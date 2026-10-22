@@ -7,7 +7,7 @@
 | `tests/run-tests.sh new` | stubs for `blkid`, `lsblk`, `udevadm`, `udisksctl`, `findmnt`, `mount`, `ntfsfix`; paths rewritten to a scratch dir | **92 passed, 0 failed** |
 | `tests/run-tests.sh old` | the original script, as a reference | its failures are the bugs that were fixed |
 | `tests/lib-tests.sh` | the library with simulated facts | **100 passed, 0 failed** |
-| `tests/i18n-tests.sh` | the catalog, the generated resources, runtime language selection | **32 passed, 0 failed** |
+| `tests/i18n-tests.sh` | the catalog, the generated resources, runtime language selection | **33 passed, 0 failed** |
 | `tests/package-check.sh` | `package()` of the PKGBUILD on the checkout | **41 passed, 0 failed** |
 | `tests/integration.sh` | disposable images as loop devices mounted by UDisks2, no root; GUI flows with scripted clicks; `BM=/usr/bin/bigmount` tests the installed package | **97 passed, 0 failed, 3 skipped** |
 | `shellcheck -x` | shipped code, tests, locale scripts | no findings |
@@ -38,9 +38,19 @@ bash tests/bench.sh big-mount/usr/bin/bigmount 20
 bash tests/measure-session.sh
 ```
 
-CI (`.github/workflows/tests.yml`, on pull requests) runs syntax, shellcheck
-and every suite except `integration.sh`, which needs a desktop session with
-UDisks2.
+CI (`.github/workflows/tests.yml`, on pull requests and on demand) runs in an
+`archlinux` container, with the same tools as BigLinux, and as a normal
+user. It runs syntax, shellcheck and every suite except `integration.sh`,
+which needs a desktop session with UDisks2. The first green run is
+`39802738847`: 92 / 100 / 33 / 41.
+
+What only a person can check is guided by `tests/manual-check.sh`. It runs
+inside the desktop session, prepares disposable devices, opens the real
+notifications, dialogs and Dolphin menu, and records the answers in
+`big-mount-manual-check.txt`. After rebooting with the package installed,
+`tests/manual-check.sh --after-boot` collects the boot time, the journal and
+the status file, and checks that no NTFS FUSE daemon holds the big-mount
+lock.
 
 ## Safety of the tests themselves
 

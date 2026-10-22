@@ -18,7 +18,9 @@ done
 mkdir -p "$dest/usr/share/applications" "$dest/etc/xdg/autostart" "$dest/usr/share/kio/servicemenus" \
     "$dest/usr/share/polkit-1/actions"
 desktop() { # TEMPLATE OUTPUT
-    msgfmt --desktop -k -kName -kGenericName -kComment -kKeywords -kX-KDE-Submenu \
+    # Name, GenericName, Comment and Keywords are default keywords; long
+    # options only (older gettext has no short -k for msgfmt)
+    msgfmt --desktop --keyword=X-KDE-Submenu \
         --template "locale/templates/$1" -d locale -o "$dest/$2"
 }
 desktop big-mount.desktop.in usr/share/applications/big-mount.desktop

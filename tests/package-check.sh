@@ -1,5 +1,5 @@
 #!/bin/bash
-# shellcheck disable=SC2016,SC2317  # bash -c '...$1' snippets and helpers called through check()
+# shellcheck disable=SC2016,SC2317,SC2329  # bash -c '...$1' snippets and helpers called through check()
 # Packaging checks: runs the package() function of pkgbuild/PKGBUILD against
 # this checkout (instead of the official git source) into a scratch dir and
 # verifies what would be installed. No root, nothing is installed.

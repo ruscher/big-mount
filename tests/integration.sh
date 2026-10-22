@@ -1,5 +1,5 @@
 #!/bin/bash
-# shellcheck disable=SC2016,SC2317  # bash -c '...$1' snippets and helpers called through check()
+# shellcheck disable=SC2016,SC2317,SC2329  # bash -c '...$1' snippets and helpers called through check()
 # Integration tests for the session tools (diagnosis, busy device, safe
 # removal, notifier) against REAL mounts.
 #

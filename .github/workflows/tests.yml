@@ -1,7 +1,9 @@
 name: Tests
 
-# Static checks, the stub based suites, translations and packaging. Nothing
-# here touches a disk: tests/integration.sh needs a local session with
+# Static checks, the stub based suites, translations and packaging, on Arch
+# Linux (the base of BigLinux): the generated .desktop/polkit files depend on
+# the gettext version, so the same tools as on the users' systems are used.
+# Nothing here touches a disk: tests/integration.sh needs a local session with
 # UDisks2 and is run by hand (see docs/09-testing.md).
 on:
   pull_request:
@@ -9,20 +11,26 @@ on:
 
 jobs:
   tests:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
+    container: archlinux:latest
     steps:
-      - uses: actions/checkout@v4
-
       - name: Install tools
         run: |
-          sudo apt-get update
-          sudo apt-get install -y shellcheck gettext desktop-file-utils libxml2-utils
-          sudo locale-gen pt_BR.UTF-8 en_US.UTF-8
+          pacman -Syu --noconfirm --needed git bash shellcheck gettext desktop-file-utils \
+            libxml2 python glibc-locales util-linux systemd diffutils
+          # The suites must not run as root: permission checks would be meaningless
+          useradd --create-home ci
+
+      - uses: actions/checkout@v4
+
+      - name: Prepare the checkout for the test user
+        run: chown -R ci:ci "$GITHUB_WORKSPACE"
 
       - name: Bash syntax
         run: |
           for f in big-mount/usr/bin/bigmount big-mount/usr/lib/big-mount/*.sh \
-                   big-mount/usr/lib/big-mount/bigmount-holders tests/*.sh locale/*.sh; do
+                   big-mount/usr/lib/big-mount/bigmount-holders tests/*.sh locale/*.sh \
+                   pkgbuild/PKGBUILD pkgbuild/big-mount.install; do
             bash -n "$f"
           done
 
@@ -34,13 +42,13 @@ jobs:
             $(ls tests/*.sh | grep -v bigmount.old.sh)
 
       - name: Boot path (stubbed devices)
-        run: bash tests/run-tests.sh new
+        run: runuser -u ci -- bash tests/run-tests.sh new
 
       - name: Library
-        run: bash tests/lib-tests.sh
+        run: runuser -u ci -- bash tests/lib-tests.sh
 
       - name: Translations
-        run: bash tests/i18n-tests.sh
+        run: runuser -u ci -- bash tests/i18n-tests.sh
 
       - name: Packaging
-        run: bash tests/package-check.sh
+        run: runuser -u ci -- bash tests/package-check.sh
