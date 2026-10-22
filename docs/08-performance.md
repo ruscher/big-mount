@@ -15,7 +15,7 @@ Ambas as versões decidem as mesmas 3 montagens.
 | CPU (usuário + sistema) | 129–136 ms | 38–42 ms |
 | Processos criados | 194 | 27 |
 | Chamadas a `ntfsfix` | 1 | 0 |
-| Clientes D-Bus (`udisksctl`) | 18 | 0 |
+| Clientes D-Bus (`udisksctl`) | 10 | 0 |
 
 De onde veio o ganho:
 

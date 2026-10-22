@@ -36,8 +36,22 @@ notificação, porque o Plasma já comunica isso.
 Os diálogos foram renderizados fora da tela com Qt (`QMessageBox`, estilo
 Fusion, escala 2×, paleta clara e escura, inglês e português). Isso levou a
 mudar a tabela: o nome técnico foi para uma segunda linha e só a coluna PID
-deixou de quebrar, porque antes o texto era cortado. **Não foi testado** no
-KDialog real dentro do Plasma, com o tema Breeze e o leitor de tela.
+deixou de quebrar, porque antes o texto era cortado.
+
+Também foi verificado:
+
+- o `kdialog` real (26.08, plataforma offscreen) aceita cada forma de chamada
+  do código: `--warningyesnocancel`, `--warningyesno`, `--msgbox`,
+  `--sorry`, `--error`, `--menu` e `--textbox`, com `--title`, `--icon` e
+  rótulos de botões. Uma opção inválida sai com 1; as válidas ficam esperando
+  o usuário;
+- o `zenity` real (4.2.2) tem todas as opções usadas;
+- os fluxos completos (ocupado → mais opções → fechar programas → removido;
+  cancelar; sistema recusado; montar de novo com gravação; dispositivo
+  protegido sem botão de correção) passam com cliques roteirizados.
+
+Falta conferir visualmente no Plasma real: tema Breeze, escala e leitor de
+tela.
 
 ## Memória e CPU do notificador
 

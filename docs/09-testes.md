@@ -2,10 +2,10 @@
 
 | Suíte | O que usa | Resultado nesta máquina |
 |---|---|---|
-| `tests/run-tests.sh new` | stubs de `blkid`, `lsblk`, `udevadm`, `udisksctl`, `findmnt`, `mount`, `ntfsfix`; caminhos reescritos para um diretório temporário | **81 aprovados, 0 falhas** |
-| `tests/run-tests.sh old` | o script original, como referência | 34/81 (as falhas são os bugs corrigidos) |
+| `tests/run-tests.sh new` | stubs de `blkid`, `lsblk`, `udevadm`, `udisksctl`, `findmnt`, `mount`, `ntfsfix`; caminhos reescritos para um diretório temporário | **89 aprovados, 0 falhas** |
+| `tests/run-tests.sh old` | o script original, como referência | referência (as falhas são os bugs corrigidos) |
 | `tests/lib-tests.sh` | biblioteca com fatos simulados por funções | **66 aprovados, 0 falhas** |
-| `tests/integration.sh` | imagens descartáveis em loop devices montados pelo UDisks2, sem root | **60 aprovados, 0 falhas, 2 pulados** |
+| `tests/integration.sh` | imagens descartáveis em loop devices montados pelo UDisks2, sem root; fluxos gráficos com cliques roteirizados; `BM=/usr/bin/bigmount` testa o pacote instalado | **80 aprovados, 0 falhas, 2 pulados** |
 | `shellcheck -x` | código distribuído e testes | sem avisos |
 | `bash -n`, `msgfmt --check`, `desktop-file-validate`, `xmllint`, `systemd-analyze verify` | — | ok |
 | `tests/bench.sh` | ver `08-performance.md` | — |
@@ -57,9 +57,10 @@ sem usuário nunca confirmam sozinhos.
 3. Dual boot com Inicialização Rápida ligada: notificação ao entrar na
    sessão; o Windows não deve mais rodar chkdsk a cada boot.
 4. Dolphin: menu de contexto → Dispositivo de armazenamento → Remover com
-   segurança, com a pasta do pendrive aberta no terminal do Dolphin.
-5. Diálogos KDialog no tema Breeze claro/escuro, com escala 150%/200% e
-   leitor de tela (Orca).
+   segurança, com a pasta do pendrive aberta no terminal do Dolphin. A
+   lógica e as opções do KDialog já foram testadas; falta o menu em si.
+5. Aparência no tema Breeze claro/escuro, com escala 150%/200% e leitor de
+   tela (Orca).
 6. Power-off de HD USB real (a integração usa loop devices, que não
    desligam).
 7. "Mostrar programas de todos os usuários" (pkexec, senha de

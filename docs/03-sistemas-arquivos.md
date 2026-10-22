@@ -36,7 +36,25 @@ O que mudou:
 | ISO 9660 / SquashFS | não testado: este kernel não tem esses módulos |
 | HFS+ | não testado: kernel sem `hfsplus`; coberto por teste unitário |
 
-## Fora do escopo desta mudança
+## Decisões
 
-Trocar `lowntfs-3g` pelo `ntfs3` do kernel e mudar `umask=000` (ver
-`10-seguranca.md`) são decisões de política que pedem validação com usuários.
+**Driver NTFS: continua `lowntfs-3g`.** O kernel do BigLinux nesta máquina
+(7.2.11-1-big) nem tem o módulo `ntfs3` (`modinfo ntfs3`: não encontrado),
+então trocar quebraria a montagem. Além disso, o `ntfs3` recusa gravar em
+volumes com o dirty bit ligado, que é justamente o estado que o `ntfsfix`
+antigo deixava. O `lowntfs-3g` já é o comportamento consolidado.
+
+**Permissões de FAT/exFAT/NTFS: `umask=000` continua o padrão**, porque o
+projeto põe compatibilidade acima de segurança e há usuários que dependem do
+compartilhamento entre contas e serviços. Quem quiser restringir usa
+`/etc/big-mount.conf`:
+
+| `PERMISSIONS=` | Opções | Efeito |
+|---|---|---|
+| `shared` (padrão) | `umask=000` | todas as contas leem, gravam e executam |
+| `owner` | `dmask=022,fmask=022` | só o último usuário grava; todos leem (`exec` mantido para Wine/Steam) |
+| `private` | `umask=077` | só o último usuário acessa |
+
+O arquivo é lido como dados (nunca com `source` como root), valores
+desconhecidos voltam para `shared` com aviso no journal, e o PKGBUILD o
+declara em `backup=`, então as edições sobrevivem às atualizações.

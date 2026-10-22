@@ -40,7 +40,9 @@ oferta de troca de dono no nível superior do Btrfs de outra instalação.
 - `bigmount --gui`, `--gui-remove`: os mesmos fluxos em KDialog ou Zenity.
 - Notificador de sessão (autostart) para dispositivos somente leitura.
 - Menu de contexto do Dolphin e lançador "Diagnóstico de Armazenamento".
-- Tradução pt_BR completa (203 mensagens).
+- Tradução pt_BR completa (204 mensagens).
+- `/etc/big-mount.conf` com `PERMISSIONS=shared|owner|private` (padrão
+  `shared`, idêntico ao comportamento anterior).
 
 ## Arquivos
 
@@ -60,12 +62,14 @@ Nenhum arquivo Markdown é necessário para o funcionamento.
 
 ## Resultados
 
-- Testes: 81/81 (boot), 66/66 (biblioteca), 60/60 + 2 pulados (integração
-  real), shellcheck sem avisos. Detalhes em `09-testes.md`.
+- Testes: 89/89 (boot), 66/66 (biblioteca), 80/80 + 2 pulados (integração
+  real, inclusive fluxos gráficos), shellcheck sem avisos. Detalhes em
+  `09-testes.md`.
 - Desempenho: 127 → 37 ms, 194 → 27 processos, nenhum cliente D-Bus no boot
   (`08-performance.md`).
-- Pacote: a função `package()` instala os 12 arquivos com permissões
-  corretas (executáveis 755). A origem continua `biglinux/big-mount`.
+- Pacote: `makepkg` a partir da branch gera 13 arquivos `root:root` com
+  permissões corretas (executáveis 755) e `backup=('etc/big-mount.conf')`.
+  A origem do PKGBUILD oficial continua `biglinux/big-mount`.
 
 ## Empacotamento e o fork
 
@@ -78,12 +82,18 @@ num `PKGBUILD` local sem publicá-lo.
 O workflow `build-package.yml` dispara o build do BigLinux em qualquer push.
 O commit do topo desta branch leva `[skip ci]` para não acioná-lo.
 
-## Pendências
+## Decisões tomadas
 
-- Validação manual com hardware e Plasma real (lista em `09-testes.md`):
-  boot real, HD USB conectado no boot, dual boot com Inicialização Rápida,
-  diálogos no Breeze/HiDPI/Orca, power-off de HD USB, Polkit, GNOME.
-- Decisões de política deixadas aos mantenedores: `umask=000` em FAT/NTFS
-  internos; `lowntfs-3g` vs `ntfs3`.
-- Não implementado, por falta de mecanismo suportado: interceptar a falha
-  de desmontagem do próprio applet do Plasma (ver `05-diagnostico-processos.md`).
+- Driver NTFS: continua `lowntfs-3g` (o kernel nem tem `ntfs3`).
+- `umask=000`: continua o padrão; modo restrito opcional em
+  `/etc/big-mount.conf`.
+- Falha de desmontagem do applet do Plasma: não interceptada. O `udisksd`
+  não publica evento dela, e espionar notificações seria frágil. Ficam o
+  menu do Dolphin e o lançador.
+
+## Pendências (dependem da instalação, de hardware ou de uma pessoa olhando)
+
+Instalar o pacote; boot real; HD USB conectado no boot; dual boot com
+Inicialização Rápida; aparência no Breeze/HiDPI/Orca; menu do Dolphin;
+power-off de HD USB real; janelas de autenticação do Polkit; GNOME. Lista
+detalhada em `09-testes.md`.

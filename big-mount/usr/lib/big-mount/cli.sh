@@ -138,6 +138,9 @@ bm_cause_text() {
          C_TITLE=$"No permission to write"
          C_REASON=$"The device was mounted for another user, so only that user can write to it."
          C_HELP=($"Unmount it and open it again from the file manager while you are logged in.")
+         if [[ $D_MP == /mnt/* ]]; then
+            C_HELP=($"This internal partition is mounted by Big-Mount at boot. An administrator can choose who may write to it with PERMISSIONS in /etc/big-mount.conf.")
+         fi
          C_FIX_LABEL=$"Mount again for my user"
          C_FIX_INFO=$"The device will be unmounted and mounted again for your user. Nothing on it is changed. Programs using it must be closed first."
          ;;
@@ -580,7 +583,7 @@ bm_pick_device() {
    done < <(lsblk -P -b -p -o NAME,TYPE,FSTYPE,LABEL,SIZE,MOUNTPOINTS 2>/dev/null)
    if [ "${#items[@]}" -eq 0 ]; then
       bm_doc_new; bm_doc_p $"No storage device to diagnose was found."
-      bm_ui_show info $"Storage diagnostics" drive-harddisk
+      bm_ui_show info $"Storage diagnostics" big-mount
       return 1
    fi
    bm_ui_menu $"Storage diagnostics" $"Choose a device:" "${items[@]}"
@@ -595,7 +598,7 @@ bm_gui_diagnose() {
    fi
    if ! bm_resolve "$target" || ! bm_facts "$R_DEV"; then
       bm_doc_new; bm_doc_p $"This folder is not on a local storage device."
-      bm_ui_show info $"Storage diagnostics" drive-harddisk
+      bm_ui_show info $"Storage diagnostics" big-mount
       return 1
    fi
    local dev="$R_DEV"
@@ -737,7 +740,7 @@ bm_gui_remove() {
    local target="${1:-}" rc name icon
    if ! bm_resolve "$target" || ! bm_facts "$R_DEV"; then
       bm_doc_new; bm_doc_p $"This folder is not on a removable storage device."
-      bm_ui_show info $"Safely remove" drive-harddisk
+      bm_ui_show info $"Safely remove" big-mount
       return 1
    fi
    local dev="$R_DEV"
