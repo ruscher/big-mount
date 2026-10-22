@@ -1,5 +1,27 @@
 # 11 — Final report
 
+## Round 5 (real devices after a reboot, release v2.1.2)
+
+The user installed v2.1.1, rebooted and allowed tests on the connected
+devices. The boot was clean (716 ms). The tests found three high-severity
+problems in safe removal, all on a USB SSD used by a Docker service
+(Immich):
+
+- **B23:** the drive was powered off while `ntfs-3g` was still writing.
+  The power-off failed, and the message blamed the drive.
+- **B24:** systemd services bound to the mount were stopped without a word.
+- **B25:** a container's own mount of the device was not seen, so the
+  filesystem could have been reported safe while still in use.
+
+The diagnosis also judged a folder by the root of its partition (B26). It
+explained system partitions, swap and whole disks poorly (B27, B28).
+
+All were fixed and tested: 135 unit tests, 110 integration tests (5 of them
+fail on v2.1.1), and a real removal, power-off and reconnection of the SSD
+in which the service came back by itself. Two mistakes in the first draft
+of the fixes were caught before release: FUSE daemon names cut to 15
+characters, and a wrong "do not start again" sentence.
+
 ## Round 4 (live tests on the real screen, release v2.1.1)
 
 The dialogs and notifications were exercised on the real Plasma desktop of

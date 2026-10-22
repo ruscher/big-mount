@@ -277,9 +277,14 @@ bm_looks_like_os() {
 #   D_FIX    safe automatic correction available: take-ownership | remount | ""
 #   D_WARN   warnings that do not prevent writing (filesystem errors noticed)
 bm_diagnose_write() {
-   local dev="$1" i ro=0 fstype mounted_type vfs fso st uid
-   D_CAUSE="" D_MP="" D_DETAIL="" D_FIX="" D_WARN=()
+   local dev="$1" path="${2:-}" i ro=0 fstype mounted_type vfs fso st uid wt line
+   D_CAUSE="" D_MP="" D_DETAIL="" D_FIX="" D_WARN=() D_OWNER="" D_PATH=""
    fstype="${F[FSTYPE]:-}"
+
+   if [ "$fstype" = swap ]; then
+      D_CAUSE=swap
+      return 0
+   fi
 
    bm_mounts "$dev"
    if [ "${#M_TARGET[@]}" -eq 0 ]; then
@@ -300,6 +305,18 @@ bm_diagnose_write() {
    if [ -z "$D_MP" ]; then
       D_MP="${M_TARGET[0]}" mounted_type="${M_FSTYPE[0]}" vfs="${M_VFSOPT[0]}" fso="${M_FSOPT[0]}"
    fi
+   # A folder was asked about ("why can't I write HERE?"): judge that folder,
+   # under the mount that contains it, not the root of the partition
+   wt="$D_MP"
+   if [ -n "$path" ]; then
+      [ -d "$path" ] || path="${path%/*}"
+      while IFS= read -r line; do
+         bm_parse_pairs "$line"
+         D_MP="${KV[TARGET]}" mounted_type="${KV[FSTYPE]}" vfs="${KV[VFS-OPTIONS]}" fso="${KV[FS-OPTIONS]}"
+      done < <(findmnt -P -n -o TARGET,FSTYPE,VFS-OPTIONS,FS-OPTIONS -T "$path" 2>/dev/null)
+      wt="$path"
+      [ "$wt" = "$D_MP" ] || D_PATH="$wt"
+   fi
    if bm_has_opt "$vfs" ro || bm_has_opt "$fso" ro; then ro=1; fi
 
    # Facts that are worth showing whatever the outcome
@@ -309,7 +326,7 @@ bm_diagnose_write() {
       [ "${errcount:-0}" -gt 0 ] && D_WARN+=("ext4 errors_count=$errcount")
    fi
 
-   if [ "$ro" -eq 0 ] && [ -w "$D_MP" ]; then
+   if [ "$ro" -eq 0 ] && [ -w "$wt" ]; then
       D_CAUSE=ok
       return 0
    fi
@@ -376,7 +393,18 @@ bm_diagnose_write() {
    fi
 
    # B: mounted read-write, but the current user has no permission
-   if bm_is_posix_fs "$fstype"; then
+   if [ -n "$D_PATH" ]; then
+      # A folder of someone else inside a writable filesystem: explain, never
+      # offer to change owners below the root of a filesystem
+      st="$(stat -c '%U:%G %a' -- "$wt" 2>/dev/null)"
+      D_CAUSE=permission-folder D_OWNER="${st%%:*}"
+      D_DETAIL="folder $wt $st"
+   elif bm_is_system_mount "$D_MP"; then
+      # Part of the running system (/, /boot/efi, ...): not for users to write
+      st="$(stat -c '%U:%G %a' -- "$D_MP" 2>/dev/null)"
+      D_CAUSE=system
+      D_DETAIL="system mount $D_MP $st"
+   elif bm_is_posix_fs "$fstype"; then
       st="$(stat -c '%U:%G %a' -- "$D_MP" 2>/dev/null)"
       D_CAUSE=permission
       D_DETAIL="root directory $st"
@@ -543,6 +571,10 @@ bm_other_holders() {
       [ -e "$h" ] || continue
       O_KIND+=(holder) O_WHAT+=("/dev/${h##*/}")
    done
+   bm_private_mounts "$dev"
+   for h in "${!P_PIDS[@]}"; do
+      O_KIND+=(isolated) O_WHAT+=("${P_COMMS[h]} (PID ${P_PIDS[h]}): ${P_MPS[h]}")
+   done
 }
 
 # Can the user be offered to close this process? Sets REPLY to "" when yes,
@@ -680,26 +712,165 @@ bm_system_use() {
    return 1
 }
 
+# FUSE daemons serving DEV (ntfs-3g, lowntfs-3g, exfat-fuse...): umount
+# returns as soon as the kernel detaches the mount, but the daemon then
+# still writes the final metadata to the device. Fills FUSE_PIDS.
+# /proc/PID/cmdline is readable for every user, so root daemons are seen.
+# /proc/PID/comm keeps 15 characters: mount.lowntfs-3g is "mount.lowntfs-3"
+BM_FUSE_COMM=" mount.ntfs-3g ntfs-3g mount.lowntfs-3 lowntfs-3g mount.ntfs mount.exfat-fus exfat-fuse mount.exfat mount.fuseblk "
+bm_fuse_daemons() {
+   local dev="$1" d comm args
+   FUSE_PIDS=()
+   for d in /proc/[0-9]*; do
+      { read -r comm < "$d/comm"; } 2>/dev/null || continue
+      [[ $BM_FUSE_COMM == *" $comm "* ]] || continue
+      { mapfile -d '' -t args < "$d/cmdline"; } 2>/dev/null || continue
+      [[ " ${args[*]} " == *" $dev "* ]] && FUSE_PIDS+=("${d#/proc/}")
+   done
+}
+
+# Mounts of DEV that an unmount here does not remove: copies in other mount
+# namespaces (a container, a sandboxed service) that do not receive our
+# mount events. The kernel keeps the filesystem alive while one exists.
+# A copy that does receive them carries shared:G or master:G of a peer
+# group G of our own mount. A plain copy of our mount (same folder of the
+# filesystem at the same place) goes away with it; a bind mount made inside
+# the namespace, as Docker does for a volume, does not (measured on 7.2).
+# Fills P_PIDS, P_COMMS and P_MPS (one per mount).
+bm_private_mounts() {
+   local dev="$1" mm line file pid rest f i src comm skip='^$'
+   local -a fields
+   local -A seen=() ours=()
+   P_PIDS=() P_COMMS=() P_MPS=()
+   mm="$(lsblk -dnro MAJ:MIN -- "$dev" 2>/dev/null)"
+   [ -n "$mm" ] || return 0
+   _bm_mi_fields() {
+      read -r -a fields <<< "$1"
+      src=""
+      for ((i = 6; i < ${#fields[@]}; i++)); do
+         [ "${fields[i]}" = - ] && { src="${fields[i + 2]:-}"; break; }
+      done
+   }
+   while IFS= read -r line; do
+      _bm_mi_fields "$line"
+      [ "${fields[2]}" = "$mm" ] || [ "$src" = "$dev" ] || continue
+      ours["${fields[3]} ${fields[4]}"]=1
+      for f in "${fields[@]:6}"; do
+         [ "$f" = - ] && break
+         [[ $f == shared:* ]] && skip+="| (shared|master):${f#shared:} "
+      done
+   done < /proc/self/mountinfo
+   # The copies that follow ours are dropped by grep: hundreds of processes
+   # share them, and parsing them here would cost tens of milliseconds
+   while IFS= read -r line; do
+      file="${line%%:*}" rest="${line#*:}"
+      pid="${file#/proc/}" pid="${pid%%/*}"
+      _bm_mi_fields "$rest"
+      [ "${fields[2]:-}" = "$mm" ] || [ "$src" = "$dev" ] || continue
+      [ -n "${seen[${fields[0]}]:-}" ] && continue
+      seen[${fields[0]}]=1
+      [ -n "${ours["${fields[3]} ${fields[4]}"]:-}" ] && continue
+      { read -r comm < "/proc/$pid/comm"; } 2>/dev/null || comm="?"
+      bm_unescape "${fields[4]}"
+      P_PIDS+=("$pid") P_COMMS+=("$comm") P_MPS+=("$REPLY")
+   done < <(grep -H -s -F -e " $mm " -e " $dev " /proc/[0-9]*/mountinfo | grep -v -E -- "$skip")
+}
+
+# After an unmount here, wait until the filesystem is really released: every
+# FUSE daemon given has exited (it writes its cache after umount returns) and
+# no private copy of the mount is left (a service that systemd stops with the
+# mount, a container). At most BM_FUSE_WAIT seconds; there is no event for
+# the exit of a process that is not our child, so this checks every 0.1 s.
+# On failure UD_ERROR is mounted-elsewhere or still-writing.
+BM_FUSE_WAIT=60
+bm_wait_released() {
+   local dev="$1" pid n left
+   shift
+   for ((n = 0; n <= BM_FUSE_WAIT * 10; n++)); do
+      # Same "do not disconnect yet" notice as a slow unmount, after 2 s
+      [ "$n" -eq 20 ] && [ -n "${BM_SLOW_HOOK:-}" ] && "$BM_SLOW_HOOK"
+      left=0
+      if [ $((n % 10)) -eq 0 ]; then
+         bm_private_mounts "$dev"
+         [ "${#P_PIDS[@]}" -gt 0 ] && left=1
+      fi
+      for pid in "$@"; do
+         if kill -0 "$pid" 2>/dev/null || [ -d "/proc/$pid" ]; then left=1; fi
+      done
+      [ "$left" -eq 0 ] && return 0
+      [ "$n" -lt $((BM_FUSE_WAIT * 10)) ] && sleep 0.1
+   done
+   if [ "${#P_PIDS[@]}" -gt 0 ]; then
+      UD_ERROR=mounted-elsewhere
+      printf -v UD_MESSAGE $"%s is unmounted here, but %s (PID %s) still has it mounted at %s" \
+         "$dev" "${P_COMMS[0]}" "${P_PIDS[0]}" "${P_MPS[0]}"
+   else
+      UD_ERROR=still-writing
+      printf -v UD_MESSAGE $"%s is unmounted, but its filesystem driver is still writing to it" "$dev"
+   fi
+   return 1
+}
+
 # bm_unmount_all DEV: unmount every mount of one filesystem. Returns 0 when
-# none is left, 1 on failure (UD_ERROR/UD_MESSAGE describe it). The mount
-# table is the judge, not the answer of udisksctl: a mount that vanished in
-# the meantime is a success, a "success" that left the mount is a failure.
+# none is left and every FUSE daemon of the device has finished writing,
+# 1 on failure (UD_ERROR/UD_MESSAGE describe it). The mount table is the
+# judge, not the answer of udisksctl: a mount that vanished in the meantime
+# is a success, a "success" that left the mount is a failure.
 bm_unmount_all() {
-   local dev="$1" n
+   local dev="$1" n daemons=()
+   bm_fuse_daemons "$dev"
+   daemons=("${FUSE_PIDS[@]}")
    for ((n = 0; n < 8; n++)); do
       bm_mounts "$dev"
-      [ "${#M_TARGET[@]}" -eq 0 ] && return 0
+      [ "${#M_TARGET[@]}" -eq 0 ] && break
       if ! bm_udisks unmount -b "$dev"; then
          bm_mounts "$dev"
-         [ "${#M_TARGET[@]}" -eq 0 ] && return 0
+         [ "${#M_TARGET[@]}" -eq 0 ] && break
          return 1
       fi
    done
    bm_mounts "$dev"
-   [ "${#M_TARGET[@]}" -eq 0 ] && return 0
-   UD_ERROR=still-mounted
-   printf -v UD_MESSAGE $"%s is still mounted at %s after being unmounted" "$dev" "${M_TARGET[0]}"
-   return 1
+   if [ "${#M_TARGET[@]}" -gt 0 ]; then
+      UD_ERROR=still-mounted
+      printf -v UD_MESSAGE $"%s is still mounted at %s after being unmounted" "$dev" "${M_TARGET[0]}"
+      return 1
+   fi
+   bm_wait_released "$dev" "${daemons[@]}"
+}
+
+# Services that systemd stops when this mount point goes away (BindsTo=,
+# Requires=, PartOf=, Requisite=, RequiresMountsFor= on its .mount unit).
+# Fills DEP_UNITS, DEP_NAMES (description) and DEP_BACK (1 when systemd
+# starts the service again with the mount: WantedBy=/RequiredBy= it) for the
+# active ones.
+bm_mount_dependents() {
+   local mp="$1" unit u key val deps wanted state desc
+   DEP_UNITS=() DEP_NAMES=() DEP_BACK=()
+   command -v systemctl >/dev/null || return 0
+   unit="$(systemd-escape --path --suffix=mount -- "$mp" 2>/dev/null)" || return 0
+   while read -r u; do
+      u="${u//[^A-Za-z0-9@._:\\-]/}"
+      [[ $u == *.service ]] || continue
+      deps="" wanted="" state="" desc=""
+      while IFS='=' read -r key val; do
+         case "$key" in
+            Description) desc="$val"; continue ;;
+            ActiveState) state="$val"; continue ;;
+         esac
+         # systemctl quotes names that contain escapes: "run-media-x\\x20y.mount"
+         val="${val//\"/}"
+         val="${val//\\\\/\\}"
+         case "$key" in
+            BindsTo | Requires | PartOf | Requisite) deps+=" $val" ;;
+            WantedBy | RequiredBy) wanted+=" $val" ;;
+         esac
+      done < <(systemctl show -p BindsTo -p Requires -p PartOf -p Requisite -p WantedBy \
+         -p RequiredBy -p ActiveState -p Description -- "$u" 2>/dev/null)
+      [[ "$deps " == *" $unit "* ]] || continue
+      [ "$state" = active ] || continue
+      DEP_UNITS+=("$u") DEP_NAMES+=("${desc:-$u}")
+      if [[ "$wanted " == *" $unit "* ]]; then DEP_BACK+=(1); else DEP_BACK+=(0); fi
+   done < <(systemctl list-dependencies --reverse --plain --no-legend -- "$unit" 2>/dev/null)
 }
 
 # Make the current user owner of the root folder of a POSIX filesystem

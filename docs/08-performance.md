@@ -49,6 +49,19 @@ Measured on the running system with the package installed:
 | the very first service run after installing | 1096 ms (not reproduced; cold caches) |
 | mount → notification in the real Plasma session | 77 ms |
 
+## Round 5 (safe removal on a real USB SSD)
+
+| Measure | Value |
+| --- | --- |
+| boot after installing v2.1.1, `systemd-analyze blame` | 716 ms; the three `mount` calls take almost all of it (Btrfs `/mnt/Dados` alone ≈ 380 ms) |
+| `--safe-remove` of a USB SSD (NTFS, a Docker service bound to it), including stopping the service and waiting for ntfs-3g | 5.1 s |
+| services bound to a mount (`systemctl` queries) | 8 ms |
+| FUSE daemons of a device (`/proc/*/comm`) | 7 ms |
+| mounts in other namespaces (`/proc/*/mountinfo`, 585 processes) | 70 ms, of which 43 ms is `grep` reading the tables |
+| `--busy` on that SSD | 224 ms |
+
+The boot path did not change in this round.
+
 ## Round 1 (original script → modernized version)
 
 | Metric | Original | Modernized |
