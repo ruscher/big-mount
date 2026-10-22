@@ -59,7 +59,7 @@ echo "========================================="
 echo "Library unit tests"
 echo "========================================="
 
-begin "read-only causes (docs/04-modo-somente-leitura.md)"
+begin "read-only causes (docs/04-read-only-diagnostics.md)"
 fake /dev/sdz1 "$WORK/rw" ext4 ext4 rw,relatime rw; diag
 check "writable -> ok" eq "$D_CAUSE" ok
 fake /dev/sdz1 "" ext4 "" "" ""; diag
@@ -117,7 +117,7 @@ unset -f bm_mounts bm_kernel_messages bm_boot_status bm_ntfs3g_fallback findmnt
 # shellcheck source=../big-mount/usr/lib/big-mount/lib.sh
 . "$BIGMOUNT_LIB/lib.sh"
 
-begin "process policy (docs/06-desmontagem-segura.md)"
+begin "process policy (docs/06-safe-removal.md)"
 H_PID=(10 11 12 13 14 15 16) H_UID=("$EUID" "$EUID" "$EUID" "$EUID" 0 "$EUID" "$EUID")
 H_COMM=(dolphin kioworker bash plasmashell udisksd sleep rsync)
 H_ACCESS=(r r "" r r "" w)
@@ -260,6 +260,8 @@ bm_mounts() { M_TARGET=(/run/media/u/X) M_FSTYPE=() M_VFSOPT=() M_FSOPT=(); }
 bm_ui_text() { :; }
 command() { [ "$2" = pkexec ] && return 0; builtin command "$@"; }
 KD_N=0; : > "$WORK/kd.log"
+# A subshell on purpose: TMPDIR and BM_UI must not leak into the next tests
+# shellcheck disable=SC2030
 ( export TMPDIR="$WORK/tmpdir"; BM_UI=kdialog; bm_gui_busy_dialog /dev/sdz1 ) > /dev/null 2>&1
 check "the privileged list was shown" grep -q "secret-app" "$WORK/kd.log"
 check "no temporary file left after the dialog" test -z "$(ls -A "$WORK/tmpdir")"

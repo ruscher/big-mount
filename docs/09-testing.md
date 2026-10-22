@@ -1,0 +1,142 @@
+# 09 — Testing
+
+## Suites
+
+| Suite | What it uses | Result on the development machine |
+| --- | --- | --- |
+| `tests/run-tests.sh new` | stubs for `blkid`, `lsblk`, `udevadm`, `udisksctl`, `findmnt`, `mount`, `ntfsfix`; paths rewritten to a scratch dir | **90 passed, 0 failed** |
+| `tests/run-tests.sh old` | the original script, as a reference | its failures are the bugs that were fixed |
+| `tests/lib-tests.sh` | the library with simulated facts | **100 passed, 0 failed** |
+| `tests/i18n-tests.sh` | the catalog, the generated resources, runtime language selection | **32 passed, 0 failed** |
+| `tests/package-check.sh` | `package()` of the PKGBUILD on the checkout | **38 passed, 0 failed** |
+| `tests/integration.sh` | disposable images as loop devices mounted by UDisks2, no root; GUI flows with scripted clicks; `BM=/usr/bin/bigmount` tests the installed package | **96 passed, 0 failed, 3 skipped** |
+| `shellcheck -x` | shipped code, tests, locale scripts | no findings |
+| `bash -n`, `msgfmt --check`, `desktop-file-validate`, `xmllint`, `systemd-analyze verify` | — | pass (part of the suites above) |
+
+Skipped in the integration suite, because this kernel lacks the modules:
+
+- ISO 9660/SquashFS;
+- LUKS (no dm-crypt target).
+
+Double and nested mounts need root to create, so they are covered by the
+unit suite instead.
+
+`shfmt` is not installed here and is not used. The code has a deliberate
+3-space style in `bigmount` and 4 spaces in the tests, and reformatting
+stable code would be a cosmetic change with regression risk.
+
+## Running
+
+```bash
+bash tests/run-tests.sh new
+bash tests/lib-tests.sh
+bash tests/i18n-tests.sh
+bash tests/package-check.sh
+bash tests/integration.sh                       # needs an active local session
+BM=/usr/bin/bigmount bash tests/integration.sh  # against the installed package
+bash tests/bench.sh big-mount/usr/bin/bigmount 20
+bash tests/measure-session.sh
+```
+
+CI (`.github/workflows/tests.yml`, on pull requests) runs syntax, shellcheck
+and every suite except `integration.sh`, which needs a desktop session with
+UDisks2.
+
+## Safety of the tests themselves
+
+- Every stub refuses to run without `TESTROOT`.
+- `run-tests.sh` and `bench.sh` abort if any disk tool does not resolve to
+  its stub. That interlock was added after an incident: on a `noexec`
+  directory, bash skipped a stub and ran the real `ntfsfix`/`mount` as a
+  normal user. Both refused, and nothing happened.
+- The integration suite only touches image files, refuses to run as root
+  and releases everything in an `EXIT` trap.
+- `package-check.sh` fails if any scratch file or binary is versioned
+  (a copy of `/usr/bin/tail` had been committed by mistake once).
+- Mutation checks were run on the new tests: each one was made to fail
+  against a broken version before being trusted. For example, the
+  temporary-file privacy test first passed even without the fix, because
+  `TMPDIR` was not exported. It was corrected and now fails without the fix.
+
+## Coverage
+
+**Devices:**
+
+- internal SATA/NVMe;
+- USB HDD/SSD with `RM=0` (each signal alone);
+- multi-partition USB, GPT disk with ext4 + FAT (real);
+- Thunderbolt NVMe, SD, eMMC, eSATA;
+- similar names (`sda1`/`sda10`);
+- virtual devices, containers;
+- device replaced during the scan or during a removal;
+- device that disappears.
+
+**Filesystems:**
+
+- healthy NTFS, hibernated NTFS (real image) and silent fallback;
+- inconsistent NTFS;
+- FAT32, exFAT;
+- ext4 with recorded errors, Btrfs, XFS, F2FS;
+- HFS+ (unit);
+- unknown types, read-only.
+
+**States:**
+
+- rw;
+- clean `ro` (the remount is really performed);
+- no permission;
+- partition holding an operating system (Btrfs `@`, Windows);
+- write-protected;
+- busy (shell with cwd, reader, writer, kioworker);
+- refused then completed unmount, partial failure, mount reappearing;
+- inconsistent udisks answers;
+- running system;
+- no session, no notification server, no KDialog.
+
+**Notifications:**
+
+- 5 s transient information;
+- 15 s warnings with actions;
+- exactly one path;
+- body escaped;
+- `kdialog --passivepopup` fallback;
+- plain text without a desktop;
+- once per device and cause.
+
+**Languages:**
+
+- `LANG=C`, `en_US.UTF-8`, `pt_BR.UTF-8`;
+- an untranslated language (`de_DE`), the `LANGUAGE` fallback chain;
+- an incomplete catalog (the missing entry falls back to English);
+- placeholders kept, Unicode and long values;
+- journal kept in English.
+
+**Security:**
+
+- no destructive command in shipped code;
+- no closing of writers, shells, session or foreign processes;
+- reused PIDs never signalled, SIGTERM only;
+- wrong partition never unmounted;
+- no false success;
+- labels with `$()`, backticks, quotes, `..`, Unicode and HTML never run
+  or inject anything;
+- config values never executed or used as printf formats;
+- dialogs never confirm by themselves, and Enter is safe;
+- the administrator process list is never left behind.
+
+## Manual validation still needed (needs hardware or a person)
+
+1. Install the package, reboot: `systemd-analyze blame | grep big-mount`,
+   `journalctl -b -u big-mount`.
+2. A USB HDD/SSD connected **during boot** must appear in Dolphin,
+   mounted by UDisks, not under `/mnt`.
+3. Dual boot with Windows Fast Startup: one notification after login;
+   Windows no longer runs chkdsk on every boot.
+4. Dolphin: right-click → Storage device → Safely remove, with the stick's
+   folder open in Dolphin's terminal panel.
+5. Appearance in Breeze light/dark, at 125 %, 150 % and 200 %, with Orca.
+6. Power-off of a real USB HDD (loop devices do not power off).
+7. An encrypted USB drive (LUKS) on a kernel with dm-crypt.
+8. "Show programs of all users" (pkexec) and "Become owner" (polkit).
+9. GNOME edition (Zenity) and an X11 session.
+10. Several users logged in: each session only sees its own processes.

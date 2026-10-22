@@ -191,7 +191,7 @@ EOF
     echo "sdb1 sdb" > "$root/fake-lsblk"
     mkdir -p "$root/sys/block/sdb"; echo 0 > "$root/sys/block/sdb/removable"
     run_script "$root" >/dev/null 2>&1
-    # Behaviour change (docs/01-auditoria.md A3): ntfsfix sets the dirty bit
+    # Behaviour change (docs/01-audit.md A3): ntfsfix sets the dirty bit
     # and resets the journal, so it must never run automatically.
     ASSERT_MSG="ntfsfix never invoked [new-only fix]"; assert_false test -s "$root/ntfsfix.log"
     ASSERT_MSG="mount uses lowntfs-3g type"; assert_true mount_log_grep "$root" "-t[[:space:]]+lowntfs-3g"
@@ -360,7 +360,7 @@ simple_case() { # ROOT BLKID_LINE PART DISK [TRAN] [HOTPLUG]
     disk "$1" "$4"
 }
 
-# ===== device identification (docs/02-deteccao-dispositivos.md) =====
+# ===== device identification (docs/02-device-detection.md) =====
 
 test_usb_rm0_transport() {
     begin "usb-hdd-rm0-transport-usb"
@@ -527,7 +527,7 @@ test_device_swapped_during_scan() {
     ASSERT_MSG="not mounted when diskseq changed"; assert_false test -s "$root/mount.log"
 }
 
-# ===== filesystems and options (docs/03-sistemas-arquivos.md) =====
+# ===== filesystems and options (docs/03-filesystem-support.md) =====
 
 test_fat_regex_bug() {
     begin "ext4-partlabel-containing-fat"
@@ -647,7 +647,7 @@ test_permissions_private_and_bad_value() {
     ASSERT_MSG="config is data, never executed"; assert_false test -e "$root/PWNED"
 }
 
-# ===== labels and paths (docs/10-seguranca.md) =====
+# ===== labels and paths (docs/10-security.md) =====
 
 test_dot_labels() {
     begin "dot-and-dotdot-labels"
