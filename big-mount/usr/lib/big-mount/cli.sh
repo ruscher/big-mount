@@ -921,6 +921,10 @@ bm_notifier_check() {
    case "${F[FSTYPE]}" in squashfs | iso9660 | erofs | udf) return 0 ;; esac
    bm_diagnose_write "$dev"
    case "$D_CAUSE" in ok | not-mounted | unsupported) return 0 ;; esac
+   # Another operating system mounted by big-mount (its folders belong to it):
+   # nothing to fix, so no warning at every login. --diagnose still explains it.
+   bm_cause_key
+   [ "$REPLY" = permission-os ] && return 0
    bm_notifier_key "$dev"; key="$REPLY"
    grep -qxF -- "$key" "$BM_NOTIFIED" 2>/dev/null && return 0
    printf '%s\n' "$key" >> "$BM_NOTIFIED"

@@ -111,6 +111,7 @@ begin "B: partition that contains an operating system"
 img os.img; mkfs.ext4 -q -F -L BMOS -E root_owner=0:0 -d "$REPO/tests/fixtures/os-root" "$IMG/os.img" 2>/dev/null \
     || mkfs.ext4 -q -F -L BMOS -E root_owner=0:0 "$IMG/os.img"
 attach "$IMG/os.img" && mountdev "$DEV"
+OS_DEV="$DEV"
 if [ -e "$MP/etc/os-release" ]; then
     diag "$DEV"
     check "cause: permission" has "diagnosis:   permission (root directory root:root 755)"
@@ -431,6 +432,9 @@ udisksctl unmount --no-user-interaction -b "$DEV" >/dev/null 2>&1; mountdev "$DE
 sleep 3
 check "same device and cause again: no repeated notification" test "$(notes_for BMNOTE)" -eq 1
 check "writable devices produce no notification" bash -c '! grep -qE "Device: (BMOK|BMOUTER|BMFAT|BMEXFAT) " "$1"' _ "$NOTE_HOME/notes"
+if mounted "$OS_DEV"; then
+    check "a partition holding an operating system produces no notification" bash -c '! grep -q "Device: BMOS " "$1"' _ "$NOTE_HOME/notes"
+fi
 kill "$P_NOTE" 2>/dev/null; pkill -P "$P_NOTE" 2>/dev/null
 rm -rf "$NOTE_HOME"
 

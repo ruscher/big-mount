@@ -51,7 +51,10 @@ warn() { local f="$1"; shift; printf -- "$P_WARN$f"'\n' "$@"; }
 # shellcheck disable=SC2059
 err()  { local f="$1"; shift; printf -- "$P_ERR$f"'\n' "$@"; }
 
-# Execute, or only show, a command that changes the system
+# Execute, or only show, a command that changes the system. Fd 9 holds the
+# lock and is closed for the command: mount helpers such as mount.lowntfs-3g
+# stay alive as FUSE daemons and would otherwise hold the lock forever, so
+# every later run (systemctl restart big-mount) would wait and give up.
 run() {
    local a
    if [ -n "$DRY_RUN" ]; then
@@ -62,7 +65,7 @@ run() {
       printf '\n'
       return 0
    fi
-   "$@"
+   "$@" 9>&-
 }
 
 if [ -z "$DRY_RUN" ]; then
