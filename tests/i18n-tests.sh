@@ -100,8 +100,16 @@ check "incomplete translation: the missing message falls back to English" grep -
 check "incomplete translation: the others are still translated" grep -q "mostra esta ajuda" <<< "$out"
 
 begin "boot messages: translated on a terminal, English in the journal"
-out_tty="$(script -qec "env -i PATH=$PATH LANG=pt_BR.UTF-8 bash $REPO/$BM --dry-run" /dev/null 2>/dev/null | tr -d '\r' | head -n3)"
-out_log="$(env -i PATH="$PATH" LANG=pt_BR.UTF-8 bash "$BM" --dry-run 2>/dev/null | head -n3)"
+# A fake internal disk (stubs of tests/run-tests.sh): independent of the
+# disks of the machine running the tests (CI containers have none)
+fake="$WORK/fake"; mkdir -p "$fake/fake-udev"
+echo '/dev/sdq1: LABEL="I18nTest" TYPE="ext4"' > "$fake/fake-blkid"
+echo "sdq1 sdq sata" > "$fake/fake-lsblk"; : > "$fake/fake-fstab"
+dry() { env -i PATH="$HERE/stubs:$PATH" TESTROOT="$fake" LANG=pt_BR.UTF-8 bash "$REPO/$BM" --dry-run; }
+export -f dry; export HERE REPO BM fake
+out_tty="$(script -qec "bash -c dry" /dev/null 2>/dev/null | tr -d '\r')"
+out_log="$(dry 2>/dev/null)"
+check "the fake disk is planned for mounting" grep -q "I18nTest" <<< "$out_log"
 if [ -n "$out_tty" ]; then
     check "terminal: Portuguese" grep -qE "ignorado|montado|deixado" <<< "$out_tty"
 else

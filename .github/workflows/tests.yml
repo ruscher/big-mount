@@ -17,7 +17,7 @@ jobs:
       - name: Install tools
         run: |
           pacman -Syu --noconfirm --needed git bash shellcheck gettext desktop-file-utils \
-            libxml2 python glibc-locales util-linux systemd
+            libxml2 python glibc-locales util-linux systemd diffutils
           # The suites must not run as root: permission checks would be meaningless
           useradd --create-home ci
 
