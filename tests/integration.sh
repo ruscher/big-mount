@@ -9,6 +9,7 @@
 # password) and runs as a normal user. Never run it as root.
 #
 # Usage: tests/integration.sh
+#        BM=/usr/bin/bigmount tests/integration.sh   (test the installed package)
 
 set -u
 # English messages, but UTF-8 so that accented labels are printed as they are
@@ -16,7 +17,7 @@ export LC_ALL=C.UTF-8
 
 HERE="$(cd "$(dirname "$0")" && pwd)"
 REPO="$(dirname "$HERE")"
-BM="$REPO/big-mount/usr/bin/bigmount"
+BM="${BM:-$REPO/big-mount/usr/bin/bigmount}"
 
 if [ "$EUID" -eq 0 ]; then
     echo "integration: do not run as root" >&2
@@ -86,6 +87,7 @@ JOURNAL=0
 
 echo "========================================="
 echo "Integration tests (real UDisks2 mounts on loop devices)"
+echo "bigmount: $BM"
 echo "========================================="
 
 # ----- A..G: why can't I write? ----------------------------------------------
@@ -140,8 +142,9 @@ RO_DEV="$DEV"
 
 begin "A: the remount correction itself"
 (
-    # shellcheck source=../big-mount/usr/lib/big-mount/lib.sh
-    BIGMOUNT_LIB="$REPO/big-mount/usr/lib/big-mount"
+    BIGMOUNT_LIB="$(dirname "$(readlink -f "$BM")")/../lib/big-mount"
+    # The library of whichever bigmount is being tested
+    # shellcheck source=/dev/null
     . "$BIGMOUNT_LIB/lib.sh"
     bm_unmount_all "$RO_DEV" && bm_udisks mount -b "$RO_DEV" >/dev/null
 )
