@@ -54,6 +54,15 @@ Found by the first real CI runs (round 3):
 | B18 | Low | proven | CI had never really run, because every commit carried `[skip ci]`. On Ubuntu 24.04 the translation checks failed: gettext 0.21 has no short `-k` for `msgfmt`, and it formats generated `.desktop` files differently from gettext 1.0 | `compile.sh` uses `--keyword=` (identical output); CI runs in an `archlinux` container, the base of BigLinux, as a normal user |
 | B19 | Low | proven | a translation test depended on the disks of the machine running it (a CI container has none); shellcheck 0.11 reports SC2329 on helpers that are called indirectly | the test uses a fake disk; SC2329 allowed in the tests only |
 
+Found by live tests on the real Plasma screen (round 4, v2.1.1):
+
+| # | Severity | Kind | Finding | Status |
+| --- | --- | --- | --- | --- |
+| B20 | Low | UX, seen live | the busy summary called any program whose current folder was on the device "a terminal" (it was `sleep`) | only shells and terminals are called terminals; other programs are named ("sleep is running inside a folder of this device") |
+| B21 | Low | UX, seen live | `bigmount --busy` on a free device said "*Device* is still in use" followed by "None of your programs is using it" | it now says "*Device* is not in use … It can be unmounted" |
+| B22 | Low | UX, seen live | at 200 % the diagnosis needed a scroll bar (the device path and a state line repeating the title) | the path moved to the technical details; the state is shown only when it adds something; `ext4` instead of `EXT4` |
+| — | Info | translation | `msgmerge` proposed "%s ainda está em uso" ("still in use") for the new "%s is not in use": the opposite meaning | translated by hand; fuzzy entries are rejected by `tests/i18n-tests.sh` |
+
 Not changed, on purpose:
 
 - **Boot path.** It is already minimal: 27 processes, of which one `blkid`,

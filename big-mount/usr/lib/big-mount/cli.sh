@@ -154,7 +154,7 @@ bm_cause_text() {
 bm_fs_label() {
    case "$1" in
       ntfs) REPLY="NTFS" ;; vfat) REPLY="FAT32" ;; exfat) REPLY="exFAT" ;;
-      ext4 | ext3 | ext2) REPLY="${1^^}" ;; btrfs) REPLY="Btrfs" ;; xfs) REPLY="XFS" ;;
+      ext4 | ext3 | ext2) REPLY="$1" ;; btrfs) REPLY="Btrfs" ;; xfs) REPLY="XFS" ;;
       f2fs) REPLY="F2FS" ;; iso9660) REPLY="ISO 9660" ;; "") REPLY=$"unknown" ;;
       *) REPLY="$1" ;;
    esac
@@ -202,21 +202,15 @@ bm_diag_doc() {
    bm_cause_text "$key"
    bm_doc_new
    bm_doc_h "$C_TITLE"
+   # Essentials only: the title already says the state, the device path is
+   # in the technical details
    bm_display_name; bm_doc_kv $"Device" "$REPLY"
-   bm_doc_kv $"Path" "$dev"
    bm_fs_label "${F[FSTYPE]}"; bm_doc_kv $"Filesystem" "$REPLY"
    mp="$D_MP"
-   if [ -n "$mp" ]; then
-      bm_doc_kv $"Mounted at" "$mp"
-      case "$D_CAUSE" in
-         ok) state=$"Read and write" ;;
-         permission*) state=$"Writable, but not by your user" ;;
-         *) state=$"Read-only" ;;
-      esac
-      bm_doc_kv $"Status" "$state"
-   else
-      bm_doc_kv $"Status" $"Not mounted"
-   fi
+   [ -n "$mp" ] && bm_doc_kv $"Mounted at" "$mp"
+   case "$D_CAUSE" in
+      permission*) state=$"Writable, but not by your user"; bm_doc_kv $"Status" "$state" ;;
+   esac
    bm_doc_p "$C_REASON"
    if [ "${#C_HELP[@]}" -gt 0 ]; then
       bm_doc_p $"How to solve:"
@@ -361,19 +355,25 @@ bm_other_label() {
 # most to the user: something writing, a terminal, a file manager, an
 # indexer, anything else. Sets BUSY_SUMMARY and BUSY_ADVICE.
 bm_busy_summary() {
-   local i best=-1 rank r comm app n="${#BUSY_PIDS[@]}"
+   local i best=0 rank=0 r comm app n="${#BUSY_PIDS[@]}"
    BUSY_SUMMARY="" BUSY_ADVICE=""
+   # Priority of a holder: 6 writing, 5 shell/terminal, 4 file manager,
+   # 3 indexer, 2 another program whose current folder is on the device, 1 other
    for i in "${!BUSY_PID[@]}"; do
       comm="${BUSY_COMM[i]}" r=1
       case "$comm" in
-         dolphin | kioworker* | kioslave* | nautilus | nemo | thunar | pcmanfm* | caja | krusader | doublecmd) r=3 ;;
-         baloo_file* | baloorunner | tracker-* | localsearch*) r=2 ;;
+         dolphin | kioworker* | kioslave* | nautilus | nemo | thunar | pcmanfm* | caja | krusader | doublecmd) r=4 ;;
+         baloo_file* | baloorunner | tracker-* | localsearch*) r=3 ;;
       esac
-      [[ $BM_SHELL_COMM == *" $comm "* || ${BUSY_FD[i]} == cwd ]] && r=4
-      [ "${BUSY_ACCESS[i]}" = w ] || [ "${BUSY_ACCESS[i]}" = u ] && r=5
+      if [[ $BM_SHELL_COMM == *" $comm "* ]]; then
+         r=5
+      elif [ "$r" -eq 1 ] && [ "${BUSY_FD[i]}" = cwd ]; then
+         r=2
+      fi
+      if [ "${BUSY_ACCESS[i]}" = w ] || [ "${BUSY_ACCESS[i]}" = u ]; then r=6; fi
       if [ "$r" -gt "$best" ]; then best="$r" rank="$i"; fi
    done
-   if [ "$best" -lt 0 ]; then
+   if [ "$best" -eq 0 ]; then
       if [ "${#O_KIND[@]}" -gt 0 ]; then
          BUSY_SUMMARY=$"No program is using it, but the system still is (see below)."
          BUSY_ADVICE=$"Resolve the item listed below, then try again."
@@ -385,14 +385,16 @@ bm_busy_summary() {
    fi
    app="${BUSY_APP[rank]}"
    case "$best" in
-      5) printf -v BUSY_SUMMARY $"%s has a file open for writing on this device." "$app"
+      6) printf -v BUSY_SUMMARY $"%s has a file open for writing on this device." "$app"
          BUSY_ADVICE=$"Let it finish, or cancel the operation in that program, then try again." ;;
-      4) BUSY_SUMMARY=$"A terminal is open in a folder of this device."
+      5) BUSY_SUMMARY=$"A terminal is open in a folder of this device."
          BUSY_ADVICE=$"Type cd in that terminal, or close it, then try again." ;;
-      3) printf -v BUSY_SUMMARY $"%s is showing or reading files of this device." "$app"
+      4) printf -v BUSY_SUMMARY $"%s is showing or reading files of this device." "$app"
          BUSY_ADVICE=$"Close the window or tab that shows the device, then try again." ;;
-      2) BUSY_SUMMARY=$"The file indexer is reading this device."
+      3) BUSY_SUMMARY=$"The file indexer is reading this device."
          BUSY_ADVICE=$"It usually finishes in a moment: try again shortly." ;;
+      2) printf -v BUSY_SUMMARY $"%s is running inside a folder of this device." "$app"
+         BUSY_ADVICE=$"Close that program, then try again." ;;
       *) printf -v BUSY_SUMMARY $"%s is using files on this device." "$app"
          BUSY_ADVICE=$"Close that program, then try again." ;;
    esac
@@ -469,8 +471,17 @@ bm_busy_details_file() {
 bm_cmd_busy() {
    bm_resolve "${1:-}" || { printf $"bigmount: '%s' is not a local storage device or a folder on one"'\n' "${1:-}" >&2; return 1; }
    bm_busy_doc "$R_DEV"
+   if [ "$BUSY_COUNT" -eq 0 ]; then
+      # Nothing visible holds it: say so instead of "still in use"
+      bm_short_name
+      printf -v REPLY $"%s is not in use" "$REPLY"
+      bm_doc_new
+      bm_doc_h "$REPLY"
+      bm_doc_p $"No program of yours and nothing in the system is using it. It can be unmounted."
+      bm_ui_show info ""
+      return 0
+   fi
    bm_ui_show info ""
-   [ "$BUSY_COUNT" -eq 0 ] && return 0
    return 3
 }
 

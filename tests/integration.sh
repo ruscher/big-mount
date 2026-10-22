@@ -259,7 +259,9 @@ begin "other holders: a second mount and a nested mount"
 img outer.img; mkfs.ext4 -q -F -L BMOUTER -E root_owner="$(id -u):$(id -g)" "$IMG/outer.img"
 attach "$IMG/outer.img" && mountdev "$DEV"
 OUT_DEV="$DEV"
-check "--busy on an unused device exits 0" "$BM" --busy "$OUT_DEV"
+BM_OUT="$("$BM" --busy "$OUT_DEV" 2>&1)"; BM_RC=$?
+check "--busy on an unused device exits 0" test "$BM_RC" -eq 0
+check "  ... and says it is not in use (not 'still in use')" bash -c 'grep -q "BMOUTER is not in use" <<< "$1" && ! grep -q "still in use" <<< "$1"' _ "$BM_OUT"
 skip "second/nested mount detection" "needs root to create the extra mount (covered by tests/lib-tests.sh)"
 
 begin "only the requested filesystem is unmounted"

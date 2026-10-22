@@ -277,6 +277,10 @@ BUSY_PID=(1 2) BUSY_PIDS=(1 2) BUSY_COMM=(dolphin bash) BUSY_APP=(Dolphin Shell)
 bm_busy_summary; check "a terminal outranks the file manager" eq "$BUSY_SUMMARY" "A terminal is open in a folder of this device. In total, 2 programs are using it."
 BUSY_PID=(1 2) BUSY_PIDS=(1 2) BUSY_COMM=(bash rsync) BUSY_APP=(Shell "Copy or archive operation") BUSY_FD=(cwd 4) BUSY_ACCESS=("" w)
 bm_busy_summary; check "a writer outranks everything" eq "${BUSY_SUMMARY%%.*}" "Copy or archive operation has a file open for writing on this device"
+BUSY_PID=(1) BUSY_PIDS=(1) BUSY_COMM=(sleep) BUSY_APP=(sleep) BUSY_FD=(cwd) BUSY_ACCESS=("")
+bm_busy_summary; check "a non-terminal program in a folder is named, not called a terminal" eq "$BUSY_SUMMARY" "sleep is running inside a folder of this device."
+BUSY_PID=(1 2) BUSY_PIDS=(1 2) BUSY_COMM=(vlc rsync) BUSY_APP=("Media player" "Copy or archive operation") BUSY_FD=(cwd 4) BUSY_ACCESS=("" w)
+bm_busy_summary; check "a writer still outranks a program in a folder" eq "${BUSY_SUMMARY%%.*}" "Copy or archive operation has a file open for writing on this device"
 BUSY_PID=() BUSY_PIDS=() O_KIND=(mount) O_WHAT=(/var/lib/os-prober/mount)
 bm_busy_summary; check "no process, but the system holds it" eq "${BUSY_SUMMARY:0:22}" "No program is using it"
 unset -f summary_for

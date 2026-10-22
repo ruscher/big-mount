@@ -366,7 +366,7 @@ bigmount --gui /dev/sdX1            # in a dialog
 ```
 
 <p align="center">
-  <img src="docs/images/read-only-ntfs.png" width="420" alt="Diagnosis of a read-only NTFS partition">
+  <img src="docs/images/read-only-device.png" width="420" alt="Diagnosis of a write-protected device (real Plasma screenshot)">
 </p>
 
 ### 5.1 Causes
@@ -968,7 +968,8 @@ point them back there. `pkgbuild/big-mount.install` only prints messages; it
 restarts nothing.
 
 Releases are tagged on `master` (`vMAJOR.MINOR.PATCH`), and each one carries
-the package built from that tag by `pkgbuild/PKGBUILD`. To test a branch,
+the package built from that tag by `pkgbuild/PKGBUILD`. The screenshots in
+this README are real captures of the dialogs on Plasma 6 (Breeze, dark). To test a branch,
 use [section 2.3](#23-build-the-package-yourself).
 
 `build-package.yml` asks the BigLinux build service to build the package on
