@@ -5,7 +5,9 @@
 #
 # Exit codes: 0 done, 1 error, 2 usage, 3 device busy, 4 refused (holds the
 # running system), 5 not authorized, 6 unmounted but still in use by a
-# stacked device, 7 unmounted but the drive could not be powered off.
+# stacked device, 7 unmounted, the drive cannot be powered off by the
+# computer, 8 unmounted but powering it off failed, 9 not done: services
+# depend on the device and the user did not confirm stopping them.
 
 BM_LIB_DIR="${BIGMOUNT_LIB:-/usr/lib/big-mount}"
 # shellcheck source=lib.sh
@@ -23,8 +25,9 @@ bm_usage() {
       "--busy TARGET" $"show what keeps a device busy" \
       "--unmount TARGET" $"unmount one filesystem safely" \
       "--safe-remove TARGET" $"unmount every filesystem of the drive and power it off" \
+      "  --no-power-off" $"with --safe-remove: unmount everything, do not power it off" \
       "  --close-apps" $"offer to close the programs that keep it busy" \
-      "  --assume-yes" $"do not ask before closing them (scripts)" \
+      "  --assume-yes" $"do not ask before closing them or stopping services (scripts)" \
       "--gui [TARGET]" $"graphical diagnosis" \
       "--gui-remove TARGET" $"graphical safe removal" \
       "--notifier" $"session service: warn about read-only devices" \
@@ -134,6 +137,20 @@ bm_cause_text() {
          C_REASON=$"This partition contains an operating system. Its folders belong to that system and must keep their owners."
          C_HELP=($"Save your files in a folder that belongs to you, for example your home folder on that system.")
          ;;
+      permission-folder)
+         C_TITLE=$"No permission to write"
+         printf -v C_REASON $"This folder belongs to %s, and only its owner can create or change files in it." "${D_OWNER:-?}"
+         C_HELP=($"Save your files in a folder of your own, for example in your home folder.")
+         ;;
+      system)
+         C_TITLE=$"System partition"
+         C_REASON=$"This partition holds the operating system that is running now. Only the system and administrators write here."
+         C_HELP=($"Save your files in your home folder.")
+         ;;
+      swap)
+         C_TITLE=$"Swap space"
+         C_REASON=$"This partition is used as swap space (virtual memory), not to store files."
+         ;;
       permission-other-user)
          C_TITLE=$"No permission to write"
          C_REASON=$"The device was mounted for another user, so only that user can write to it."
@@ -208,8 +225,9 @@ bm_diag_doc() {
    bm_fs_label "${F[FSTYPE]}"; bm_doc_kv $"Filesystem" "$REPLY"
    mp="$D_MP"
    [ -n "$mp" ] && bm_doc_kv $"Mounted at" "$mp"
+   [ -n "${D_PATH:-}" ] && bm_doc_kv $"Folder" "$D_PATH"
    case "$D_CAUSE" in
-      permission*) state=$"Writable, but not by your user"; bm_doc_kv $"Status" "$state" ;;
+      permission | permission-other-user) state=$"Writable, but not by your user"; bm_doc_kv $"Status" "$state" ;;
    esac
    bm_doc_p "$C_REASON"
    if [ "${#C_HELP[@]}" -gt 0 ]; then
@@ -225,7 +243,7 @@ bm_diag_doc() {
 bm_tech_report() {
    local dev="$1" i l
    printf '%s\n' "device:      $dev (${F[KNAME]}), disk ${F[DISK]}"
-   printf '%s\n' "model:       ${F[VENDOR]} ${F[MODEL]}"
+   printf '%s\n' "model:       ${F[VENDOR]:+${F[VENDOR]} }${F[MODEL]}"
    printf '%s\n' "transport:   ${F[TRAN]:-?}  removable=${F[RM]} hotplug=${F[HOTPLUG]} ro(part)=${F[RO]} ro(disk)=${F[DISK_RO]}"
    printf '%s\n' "filesystem:  ${F[FSTYPE]} ${F[FSVER]} label='${F[LABEL]}' uuid=${F[UUID]}"
    bm_mounts "$dev"
@@ -244,20 +262,45 @@ bm_tech_report() {
 # ---------------------------------------------------------------------------
 # --diagnose
 
+# Partitions of a whole disk that hold a filesystem (DISK_PARTS)
+bm_disk_parts() {
+   local line
+   DISK_PARTS=()
+   while IFS= read -r line; do
+      bm_parse_pairs "$line"
+      [ "${KV[NAME]}" = "$1" ] && continue
+      case "${KV[FSTYPE]}" in "" | crypto_LUKS | LVM2_member | *_member) continue ;; esac
+      DISK_PARTS+=("${KV[NAME]}")
+   done < <(lsblk -P -p -n -o NAME,FSTYPE -- "$1" 2>/dev/null)
+}
+
 bm_cmd_diagnose() {
-   local target="${1:-}"
+   local target="${1:-}" part rc=0
    if [ -z "$target" ]; then
       bm_overview
       return
    fi
    bm_resolve "$target" || { printf $"bigmount: '%s' is not a local storage device or a folder on one"'\n' "$target" >&2; return 1; }
    bm_facts "$R_DEV" || { printf $"bigmount: cannot read information about %s"'\n' "$R_DEV" >&2; return 1; }
-   bm_diagnose_write "$R_DEV"
+   # A whole disk: diagnose each of its filesystems
+   if [ "${F[TYPE]}" = disk ] && [ -z "${F[FSTYPE]}" ]; then
+      bm_disk_parts "$R_DEV"
+      if [ "${#DISK_PARTS[@]}" -gt 0 ]; then
+         for part in "${DISK_PARTS[@]}"; do
+            bm_cmd_diagnose "$part" || rc=1
+            printf '\n'
+         done
+         return "$rc"
+      fi
+   fi
+   bm_diagnose_write "$R_DEV" "$R_PATH"
    bm_diag_doc "$R_DEV"
    bm_ui_show info "$C_TITLE"
    printf '\n%s\n' $"Technical details:"
    bm_tech_report "$R_DEV" | sed 's/^/  /'
-   if [ -n "$D_MP" ]; then
+   # The running system is used by every program and is never removed:
+   # listing its users would only be noise
+   if [ -n "$D_MP" ] && ! bm_is_system_mount "$D_MP"; then
       printf '\n'
       bm_busy_doc "$R_DEV" quiet
       if [ "$BUSY_COUNT" -gt 0 ]; then bm_ui_show info ""; fi
@@ -347,6 +390,7 @@ bm_other_label() {
       swap) REPLY=$"It is in use as swap space" ;;
       loop) printf -v REPLY $"A disk image stored on it is attached: %s" "$2" ;;
       holder) printf -v REPLY $"It is used by %s (encryption, LVM or RAID)" "$2" ;;
+      isolated) printf -v REPLY $"Also mounted inside an isolated environment (a container or a sandboxed service): %s" "$2" ;;
       *) REPLY="$2" ;;
    esac
 }
@@ -374,7 +418,10 @@ bm_busy_summary() {
       if [ "$r" -gt "$best" ]; then best="$r" rank="$i"; fi
    done
    if [ "$best" -eq 0 ]; then
-      if [ "${#O_KIND[@]}" -gt 0 ]; then
+      if [[ " ${O_KIND[*]} " =~ ^( isolated)+\ $ ]]; then
+         BUSY_SUMMARY=$"A container or a sandboxed service has its own mount of this device (see below). Unmounting it here does not release the device while that mount exists."
+         BUSY_ADVICE=$"Stop that container or service first. Big-Mount waits for it before saying the device can be disconnected."
+      elif [ "${#O_KIND[@]}" -gt 0 ]; then
          BUSY_SUMMARY=$"No program is using it, but the system still is (see below)."
          BUSY_ADVICE=$"Resolve the item listed below, then try again."
       else
@@ -502,8 +549,8 @@ bm_is_removable_drive() {
 # again (another device may have taken the name), and nothing is reported as
 # safe while any filesystem of the drive is still mounted.
 bm_remove_core() {
-   local mode="$1" dev="$2" d i t targets=() types=() rc seq
-   RM_BUSY_DEV="" RM_REASON="" RM_POWERED=0 RM_REMOVABLE=0
+   local mode="$1" dev="$2" d i t targets=() types=() rc seq n
+   RM_BUSY_DEV="" RM_REASON="" RM_POWERED=0 RM_REMOVABLE=0 RM_DEP_UNITS=() RM_DEP_NAMES=() RM_DEP_BACK=()
    bm_facts "$dev" || { RM_REASON=$"device not found"; return 1; }
    local disk="${F[DISK]}" disk_type="${F[DISK_TYPE]}"
    bm_is_removable_drive && RM_REMOVABLE=1
@@ -525,6 +572,20 @@ bm_remove_core() {
       done
       targets=("$dev")
    fi
+   # Services that systemd stops when these mounts go away (e.g. a media or
+   # photo server with BindsTo= on the mount): never stop them by surprise.
+   # The caller asks the user and sets RM_ALLOW_SERVICES=1 to go on.
+   if [ "${RM_ALLOW_SERVICES:-0}" != 1 ]; then
+      for d in "${targets[@]}"; do
+         bm_mounts "$d"
+         for t in "${M_TARGET[@]}"; do
+            bm_mount_dependents "$t"
+            RM_DEP_UNITS+=("${DEP_UNITS[@]}") RM_DEP_NAMES+=("${DEP_NAMES[@]}") RM_DEP_BACK+=("${DEP_BACK[@]}")
+         done
+      done
+      [ "${#RM_DEP_UNITS[@]}" -gt 0 ] && return 9
+   fi
+
    # Stacked devices (LUKS, LVM) come after their parents in lsblk: go backwards
    for ((i = ${#targets[@]} - 1; i >= 0; i--)); do
       d="${targets[i]}"
@@ -578,15 +639,33 @@ bm_remove_core() {
       done
    done
    [ "$disk_type" = loop ] && return 7
-   _bm_same_disk || return 1
-   if bm_udisks power-off -b "$disk"; then
-      RM_POWERED=1
-      return 0
+   # A few attempts: right after an unmount, udev and UDisks may still be
+   # processing the change and report the drive as in use
+   for ((n = 0; n < 3; n++)); do
+      _bm_same_disk || return 1
+      if bm_udisks power-off -b "$disk"; then
+         RM_POWERED=1
+         return 0
+      fi
+      case "$UD_ERROR" in
+         *NotAuthorized*) return 5 ;;
+         *NotSupported*) RM_REASON="$UD_MESSAGE"; return 7 ;;
+      esac
+      udevadm settle --timeout=5 >/dev/null 2>&1
+      sleep 1
+   done
+   # Unmounted, but the power-off itself failed: say so, with the reason
+   RM_REASON="${UD_MESSAGE##*: }"
+   return 8
+}
+
+# What happens to the services of RM_DEP_* once the device is back (REPLY)
+bm_dep_restart_text() {
+   if [[ " ${RM_DEP_BACK[*]} " == *" 0 "* ]]; then
+      REPLY=$"They do not start again by themselves when the device comes back."
+   else
+      REPLY=$"They start again by themselves when the device is mounted again."
    fi
-   rc=7
-   [[ $UD_ERROR == *NotAuthorized* ]] && rc=5
-   RM_REASON="$UD_MESSAGE"
-   return "$rc"
 }
 
 # Eligible processes to close: CLOSE_PIDS/CLOSE_STARTS/CLOSE_NAMES, others in KEEP_*
@@ -616,6 +695,7 @@ bm_close_args() {
 bm_cmd_remove() {
    local mode="$1" target="" close=0 yes=0 a rc tries=0
    shift
+   RM_ALLOW_SERVICES=0
    for a in "$@"; do
       case "$a" in
          --close-apps) close=1 ;;
@@ -655,6 +735,22 @@ bm_cmd_remove() {
             bm_close_args
             bm_close_processes "${CLOSE_ARGS[@]}" || printf $"Still running: %s"'\n' "${CLOSE_LEFT[*]}"
             ;;
+         9)
+            printf '%s\n' $"These services use the device and will be stopped when it is unmounted:" >&2
+            for a in "${!RM_DEP_UNITS[@]}"; do printf '  %s (%s)\n' "${RM_DEP_NAMES[a]}" "${RM_DEP_UNITS[a]}" >&2; done
+            bm_dep_restart_text; printf '%s\n' "$REPLY" >&2
+            if [ "$yes" -eq 1 ]; then
+               RM_ALLOW_SERVICES=1
+            elif [ -t 0 ]; then
+               bm_doc_new
+               bm_ui_confirm "" "" $"Stop them and continue" $"Cancel" || return 9
+               RM_ALLOW_SERVICES=1
+            else
+               printf '%s\n' $"Nothing was done. Run again with --assume-yes to stop them." >&2
+               return 9
+            fi
+            ;;
+         8) printf $"Unmounted, but powering the drive off failed (%s). Wait a moment before disconnecting it."'\n' "$RM_REASON" >&2; return 8 ;;
          4) printf $"Refused: this drive holds the running system (%s)."'\n' "$RM_REASON" >&2; return 4 ;;
          5) printf '%s\n' $"Permission to unmount was not granted." >&2; return 5 ;;
          6) printf $"Unmounted, but the drive is still in use (%s), so it was not powered off."'\n' "$RM_REASON" >&2; return 6 ;;
@@ -697,10 +793,23 @@ bm_gui_diagnose() {
       bm_notify info big-mount $"Storage diagnostics" $"This folder is not on a local storage device."
       return 1
    fi
-   local dev="$R_DEV"
+   local dev="$R_DEV" path="$R_PATH"
+   # A whole disk: its only filesystem, or let the user choose one
+   if [ "${F[TYPE]}" = disk ] && [ -z "${F[FSTYPE]}" ]; then
+      bm_disk_parts "$dev"
+      if [ "${#DISK_PARTS[@]}" -eq 1 ]; then
+         dev="${DISK_PARTS[0]}"
+      elif [ "${#DISK_PARTS[@]}" -gt 1 ]; then
+         local items=() p
+         for p in "${DISK_PARTS[@]}"; do bm_facts "$p"; bm_display_name; items+=("$p" "$REPLY"); done
+         bm_ui_menu $"Storage diagnostics" $"Choose a device:" "${items[@]}"
+         [ -n "$REPLY" ] || return 0
+         dev="$REPLY"
+      fi
+   fi
    while :; do
       bm_facts "$dev"
-      bm_diagnose_write "$dev"
+      bm_diagnose_write "$dev" "$path"
       bm_diag_doc "$dev"
       bm_device_icon; icon="$REPLY"
       [ "$D_CAUSE" = ok ] || icon=dialog-warning
@@ -729,7 +838,7 @@ bm_gui_diagnose() {
 # Only the help text (notification action "How to solve")
 bm_gui_help() {
    bm_resolve "${1:-}" && bm_facts "$R_DEV" || return 1
-   bm_diagnose_write "$R_DEV"
+   bm_diagnose_write "$R_DEV" "$R_PATH"
    bm_cause_key; bm_cause_text "$REPLY"
    bm_doc_new
    bm_doc_h $"How to solve"
@@ -840,7 +949,10 @@ bm_gui_busy_dialog() {
 }
 
 # Shown when an unmount or power-off is still running after 2 seconds
+# Once per removal, however many slow steps it has (unmount, release, power-off)
 bm_gui_slow_notice() {
+   [ "${BM_GUI_SLOW_SHOWN:-0}" = 1 ] && return 0
+   BM_GUI_SLOW_SHOWN=1
    bm_notify info document-save "$BM_GUI_NAME" $"Writing pending data to the device. Do not disconnect it yet." &
 }
 
@@ -854,7 +966,7 @@ bm_gui_remove() {
    bm_display_name; name="$REPLY"
    bm_short_name; short="$REPLY"
    bm_device_icon; icon="$REPLY"
-   BM_GUI_NAME="$short" BM_SLOW_HOOK=bm_gui_slow_notice
+   BM_GUI_NAME="$short" BM_SLOW_HOOK=bm_gui_slow_notice BM_GUI_SLOW_SHOWN=0 RM_ALLOW_SERVICES=0
    while :; do
       bm_remove_core remove "$dev"; rc=$?
       case "$rc" in
@@ -878,6 +990,23 @@ bm_gui_remove() {
             break
             ;;
          3) bm_gui_busy_dialog "$RM_BUSY_DEV" || break ;;
+         9)
+            bm_doc_new
+            bm_doc_h $"Services use this device"
+            bm_doc_p $"Removing it will stop these services:"
+            local u; for u in "${!RM_DEP_UNITS[@]}"; do bm_doc_li "${RM_DEP_NAMES[u]} (${RM_DEP_UNITS[u]})"; done
+            bm_dep_restart_text; bm_doc_p "$REPLY"
+            if bm_ui_confirm_risky $"Services use this device" dialog-warning $"Stop them and remove" $"Cancel"; then
+               RM_ALLOW_SERVICES=1
+            else
+               break
+            fi
+            ;;
+         8)
+            bm_notify warning dialog-warning $"Unable to power off device" \
+               "$name"$'\n'$"It was unmounted, but powering it off failed. Wait a moment before disconnecting it."$'\n'"$RM_REASON" >/dev/null &
+            break
+            ;;
          4)
             bm_notify warning dialog-error $"Unable to remove device" \
                "$name"$'\n'$"It holds the operating system that is running now." >/dev/null &

@@ -8,7 +8,13 @@
    State and start time come from `/proc/PID/stat`.
 2. **Holders without a process**: other mounts of the same device, nested
    mounts, a swap file, a disk image attached to a loop device,
-   device-mapper/RAID holders.
+   device-mapper/RAID holders, and mounts of the device inside another mount
+   namespace that our unmount does not remove (a container volume). Those
+   are found in `/proc/*/mountinfo`, which every user can read. The scan
+   costs about 70 ms on a desktop with 585 processes, almost all of it the
+   kernel generating each table. When they are the only holder, the summary
+   says that a container or sandboxed service has its own mount of the
+   device and must be stopped first.
 
 ## Plain language first
 

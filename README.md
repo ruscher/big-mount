@@ -383,6 +383,9 @@ bigmount --gui /dev/sdX1            # in a dialog
 | **E** write-protected | SD card lock switch, protected media | `/sys/block/*/ro = 1` | none: move the switch |
 | **F** hardware | read/write errors, cable, port | kernel `I/O error` messages | none: copy the data, try another cable |
 | **G** no write support | CD/DVD, ISO, SquashFS, journaled HFS+, APFS, legacy `ntfs` driver | type of the mounted filesystem | none |
+| folder of another user | you asked about a folder that belongs to someone else, inside a writable device | the folder itself, under the mount that contains it | none: the owner is named |
+| system partition | `/`, `/boot/efi`... of the running system | system mount points | none |
+| swap | swap space, not for files | filesystem type | none |
 
 The fix button only appears when the cause has a safe, verifiable
 correction. Every correction asks for confirmation and is checked
@@ -527,17 +530,27 @@ Sequence:
 1. **Diagnosis.** Resolves the device and its drive, and **refuses** if the
    drive holds the running system (`/`, `/home`, `/boot`, `/boot/efi`,
    `/usr`, `/var`... or active swap).
-2. **Normal attempt.** `udisksctl unmount` for every mount of every
+2. **Services.** systemd services that stop when the device goes away
+   (`BindsTo=`, `Requires=`, `PartOf=`, `Requisite=` or
+   `RequiresMountsFor=` on its mount, such as a photo or media server) are
+   listed first. Nothing happens until you agree to stop them. The message
+   says whether they start again by themselves when the device comes back.
+3. **Normal attempt.** `udisksctl unmount` for every mount of every
    partition (stacked layers first). Polkit asks for a password when needed.
-3. **Busy** (`org.freedesktop.UDisks2.Error.DeviceBusy`). Shows what holds
+4. **Busy** (`org.freedesktop.UDisks2.Error.DeviceBusy`). Shows what holds
    it and offers **Try again**, **Refresh the list**, **Show technical
    details**, **Close the listed programs…** and **Show programs of all
    users**.
-4. **Verification.** The mount table decides, not the answer of
+5. **Verification.** The mount table decides, not the answer of
    udisksctl, and every partition is checked again at the end.
-5. **Encryption.** Open LUKS volumes on the drive are locked.
-6. **Power off.** `udisksctl power-off`, only for removable drives, only
-   when nothing else uses the drive. Internal disks are only unmounted.
+6. **Release.** An NTFS or exFAT volume mounted through FUSE is still being
+   written by its driver (`ntfs-3g`) after the unmount returns, and a
+   container may have its own mount of the device. Big-Mount waits until
+   both are gone (up to 60 s) before saying anything is safe.
+7. **Encryption.** Open LUKS volumes on the drive are locked.
+8. **Power off.** `udisksctl power-off`, only for removable drives, only
+   when nothing else uses the drive, with 3 attempts. Internal disks are
+   only unmounted.
 
 Before every step that cannot be undone, the disk sequence number is read
 again: if another device took the name, the operation stops. If an unmount
@@ -570,6 +583,8 @@ Final messages, shown only after verification:
 | holds the running system | **Unable to remove device** |
 | authorization refused | **Unable to unmount device** — the device remains mounted |
 | still in use (LVM, RAID) | **Unable to power off device** — do not disconnect it yet |
+| power-off failed | **Unable to power off device** — it was unmounted; wait a moment before disconnecting it |
+| services depend on it | dialog **Services use this device**: **Stop them and remove** or **Cancel** (default) |
 
 ---
 
@@ -650,7 +665,7 @@ empty target is refused.
 | `bigmount --safe-remove TARGET` | no (polkit) | unmounts every partition of the drive, locks LUKS, powers it off if removable |
 | `  --no-power-off` | — | with `--safe-remove`: unmount everything, do not power off |
 | `  --close-apps` | — | with `--unmount`/`--safe-remove`: offer to close the eligible programs |
-| `  --assume-yes` | — | with `--close-apps`: do not ask (scripts) |
+| `  --assume-yes` | — | do not ask before closing programs (with `--close-apps`) or stopping services that depend on the device (scripts) |
 | `bigmount --gui [TARGET]` | no | diagnosis in a dialog; without a target, a list |
 | `bigmount --gui-remove TARGET` | no | safe removal in dialogs |
 | `bigmount --notifier` | no | session notifier (started by autostart) |
@@ -668,6 +683,8 @@ Exit codes:
 | 5 | authorization refused or cancelled |
 | 6 | unmounted, but the drive is still in use (LVM/RAID); not powered off |
 | 7 | unmounted, but the drive cannot be powered off by the computer |
+| 8 | unmounted, but powering it off failed (wait a moment before unplugging) |
+| 9 | nothing done: systemd services depend on the device (`--assume-yes` stops them) |
 
 In a script:
 
@@ -1033,18 +1050,25 @@ run during boot. Details in [`docs/08-performance.md`](docs/08-performance.md).
   `/etc/fstab` with `/etc/crypttab`.
 - Btrfs with nested subvolumes: processes inside another subvolume may not
   show up in the `lsof` of the mount point.
+- A container that mounts the device by itself keeps it in use after the
+  unmount. Big-Mount shows it and waits up to 60 s for it to stop, but it
+  never stops containers itself. Services bound to the mount are stopped
+  by systemd, and only after you agree.
 - Verified on the installed package and a running Plasma 6 session:
   - the full integration suite against `/usr/bin/bigmount`;
   - `systemctl restart big-mount` with a mounted NTFS volume, whose FUSE
     daemon stays alive;
   - real notifications, 77 ms after the mount, 15 s, with buttons, and no
     process left behind;
-  - the polkit action, and the language selection.
+  - the polkit action, and the language selection;
+  - a real boot (716 ms, three internal partitions, read-write);
+  - safe removal and power-off of a real USB SSD (NTFS, used by a Docker
+    service), reconnected afterwards, clean.
 - Still to validate on real hardware or by eye:
-  - a real boot, and a USB disk plugged in at boot;
+  - a USB disk plugged in during boot;
   - Windows Fast Startup;
   - eSATA, Thunderbolt NVMe, an internal SD reader;
-  - the power-off of a USB HDD, LUKS drives;
+  - the power-off of a USB HDD (a USB SSD was validated), LUKS drives;
   - Breeze with 125/150/200 % scaling, the Orca screen reader, the Dolphin
     menu;
   - the GNOME edition.

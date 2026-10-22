@@ -1,5 +1,5 @@
 #!/bin/bash
-# shellcheck disable=SC2016,SC2317,SC2329  # bash -c '...$1' snippets and helpers called through check()
+# shellcheck disable=SC2016,SC2317,SC2329,SC2218  # bash -c '...$1' snippets, helpers called through check(), library functions replaced by stubs later on
 # Unit tests for /usr/lib/big-mount (diagnosis decisions, process policy,
 # escaping, parsing). System facts are replaced by shell functions that
 # shadow the real helpers, so nothing on the machine is read or changed,
@@ -112,6 +112,19 @@ fake /dev/sdz1 "$WORK/locked" vfat vfat rw,uid=1234 rw; diag
 check "FAT mounted for another uid -> permission-other-user" eq "$D_CAUSE" permission-other-user
 fake /dev/sdz1 "$WORK/rw" ext4 ext4 rw rw; diag
 check "ok has no fix" eq "$D_FIX" ""
+fake /dev/sdz1 "$WORK/rw" ext4 ext4 rw rw; bm_diagnose_write /dev/sdz1 "$WORK/locked"
+check "a folder of someone else inside a writable mount -> permission-folder" eq "$D_CAUSE" permission-folder
+check "  ... judged at that folder, not at the mount root" eq "$D_PATH" "$WORK/locked"
+check "  ... never offers to change owners there" eq "$D_FIX" ""
+fake /dev/sdz1 "$WORK/rw" ext4 ext4 rw rw; bm_diagnose_write /dev/sdz1 "$WORK/rw"
+check "a writable folder -> ok" eq "$D_CAUSE" ok
+fake /dev/sdz1 / ext4 ext4 rw rw
+if [ -w / ]; then echo "  (skipped: / is writable here)"; else
+    diag
+    check "the running system's root -> system, no fix" eq "$D_CAUSE:$D_FIX" "system:"
+fi
+fake /dev/sdz2 "" swap "" "" ""; diag
+check "swap partition -> swap" eq "$D_CAUSE" swap
 unset -f bm_mounts bm_kernel_messages bm_boot_status bm_ntfs3g_fallback findmnt
 # shellcheck source=../big-mount/usr/lib/big-mount/lib.sh
 # shellcheck source=../big-mount/usr/lib/big-mount/lib.sh
@@ -169,6 +182,10 @@ bm_diskseq() { REPLY="${FAKE_SEQ[0]}"; [ "${#FAKE_SEQ[@]}" -gt 1 ] && FAKE_SEQ=(
 bm_mounts() { M_TARGET=() M_FSTYPE=() M_VFSOPT=() M_FSOPT=(); [ -n "${MOUNTED[$1]:-}" ] && M_TARGET=("${MOUNTED[$1]}"); }
 bm_has_holders() { [[ " $HOLDERS " == *" $1 "* ]]; }
 bm_other_holders() { O_KIND=() O_WHAT=(); }
+declare -A DEPS_ON=()
+bm_mount_dependents() { DEP_UNITS=() DEP_NAMES=(); [ -n "${DEPS_ON[$1]:-}" ] && DEP_UNITS=("${DEPS_ON[$1]}") DEP_NAMES=("Photo server"); return 0; }
+udevadm() { :; }
+sleep() { :; }
 bm_udisks() {
     CALLS+=("$*"); UD_ERROR="" UD_MESSAGE=""
     local dev="${*: -1}"
@@ -214,8 +231,116 @@ bm_facts() { F=([NAME]="$1" [DISK]=/dev/sda [DISK_TYPE]=disk [TRAN]=sata [HOTPLU
 bm_remove_core remove /dev/sdz1; rc=$?
 check "internal disk: unmounted, never powered off" eq "$rc:$RM_POWERED" "0:0"
 check "  ... no power-off request at all" bash -c '[[ $1 != *power-off* ]]' _ "${CALLS[*]}"
-unset -f fake_drive bm_facts bm_system_use bm_drive_members bm_diskseq bm_mounts bm_has_holders bm_other_holders bm_udisks
+
+bm_facts() { F=([NAME]="$1" [DISK]=/dev/sdz [DISK_TYPE]=disk [TRAN]=usb [HOTPLUG]=1 [RM]=0 [FSTYPE]=ext4); }
+fake_drive; DEPS_ON=([/run/media/u/B]=photos.service); RM_ALLOW_SERVICES=0
+bm_remove_core remove /dev/sdz1; rc=$?
+check "a service bound to a mount -> asks first (9)" eq "$rc" 9
+check "  ... names the service" eq "${RM_DEP_UNITS[*]}:${RM_DEP_NAMES[*]}" "photos.service:Photo server"
+check "  ... and nothing was unmounted" eq "${#CALLS[@]}" 0
+fake_drive; RM_ALLOW_SERVICES=1
+bm_remove_core remove /dev/sdz1; rc=$?
+check "after the user agrees -> removed" eq "$rc:$RM_POWERED" "0:1"
+DEPS_ON=() RM_ALLOW_SERVICES=0
+
+fake_drive
+bm_udisks() {
+    CALLS+=("$*"); UD_ERROR="" UD_MESSAGE=""
+    case "$1" in
+        unmount) unset "MOUNTED[${*: -1}]" ;;
+        power-off) UD_ERROR=org.freedesktop.UDisks2.Error.Failed UD_MESSAGE="GDBus.Error:org.freedesktop.UDisks2.Error.Failed: Error powering off drive: target is busy"; return 1 ;;
+    esac
+    return 0
+}
+bm_remove_core remove /dev/sdz1; rc=$?
+check "power-off keeps failing after the unmount -> 8 (not 7)" eq "$rc" 8
+check "  ... after three attempts" eq "$(printf '%s\n' "${CALLS[@]}" | grep -c power-off)" 3
+check "  ... with the reason from UDisks, without the D-Bus prefix" eq "$RM_REASON" "target is busy"
+fake_drive
+bm_udisks() { CALLS+=("$*"); UD_ERROR="" UD_MESSAGE=""; case "$1" in unmount) unset "MOUNTED[${*: -1}]" ;; power-off) UD_ERROR=org.freedesktop.UDisks2.Error.NotSupported UD_MESSAGE="No usb device"; return 1 ;; esac; return 0; }
+bm_remove_core remove /dev/sdz1; rc=$?
+check "drive that cannot be powered off -> 7, at once" eq "$rc:$(printf '%s\n' "${CALLS[@]}" | grep -c power-off)" "7:1"
+fake_drive; POWER_TRIES=0
+bm_udisks() { CALLS+=("$*"); UD_ERROR="" UD_MESSAGE=""; case "$1" in unmount) unset "MOUNTED[${*: -1}]" ;; power-off) POWER_TRIES=$((POWER_TRIES + 1)); [ "$POWER_TRIES" -ge 2 ] && return 0; UD_ERROR=org.freedesktop.UDisks2.Error.Failed; return 1 ;; esac; return 0; }
+bm_remove_core remove /dev/sdz1; rc=$?
+check "power-off that succeeds on the second attempt -> success" eq "$rc:$RM_POWERED" "0:1"
+unset -f fake_drive bm_facts bm_system_use bm_drive_members bm_diskseq bm_mounts bm_has_holders bm_other_holders bm_udisks bm_mount_dependents udevadm sleep
 . "$BIGMOUNT_LIB/lib.sh"
+
+begin "services bound to a mount point (systemd)"
+systemctl() {
+    case "$1" in
+        list-dependencies) printf '%s\n' photos.service other.service default.target ;;
+        show) case "${*: -1}" in
+            photos.service) printf '%s\n' 'BindsTo="run-media-u-My\\x20Disk.mount"' 'Requires=sysinit.target' \
+                'WantedBy=multi-user.target' 'ActiveState=active' 'Description=Photo server' ;;
+            other.service) printf '%s\n' 'BindsTo=run-media-u-Other.mount' 'WantedBy=run-media-u-Other.mount multi-user.target' \
+                'ActiveState=active' 'Description=Other' ;;
+        esac ;;
+    esac
+}
+bm_mount_dependents "/run/media/u/My Disk"
+check "a service with BindsTo= on the (escaped) mount unit is found" eq "${DEP_UNITS[*]}" photos.service
+check "  ... with its description" eq "${DEP_NAMES[*]}" "Photo server"
+check "  ... and not started again with the mount" eq "${DEP_BACK[*]}" 0
+RM_DEP_BACK=(0); bm_dep_restart_text
+check "  ... which the user is told" bash -c '[[ $1 == *"do not start again"* ]]' _ "$REPLY"
+bm_mount_dependents /run/media/u/Other
+check "WantedBy= the mount -> systemd starts it again" eq "${DEP_UNITS[*]}:${DEP_BACK[*]}" "other.service:1"
+RM_DEP_BACK=(1); bm_dep_restart_text
+check "  ... which the user is told" bash -c '[[ $1 == *"start again by themselves when"* ]]' _ "$REPLY"
+bm_mount_dependents /run/media/u/Nothing
+check "no service bound -> none" eq "${#DEP_UNITS[@]}" 0
+unset -f systemctl
+
+begin "FUSE drivers finish writing before the drive is powered off"
+FAKE_TABLE=("/run/media/u/N")
+bm_mounts() { M_TARGET=("${FAKE_TABLE[@]}"); M_FSTYPE=() M_VFSOPT=() M_FSOPT=(); }
+bm_udisks() { FAKE_TABLE=(); UD_ERROR=""; return 0; }
+fake_fuse() { bash -c 'printf mount.ntfs-3g > /proc/$$/comm; sleep "$2"; true' _ /dev/fakez9 "$1" & FUSE_PID=$!; command sleep 0.2; }
+fake_fuse 1.5
+bm_fuse_daemons /dev/fakez9
+check "the FUSE daemon of the device is recognized" eq "${FUSE_PIDS[*]}" "$FUSE_PID"
+bm_fuse_daemons /dev/fakez
+check "  ... never the one of a similar name" eq "${#FUSE_PIDS[@]}" 0
+bash -c 'printf mount.lowntfs-3g > /proc/$$/comm; sleep 1; true' _ /dev/fakez8 & LOW_PID=$!; command sleep 0.2
+bm_fuse_daemons /dev/fakez8
+check "  ... also with a name longer than the 15 characters of comm" eq "${FUSE_PIDS[*]}" "$LOW_PID"
+wait "$LOW_PID"
+bm_unmount_all /dev/fakez9; rc=$?
+check "unmount returns only after the daemon exited" bash -c '[ "$1" = 0 ] && ! kill -0 "$2" 2>/dev/null' _ "$rc" "$FUSE_PID"
+wait "$FUSE_PID" 2>/dev/null
+FAKE_TABLE=("/run/media/u/N"); fake_fuse 3
+BM_FUSE_WAIT=1 bm_unmount_all /dev/fakez9; rc=$?
+check "daemon still running after the limit -> failure, still-writing" eq "$rc:$UD_ERROR" "1:still-writing"
+kill "$FUSE_PID" 2>/dev/null; wait "$FUSE_PID" 2>/dev/null
+unset -f bm_mounts bm_udisks fake_fuse
+. "$BIGMOUNT_LIB/lib.sh"
+
+begin "safe removal in dialogs: services are stopped only after consent"
+bm_resolve() { R_DEV=/dev/sdz1; }
+bm_facts() { F=([NAME]=/dev/sdz1 [LABEL]=X [FSTYPE]=ntfs [DISK]=/dev/sdz); }
+bm_remove_core() {
+    CORE_CALLS+=("$RM_ALLOW_SERVICES")
+    if [ "$RM_ALLOW_SERVICES" != 1 ]; then RM_DEP_UNITS=(photos.service) RM_DEP_NAMES=("Photo server") RM_DEP_BACK=(1); return 9; fi
+    RM_POWERED=1; return 0
+}
+bm_notify() { printf '%s\n' "$3" >> "$WORK/gn.log"; }  # runs in the background
+CONFIRM=1; bm_ui_confirm_risky() { CONFIRM_TITLE="$1"; return "$CONFIRM"; }
+CORE_CALLS=() RM_ALLOW_SERVICES=1; : > "$WORK/gn.log"
+bm_gui_remove /dev/sdz1; rc=$?
+check "Cancel: nothing stopped, nothing removed" eq "${CORE_CALLS[*]}:$(cat "$WORK/gn.log")" "0:"
+check "  ... the consent of an earlier removal is not reused" eq "${CORE_CALLS[0]}" 0
+check "  ... the dialog names the problem" eq "$CONFIRM_TITLE" "Services use this device"
+CONFIRM=0 CORE_CALLS=(); : > "$WORK/gn.log"
+bm_gui_remove /dev/sdz1; rc=$?; wait
+check "Stop them and remove: removal goes on" eq "${CORE_CALLS[*]}:$rc" "0 1:0"
+check "  ... and ends with Safe to disconnect" eq "$(cat "$WORK/gn.log")" "Safe to disconnect"
+BM_GUI_NAME=X BM_GUI_SLOW_SHOWN=0; : > "$WORK/gn.log"
+bm_gui_slow_notice; bm_gui_slow_notice; wait
+check "the 'do not disconnect' notice is shown once per removal" eq "$(wc -l < "$WORK/gn.log")" 1
+unset -f bm_resolve bm_facts bm_remove_core bm_notify bm_ui_confirm_risky
+. "$BIGMOUNT_LIB/lib.sh"; . "$BIGMOUNT_LIB/ui.sh"; . "$BIGMOUNT_LIB/cli.sh"; BM_UI="tty"; bm_ui_init
 
 begin "slow operations announce themselves after 2 s, without polling"
 udisksctl() { sleep "$FAKE_DELAY"; }

@@ -16,6 +16,11 @@
 | B — no permission (POSIX) | rw, root folder owned by another user | **Become owner of the main folder** (UDisks `TakeOwnership`, `recursive=false`, polkit) |
 | B — partition holding an operating system | `etc/os-release`, `*/etc/os-release` (Btrfs subvolumes), `@`, `Windows/System32`... | none |
 | B — FAT/NTFS of another user | another `uid=` | **Mount again for my user** (UDisks mounts only) |
+| folder of another user | a FOLDER was asked about; it is judged under the mount that contains it (`findmnt -T`), and it belongs to someone else | none: the owner is named |
+| system partition | `/`, `/boot/efi`, `/usr`, ... of the running system | none |
+| swap | the partition is swap space | none |
+
+A whole disk (`/dev/sdd`) is answered with the list of its partitions.
 
 Rules that tests enforce:
 

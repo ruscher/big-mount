@@ -6,17 +6,16 @@
 | --- | --- | --- |
 | `tests/run-tests.sh new` | stubs for `blkid`, `lsblk`, `udevadm`, `udisksctl`, `findmnt`, `mount`, `ntfsfix`; paths rewritten to a scratch dir | **92 passed, 0 failed** |
 | `tests/run-tests.sh old` | the original script, as a reference | its failures are the bugs that were fixed |
-| `tests/lib-tests.sh` | the library with simulated facts | **102 passed, 0 failed** |
+| `tests/lib-tests.sh` | the library with simulated facts | **135 passed, 0 failed** |
 | `tests/i18n-tests.sh` | the catalog, the generated resources, runtime language selection | **33 passed, 0 failed** |
 | `tests/package-check.sh` | `package()` of the PKGBUILD on the checkout | **41 passed, 0 failed** |
-| `tests/integration.sh` | disposable images as loop devices mounted by UDisks2, no root; GUI flows with scripted clicks; `BM=/usr/bin/bigmount` tests the installed package | **98 passed, 0 failed, 3 skipped** |
+| `tests/integration.sh` | disposable images as loop devices mounted by UDisks2, no root; GUI flows with scripted clicks; `BM=/usr/bin/bigmount` tests the installed package | **110 passed, 0 failed, 2 skipped** |
 | `shellcheck -x` | shipped code, tests, locale scripts | no findings |
 | `bash -n`, `msgfmt --check`, `desktop-file-validate`, `xmllint`, `systemd-analyze verify` | — | pass (part of the suites above) |
 
-Skipped in the integration suite, because this kernel lacks the modules:
-
-- ISO 9660/SquashFS;
-- LUKS (no dm-crypt target).
+Skipped in the integration suite, because this kernel lacks the module:
+LUKS (no dm-crypt target). ISO 9660/SquashFS, skipped in earlier rounds,
+now run.
 
 Double and nested mounts need root to create, so they are covered by the
 unit suite instead.
@@ -173,10 +172,30 @@ opened.
 
 The README screenshots are these real captures.
 
+## Validated on real devices after a reboot with v2.1.1 (round 5)
+
+| Check | Result |
+| --- | --- |
+| boot | 716 ms in `systemd-analyze blame`; `/mnt/Basic_data_partition` (NTFS), `/mnt/root` and `/mnt/Dados` (Btrfs) mounted read-write; status file correct; notifier running |
+| `--diagnose` on every device | found B26–B28 (folder judged at the partition root, system partitions, swap, whole disk, a 463-line busy section) |
+| `--busy` on the USB SSD | found B25: the Docker volume of the Immich service (`tini`, `/data`) |
+| `--safe-remove` of the USB SSD with v2.1.1 | unmounted, power-off failed (ntfs-3g still writing, B23), the CLI blamed the drive, and Immich was stopped without warning (B24) |
+| the same with this version | without `--assume-yes`: exit 9, nothing touched; with it: exit 0 in 5.1 s, powered off after ntfs-3g and the containers ended (journal order in 06) |
+| reconnection (USB port toggled through sysfs) | mounted again in 5 s, read-write, clean; Immich started again by itself |
+| FUSE daemons by name | the internal `mount.lowntfs-3g` is found despite the 15-character `comm` |
+
+The integration suite checks the new release logic with an NTFS image held
+by a bind mount in an unprivileged mount namespace. Against the installed
+v2.1.1 it fails 5 checks, and against this version none.
+
+A root-made namespace and an unprivileged one behave the same here: a plain
+copy of the mount vanishes with the unmount on the host, and a bind mount
+made inside the namespace survives it (kernel 7.2.11).
+
 ## Manual validation still needed (needs hardware or a person)
 
-1. Install the package, reboot: `systemd-analyze blame | grep big-mount`,
-   `journalctl -b -u big-mount`.
+1. (done in round 5) Install the package, reboot:
+   `systemd-analyze blame | grep big-mount`, `journalctl -b -u big-mount`.
 2. A USB HDD/SSD connected **during boot** must appear in Dolphin,
    mounted by UDisks, not under `/mnt`.
 3. Dual boot with Windows Fast Startup: one notification after login;
@@ -184,7 +203,7 @@ The README screenshots are these real captures.
 4. Dolphin: right-click → Storage device → Safely remove, with the stick's
    folder open in Dolphin's terminal panel.
 5. Appearance in Breeze light/dark, at 125 %, 150 % and 200 %, with Orca.
-6. Power-off of a real USB HDD (loop devices do not power off).
+6. Power-off of a real USB HDD (a USB SSD was validated in round 5).
 7. An encrypted USB drive (LUKS) on a kernel with dm-crypt.
 8. "Show programs of all users" (pkexec) and "Become owner" (polkit).
 9. GNOME edition (Zenity) and an X11 session.

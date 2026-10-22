@@ -63,6 +63,22 @@ Found by live tests on the real Plasma screen (round 4, v2.1.1):
 | B22 | Low | UX, seen live | at 200 % the diagnosis needed a scroll bar (the device path and a state line repeating the title) | the path moved to the technical details; the state is shown only when it adds something; `ext4` instead of `EXT4` |
 | — | Info | translation | `msgmerge` proposed "%s ainda está em uso" ("still in use") for the new "%s is not in use": the opposite meaning | translated by hand; fuzzy entries are rejected by `tests/i18n-tests.sh` |
 
+Found by tests on real devices after rebooting with v2.1.1 installed (round
+5, v2.1.2). The machine has a USB SSD with NTFS that a Docker service
+(Immich) uses, with `BindsTo=` on its mount unit.
+
+| # | Severity | Kind | Finding | Status |
+| --- | --- | --- | --- | --- |
+| B23 | High | proven live | after unmounting an NTFS (FUSE) volume, `udisksctl unmount` returns while `ntfs-3g` is still writing. The power-off then failed, and the CLI said "cannot be powered off by the computer" (exit 7), which is wrong for a USB SSD | after the unmount, Big-Mount waits (up to 60 s, with the "do not disconnect" notice after 2 s) until the FUSE daemon of the device has exited. The power-off gets 3 attempts. A failed power-off has its own exit code 8 and message, and 7 is kept for drives that really cannot be powered off |
+| B24 | High | proven live | unmounting the SSD silently stopped the Immich service: systemd stops units with `BindsTo=`/`Requires=`/`PartOf=`/`Requisite=` on a mount unit when it goes away | before unmounting, the services that depend on the mount are listed and the user must confirm (dialog: Cancel is the default; CLI: `--assume-yes` or a question on a terminal; otherwise exit 9 and nothing is done). The text says whether systemd starts them again with the mount (`WantedBy=` the mount unit), as it does for Immich |
+| B25 | High | proven by test | a bind mount made inside another mount namespace (a Docker volume, `/immich-ruscher` → `/data`) is not removed by the unmount on the host, so the kernel keeps the filesystem in use. Big-Mount judged only the host mount table, so it would have said "safe to disconnect" | such mounts are detected in `/proc/*/mountinfo` (readable by every user). They are shown in the busy view, and the unmount waits for them like for a FUSE daemon. If they stay, the result is an error that names the process. Copies that follow ours (`shared:`/`master:` of our peer group), and plain copies at the same place, vanish with our unmount on this kernel (measured), so they are ignored |
+| B26 | Medium | proven live | `--diagnose FOLDER` judged the root of the partition, not the folder. A folder of another user inside a writable partition was reported as writable | the folder is judged under the mount that contains it (`findmnt -T`); new cause `permission-folder` that names the owner and never offers to change it |
+| B27 | Low | seen live | partitions of the running system (`/`, `/boot/efi`) were explained as permission problems ("mounted for another user" for the EFI partition) | new cause **System partition**, no fix offered; the busy section is skipped for them (it listed 463 lines of system processes) |
+| B28 | Low | seen live | a swap partition was diagnosed as "not mounted"; a whole disk (`/dev/sdd`) as an unmounted filesystem | swap has its own explanation; a whole disk lists its partitions |
+| B29 | Low | proven | `--no-power-off` worked but was missing from `--help` | listed |
+| — | Info | caught before release | the first version of the B23 fix compared `/proc/PID/comm` with `mount.lowntfs-3g`, but the kernel keeps 15 characters (`mount.lowntfs-3`), so the internal NTFS and exFAT FUSE daemons were not recognized | the list uses the truncated names; a unit test covers it |
+| — | Info | caught before release | a draft message said bound services "do not start again" when the device comes back; for Immich that is false | the text depends on `WantedBy=` |
+
 Not changed, on purpose:
 
 - **Boot path.** It is already minimal: 27 processes, of which one `blkid`,

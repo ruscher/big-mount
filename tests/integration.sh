@@ -186,6 +186,42 @@ else
     fi
 fi
 
+begin "NTFS (FUSE): unmount returns only after the driver finished writing"
+img fuse.img 96M; mkntfs -q -F -f -L BMFUSE "$IMG/fuse.img" >/dev/null 2>&1
+if attach "$IMG/fuse.img" && mountdev "$DEV" && [ "$(findmnt -n -o FSTYPE --source "$DEV")" = fuseblk ]; then
+    head -c 48M /dev/urandom > "$MP/data.bin"
+    BM_OUT="$("$BM" --unmount "$DEV" 2>&1)"; BM_RC=$?
+    check "--unmount exits 0" test "$BM_RC" -eq 0
+    check "  ... and no FUSE daemon of the device is left when it returns" \
+        bash -c '! pgrep -f -- "ntfs[^ ]* $1 " >/dev/null' _ "$DEV"
+    check "the volume is clean afterwards (nothing left half written)" ntfs-3g.probe --readwrite "$IMG/fuse.img"
+    # A bind mount made inside another mount namespace (as Docker does for a
+    # volume) keeps the filesystem and its FUSE daemon alive after the
+    # unmount here; a plain copy of the mount does not
+    mkdir -p "$IMG/bindto"
+    if mountdev "$DEV" && mkdir -p "$MP/vol" && unshare -r -m --propagation private true 2>/dev/null; then
+        bg unshare -r -m --propagation private bash -c 'mount --bind "$1" "$2" && sleep 4; true' _ "$MP/vol" "$IMG/bindto"
+        sleep 0.5
+        BM_OUT="$("$BM" --busy "$DEV" 2>&1)"
+        check "--busy shows the bind mount of the other namespace" has "Also mounted inside an isolated environment"
+        check "  ... and only that one (not plain copies)" test "$(grep -c "isolated environment" <<< "$BM_OUT")" -eq 1
+        BM_OUT="$("$BM" --unmount "$DEV" 2>&1)"; BM_RC=$?
+        check "--unmount waits until it is gone (exit 0)" test "$BM_RC" -eq 0
+        check "  ... the mount and the FUSE daemon are gone when it returns" \
+            bash -c '! grep -qsF " $1 " /proc/[0-9]*/mountinfo && ! pgrep -f -- "ntfs[^ ]* $1 " >/dev/null' _ "$DEV"
+    else
+        skip "private mount namespace" "unprivileged user namespaces are disabled"
+    fi
+else
+    skip "NTFS through FUSE" "UDisks did not mount the image with ntfs-3g"
+fi
+
+begin "a folder is judged where it is, not at the root of its partition"
+diag /usr/share
+check "a system folder owned by root -> permission-folder" has "diagnosis:   permission-folder"
+check "  ... names the owner" has "This folder belongs to root"
+check "  ... and offers no fix" bash -c '! grep -q "fix=" <<< "$1"' _ "$BM_OUT"
+
 begin "G: filesystem without write support (ISO 9660 or SquashFS)"
 mkdir -p "$IMG/isodir"; echo data > "$IMG/isodir/file.txt"
 G_DONE=0
