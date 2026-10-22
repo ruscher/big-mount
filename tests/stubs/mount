@@ -1,43 +1,51 @@
 #!/bin/bash
-# Stub mount: logs invocation, appends to fake /proc/mounts, respects $MOUNT_FAIL_DEVS
-# Args last two are source and target (after -o/-t options)
+# Stub mount: logs the invocation and appends to the fake /proc/mounts.
+# Failure injection:
+#   MOUNT_FAIL_DEVS="/dev/a /dev/b"   every mount of these devices exits 32
+#   MOUNT_RC_RW="/dev/a=14 ..."       exit code for read-write attempts
+#   MOUNT_RC_RO="/dev/a=13 ..."       exit code for read-only attempts
+#   MOUNT_FALLBACK_RO="/dev/a ..."    read-write requests succeed read-only,
+#                                     as ntfs-3g does for hibernated volumes
+# (ntfs-3g exits 13 inconsistent, 14 hibernated, 15 unclean; see ntfs-3g.probe(8))
+: "${TESTROOT:?stub called outside the test harness}"
 args=("$@")
 echo "mount ${args[*]}" >> "$TESTROOT/mount.log"
 
-src=""
-tgt=""
-typ="auto"
-# Simple parser: collect non-option positional tail
-skip_next=0
-positional=()
-for ((i=0; i<${#args[@]}; i++)); do
+typ="auto" opts="" skip_next=0 positional=()
+for ((i = 0; i < ${#args[@]}; i++)); do
     if [ "$skip_next" -eq 1 ]; then
         skip_next=0
         continue
     fi
     case "${args[i]}" in
-        -o|-t) skip_next=1 ;;
-        -*)    ;;
-        *)     positional+=("${args[i]}") ;;
+        -t) typ="${args[i+1]}"; skip_next=1 ;;
+        -o) opts="${args[i+1]}"; skip_next=1 ;;
+        -*) ;;
+        *) positional+=("${args[i]}") ;;
     esac
 done
 src="${positional[0]}"
 tgt="${positional[1]}"
 
-# Detect -t type
-for ((i=0; i<${#args[@]}; i++)); do
-    [ "${args[i]}" = "-t" ] && typ="${args[i+1]}"
+mode=rw
+[[ ",$opts," == *,ro,* ]] && mode=ro
+
+for bad in ${MOUNT_FAIL_DEVS:-}; do
+    if [ "$src" = "$bad" ]; then
+        echo "stub mount: forced fail $src" >&2
+        exit 32
+    fi
+done
+if [ "$mode" = rw ]; then table="${MOUNT_RC_RW:-}"; else table="${MOUNT_RC_RO:-}"; fi
+for entry in $table; do
+    if [ "${entry%=*}" = "$src" ]; then
+        echo "stub mount: forced $mode exit ${entry#*=} for $src" >&2
+        exit "${entry#*=}"
+    fi
 done
 
-# Optional fail injection
-if [ -n "${MOUNT_FAIL_DEVS:-}" ]; then
-    for bad in $MOUNT_FAIL_DEVS; do
-        if [ "$src" = "$bad" ]; then
-            echo "stub mount: forced fail $src" >&2
-            exit 32
-        fi
-    done
-fi
-
-echo "$src $tgt $typ rw 0 0" >> "$TESTROOT/proc/mounts"
+for fb in ${MOUNT_FALLBACK_RO:-}; do
+    [ "$src" = "$fb" ] && mode=ro
+done
+echo "$src $tgt $typ $mode 0 0" >> "$TESTROOT/proc/mounts"
 exit 0

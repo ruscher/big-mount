@@ -1,0 +1,17 @@
+#!/bin/bash
+# Stub findmnt: only "findmnt --fstab --source DEV" is supported. It succeeds
+# when DEV is a line of $TESTROOT/fake-fstab, so the real /etc/fstab of the
+# machine running the tests never influences the result.
+: "${TESTROOT:?stub called outside the test harness}"
+fstab=0 src="" prev=""
+for a in "$@"; do
+    [ "$a" = "--fstab" ] && fstab=1
+    [ "$prev" = "--source" ] && src="$a"
+    prev="$a"
+done
+if [ "$fstab" -eq 1 ] && [ -n "$src" ]; then
+    [ -r "$TESTROOT/fake-fstab" ] && grep -qxF -- "$src" "$TESTROOT/fake-fstab"
+    exit
+fi
+echo "stub findmnt: unsupported call: $*" >&2
+exit 99

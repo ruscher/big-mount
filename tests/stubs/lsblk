@@ -1,12 +1,45 @@
 #!/bin/bash
-# Stub: lsblk -no PKNAME /dev/<part> -> parent device from $TESTROOT/fake-lsblk map
-# Map format: each line "<part> <parent>"
-dev=""
+# Stub lsblk, driven by $TESTROOT/fake-lsblk.
+# Map format, one line per partition: "<part> <parent> [TRAN] [HOTPLUG]".
+# TRAN and HOTPLUG describe the parent disk; RM is read from the fake
+# $TESTROOT/sys/block/<disk>/removable. Supported calls:
+#   lsblk -no PKNAME /dev/<part>                         (legacy script)
+#   lsblk -P -p -o NAME,PKNAME,TYPE,TRAN,RM,HOTPLUG       (current script)
+: "${TESTROOT:?stub called outside the test harness}"
+map="$TESTROOT/fake-lsblk"
+[ -r "$map" ] || exit 1
+
+pairs=0 dev=""
 for a in "$@"; do
     case "$a" in
+        -P) pairs=1 ;;
         /dev/*) dev="${a#/dev/}" ;;
     esac
 done
-[ -z "$dev" ] && exit 1
-[ -r "$TESTROOT/fake-lsblk" ] || exit 1
-awk -v p="$dev" '$1==p {print $2; found=1} END {exit !found}' "$TESTROOT/fake-lsblk"
+
+if [ "$pairs" -eq 0 ]; then
+    [ -z "$dev" ] && exit 1
+    awk -v p="$dev" '$1==p {print $2; found=1} END {exit !found}' "$map"
+    exit
+fi
+
+declare -A seen
+emit() { # name pkname type tran rm hotplug
+    printf 'NAME="/dev/%s" PKNAME="%s" TYPE="%s" TRAN="%s" RM="%s" HOTPLUG="%s"\n' \
+        "$1" "${2:+/dev/$2}" "$3" "$4" "$5" "$6"
+}
+rm_of() { local f="$TESTROOT/sys/block/$1/removable"; [ -r "$f" ] && cat "$f" || echo 0; }
+while read -r part parent tran hot _; do
+    [ -n "$part" ] || continue
+    hot="${hot:-0}"
+    if [ -n "$parent" ] && [ -z "${seen[$parent]:-}" ]; then
+        seen[$parent]=1
+        emit "$parent" "" disk "${tran:-}" "$(rm_of "$parent")" "$hot"
+    fi
+    if [ -n "$parent" ]; then
+        emit "$part" "$parent" part "" "$(rm_of "$parent")" "$hot"
+    else
+        case "$part" in loop*) t=loop ;; *) t=disk ;; esac
+        emit "$part" "" "$t" "${tran:-}" "$(rm_of "$part")" "$hot"
+    fi
+done < "$map"

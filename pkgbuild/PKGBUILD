@@ -5,11 +5,14 @@ pkgver=$(date +%y.%m.%d)
 pkgrel=$(date +%H%M)
 arch=('any')
 license=('GPL')
-depends=('udisks2' 'util-linux' 'ntfs-3g')
+depends=('udisks2' 'util-linux' 'ntfs-3g' 'lsof')
+optdepends=('kdialog: dialogs on KDE Plasma'
+            'zenity: dialogs on GNOME and other desktops'
+            'libnotify: notifications about read-only devices')
 provides=('big-mount-git')
 replaces=('big-mount-git')
 url="https://github.com/biglinux/big-mount"
-pkgdesc="Auto mount partitions in internal disks on boot"
+pkgdesc="Auto mount partitions in internal disks on boot, diagnose read-only and busy devices"
 source=("git+https://github.com/biglinux/big-mount.git")
 makedepends=("git")
 md5sums=(SKIP)

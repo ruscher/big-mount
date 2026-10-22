@@ -1,3 +1,4 @@
 #!/bin/bash
+: "${TESTROOT:?stub called outside the test harness}"
 # Stub: emit content of $TESTROOT/fake-blkid
 cat "$TESTROOT/fake-blkid"

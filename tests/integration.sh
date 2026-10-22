@@ -1,0 +1,309 @@
+#!/bin/bash
+# shellcheck disable=SC2016,SC2317  # bash -c '...$1' snippets and helpers called through check()
+# Integration tests for the session tools (diagnosis, busy device, safe
+# removal, notifier) against REAL mounts.
+#
+# Disposable images are attached as loop devices through UDisks2 and mounted
+# exactly as Plasma mounts a USB stick, so no real disk is ever touched. It
+# needs a local active session (polkit lets it set up loop devices without a
+# password) and runs as a normal user. Never run it as root.
+#
+# Usage: tests/integration.sh
+
+set -u
+# English messages, but UTF-8 so that accented labels are printed as they are
+export LC_ALL=C.UTF-8
+
+HERE="$(cd "$(dirname "$0")" && pwd)"
+REPO="$(dirname "$HERE")"
+BM="$REPO/big-mount/usr/bin/bigmount"
+
+if [ "$EUID" -eq 0 ]; then
+    echo "integration: do not run as root" >&2
+    exit 2
+fi
+
+PASS=0 FAIL=0 SKIP=0 FAILED=()
+ok()   { PASS=$((PASS + 1)); printf '  \033[32m✓\033[0m %s\n' "$1"; }
+bad()  { FAIL=$((FAIL + 1)); FAILED+=("$1"); printf '  \033[31m✗\033[0m %s\n' "$1"; }
+skip() { SKIP=$((SKIP + 1)); printf '  \033[33m-\033[0m %s (skipped: %s)\n' "$1" "$2"; }
+check() { local msg="$1"; shift; if "$@"; then ok "$msg"; else bad "$msg"; fi; }
+begin() { echo "— $1"; }
+
+# Images live in /tmp (no exec needed); helper binaries need an exec mount
+IMG="$(mktemp -d "${TMPDIR:-/tmp}/bigmount-integ.XXXXXX")"
+BIN="$(mktemp -d "$HERE/.integ.XXXXXX")"
+LOOPS=() PIDS=()
+
+cleanup() {
+    local p d
+    for p in "${PIDS[@]}"; do kill "$p" 2>/dev/null; done
+    wait 2>/dev/null
+    for d in "${LOOPS[@]}"; do
+        while findmnt -n --source "$d" >/dev/null 2>&1; do
+            udisksctl unmount --no-user-interaction -b "$d" >/dev/null 2>&1 || break
+        done
+        udisksctl loop-delete --no-user-interaction -b "$d" >/dev/null 2>&1
+    done
+    rm -rf "$IMG" "$BIN"
+}
+trap cleanup EXIT
+
+# attach IMAGE [ro] -> DEV ; mount DEV [opts] -> MP
+attach() {
+    local out ro=()
+    [ "${2:-}" = ro ] && ro=(-r)
+    out="$(udisksctl loop-setup --no-user-interaction "${ro[@]}" -f "$1" 2>&1)" || return 1
+    DEV="$(grep -o '/dev/loop[0-9]*' <<< "$out" | head -n1)"
+    [ -n "$DEV" ] || return 1
+    LOOPS+=("$DEV")
+    udevadm settle --timeout=5 2>/dev/null
+}
+mountdev() {
+    local opts=()
+    [ -n "${2:-}" ] && opts=(-o "$2")
+    udisksctl mount --no-user-interaction -b "$1" "${opts[@]}" >/dev/null 2>&1 || return 1
+    MP="$(findmnt -n -o TARGET --source "$1" | head -n1)"
+    [ -n "$MP" ]
+}
+img() { rm -f "$IMG/$1"; truncate -s "${2:-64M}" "$IMG/$1"; }
+diag() { BM_OUT="$("$BM" --diagnose "$1" 2>&1)"; BM_RC=$?; }
+has() { grep -qF -- "$1" <<< "$BM_OUT"; }
+mounted() { findmnt -n --source "$1" >/dev/null 2>&1; }
+bg() { "$@" & PIDS+=("$!"); LASTPID=$!; }
+
+# ----- preconditions ---------------------------------------------------------
+img probe.img 4M
+if ! command -v udisksctl >/dev/null || ! attach "$IMG/probe.img"; then
+    echo "integration: cannot set up loop devices through UDisks2 (no active local session?)."
+    echo "integration: SKIPPED, nothing was tested."
+    exit 77
+fi
+udisksctl loop-delete --no-user-interaction -b "$DEV" >/dev/null 2>&1
+LOOPS=()
+JOURNAL=0
+[ -n "$(journalctl -k -b -n 1 -q 2>/dev/null)" ] && JOURNAL=1
+
+echo "========================================="
+echo "Integration tests (real UDisks2 mounts on loop devices)"
+echo "========================================="
+
+# ----- A..G: why can't I write? ----------------------------------------------
+begin "healthy ext4 owned by the user"
+img ok.img; mkfs.ext4 -q -F -L BMOK -E root_owner="$(id -u):$(id -g)" "$IMG/ok.img"
+attach "$IMG/ok.img" && mountdev "$DEV"
+diag "$MP"
+check "diagnosis: ok (exit 0)" test "$BM_RC" -eq 0
+check "reports 'Device ready'" has "Device ready"
+OK_DEV="$DEV" OK_MP="$MP"
+
+begin "B: ext4 whose root folder belongs to root"
+img perm.img; mkfs.ext4 -q -F -L BMPERM -E root_owner=0:0 "$IMG/perm.img"
+attach "$IMG/perm.img" && mountdev "$DEV"
+diag "$DEV"
+check "cause: permission" has "diagnosis:   permission"
+check "safe fix offered: take ownership (not recursive)" has "fix=take-ownership"
+check "explains that only the main folder changes" has "Only that folder changes"
+
+begin "B: partition that contains an operating system"
+img os.img; mkfs.ext4 -q -F -L BMOS -E root_owner=0:0 -d "$REPO/tests/fixtures/os-root" "$IMG/os.img" 2>/dev/null \
+    || mkfs.ext4 -q -F -L BMOS -E root_owner=0:0 "$IMG/os.img"
+attach "$IMG/os.img" && mountdev "$DEV"
+if [ -e "$MP/etc/os-release" ]; then
+    diag "$DEV"
+    check "cause: permission" has "diagnosis:   permission (root directory root:root 755)"
+    check "explains it contains an operating system" has "contains an operating system"
+    check "take ownership NOT offered" bash -c '! grep -q "fix=take-ownership" <<< "$1"' _ "$BM_OUT"
+else
+    skip "operating system partition" "mkfs.ext4 -d unsupported"
+fi
+
+begin "E: write-protected device"
+img wp.img; mkfs.ext4 -q -F -L BMWP "$IMG/wp.img"
+attach "$IMG/wp.img" ro && mountdev "$DEV"
+diag "$DEV"
+check "cause: hw-readonly" has "diagnosis:   hw-readonly"
+check "explains the lock switch" has "lock switch"
+check "no fix offered" bash -c '! grep -q "fix=" <<< "$1"' _ "$BM_OUT"
+
+begin "A: healthy filesystem mounted read-only"
+img ro.img; mkfs.ext4 -q -F -L BMRO -E root_owner="$(id -u):$(id -g)" "$IMG/ro.img"
+attach "$IMG/ro.img" && mountdev "$DEV" ro
+diag "$DEV"
+check "cause: mounted-ro" has "diagnosis:   mounted-ro"
+if [ "$JOURNAL" -eq 1 ]; then
+    check "remount offered (no evidence of errors)" has "fix=remount"
+else
+    skip "remount offered" "kernel log not readable"
+fi
+RO_DEV="$DEV"
+
+begin "A: the remount correction itself"
+(
+    # shellcheck source=../big-mount/usr/lib/big-mount/lib.sh
+    BIGMOUNT_LIB="$REPO/big-mount/usr/lib/big-mount"
+    . "$BIGMOUNT_LIB/lib.sh"
+    bm_unmount_all "$RO_DEV" && bm_udisks mount -b "$RO_DEV" >/dev/null
+)
+diag "$RO_DEV"
+check "after remount the device is writable" test "$BM_RC" -eq 0
+
+begin "C: ext4 with recorded errors"
+img err.img 32M; mkfs.ext4 -q -F -L BMERR -E root_owner="$(id -u):$(id -g)" "$IMG/err.img"
+debugfs -w -R "ssv error_count 3" "$IMG/err.img" >/dev/null 2>&1
+attach "$IMG/err.img" && mountdev "$DEV"
+diag "$DEV"
+check "still writable, but warns about the errors" has "warning:     ext4 errors_count=3"
+check "advises to copy files and check it" has "Attention: the filesystem has recorded errors"
+udisksctl unmount --no-user-interaction -b "$DEV" >/dev/null 2>&1
+mountdev "$DEV" ro
+diag "$DEV"
+check "read-only + errors -> cause fs-errors" has "diagnosis:   fs-errors"
+check "never offers to remount a damaged filesystem" bash -c '! grep -q "fix=remount" <<< "$1"' _ "$BM_OUT"
+
+begin "D: hibernated NTFS (Windows Fast Startup)"
+img hib.img; mkntfs -q -F -f -L BMHIBER "$IMG/hib.img" >/dev/null 2>&1
+{ printf 'hibr'; head -c 8188 /dev/zero; } > "$IMG/hiberfil"
+ntfscp -f "$IMG/hib.img" "$IMG/hiberfil" hiberfil.sys >/dev/null 2>&1
+if ntfs-3g.probe --readwrite "$IMG/hib.img" >/dev/null 2>&1; then
+    skip "hibernated NTFS" "could not create the hibernation marker"
+else
+    attach "$IMG/hib.img"
+    # ntfs-3g either refuses read-write or silently falls back to read-only
+    if mountdev "$DEV" || mountdev "$DEV" ro; then
+        diag "$DEV"
+        check "cause: ntfs-unsafe" has "diagnosis:   ntfs-unsafe"
+        check "explains Fast Startup" has "Fast Startup"
+        check "no repair offered (needs Windows)" bash -c '! grep -q "fix=" <<< "$1"' _ "$BM_OUT"
+        check "image still hibernated: nothing was written" bash -c '! ntfs-3g.probe --readwrite "$1" >/dev/null 2>&1' _ "$IMG/hib.img"
+    else
+        skip "hibernated NTFS diagnosis" "read-only mount failed"
+    fi
+fi
+
+begin "G: filesystem without write support (ISO 9660 or SquashFS)"
+mkdir -p "$IMG/isodir"; echo data > "$IMG/isodir/file.txt"
+G_DONE=0
+if xorriso -as mkisofs -quiet -V BMISO -o "$IMG/iso.img" "$IMG/isodir" >/dev/null 2>&1 \
+    && attach "$IMG/iso.img" && mountdev "$DEV"; then
+    diag "$DEV"; check "ISO 9660: cause unsupported" has "diagnosis:   unsupported"; G_DONE=1
+fi
+if mksquashfs "$IMG/isodir" "$IMG/sq.img" -quiet -noappend >/dev/null 2>&1 \
+    && attach "$IMG/sq.img" && mountdev "$DEV"; then
+    diag "$DEV"; check "SquashFS: cause unsupported" has "diagnosis:   unsupported"; G_DONE=1
+fi
+[ "$G_DONE" -eq 1 ] || skip "read-only filesystems" "kernel supports neither iso9660 nor squashfs"
+
+begin "FAT32 and exFAT mounted by UDisks"
+for t in vfat exfat; do
+    img "$t.img" 64M
+    if [ "$t" = vfat ]; then mkfs.vfat -n BMFAT "$IMG/$t.img" >/dev/null; else mkfs.exfat -L BMEXFAT "$IMG/$t.img" >/dev/null; fi
+    attach "$IMG/$t.img" && mountdev "$DEV"
+    diag "$DEV"
+    check "$t: writable" test "$BM_RC" -eq 0
+done
+
+# ----- busy device -------------------------------------------------------------
+begin "busy: terminal folder, reader, writer, kioworker"
+img busy.img; mkfs.ext4 -q -F -L "BM Família" -E root_owner="$(id -u):$(id -g)" "$IMG/busy.img"
+attach "$IMG/busy.img" && mountdev "$DEV"
+BUSY_DEV="$DEV" BUSY_MP="$MP"
+check "label with spaces and accents mounted" test -d "$BUSY_MP"
+echo hello > "$BUSY_MP/a.txt"; : > "$BUSY_MP/thumbnail"
+# A shell sitting in a folder of the device, without child processes
+mkfifo "$BIN/idle"
+bg bash -c 'cd "$1" && read -r -t 300 _ <> "$2"' _ "$BUSY_MP" "$BIN/idle"; P_SHELL=$LASTPID
+bg bash -c 'exec 3< "$1/a.txt"; exec sleep 300' _ "$BUSY_MP"; P_READ=$LASTPID
+bg bash -c 'exec 4>> "$1/b.txt"; exec sleep 300' _ "$BUSY_MP"; P_WRITE=$LASTPID
+cp /usr/bin/tail "$BIN/kioworker"
+bg bash -c 'cd "$1" && exec "$2" -f thumbnail' _ "$BUSY_MP" "$BIN/kioworker"; P_KIO=$LASTPID
+sleep 1
+BM_OUT="$("$BM" --busy "$BUSY_MP" 2>&1)"; BM_RC=$?
+check "--busy exits 3 (busy)" test "$BM_RC" -eq 3
+check "lists the shell with its folder on the device" has "Command shell (terminal)  |  bash  |  $P_SHELL  |  Current folder is on the device"
+check "lists the reader" has "sleep  |  $P_READ  |  Open for reading"
+check "lists the writer as writing (not as a transfer)" has "sleep  |  $P_WRITE  |  Open for writing"
+check "recognises a kioworker by its protocol" has "KDE thumbnail generator  |  kioworker  |  $P_KIO"
+check "no invented progress or speed" bash -c '! grep -qiE "[0-9]+ ?%|MB/s|remaining" <<< "$1"' _ "$BM_OUT"
+
+begin "busy: unmount is refused and nothing is forced"
+BM_OUT="$("$BM" --unmount "$BUSY_DEV" 2>&1)"; BM_RC=$?
+check "--unmount exits 3" test "$BM_RC" -eq 3
+check "device still mounted" mounted "$BUSY_DEV"
+check "no success message" bash -c '! grep -qE "Unmounted|removed safely" <<< "$1"' _ "$BM_OUT"
+check "all holders still alive" kill -0 "$P_SHELL" "$P_READ" "$P_WRITE" "$P_KIO"
+
+begin "busy: closing programs only closes what is safe"
+BM_OUT="$("$BM" --unmount "$BUSY_DEV" --close-apps --assume-yes 2>&1)"; BM_RC=$?
+check "still busy because of the writer (exit 3)" test "$BM_RC" -eq 3
+check "the writer was NOT closed" kill -0 "$P_WRITE"
+check "the shell was NOT closed (user must cd)" kill -0 "$P_SHELL"
+check "the reader was closed" bash -c '! kill -0 "$1" 2>/dev/null' _ "$P_READ"
+check "the kioworker was closed" bash -c '! kill -0 "$1" 2>/dev/null' _ "$P_KIO"
+check "explains why the writer is kept" has "has a file open for writing"
+check "device still mounted" mounted "$BUSY_DEV"
+
+begin "busy -> released -> unmounted"
+kill "$P_WRITE" "$P_SHELL" 2>/dev/null; sleep 0.5
+BM_OUT="$("$BM" --unmount "$BUSY_DEV" 2>&1)"; BM_RC=$?
+check "--unmount exits 0" test "$BM_RC" -eq 0
+check "really unmounted" bash -c '! findmnt -n --source "$1" >/dev/null' _ "$BUSY_DEV"
+check "success reported only now" has "Unmounted."
+
+begin "other holders: a second mount and a nested mount"
+img outer.img; mkfs.ext4 -q -F -L BMOUTER -E root_owner="$(id -u):$(id -g)" "$IMG/outer.img"
+attach "$IMG/outer.img" && mountdev "$DEV"
+OUT_DEV="$DEV"
+check "--busy on an unused device exits 0" "$BM" --busy "$OUT_DEV"
+skip "second/nested mount detection" "needs root to create the extra mount (covered by tests/lib-tests.sh)"
+
+begin "only the requested filesystem is unmounted"
+BM_OUT="$("$BM" --unmount "$OUT_DEV" 2>&1)"; BM_RC=$?
+check "--unmount exits 0" test "$BM_RC" -eq 0
+check "the other device stays mounted" mounted "$OK_DEV"
+
+begin "safe removal of a loop 'drive' (nothing to power off)"
+BM_OUT="$("$BM" --safe-remove "$OK_MP" 2>&1)"; BM_RC=$?
+check "--safe-remove exits 0" test "$BM_RC" -eq 0
+check "really unmounted" bash -c '! findmnt -n --source "$1" >/dev/null' _ "$OK_DEV"
+check "does not claim a power-off" bash -c '! grep -q "removed safely" <<< "$1"' _ "$BM_OUT"
+check "reports the unmount" has "Unmounted."
+
+begin "the running system is never unmounted"
+BM_OUT="$("$BM" --safe-remove / 2>&1)"; BM_RC=$?
+check "--safe-remove / refused (exit 4)" test "$BM_RC" -eq 4
+check "/ still mounted" findmnt -n / >/dev/null
+if findmnt -n /home >/dev/null; then
+    BM_OUT="$("$BM" --unmount /home 2>&1)"; BM_RC=$?
+    check "--unmount /home refused (exit 4)" test "$BM_RC" -eq 4
+fi
+
+# ----- notifier ------------------------------------------------------------------
+begin "notifier: warns once about a read-only device"
+NOTE_HOME="$(mktemp -d)"
+img note.img; mkfs.ext4 -q -F -L BMNOTE "$IMG/note.img"
+(
+    exec env -u DBUS_SESSION_BUS_ADDRESS -u WAYLAND_DISPLAY -u DISPLAY \
+        XDG_RUNTIME_DIR="$NOTE_HOME" XDG_STATE_HOME="$NOTE_HOME/state" "$BM" --notifier
+) 2> "$NOTE_HOME/notes" &
+P_NOTE=$!; PIDS+=("$P_NOTE")
+sleep 1
+attach "$IMG/note.img" ro && mountdev "$DEV"
+sleep 3
+notes_for() { grep -c "^Device mounted read-only: Device: $1 " "$NOTE_HOME/notes"; }
+check "initial scan: warns about the device already mounted read-only (BMWP)" test "$(notes_for BMWP)" -eq 1
+check "hot-plugged read-only device: one notification" test "$(notes_for BMNOTE)" -eq 1
+check "the notification names the reason" grep -q "write-protected" "$NOTE_HOME/notes"
+udisksctl unmount --no-user-interaction -b "$DEV" >/dev/null 2>&1; mountdev "$DEV" ro
+sleep 3
+check "same device and cause again: no repeated notification" test "$(notes_for BMNOTE)" -eq 1
+check "writable devices produce no notification" bash -c '! grep -qE "Device: (BMOK|BMOUTER|BMFAT|BMEXFAT) " "$1"' _ "$NOTE_HOME/notes"
+kill "$P_NOTE" 2>/dev/null; pkill -P "$P_NOTE" 2>/dev/null
+rm -rf "$NOTE_HOME"
+
+echo ""
+echo "========================================="
+echo "integration result: $PASS passed, $FAIL failed, $SKIP skipped"
+[ "$FAIL" -gt 0 ] && printf '  - %s\n' "${FAILED[@]}"
+echo "========================================="
+exit "$FAIL"
