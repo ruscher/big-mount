@@ -764,17 +764,26 @@ bm_gui_fix() {
 # ---------------------------------------------------------------------------
 # Graphical safe removal (bigmount --gui-remove, Dolphin action)
 
+# The processes of every user, read with administrator rights, are kept only
+# while the busy dialog shows them: never left behind in /tmp
+bm_priv_clear() {
+   [ -n "${BM_PRIV_LSOF:-}" ] && rm -f -- "$BM_PRIV_LSOF"
+   BM_PRIV_LSOF=""
+}
+
 # Busy dialog: returns 0 to try again, 1 to give up
 bm_gui_busy_dialog() {
    local dev="$1" priv="" tmp self
-   BM_PRIV_LSOF=""
+   bm_priv_clear
+   trap 'bm_priv_clear' EXIT
+   trap 'bm_priv_clear; exit 130' INT TERM HUP
    while :; do
       bm_busy_doc "$dev" "" "$priv"
       bm_device_icon
       bm_ui_choice $"Device is busy" dialog-warning $"Try again" $"More options…" $"Cancel"
       case "$REPLY" in
-         1) BM_PRIV_LSOF=""; return 0 ;;
-         3) BM_PRIV_LSOF=""; return 1 ;;
+         1) bm_priv_clear; return 0 ;;
+         3) bm_priv_clear; return 1 ;;
       esac
       local opts=(refresh $"Refresh the list" details $"Show technical details")
       bm_close_candidates
@@ -806,12 +815,14 @@ bm_gui_busy_dialog() {
             # org.biglinux.big-mount.inspect-processes); the dialogs stay
             # in the user session
             self="$BM_LIB_DIR/bigmount-holders"
-            tmp="$(mktemp)"
+            bm_priv_clear
+            tmp="$(mktemp)" || continue
+            BM_PRIV_LSOF="$tmp"
             bm_mounts "$dev"
             local mp; for mp in "${M_TARGET[@]}"; do
                pkexec "$self" "$mp" >> "$tmp" 2>/dev/null
             done
-            if [ -s "$tmp" ]; then BM_PRIV_LSOF="$tmp"; priv=1; fi
+            if [ -s "$tmp" ]; then priv=1; else bm_priv_clear; priv=""; fi
             ;;
       esac
    done

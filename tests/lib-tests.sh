@@ -244,6 +244,28 @@ check "  ... and no GUI program started" test ! -s "$WORK/n.log"
 unset -f notify-send kdialog
 BM_UI="tty"
 
+begin "administrator view leaves no file behind"
+mkdir -p "$WORK/tmpdir"
+printf 'p77\ncsecret-app\nu0\nLroot\nfcwd\na \ntDIR\nn/home/other/private\n' > "$WORK/priv.out"
+pkexec() { cat "$WORK/priv.out"; }
+kdialog() { echo "$*" >> "$WORK/kd.log"; KD_N=$((KD_N + 1)); case "$KD_N" in 1) return 1 ;; 2) echo admin ;; 3) return 1 ;; 4) echo details; return 0 ;; *) return 2 ;; esac; }
+bm_busy_collect() {
+    BUSY_PID=() BUSY_PIDS=() BUSY_APP=() BUSY_COMM=() BUSY_FD=() BUSY_ACCESS=() BUSY_UID=() BUSY_USER=() O_KIND=() O_WHAT=() BUSY_COUNT=0
+    if [ -n "${2:-}" ] && grep -q secret "$2"; then
+        BUSY_PID=(77) BUSY_PIDS=(77) BUSY_APP=(secret-app) BUSY_COMM=(secret-app) BUSY_FD=(cwd) BUSY_ACCESS=("") BUSY_UID=(0) BUSY_USER=(root) BUSY_COUNT=1
+    fi
+}
+bm_facts() { F=([NAME]=/dev/sdz1 [LABEL]=X [FSTYPE]=ext4); }
+bm_mounts() { M_TARGET=(/run/media/u/X) M_FSTYPE=() M_VFSOPT=() M_FSOPT=(); }
+bm_ui_text() { :; }
+command() { [ "$2" = pkexec ] && return 0; builtin command "$@"; }
+KD_N=0; : > "$WORK/kd.log"
+( export TMPDIR="$WORK/tmpdir"; BM_UI=kdialog; bm_gui_busy_dialog /dev/sdz1 ) > /dev/null 2>&1
+check "the privileged list was shown" grep -q "secret-app" "$WORK/kd.log"
+check "no temporary file left after the dialog" test -z "$(ls -A "$WORK/tmpdir")"
+unset -f pkexec kdialog bm_busy_collect bm_facts bm_mounts bm_ui_text command
+. "$BIGMOUNT_LIB/cli.sh"; BM_UI="tty"; bm_ui_init
+
 begin "busy summary speaks plain language"
 summary_for() { BUSY_PID=("$@") BUSY_PIDS=("$@"); }
 O_KIND=() O_WHAT=()
