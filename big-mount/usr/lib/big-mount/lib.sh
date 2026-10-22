@@ -126,8 +126,16 @@ bm_facts() {
 
    # Walk up to the whole disk for model, transport and power-off
    disk="$dev"
-   local pk="${F[PKNAME]}" n=0
-   while [ -n "$pk" ] && [ "$n" -lt 8 ]; do
+   local pk="${F[PKNAME]}" n=0 kn slaves
+   while [ "$n" -lt 8 ]; do
+      # lsblk shows no parent for a device-mapper device (LUKS, LVM) asked
+      # about directly: follow sysfs when there is exactly one
+      if [ -z "$pk" ]; then
+         kn="$(readlink -f -- "$disk")"
+         slaves=(/sys/class/block/"${kn##*/}"/slaves/*)
+         [ "${#slaves[@]}" -eq 1 ] && [ -e "${slaves[0]}" ] && pk="/dev/${slaves[0]##*/}"
+      fi
+      [ -n "$pk" ] || break
       disk="$pk"
       pk="$(lsblk -n -d -o PKNAME -- "$disk" 2>/dev/null)"
       [[ -n $pk && $pk != /dev/* ]] && pk="/dev/$pk"
@@ -895,6 +903,8 @@ bm_privileged_holders() {
    src="$(findmnt -n -o SOURCE --mountpoint "$mp" 2>/dev/null | head -n1)"
    src="${src%%\[*}"
    [[ $src == /dev/* ]] || { bm_warn "not a mount point of a local device"; return 1; }
+   # The running system is never removed: no reason to list all its processes
+   bm_is_system_mount "$mp" && { bm_warn "refused: a mount of the running system"; return 1; }
    lsof -w -F pcuLftan -- "$mp" 2>/dev/null
    return 0
 }

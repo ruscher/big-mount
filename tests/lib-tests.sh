@@ -476,6 +476,11 @@ bm_doc_new; bm_doc_tr "App"$'\n'"comm" 42 "Open"
 bm_doc_render_text
 check "terminal: table keeps the second line of a cell" bash -c '[[ $1 == *"App  |  comm  |  42  |  Open"* ]]' _ "$REPLY"
 
+begin "Zenity (Pango): a block of lines is followed by an empty line, as in KDialog"
+bm_doc_new; bm_doc_kv A 1; bm_doc_kv B 2; bm_doc_p para; bm_doc_li x; bm_doc_li y; bm_doc_p end
+bm_doc_render_markup pango
+check "key/value, list and paragraphs are separated" eq "$REPLY" "<b>A:</b> 1"$'\n'"<b>B:</b> 2"$'\n\n'"para"$'\n\n'"  • x"$'\n'"  • y"$'\n\n'"end"
+
 begin "an empty target is refused (it must not mean the current folder)"
 ( cd / && bm_main --busy "" >/dev/null 2>&1 ); rc=$?
 check "--busy '' exits 2" eq "$rc" 2

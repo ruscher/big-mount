@@ -140,15 +140,15 @@ msgstr "ALVO é um dispositivo (/dev/sdb1) ou qualquer pasta dentro de um dispos
 
 #: big-mount/usr/lib/big-mount/cli.sh:45 big-mount/usr/lib/big-mount/cli.sh:283
 #: big-mount/usr/lib/big-mount/cli.sh:519
-#: big-mount/usr/lib/big-mount/cli.sh:708
+#: big-mount/usr/lib/big-mount/cli.sh:715
 msgid "bigmount: '%s' is not a local storage device or a folder on one"
 msgstr "bigmount: '%s' não é um dispositivo de armazenamento local nem uma pasta dentro de um"
 
-#: big-mount/usr/lib/big-mount/cli.sh:63 big-mount/usr/lib/big-mount/cli.sh:704
+#: big-mount/usr/lib/big-mount/cli.sh:63 big-mount/usr/lib/big-mount/cli.sh:711
 msgid "bigmount: unknown option '%s' (see bigmount --help)"
 msgstr "bigmount: opção desconhecida '%s' (veja bigmount --help)"
 
-#: big-mount/usr/lib/big-mount/cli.sh:77 big-mount/usr/lib/big-mount/cli.sh:877
+#: big-mount/usr/lib/big-mount/cli.sh:77 big-mount/usr/lib/big-mount/cli.sh:884
 msgid "Device ready"
 msgstr "Dispositivo pronto"
 
@@ -655,438 +655,446 @@ msgstr "Também o mantém ocupado:"
 msgid "An open file does not necessarily mean that something is being copied."
 msgstr "Um arquivo aberto não significa necessariamente que algo está sendo copiado."
 
-#: big-mount/usr/lib/big-mount/cli.sh:524
+#: big-mount/usr/lib/big-mount/cli.sh:527
 msgid "%s is not in use"
 msgstr "%s não está em uso"
 
-#: big-mount/usr/lib/big-mount/cli.sh:527
-msgid "No program of yours and nothing in the system is using it. It can be unmounted."
-msgstr "Nenhum programa seu e nada no sistema está usando o dispositivo. Ele pode ser desmontado."
+#: big-mount/usr/lib/big-mount/cli.sh:529
+msgid "No program and nothing in the system is using it. It can be unmounted."
+msgstr "Nenhum programa e nada no sistema está usando o dispositivo. Ele pode ser desmontado."
 
-#: big-mount/usr/lib/big-mount/cli.sh:554
+#: big-mount/usr/lib/big-mount/cli.sh:531
+msgid "None of your programs is using %s"
+msgstr "Nenhum programa seu está usando %s"
+
+#: big-mount/usr/lib/big-mount/cli.sh:533
+msgid "No program of yours, no other mount and no other device is using it. It can probably be unmounted. Programs of other users and of the system are only visible to an administrator."
+msgstr "Nenhum programa seu, nenhuma outra montagem e nenhum outro dispositivo está usando o dispositivo. Provavelmente ele pode ser desmontado. Programas de outros usuários e do sistema só ficam visíveis para um administrador."
+
+#: big-mount/usr/lib/big-mount/cli.sh:561
 msgid "device not found"
 msgstr "dispositivo não encontrado"
 
-#: big-mount/usr/lib/big-mount/cli.sh:561
+#: big-mount/usr/lib/big-mount/cli.sh:568
 msgid "The device was disconnected or replaced during the operation. Nothing else was done."
 msgstr "O dispositivo foi desconectado ou substituído durante a operação. Nada mais foi feito."
 
-#: big-mount/usr/lib/big-mount/cli.sh:609
+#: big-mount/usr/lib/big-mount/cli.sh:616
 msgid "%s was mounted again at %s"
 msgstr "%s foi montado novamente em %s"
 
-#: big-mount/usr/lib/big-mount/cli.sh:624
+#: big-mount/usr/lib/big-mount/cli.sh:631
 msgid "%s: the encrypted volume could not be locked"
 msgstr "%s: não foi possível bloquear o volume criptografado"
 
-#: big-mount/usr/lib/big-mount/cli.sh:665
+#: big-mount/usr/lib/big-mount/cli.sh:672
 msgid "They do not start again by themselves when the device comes back."
 msgstr "Eles não voltam a funcionar sozinhos quando o dispositivo for conectado de novo."
 
-#: big-mount/usr/lib/big-mount/cli.sh:667
+#: big-mount/usr/lib/big-mount/cli.sh:674
 msgid "They start again by themselves when the device is mounted again."
 msgstr "Eles voltam a funcionar sozinhos quando o dispositivo for montado de novo."
 
-#: big-mount/usr/lib/big-mount/cli.sh:715
+#: big-mount/usr/lib/big-mount/cli.sh:722
 msgid "Device removed safely. It can be disconnected now."
 msgstr "Dispositivo removido com segurança. Ele já pode ser desconectado."
 
-#: big-mount/usr/lib/big-mount/cli.sh:717
+#: big-mount/usr/lib/big-mount/cli.sh:724
 msgid "Unmounted. Everything was written to the device."
 msgstr "Desmontado. Tudo foi gravado no dispositivo."
 
-#: big-mount/usr/lib/big-mount/cli.sh:729
+#: big-mount/usr/lib/big-mount/cli.sh:736
 msgid "These programs can be asked to close (unsaved changes in them may be lost):"
 msgstr "Estes programas podem ser solicitados a fechar (alterações não salvas neles podem ser perdidas):"
 
-#: big-mount/usr/lib/big-mount/cli.sh:733
-#: big-mount/usr/lib/big-mount/cli.sh:927
+#: big-mount/usr/lib/big-mount/cli.sh:740
+#: big-mount/usr/lib/big-mount/cli.sh:934
 msgid "Close them"
 msgstr "Fechar programas"
 
-#: big-mount/usr/lib/big-mount/cli.sh:733
-#: big-mount/usr/lib/big-mount/cli.sh:746
-#: big-mount/usr/lib/big-mount/cli.sh:857
-#: big-mount/usr/lib/big-mount/cli.sh:903
-#: big-mount/usr/lib/big-mount/cli.sh:927
-#: big-mount/usr/lib/big-mount/cli.sh:996
+#: big-mount/usr/lib/big-mount/cli.sh:740
+#: big-mount/usr/lib/big-mount/cli.sh:753
+#: big-mount/usr/lib/big-mount/cli.sh:864
+#: big-mount/usr/lib/big-mount/cli.sh:910
+#: big-mount/usr/lib/big-mount/cli.sh:934
+#: big-mount/usr/lib/big-mount/cli.sh:1006
 msgid "Cancel"
 msgstr "Cancelar"
 
-#: big-mount/usr/lib/big-mount/cli.sh:736
+#: big-mount/usr/lib/big-mount/cli.sh:743
 msgid "Still running: %s"
 msgstr "Ainda em execução: %s"
 
-#: big-mount/usr/lib/big-mount/cli.sh:739
+#: big-mount/usr/lib/big-mount/cli.sh:746
 msgid "These services use the device and will be stopped when it is unmounted:"
 msgstr "Estes serviços usam o dispositivo e serão parados quando ele for desmontado:"
 
-#: big-mount/usr/lib/big-mount/cli.sh:746
+#: big-mount/usr/lib/big-mount/cli.sh:753
 msgid "Stop them and continue"
 msgstr "Parar e continuar"
 
-#: big-mount/usr/lib/big-mount/cli.sh:749
+#: big-mount/usr/lib/big-mount/cli.sh:756
 msgid "Nothing was done. Run again with --assume-yes to stop them."
 msgstr "Nada foi feito. Execute de novo com --assume-yes para pará-los."
 
-#: big-mount/usr/lib/big-mount/cli.sh:753
+#: big-mount/usr/lib/big-mount/cli.sh:760
 msgid "Unmounted, but powering the drive off failed (%s). Wait a moment before disconnecting it."
 msgstr "Desmontado, mas não foi possível desligar a unidade (%s). Aguarde um momento antes de desconectá-la."
 
-#: big-mount/usr/lib/big-mount/cli.sh:754
+#: big-mount/usr/lib/big-mount/cli.sh:761
 msgid "Refused: this drive holds the running system (%s)."
 msgstr "Recusado: esta unidade contém o sistema em execução (%s)."
 
-#: big-mount/usr/lib/big-mount/cli.sh:755
+#: big-mount/usr/lib/big-mount/cli.sh:762
 msgid "Permission to unmount was not granted."
 msgstr "A permissão para desmontar não foi concedida."
 
-#: big-mount/usr/lib/big-mount/cli.sh:756
+#: big-mount/usr/lib/big-mount/cli.sh:763
 msgid "Unmounted, but the drive is still in use (%s), so it was not powered off."
 msgstr "Desmontado, mas a unidade ainda está em uso (%s), por isso não foi desligada."
 
-#: big-mount/usr/lib/big-mount/cli.sh:757
+#: big-mount/usr/lib/big-mount/cli.sh:764
 msgid "Unmounted. This drive cannot be powered off by the computer; it can be disconnected now."
 msgstr "Desmontado. Esta unidade não pode ser desligada pelo computador; ela já pode ser desconectada."
 
-#: big-mount/usr/lib/big-mount/cli.sh:758
+#: big-mount/usr/lib/big-mount/cli.sh:765
 msgid "Could not unmount: %s"
 msgstr "Não foi possível desmontar: %s"
 
-#: big-mount/usr/lib/big-mount/cli.sh:779
-#: big-mount/usr/lib/big-mount/cli.sh:782
-#: big-mount/usr/lib/big-mount/cli.sh:793
-#: big-mount/usr/lib/big-mount/cli.sh:805
+#: big-mount/usr/lib/big-mount/cli.sh:786
+#: big-mount/usr/lib/big-mount/cli.sh:789
+#: big-mount/usr/lib/big-mount/cli.sh:800
+#: big-mount/usr/lib/big-mount/cli.sh:812
 msgid "Storage diagnostics"
 msgstr "Diagnóstico de armazenamento"
 
-#: big-mount/usr/lib/big-mount/cli.sh:779
+#: big-mount/usr/lib/big-mount/cli.sh:786
 msgid "No storage device to diagnose was found."
 msgstr "Nenhum dispositivo de armazenamento para diagnosticar foi encontrado."
 
-#: big-mount/usr/lib/big-mount/cli.sh:782
-#: big-mount/usr/lib/big-mount/cli.sh:805
+#: big-mount/usr/lib/big-mount/cli.sh:789
+#: big-mount/usr/lib/big-mount/cli.sh:812
 msgid "Choose a device:"
 msgstr "Escolha um dispositivo:"
 
-#: big-mount/usr/lib/big-mount/cli.sh:793
+#: big-mount/usr/lib/big-mount/cli.sh:800
 msgid "This folder is not on a local storage device."
 msgstr "Esta pasta não está em um dispositivo de armazenamento local."
 
-#: big-mount/usr/lib/big-mount/cli.sh:817
-#: big-mount/usr/lib/big-mount/cli.sh:819
-#: big-mount/usr/lib/big-mount/cli.sh:821
-#: big-mount/usr/lib/big-mount/cli.sh:830
-#: big-mount/usr/lib/big-mount/cli.sh:916
+#: big-mount/usr/lib/big-mount/cli.sh:824
+#: big-mount/usr/lib/big-mount/cli.sh:826
+#: big-mount/usr/lib/big-mount/cli.sh:828
+#: big-mount/usr/lib/big-mount/cli.sh:837
+#: big-mount/usr/lib/big-mount/cli.sh:923
 msgid "Technical details"
 msgstr "Detalhes técnicos"
 
-#: big-mount/usr/lib/big-mount/cli.sh:817
-#: big-mount/usr/lib/big-mount/cli.sh:819
-#: big-mount/usr/lib/big-mount/cli.sh:821
+#: big-mount/usr/lib/big-mount/cli.sh:824
+#: big-mount/usr/lib/big-mount/cli.sh:826
+#: big-mount/usr/lib/big-mount/cli.sh:828
 msgid "Close"
 msgstr "Fechar"
 
-#: big-mount/usr/lib/big-mount/cli.sh:819
+#: big-mount/usr/lib/big-mount/cli.sh:826
 msgid "Safely remove…"
 msgstr "Remover com segurança…"
 
-#: big-mount/usr/lib/big-mount/cli.sh:844
-#: big-mount/usr/lib/big-mount/cli.sh:1075
+#: big-mount/usr/lib/big-mount/cli.sh:851
+#: big-mount/usr/lib/big-mount/cli.sh:1085
 msgid "How to solve"
 msgstr "Como resolver"
 
-#: big-mount/usr/lib/big-mount/cli.sh:877
+#: big-mount/usr/lib/big-mount/cli.sh:884
 msgid "You can now write to this device."
 msgstr "Agora você pode gravar neste dispositivo."
 
-#: big-mount/usr/lib/big-mount/cli.sh:879
+#: big-mount/usr/lib/big-mount/cli.sh:886
 msgid "Unable to fix the device"
 msgstr "Não foi possível corrigir o dispositivo"
 
-#: big-mount/usr/lib/big-mount/cli.sh:880
+#: big-mount/usr/lib/big-mount/cli.sh:887
 msgid "Nothing was changed on the device. See the technical details for more information."
 msgstr "Nada foi alterado no dispositivo. Veja os detalhes técnicos para mais informações."
 
-#: big-mount/usr/lib/big-mount/cli.sh:903
-#: big-mount/usr/lib/big-mount/cli.sh:912
+#: big-mount/usr/lib/big-mount/cli.sh:910
+#: big-mount/usr/lib/big-mount/cli.sh:919
 msgid "Device is busy"
 msgstr "Dispositivo ocupado"
 
-#: big-mount/usr/lib/big-mount/cli.sh:903
+#: big-mount/usr/lib/big-mount/cli.sh:910
 msgid "Try again"
 msgstr "Tentar novamente"
 
-#: big-mount/usr/lib/big-mount/cli.sh:903
+#: big-mount/usr/lib/big-mount/cli.sh:910
 msgid "More options…"
 msgstr "Mais opções…"
 
-#: big-mount/usr/lib/big-mount/cli.sh:908
+#: big-mount/usr/lib/big-mount/cli.sh:915
 msgid "Refresh the list"
 msgstr "Atualizar a lista"
 
-#: big-mount/usr/lib/big-mount/cli.sh:908
+#: big-mount/usr/lib/big-mount/cli.sh:915
 msgid "Show technical details"
 msgstr "Mostrar detalhes técnicos"
 
-#: big-mount/usr/lib/big-mount/cli.sh:910
+#: big-mount/usr/lib/big-mount/cli.sh:917
 msgid "Close the listed programs…"
 msgstr "Fechar os programas listados…"
 
-#: big-mount/usr/lib/big-mount/cli.sh:911
+#: big-mount/usr/lib/big-mount/cli.sh:918
 msgid "Show programs of all users (administrator)"
 msgstr "Mostrar programas de todos os usuários (administrador)"
 
-#: big-mount/usr/lib/big-mount/cli.sh:912
+#: big-mount/usr/lib/big-mount/cli.sh:919
 msgid "What do you want to do?"
 msgstr "O que você deseja fazer?"
 
-#: big-mount/usr/lib/big-mount/cli.sh:920
+#: big-mount/usr/lib/big-mount/cli.sh:927
 msgid "Close these programs?"
 msgstr "Fechar estes programas?"
 
-#: big-mount/usr/lib/big-mount/cli.sh:922
+#: big-mount/usr/lib/big-mount/cli.sh:929
 msgid "They will be asked to close, as when you close their windows. Unsaved changes in them may be lost: if possible, close them yourself instead."
 msgstr "Eles receberão um pedido para fechar, como quando você fecha as janelas deles. Alterações não salvas podem ser perdidas: se possível, feche-os você mesmo."
 
-#: big-mount/usr/lib/big-mount/cli.sh:924
+#: big-mount/usr/lib/big-mount/cli.sh:931
 msgid "These will not be closed:"
 msgstr "Estes não serão fechados:"
 
-#: big-mount/usr/lib/big-mount/cli.sh:927
+#: big-mount/usr/lib/big-mount/cli.sh:934
 msgid "Close programs"
 msgstr "Fechar programas"
 
-#: big-mount/usr/lib/big-mount/cli.sh:953
+#: big-mount/usr/lib/big-mount/cli.sh:963
 msgid "Writing pending data to the device. Do not disconnect it yet."
 msgstr "Gravando os dados pendentes no dispositivo. Não o desconecte ainda."
 
-#: big-mount/usr/lib/big-mount/cli.sh:959
+#: big-mount/usr/lib/big-mount/cli.sh:969
 msgid "Safely remove"
 msgstr "Remover com segurança"
 
-#: big-mount/usr/lib/big-mount/cli.sh:959
+#: big-mount/usr/lib/big-mount/cli.sh:969
 msgid "This folder is not on a removable storage device."
 msgstr "Esta pasta não está em um dispositivo de armazenamento removível."
 
-#: big-mount/usr/lib/big-mount/cli.sh:972
-#: big-mount/usr/lib/big-mount/cli.sh:975
-#: big-mount/usr/lib/big-mount/cli.sh:984
+#: big-mount/usr/lib/big-mount/cli.sh:982
+#: big-mount/usr/lib/big-mount/cli.sh:985
+#: big-mount/usr/lib/big-mount/cli.sh:994
 msgid "Safe to disconnect"
 msgstr "Pronto para desconectar"
 
-#: big-mount/usr/lib/big-mount/cli.sh:973
+#: big-mount/usr/lib/big-mount/cli.sh:983
 msgid "Successfully unmounted and powered off. You can disconnect it now."
 msgstr "Desmontado e desligado com sucesso. Você já pode desconectá-lo."
 
-#: big-mount/usr/lib/big-mount/cli.sh:976
+#: big-mount/usr/lib/big-mount/cli.sh:986
 msgid "Successfully unmounted. You can disconnect it now."
 msgstr "Desmontado com sucesso. Você já pode desconectá-lo."
 
-#: big-mount/usr/lib/big-mount/cli.sh:978
+#: big-mount/usr/lib/big-mount/cli.sh:988
 msgid "Device unmounted"
 msgstr "Dispositivo desmontado"
 
-#: big-mount/usr/lib/big-mount/cli.sh:979
+#: big-mount/usr/lib/big-mount/cli.sh:989
 msgid "All pending data was written and its filesystems were unmounted."
 msgstr "Todos os dados pendentes foram gravados e os sistemas de arquivos foram desmontados."
 
-#: big-mount/usr/lib/big-mount/cli.sh:985
+#: big-mount/usr/lib/big-mount/cli.sh:995
 msgid "Successfully unmounted. This drive cannot be powered off by the computer, but you can disconnect it now."
 msgstr "Desmontado com sucesso. Esta unidade não pode ser desligada pelo computador, mas você já pode desconectá-la."
 
-#: big-mount/usr/lib/big-mount/cli.sh:992
-#: big-mount/usr/lib/big-mount/cli.sh:996
+#: big-mount/usr/lib/big-mount/cli.sh:1002
+#: big-mount/usr/lib/big-mount/cli.sh:1006
 msgid "Services use this device"
 msgstr "Serviços usam este dispositivo"
 
-#: big-mount/usr/lib/big-mount/cli.sh:993
+#: big-mount/usr/lib/big-mount/cli.sh:1003
 msgid "Removing it will stop these services:"
 msgstr "Remover o dispositivo vai parar estes serviços:"
 
-#: big-mount/usr/lib/big-mount/cli.sh:996
+#: big-mount/usr/lib/big-mount/cli.sh:1006
 msgid "Stop them and remove"
 msgstr "Parar e remover"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1003
-#: big-mount/usr/lib/big-mount/cli.sh:1018
+#: big-mount/usr/lib/big-mount/cli.sh:1013
+#: big-mount/usr/lib/big-mount/cli.sh:1028
 msgid "Unable to power off device"
 msgstr "Não foi possível desligar o dispositivo"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1004
+#: big-mount/usr/lib/big-mount/cli.sh:1014
 msgid "It was unmounted, but powering it off failed. Wait a moment before disconnecting it."
 msgstr "Ele foi desmontado, mas não foi possível desligá-lo. Aguarde um momento antes de desconectá-lo."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1008
+#: big-mount/usr/lib/big-mount/cli.sh:1018
 msgid "Unable to remove device"
 msgstr "Não foi possível remover o dispositivo"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1009
+#: big-mount/usr/lib/big-mount/cli.sh:1019
 msgid "It holds the operating system that is running now."
 msgstr "Ele contém o sistema operacional que está em execução agora."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1013
 #: big-mount/usr/lib/big-mount/cli.sh:1023
+#: big-mount/usr/lib/big-mount/cli.sh:1033
 msgid "Unable to unmount device"
 msgstr "Não foi possível desmontar o dispositivo"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1014
+#: big-mount/usr/lib/big-mount/cli.sh:1024
 msgid "Permission was not granted. The device remains mounted."
 msgstr "A permissão não foi concedida. O dispositivo continua montado."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1019
+#: big-mount/usr/lib/big-mount/cli.sh:1029
 msgid "Its filesystems were unmounted, but the drive is still in use, so it was not powered off. Do not disconnect it yet."
 msgstr "Os sistemas de arquivos foram desmontados, mas a unidade ainda está em uso, por isso não foi desligada. Não a desconecte ainda."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1024
+#: big-mount/usr/lib/big-mount/cli.sh:1034
 msgid "It remains mounted. Nothing was forced."
 msgstr "Ele continua montado. Nada foi forçado."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1073
+#: big-mount/usr/lib/big-mount/cli.sh:1083
 msgid "Device: %s\\nFilesystem: %s\\nPossible reason: %s"
 msgstr "Dispositivo: %s\\nSistema de arquivos: %s\\nPossível motivo: %s"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1075
+#: big-mount/usr/lib/big-mount/cli.sh:1085
 msgid "View details"
 msgstr "Ver detalhes"
 
-#: big-mount/usr/lib/big-mount/lib.sh:431
+#: big-mount/usr/lib/big-mount/lib.sh:439
 msgid "Dolphin (file manager)"
 msgstr "Dolphin (gerenciador de arquivos)"
 
-#: big-mount/usr/lib/big-mount/lib.sh:434
+#: big-mount/usr/lib/big-mount/lib.sh:442
 msgid "KDE thumbnail generator"
 msgstr "Gerador de miniaturas do KDE"
 
-#: big-mount/usr/lib/big-mount/lib.sh:435
+#: big-mount/usr/lib/big-mount/lib.sh:443
 msgid "KDE trash"
 msgstr "Lixeira do KDE"
 
-#: big-mount/usr/lib/big-mount/lib.sh:436
+#: big-mount/usr/lib/big-mount/lib.sh:444
 msgid "KDE file service (kioworker)"
 msgstr "Serviço de arquivos do KDE (kioworker)"
 
-#: big-mount/usr/lib/big-mount/lib.sh:437
+#: big-mount/usr/lib/big-mount/lib.sh:445
 msgid "KDE file service (%s)"
 msgstr "Serviço de arquivos do KDE (%s)"
 
-#: big-mount/usr/lib/big-mount/lib.sh:440
+#: big-mount/usr/lib/big-mount/lib.sh:448
 msgid "Baloo file indexer"
 msgstr "Indexador de arquivos Baloo"
 
-#: big-mount/usr/lib/big-mount/lib.sh:441
+#: big-mount/usr/lib/big-mount/lib.sh:449
 msgid "File indexer (Tracker)"
 msgstr "Indexador de arquivos (Tracker)"
 
-#: big-mount/usr/lib/big-mount/lib.sh:443
+#: big-mount/usr/lib/big-mount/lib.sh:451
 msgid "Terminal"
 msgstr "Terminal"
 
-#: big-mount/usr/lib/big-mount/lib.sh:445
+#: big-mount/usr/lib/big-mount/lib.sh:453
 msgid "Command shell (terminal)"
 msgstr "Interpretador de comandos (terminal)"
 
-#: big-mount/usr/lib/big-mount/lib.sh:447
+#: big-mount/usr/lib/big-mount/lib.sh:455
 msgid "Media player"
 msgstr "Reprodutor de mídia"
 
-#: big-mount/usr/lib/big-mount/lib.sh:448
+#: big-mount/usr/lib/big-mount/lib.sh:456
 msgid "Thumbnail generator"
 msgstr "Gerador de miniaturas"
 
-#: big-mount/usr/lib/big-mount/lib.sh:449
+#: big-mount/usr/lib/big-mount/lib.sh:457
 msgid "Document viewer"
 msgstr "Visualizador de documentos"
 
-#: big-mount/usr/lib/big-mount/lib.sh:450
+#: big-mount/usr/lib/big-mount/lib.sh:458
 msgid "Image viewer"
 msgstr "Visualizador de imagens"
 
-#: big-mount/usr/lib/big-mount/lib.sh:451
+#: big-mount/usr/lib/big-mount/lib.sh:459
 msgid "Text editor"
 msgstr "Editor de texto"
 
-#: big-mount/usr/lib/big-mount/lib.sh:453
+#: big-mount/usr/lib/big-mount/lib.sh:461
 msgid "Web browser"
 msgstr "Navegador"
 
-#: big-mount/usr/lib/big-mount/lib.sh:454
+#: big-mount/usr/lib/big-mount/lib.sh:462
 msgid "File manager"
 msgstr "Gerenciador de arquivos"
 
-#: big-mount/usr/lib/big-mount/lib.sh:456
+#: big-mount/usr/lib/big-mount/lib.sh:464
 msgid "Copy or archive operation"
 msgstr "Cópia ou compactação de arquivos"
 
-#: big-mount/usr/lib/big-mount/lib.sh:457
+#: big-mount/usr/lib/big-mount/lib.sh:465
 msgid "Synchronization service"
 msgstr "Serviço de sincronização"
 
-#: big-mount/usr/lib/big-mount/lib.sh:458
+#: big-mount/usr/lib/big-mount/lib.sh:466
 msgid "Backup"
 msgstr "Backup"
 
-#: big-mount/usr/lib/big-mount/lib.sh:468
+#: big-mount/usr/lib/big-mount/lib.sh:476
 msgid "Current folder is on the device"
 msgstr "Pasta atual está no dispositivo"
 
-#: big-mount/usr/lib/big-mount/lib.sh:469
+#: big-mount/usr/lib/big-mount/lib.sh:477
 msgid "Root folder (chroot) is on the device"
 msgstr "Usa o dispositivo como pasta raiz (chroot)"
 
-#: big-mount/usr/lib/big-mount/lib.sh:470
+#: big-mount/usr/lib/big-mount/lib.sh:478
 msgid "Program running from the device"
 msgstr "Programa executado a partir do dispositivo"
 
-#: big-mount/usr/lib/big-mount/lib.sh:471
+#: big-mount/usr/lib/big-mount/lib.sh:479
 msgid "File mapped in memory"
 msgstr "Arquivo carregado na memória"
 
-#: big-mount/usr/lib/big-mount/lib.sh:474
+#: big-mount/usr/lib/big-mount/lib.sh:482
 msgid "Open for writing"
 msgstr "Aberto para escrita"
 
-#: big-mount/usr/lib/big-mount/lib.sh:475
+#: big-mount/usr/lib/big-mount/lib.sh:483
 msgid "Open for reading and writing"
 msgstr "Aberto para leitura e escrita"
 
-#: big-mount/usr/lib/big-mount/lib.sh:476
+#: big-mount/usr/lib/big-mount/lib.sh:484
 msgid "Folder open"
 msgstr "Pasta aberta"
 
-#: big-mount/usr/lib/big-mount/lib.sh:476
+#: big-mount/usr/lib/big-mount/lib.sh:484
 msgid "Open for reading"
 msgstr "Aberto para leitura"
 
-#: big-mount/usr/lib/big-mount/lib.sh:585
+#: big-mount/usr/lib/big-mount/lib.sh:593
 msgid "belongs to another user or to the system"
 msgstr "pertence a outro usuário ou ao sistema"
 
-#: big-mount/usr/lib/big-mount/lib.sh:588
+#: big-mount/usr/lib/big-mount/lib.sh:596
 msgid "part of the desktop session"
 msgstr "faz parte da sessão gráfica"
 
-#: big-mount/usr/lib/big-mount/lib.sh:591
+#: big-mount/usr/lib/big-mount/lib.sh:599
 msgid "a terminal: type 'cd' in it or close the tab"
 msgstr "é um terminal: digite 'cd' nele ou feche a aba"
 
-#: big-mount/usr/lib/big-mount/lib.sh:594
+#: big-mount/usr/lib/big-mount/lib.sh:602
 msgid "this tool"
 msgstr "esta ferramenta"
 
-#: big-mount/usr/lib/big-mount/lib.sh:599
+#: big-mount/usr/lib/big-mount/lib.sh:607
 msgid "has a file open for writing: finish or cancel the operation in the application"
 msgstr "tem um arquivo aberto para escrita: conclua ou cancele a operação no aplicativo"
 
-#: big-mount/usr/lib/big-mount/lib.sh:805
+#: big-mount/usr/lib/big-mount/lib.sh:813
 msgid "%s is unmounted here, but %s (PID %s) still has it mounted at %s"
 msgstr "%s foi desmontado aqui, mas %s (PID %s) ainda o mantém montado em %s"
 
-#: big-mount/usr/lib/big-mount/lib.sh:809
+#: big-mount/usr/lib/big-mount/lib.sh:817
 msgid "%s is unmounted, but its filesystem driver is still writing to it"
 msgstr "%s foi desmontado, mas o driver do sistema de arquivos ainda está gravando nele"
 
-#: big-mount/usr/lib/big-mount/lib.sh:835
+#: big-mount/usr/lib/big-mount/lib.sh:843
 msgid "%s is still mounted at %s after being unmounted"
 msgstr "%s continua montado em %s depois de ser desmontado"
 
