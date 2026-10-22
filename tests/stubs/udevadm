@@ -1,0 +1,41 @@
+#!/bin/bash
+# Stub udevadm, driven by $TESTROOT/fake-udev/<name> (KEY=VALUE lines).
+#   udevadm info --query=property /dev/A /dev/B ...
+#   udevadm settle ...
+# Devices without a file look initialized and without special properties.
+# <name>.uninit makes a device look unprocessed until "settle" runs;
+# <name>.uninit-forever keeps it that way. The legacy fake-udisksctl/<name>
+# files are translated (HintIgnore: true -> UDISKS_IGNORE=1).
+: "${TESTROOT:?stub called outside the test harness}"
+dir="$TESTROOT/fake-udev"
+case "${1:-}" in
+    settle)
+        echo "udevadm $*" >> "$TESTROOT/udevadm.log"
+        rm -f "$dir"/*.uninit
+        exit 0
+        ;;
+    info) ;;
+    *) exit 1 ;;
+esac
+echo "udevadm $*" >> "$TESTROOT/udevadm.log"
+# <disk>.swap-diskseq: simulate that disk being replaced during the scan
+for f in "$dir"/*.swap-diskseq; do
+    [ -e "$f" ] || continue
+    d="$(basename "$f" .swap-diskseq)"
+    echo 99 > "$TESTROOT/sys/block/$d/diskseq"
+done
+for a in "$@"; do
+    case "$a" in /dev/*) ;; *) continue ;; esac
+    name="${a##*/}"
+    echo "DEVPATH=/devices/fake/block/$name"
+    echo "DEVNAME=$a"
+    if [ ! -e "$dir/$name.uninit" ] && [ ! -e "$dir/$name.uninit-forever" ]; then
+        echo "USEC_INITIALIZED=12345"
+    fi
+    [ -r "$dir/$name" ] && cat "$dir/$name"
+    legacy="$TESTROOT/fake-udisksctl/$name"
+    if [ -r "$legacy" ] && grep -q 'HintIgnore:.*true' "$legacy"; then
+        echo "UDISKS_IGNORE=1"
+    fi
+done
+exit 0

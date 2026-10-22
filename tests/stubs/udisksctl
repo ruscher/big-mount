@@ -1,4 +1,5 @@
 #!/bin/bash
+: "${TESTROOT:?stub called outside the test harness}"
 # Stub: look up response in $TESTROOT/fake-udisksctl/<devname>
 # Called as: udisksctl info -b /dev/<X>
 dev=""
@@ -8,5 +9,7 @@ for a in "$@"; do
     esac
 done
 f="$TESTROOT/fake-udisksctl/$dev"
-[ -r "$f" ] && cat "$f" || true
+if [ -r "$f" ]; then
+    cat "$f"
+fi
 exit 0
