@@ -4,6 +4,8 @@
 #   MOUNT_FAIL_DEVS="/dev/a /dev/b"   every mount of these devices exits 32
 #   MOUNT_RC_RW="/dev/a=14 ..."       exit code for read-write attempts
 #   MOUNT_RC_RO="/dev/a=13 ..."       exit code for read-only attempts
+#   MOUNT_FALLBACK_RO="/dev/a ..."    read-write requests succeed read-only,
+#                                     as ntfs-3g does for hibernated volumes
 # (ntfs-3g exits 13 inconsistent, 14 hibernated, 15 unclean; see ntfs-3g.probe(8))
 : "${TESTROOT:?stub called outside the test harness}"
 args=("$@")
@@ -42,5 +44,8 @@ for entry in $table; do
     fi
 done
 
+for fb in ${MOUNT_FALLBACK_RO:-}; do
+    [ "$src" = "$fb" ] && mode=ro
+done
 echo "$src $tgt $typ $mode 0 0" >> "$TESTROOT/proc/mounts"
 exit 0

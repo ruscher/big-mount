@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=SC2016,SC2317  # bash -c '...$1' snippets and helpers called through check()
 # Unit test harness for bigmount.
 # Usage: run-tests.sh {old|new}
 # Stubs out blkid, lsblk, udevadm, udisksctl, findmnt, mount, ntfsfix.
@@ -73,7 +74,7 @@ run_script() {
     transform_script "$SCRIPT_SRC" "$tmp" "$root"
     env -i TESTROOT="$root" HOME="$HOME" PATH="$HERE/stubs:/usr/bin:/bin" \
         MOUNT_FAIL_DEVS="${MOUNT_FAIL_DEVS:-}" MOUNT_RC_RW="${MOUNT_RC_RW:-}" \
-        MOUNT_RC_RO="${MOUNT_RC_RO:-}" bash "$tmp" "$@"
+        MOUNT_RC_RO="${MOUNT_RC_RO:-}" MOUNT_FALLBACK_RO="${MOUNT_FALLBACK_RO:-}" bash "$tmp" "$@"
 }
 
 report() {
@@ -568,6 +569,23 @@ test_ntfs_hibernated() {
     ASSERT_MSG="no ntfsfix"; assert_false test -s "$root/ntfsfix.log"
 }
 
+test_ntfs_silent_readonly_fallback() {
+    begin "ntfs-driver-falls-back-to-read-only"
+    local root="$HERE/tmp-ntfs-fallback"
+    simple_case "$root" '/dev/sdb3: LABEL="Windows" UUID="BE02" TYPE="ntfs"' sdb3 sdb sata 0
+    MOUNT_FALLBACK_RO="/dev/sdb3" run_script "$root" >/dev/null 2>&1
+    ASSERT_MSG="single mount call (driver handled it)"; assert_true test "$(grep -c '^mount' "$root/mount.log")" -eq 1
+    ASSERT_MSG="real state recorded: ro ntfs-readonly"; assert_true status_has "$root" "ro	ntfs-readonly"
+}
+
+test_write_protected_fallback() {
+    begin "write-protected-device-read-only-fallback"
+    local root="$HERE/tmp-wp-fallback"
+    simple_case "$root" '/dev/sda1: LABEL="Old" UUID="w" TYPE="ext4"' sda1 sda sata 0
+    MOUNT_FALLBACK_RO="/dev/sda1" run_script "$root" >/dev/null 2>&1
+    ASSERT_MSG="real state recorded: ro readonly-fallback"; assert_true status_has "$root" "ro	readonly-fallback"
+}
+
 test_ntfs_inconsistent_unmountable() {
     begin "ntfs-inconsistent-fails-cleanly"
     local root="$HERE/tmp-ntfs-bad"
@@ -724,6 +742,8 @@ test_fat_regex_bug
 test_exfat_options
 test_generic_filesystems
 test_ntfs_hibernated
+test_ntfs_silent_readonly_fallback
+test_write_protected_fallback
 test_ntfs_inconsistent_unmountable
 test_failed_mount_keeps_existing_dir
 test_dot_labels

@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck disable=SC2016,SC2317  # bash -c '...$1' snippets and helpers called through check()
 # Reproducible benchmark for the boot path of bigmount.
 #
 # Usage: tests/bench.sh SCRIPT [ITERATIONS]
