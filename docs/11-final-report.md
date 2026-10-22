@@ -1,5 +1,15 @@
 # 11 — Final report
 
+## Round 4 (live tests on the real screen, release v2.1.1)
+
+The dialogs and notifications were exercised on the real Plasma desktop of
+the development machine, with disposable devices (see 09). Three wording and
+layout problems seen there were fixed (B20–B22), and `--busy` on a free
+device now says it is not in use. The README shows real screenshots. During
+this round a screenshot safeguard failed once (it captured the user's
+terminal instead of the dialog); those files were deleted unopened, and the
+capture rule now requires class, PID and title to match.
+
 ## Round 3 (installed package, release v2.1.0)
 
 The package built from round 2 was installed on the development machine

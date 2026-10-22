@@ -6,10 +6,10 @@
 | --- | --- | --- |
 | `tests/run-tests.sh new` | stubs for `blkid`, `lsblk`, `udevadm`, `udisksctl`, `findmnt`, `mount`, `ntfsfix`; paths rewritten to a scratch dir | **92 passed, 0 failed** |
 | `tests/run-tests.sh old` | the original script, as a reference | its failures are the bugs that were fixed |
-| `tests/lib-tests.sh` | the library with simulated facts | **100 passed, 0 failed** |
+| `tests/lib-tests.sh` | the library with simulated facts | **102 passed, 0 failed** |
 | `tests/i18n-tests.sh` | the catalog, the generated resources, runtime language selection | **33 passed, 0 failed** |
 | `tests/package-check.sh` | `package()` of the PKGBUILD on the checkout | **41 passed, 0 failed** |
-| `tests/integration.sh` | disposable images as loop devices mounted by UDisks2, no root; GUI flows with scripted clicks; `BM=/usr/bin/bigmount` tests the installed package | **97 passed, 0 failed, 3 skipped** |
+| `tests/integration.sh` | disposable images as loop devices mounted by UDisks2, no root; GUI flows with scripted clicks; `BM=/usr/bin/bigmount` tests the installed package | **98 passed, 0 failed, 3 skipped** |
 | `shellcheck -x` | shipped code, tests, locale scripts | no findings |
 | `bash -n`, `msgfmt --check`, `desktop-file-validate`, `xmllint`, `systemd-analyze verify` | — | pass (part of the suites above) |
 
@@ -147,6 +147,31 @@ lock.
   what found B17 (see 01).
 - Language selection of the installed files (`C`, `en_US`, `pt_BR`,
   `de_DE` → English), and the polkit action registered with its exec path.
+
+## Validated live on the Plasma screen (round 4)
+
+Dialogs were opened by the real `kdialog` on the user's desktop (Breeze,
+dark, pt_BR and English), with disposable devices, and captured. A
+screenshot is taken only after KWin (`kdotool`) confirms three things: the
+active window has class `org.kde.kdialog`, it belongs to the PID that was
+just started, and it has the expected title.
+
+That rule exists because a first attempt identified the window by PID
+alone, and `kdotool search --pid` without a pattern returned an unrelated
+window (the user's terminal). Those captures were deleted without being
+opened.
+
+| Check | Result |
+| --- | --- |
+| diagnosis at 100 %, 150 %, 200 % (`QT_SCALE_FACTOR`) | readable; 200 % needed a scroll bar, fixed (B22) and captured again without one |
+| busy dialog | plain summary first; the wrong "terminal" wording was found here (B20) and fixed |
+| "Close these programs?" | **Cancel** carries the default focus frame: Enter closes nothing |
+| closing a dialog | equals Cancel: the busy device stayed mounted, exit code 3 |
+| safe removal of a free device through `--gui-remove` | unmounted, then "Device unmounted" shown 0.35 s later, 5000 ms, transient |
+| read-only warning from the notifier | shown 2.42 s after the mount, 15000 ms, kept in the history |
+| real disks, read only (`--diagnose`, `--busy`) | the USB SSD is recognized (`usb`, `hotplug=1`) and writable; internal NTFS ok; the contradictory `--busy` wording on a free device was found here (B21) |
+
+The README screenshots are these real captures.
 
 ## Manual validation still needed (needs hardware or a person)
 

@@ -84,7 +84,7 @@ scale 2, light and dark palettes, English and Portuguese). That review made
 the technical name a second line under the friendly name, kept only the PID
 on one line (long text used to be cut off), and removed an empty gap.
 
-![Read-only NTFS diagnosis](images/read-only-ntfs.png)
+![Read-only device diagnosis (real Plasma screenshot)](images/read-only-device.png)
 
 **Not verified on a real Plasma screen:** Breeze theme, 125/150/200 %
 scaling, the Orca screen reader and the Dolphin service menu itself. These
