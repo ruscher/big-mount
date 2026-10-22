@@ -16,7 +16,7 @@ case "${1:-}" in
    --dry-run) DRY_RUN=1 ;;
    *)
       BIGMOUNT_LIB="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/../lib/big-mount"
-      # shellcheck source=../lib/big-mount/cli.sh
+      # shellcheck source-path=SCRIPTDIR source=../lib/big-mount/cli.sh
       . "$BIGMOUNT_LIB/cli.sh" || exit 1
       bm_main "$@"
       exit
@@ -385,8 +385,8 @@ for i in "${CANDIDATES[@]}"; do
    mount_rc=1
    case "$FSTYPE" in
       ntfs)
-         opts="uid=$UserID,gid=$GroupID,rw,noatime,exec,umask=000,nodev,nofail,x-gvfs-show"
-         run mount -t lowntfs-3g -o "$opts" "$DEV" "$MOUNT_POINT"
+         ntfs_opts="uid=$UserID,gid=$GroupID,rw,noatime,exec,umask=000,nodev,nofail,x-gvfs-show"
+         run mount -t lowntfs-3g -o "$ntfs_opts" "$DEV" "$MOUNT_POINT"
          mount_rc=$?
          # ntfs-3g refuses read-write on hibernated (14), inconsistent (13)
          # or uncleanly unmounted (15) volumes. Reading does not change the
@@ -398,7 +398,7 @@ for i in "${CANDIDATES[@]}"; do
          esac
          if [ -n "$note" ]; then
             warn "$DEV: NTFS refused read-write mount ($note), retrying read-only"
-            run mount -t lowntfs-3g -o "${opts/,rw,/,ro,}" "$DEV" "$MOUNT_POINT"
+            run mount -t lowntfs-3g -o "${ntfs_opts/,rw,/,ro,}" "$DEV" "$MOUNT_POINT"
             mount_rc=$?
             state=ro
          fi
@@ -423,10 +423,27 @@ for i in "${CANDIDATES[@]}"; do
       continue
    fi
 
+   mapfile -t MOUNTS < /proc/mounts
+
+   # Record the real state: drivers fall back to read-only on their own
+   # (ntfs-3g for hibernated or unclean volumes, mount(8) for write-protected
+   # devices), and the user deserves to know why
+   if [ -z "$DRY_RUN" ] && [ "$state" = rw ]; then
+      for l in "${MOUNTS[@]}"; do
+         [[ $l == "$DEV $MOUNT_POINT "* ]] || continue
+         read -r _ _ _ mount_opts _ <<< "$l"
+         if [[ ,$mount_opts, == *,ro,* ]]; then
+            state=ro
+            if [ "$FSTYPE" = ntfs ]; then note=ntfs-readonly; else note=readonly-fallback; fi
+            warn "$DEV: the driver mounted $FSTYPE read-only on its own ($note)"
+         fi
+         break
+      done
+   fi
+
    log "$DEV: ${DRY_RUN:+would be }mounted $FSTYPE on $MOUNT_POINT ($state)"
    printf -v line '%s\t%s\t%s\t%s\t%s' "$DEV" "${BK[UUID]:--}" "$MOUNT_POINT" "$state" "${note:--}"
    STATUS+=("$line")
-   mapfile -t MOUNTS < /proc/mounts
 
    # Reverse symlink /mnt/<device> -> mount point, refreshing a stale one
    if [ -n "$LABEL_NAME" ] && [ "$MOUNT_POINT" != "/mnt/$PARTITION" ]; then
