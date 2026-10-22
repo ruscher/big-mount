@@ -640,8 +640,9 @@ test_permissions_private_and_bad_value() {
     run_script "$root" >/dev/null 2>&1
     ASSERT_MSG="private: umask=077"; assert_true mount_log_grep "$root" ",umask=077,"
     simple_case "$root" '/dev/sdb1: LABEL="Win" TYPE="vfat"' sdb1 sdb sata 0
-    printf 'PERMISSIONS=$(touch %s/PWNED)\n' "$root" > "$root/etc/big-mount.conf"
-    run_script "$root" >/dev/null 2>&1
+    printf 'PERMISSIONS=%%s%%n$(touch %s/PWNED)\n' "$root" > "$root/etc/big-mount.conf"
+    local out; out="$(run_script "$root" 2>&1)"
+    ASSERT_MSG="value with printf directives is printed, not interpreted"; assert_true grep -qF "unknown value '%s%n" <<<"$out"
     ASSERT_MSG="invalid value falls back to shared"; assert_true mount_log_grep "$root" ",umask=000,"
     ASSERT_MSG="config is data, never executed"; assert_false test -e "$root/PWNED"
 }

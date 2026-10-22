@@ -27,15 +27,29 @@ if [ -e "/etc/bigmountall-no" ]; then
    exit 0
 fi
 
-# journald turns a leading "<N>" into the syslog priority of the line
+# Messages are translated for a person at a terminal (bigmount --dry-run) and
+# stay in English in the journal, where they are searched for and quoted in
+# bug reports. $"..." is resolved by bash itself: no extra process.
+# journald turns a leading "<N>" into the syslog priority of the line.
+shopt -s noexpand_translation 2>/dev/null
 if [ -t 1 ]; then
    P_WARN="" P_ERR=""
+   export TEXTDOMAIN=big-mount
+   TEXTDOMAINDIR="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/../share/locale"
+   export TEXTDOMAINDIR
 else
    P_WARN="<4>" P_ERR="<3>"
+   # A domain without catalogs: every message stays as written
+   export TEXTDOMAIN=big-mount-journal
 fi
-log()  { printf '%s\n' "$*"; }
-warn() { printf '%s%s\n' "$P_WARN" "$*"; }
-err()  { printf '%s%s\n' "$P_ERR" "$*"; }
+# log|warn|err FORMAT ARGS...: FORMAT is always a constant (translatable)
+# string, data only ever goes in ARGS
+# shellcheck disable=SC2059
+log()  { local f="$1"; shift; printf -- "$f"'\n' "$@"; }
+# shellcheck disable=SC2059
+warn() { local f="$1"; shift; printf -- "$P_WARN$f"'\n' "$@"; }
+# shellcheck disable=SC2059
+err()  { local f="$1"; shift; printf -- "$P_ERR$f"'\n' "$@"; }
 
 # Execute, or only show, a command that changes the system
 run() {
@@ -54,7 +68,7 @@ run() {
 if [ -z "$DRY_RUN" ]; then
    exec 9>/run/lock/big-mount.lock
    if ! flock -w 60 9; then
-      err "another bigmount is still running, giving up"
+      err $"another bigmount is still running, giving up"
       exit 1
    fi
 fi
@@ -99,7 +113,7 @@ if [ -r /etc/big-mount.conf ]; then
          PERMISSIONS=shared) FILE_MASK="umask=000" ;;
          PERMISSIONS=owner) FILE_MASK="dmask=022,fmask=022" ;;
          PERMISSIONS=private) FILE_MASK="umask=077" ;;
-         PERMISSIONS=*) warn "/etc/big-mount.conf: unknown value '${line#*=}', using shared" ;;
+         PERMISSIONS=*) warn $"/etc/big-mount.conf: unknown value '%s', using shared" "${line#*=}" ;;
       esac
    done < /etc/big-mount.conf
 fi
@@ -218,20 +232,20 @@ for i in "${BLKID_LINES[@]}"; do
       "" | swap | squashfs) continue ;;
       # Containers and members: LUKS, LVM, md/fake RAID, ZFS, VMFS, ...
       crypto_* | BitLocker | *_member | bcache | ceph | DM_snapshot_cow | drbd)
-         [ -n "$DRY_RUN" ] && log "$DEV: skipped, ${BK[TYPE]} is not a filesystem"
+         [ -n "$DRY_RUN" ] && log $"%s: skipped, %s is not a filesystem" "$DEV" "${BK[TYPE]}"
          continue
          ;;
    esac
    case "$DEV" in
       /dev/mapper/* | /dev/dm-* | /dev/loop* | /dev/zram* | /dev/ram*)
-         [ -n "$DRY_RUN" ] && log "$DEV: skipped, virtual device"
+         [ -n "$DRY_RUN" ] && log $"%s: skipped, virtual device" "$DEV"
          continue
          ;;
       /dev/?*) ;;
       *) continue ;;
    esac
    if is_mounted_dev "$DEV"; then
-      [ -n "$DRY_RUN" ] && log "$DEV: skipped, already mounted"
+      [ -n "$DRY_RUN" ] && log $"%s: skipped, already mounted" "$DEV"
       continue
    fi
    CANDIDATES+=("$i")
@@ -267,7 +281,7 @@ for d in "${devs[@]}"; do
    [ -n "${UD[$d|USEC_INITIALIZED]:-}" ] || pending+=("$d")
 done
 if [ "${#pending[@]}" -gt 0 ]; then
-   log "waiting for udev to finish processing ${pending[*]}"
+   log $"waiting for udev to finish processing %s" "${pending[*]}"
    udevadm settle --timeout=10 >/dev/null 2>&1
    udev_query "${pending[@]}"
 fi
@@ -317,11 +331,11 @@ for i in "${CANDIDATES[@]}"; do
    FSTYPE="${BK[TYPE]}"
 
    if [ -z "${UD[$DEV|USEC_INITIALIZED]:-}" ]; then
-      warn "$DEV: udev has no information about it yet, not mounting"
+      warn $"%s: udev has no information about it yet, not mounting" "$DEV"
       continue
    fi
    if [ "${UD[$DEV|UDISKS_IGNORE]:-}" = "1" ]; then
-      [ -n "$DRY_RUN" ] && log "$DEV: skipped, hidden by udev/UDisks (UDISKS_IGNORE)"
+      [ -n "$DRY_RUN" ] && log $"%s: skipped, hidden by udev/UDisks (UDISKS_IGNORE)" "$DEV"
       continue
    fi
 
@@ -329,13 +343,13 @@ for i in "${CANDIDATES[@]}"; do
    DISK="$REPLY"
    external_reason "$DEV" "$DISK"
    if [ -n "$REPLY" ]; then
-      log "$DEV: left to UDisks, external device ($REPLY)"
+      log $"%s: left to UDisks, external device (%s)" "$DEV" "$REPLY"
       continue
    fi
 
    # Skip partitions managed by /etc/fstab, even "noauto"
    if findmnt --fstab --source "$DEV" >/dev/null 2>&1; then
-      [ -n "$DRY_RUN" ] && log "$DEV: skipped, listed in /etc/fstab"
+      [ -n "$DRY_RUN" ] && log $"%s: skipped, listed in /etc/fstab" "$DEV"
       continue
    fi
 
@@ -387,7 +401,7 @@ for i in "${CANDIDATES[@]}"; do
    if [ -n "${DISKSEQ[$DISK]:-}" ] && [ -r "/sys/block/$DISK/diskseq" ]; then
       read -r seq_now < "/sys/block/$DISK/diskseq"
       if [ "$seq_now" != "${DISKSEQ[$DISK]}" ]; then
-         warn "$DEV: device changed during the scan, not mounting"
+         warn $"%s: device changed during the scan, not mounting" "$DEV"
          continue
       fi
    fi
@@ -413,7 +427,7 @@ for i in "${CANDIDATES[@]}"; do
             15) note=ntfs-unclean ;;
          esac
          if [ -n "$note" ]; then
-            warn "$DEV: NTFS refused read-write mount ($note), retrying read-only"
+            warn $"%s: NTFS refused read-write mount (%s), retrying read-only" "$DEV" "$note"
             run mount -t lowntfs-3g -o "${ntfs_opts/,rw,/,ro,}" "$DEV" "$MOUNT_POINT"
             mount_rc=$?
             state=ro
@@ -430,7 +444,7 @@ for i in "${CANDIDATES[@]}"; do
    esac
 
    if [ "$mount_rc" -ne 0 ]; then
-      err "$DEV: mount of $FSTYPE on $MOUNT_POINT failed (exit $mount_rc)"
+      err $"%s: mount of %s on %s failed (exit %s)" "$DEV" "$FSTYPE" "$MOUNT_POINT" "$mount_rc"
       printf -v line '%s\t%s\t%s\t%s\t%s' "$DEV" "${BK[UUID]:--}" "$MOUNT_POINT" failed "${note:-mount-exit-$mount_rc}"
       STATUS+=("$line")
       if [ -n "$created_dir" ]; then
@@ -451,13 +465,17 @@ for i in "${CANDIDATES[@]}"; do
          if [[ ,$mount_opts, == *,ro,* ]]; then
             state=ro
             if [ "$FSTYPE" = ntfs ]; then note=ntfs-readonly; else note=readonly-fallback; fi
-            warn "$DEV: the driver mounted $FSTYPE read-only on its own ($note)"
+            warn $"%s: the driver mounted %s read-only on its own (%s)" "$DEV" "$FSTYPE" "$note"
          fi
          break
       done
    fi
 
-   log "$DEV: ${DRY_RUN:+would be }mounted $FSTYPE on $MOUNT_POINT ($state)"
+   if [ -n "$DRY_RUN" ]; then
+      log $"%s: would be mounted %s on %s (%s)" "$DEV" "$FSTYPE" "$MOUNT_POINT" "$state"
+   else
+      log $"%s: mounted %s on %s (%s)" "$DEV" "$FSTYPE" "$MOUNT_POINT" "$state"
+   fi
    printf -v line '%s\t%s\t%s\t%s\t%s' "$DEV" "${BK[UUID]:--}" "$MOUNT_POINT" "$state" "${note:--}"
    STATUS+=("$line")
 
