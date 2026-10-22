@@ -795,7 +795,7 @@ bm_gui_busy_dialog() {
                bm_doc_p $"These will not be closed:"
                for n in "${!KEEP_NAMES[@]}"; do bm_doc_li "${KEEP_NAMES[n]}: ${KEEP_WHY[n]}"; done
             fi
-            if bm_ui_confirm $"Close programs" dialog-warning $"Close them" $"Cancel"; then
+            if bm_ui_confirm_risky $"Close programs" dialog-warning $"Close them" $"Cancel"; then
                bm_close_args
                bm_close_processes "${CLOSE_ARGS[@]}"
                return 0

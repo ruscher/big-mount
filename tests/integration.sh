@@ -273,6 +273,41 @@ check "really unmounted" bash -c '! findmnt -n --source "$1" >/dev/null' _ "$OK_
 check "does not claim a power-off" bash -c '! grep -q "removed safely" <<< "$1"' _ "$BM_OUT"
 check "reports the unmount" has "Unmounted."
 
+begin "drive with two partitions (GPT: ext4 + FAT)"
+img disk.img 80M
+printf 'label: gpt\nstart=2048, size=65536, type=L\nstart=67584, size=65536, type=L\n' | sfdisk -q "$IMG/disk.img"
+img p1.img 32M; mkfs.ext4 -q -F -L BMPART1 -E root_owner="$(id -u):$(id -g)" "$IMG/p1.img"
+img p2.img 32M; mkfs.vfat -n BMPART2 "$IMG/p2.img" >/dev/null
+dd if="$IMG/p1.img" of="$IMG/disk.img" bs=512 seek=2048 conv=notrunc status=none
+dd if="$IMG/p2.img" of="$IMG/disk.img" bs=512 seek=67584 conv=notrunc status=none
+attach "$IMG/disk.img"; DISK="$DEV"
+if mountdev "${DISK}p1" && P1_MP="$MP" && mountdev "${DISK}p2"; then
+    P2_MP="$MP"; echo x > "$P2_MP/f"
+    bg bash -c 'exec 3< "$1/f"; exec sleep 300' _ "$P2_MP"; P_P2=$LASTPID; sleep 0.5
+    BM_OUT="$("$BM" --safe-remove "$P1_MP" 2>&1)"; BM_RC=$?
+    check "one busy partition -> the whole removal stops (exit 3)" test "$BM_RC" -eq 3
+    check "the busy partition stays mounted" mounted "${DISK}p2"
+    check "no success message" bash -c '! grep -qE "Unmounted|removed safely" <<< "$1"' _ "$BM_OUT"
+    check "names the program on the busy partition" has "$P_P2"
+    kill "$P_P2" 2>/dev/null; sleep 0.5
+    BM_OUT="$("$BM" --safe-remove "$P1_MP" 2>&1)"; BM_RC=$?
+    check "released -> both partitions unmounted (exit 0)" test "$BM_RC" -eq 0
+    check "partition 1 unmounted" bash -c '! findmnt -n --source "$1" >/dev/null' _ "${DISK}p1"
+    check "partition 2 unmounted" bash -c '! findmnt -n --source "$1" >/dev/null' _ "${DISK}p2"
+else
+    skip "two partitions" "the kernel did not expose the loop partitions"
+fi
+
+begin "a device that disappears"
+img gone.img 32M; mkfs.ext4 -q -F -L BMGONE "$IMG/gone.img"
+attach "$IMG/gone.img"; GONE="$DEV"
+udisksctl loop-delete --no-user-interaction -b "$GONE" >/dev/null 2>&1; udevadm settle
+BM_OUT="$("$BM" --diagnose "$GONE" 2>&1)"; BM_RC=$?
+check "diagnosis of a vanished device fails cleanly (exit 1, message)" bash -c '[ "$1" -eq 1 ] && [ -n "$2" ] && ! grep -qiE "unbound|syntax|command not found" <<< "$2"' _ "$BM_RC" "$BM_OUT"
+BM_OUT="$("$BM" --safe-remove "$GONE" 2>&1)"; BM_RC=$?
+check "removal of a vanished device does not claim success" bash -c '[ "$1" -ne 0 ] && ! grep -qE "Unmounted|removed safely" <<< "$2"' _ "$BM_RC" "$BM_OUT"
+skip "encrypted (LUKS) drive" "no dm-crypt in this kernel; lock-before-power-off is covered by tests/lib-tests.sh"
+
 begin "the running system is never unmounted"
 BM_OUT="$("$BM" --safe-remove / 2>&1)"; BM_RC=$?
 check "--safe-remove / refused (exit 4)" test "$BM_RC" -eq 4
@@ -318,17 +353,27 @@ img gui.img; mkfs.ext4 -q -F -L BMGUI -E root_owner="$(id -u):$(id -g)" "$IMG/gu
 attach "$IMG/gui.img" && mountdev "$DEV"
 GUI_DEV="$DEV" GUI_MP="$MP"; echo x > "$GUI_MP/f"
 bg bash -c 'exec 3< "$1/f"; exec sleep 300' _ "$GUI_MP"; P_GUI=$LASTPID; sleep 0.5
-gui "1" "0 close" "0" -- --gui-remove "$GUI_MP/f"
+gui "1" "0 close" "1" -- --gui-remove "$GUI_MP/f"
 check "flow ends successfully (exit 0)" test "$GUI_RC" -eq 0
 check "busy dialog shown with the holder's PID" kd_has "$P_GUI"
 check "busy dialog title names the device" kd_has "BMGUI is still in use"
 check "plain-language summary first" kd_has "Close that program, then try again."
 check "confirmation listed the program before closing it" bash -c 'grep -F -- "--warningyesno" "$1" | grep -qF "PID $2"' _ "$BIN/kd.log" "$P_GUI"
+check "the safe answer (Cancel) is the default button" kd_has "--yes-label Cancel --no-label Close them"
 check "the reader was closed" bash -c '! kill -0 "$1" 2>/dev/null' _ "$P_GUI"
 check "really unmounted" bash -c '! findmnt -n --source "$1" >/dev/null' _ "$GUI_DEV"
 check "notification only after success" grep -q "Device unmounted" "$BIN/notify.log"
 check "information popup is transient and lasts 5 s" grep -q -- "--expire-time 5000 .*--transient" "$BIN/notify.log"
 check "no power-off claimed for a loop device" bash -c '! grep -q "removed safely" "$1"' _ "$BIN/notify.log"
+
+begin "GUI remove: an accidental Enter in the close confirmation closes nothing"
+mountdev "$GUI_DEV"; GUI_MP="$MP"
+bg bash -c 'exec 3< "$1/f"; exec sleep 300' _ "$GUI_MP"; P_GUI=$LASTPID; sleep 0.5
+gui "1" "0 close" "0" -- --gui-remove "$GUI_MP"
+check "Enter (default button) keeps the program running" kill -0 "$P_GUI"
+check "still mounted" mounted "$GUI_DEV"
+kill "$P_GUI" 2>/dev/null; sleep 0.3
+udisksctl unmount --no-user-interaction -b "$GUI_DEV" >/dev/null 2>&1
 
 begin "GUI remove: busy -> Cancel keeps everything as it was"
 mountdev "$GUI_DEV"; GUI_MP="$MP"

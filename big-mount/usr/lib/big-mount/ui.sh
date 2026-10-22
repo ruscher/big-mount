@@ -40,11 +40,13 @@ bm_doc_pre() { DOC_KIND+=(pre) DOC_TEXT+=("$1"); }
 
 # Pango and Qt rich text need the same escaping
 bm_doc_render_markup() {
-   local mode="$1" i kind text out="" in_list=0 in_table=0 cell cells k v
+   local mode="$1" i kind text out="" in_list=0 in_table=0 in_kv=0 cell cells k v
    for i in "${!DOC_KIND[@]}"; do
       kind="${DOC_KIND[i]}"
       text="${DOC_TEXT[i]}"
       if [ "$mode" = html ]; then
+         # Consecutive key/value lines form one paragraph (no empty gap)
+         if [ "$in_kv" -eq 1 ] && [ "$kind" != kv ]; then out+="</p>"; in_kv=0; fi
          if [ "$in_list" -eq 1 ] && [ "$kind" != li ]; then out+="</ul>"; in_list=0; fi
          if [ "$in_table" -eq 1 ] && [ "$kind" != tr ] && [ "$kind" != th ]; then out+="</table>"; in_table=0; fi
       fi
@@ -60,7 +62,12 @@ bm_doc_render_markup() {
          kv)
             bm_html "${text%%$'\t'*}"; k="$REPLY"
             bm_html "${text#*$'\t'}"; v="$REPLY"
-            if [ "$mode" = html ]; then out+="<b>$k:</b> $v<br>"; else out+="<b>$k:</b> $v"$'\n'; fi
+            if [ "$mode" = html ]; then
+               if [ "$in_kv" -eq 0 ]; then out+="<p>"; in_kv=1; else out+="<br>"; fi
+               out+="<b>$k:</b> $v"
+            else
+               out+="<b>$k:</b> $v"$'\n'
+            fi
             ;;
          li)
             bm_html "$text"
@@ -106,6 +113,7 @@ bm_doc_render_markup() {
       esac
    done
    if [ "$mode" = html ]; then
+      [ "$in_kv" -eq 1 ] && out+="</p>"
       [ "$in_list" -eq 1 ] && out+="</ul>"
       [ "$in_table" -eq 1 ] && out+="</table>"
       REPLY="<html>$out</html>"
@@ -220,6 +228,30 @@ bm_ui_confirm() {
          printf '%s [%s/%s] ' "$yes?" "y" "N"
          read -r ans || return 1
          [[ $ans == [yYsS]* ]]
+         ;;
+   esac
+}
+
+# bm_ui_confirm_risky TITLE ICON YES NO: like bm_ui_confirm, but for a
+# choice that can lose data: the safe answer is the default button, so an
+# accidental Enter never confirms it
+bm_ui_confirm_risky() {
+   local title="$1" icon="$2" yes="$3" no="$4" ans
+   case "$BM_UI" in
+      kdialog)
+         bm_doc_render_markup html
+         # The first (default) button is the safe one; rc 1 is "yes"
+         kdialog --title "$title" ${icon:+--icon "$icon"} --warningyesno "$REPLY" \
+            --yes-label "$no" --no-label "$yes" >/dev/null 2>&1
+         [ "$?" -eq 1 ]
+         ;;
+      zenity)
+         bm_doc_render_markup pango
+         zenity --question --default-cancel --title "$title" ${icon:+--icon "$icon"} --width 520 \
+            --text "$REPLY" --ok-label "$yes" --cancel-label "$no" >/dev/null 2>&1
+         ;;
+      *)
+         bm_ui_confirm "$@"
          ;;
    esac
 }

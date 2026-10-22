@@ -24,7 +24,7 @@ trap 'rm -rf -- "$tmp"' EXIT
 
 xgettext --no-wrap --from-code=UTF-8 -L Desktop -k -kName -kGenericName -kComment -kKeywords -kX-KDE-Submenu \
     -o "$tmp/desktop.pot" locale/templates/*.desktop.in
-xgettext --no-wrap --from-code=UTF-8 --its=/usr/share/gettext/its/polkit.its \
+xgettext --no-wrap --from-code=UTF-8 --its=locale/its/polkit.its \
     -o "$tmp/polkit.pot" locale/templates/*.policy.in
 
 msgcat --no-wrap --use-first -o "$pot" "$tmp/shell.pot" "$tmp/desktop.pot" "$tmp/polkit.pot"

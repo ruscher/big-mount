@@ -27,5 +27,7 @@ desktop big-mount-servicemenu.desktop.in usr/share/kio/servicemenus/big-mount.de
 # msgfmt writes BCP 47 tags (pt-BR); polkit matches POSIX locale names
 # (pt_BR, then pt), which is also what the policy always used
 policy="$dest/usr/share/polkit-1/actions/org.biglinux.big-mount.policy"
-msgfmt --xml --template locale/templates/org.biglinux.big-mount.policy.in -d locale -o "$policy"
+# locale/its holds the polkit ITS rules, for systems without polkit (CI)
+GETTEXTDATADIRS="$PWD/locale${GETTEXTDATADIRS:+:$GETTEXTDATADIRS}" \
+    msgfmt --xml --template locale/templates/org.biglinux.big-mount.policy.in -d locale -o "$policy"
 sed -i -E 's/xml:lang="([a-z]{2,3})-([A-Z]{2})"/xml:lang="\1_\2"/g' "$policy"
