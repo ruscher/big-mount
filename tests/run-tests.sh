@@ -1,5 +1,5 @@
 #!/bin/bash
-# shellcheck disable=SC2016,SC2317  # bash -c '...$1' snippets and helpers called through check()
+# shellcheck disable=SC2016,SC2317,SC2329  # bash -c '...$1' snippets and helpers called through check()
 # Unit test harness for bigmount.
 # Usage: run-tests.sh {old|new}
 # Stubs out blkid, lsblk, udevadm, udisksctl, findmnt, mount, ntfsfix.

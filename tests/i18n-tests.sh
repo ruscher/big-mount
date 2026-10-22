@@ -1,5 +1,5 @@
 #!/bin/bash
-# shellcheck disable=SC2016,SC2317  # bash -c '...$1' snippets and helpers called through check()
+# shellcheck disable=SC2016,SC2317,SC2329  # bash -c '...$1' snippets and helpers called through check()
 # Internationalization tests: the catalog is complete and up to date, the
 # generated resources match their templates, messages keep their printf
 # placeholders, and the scripts pick the right language at run time

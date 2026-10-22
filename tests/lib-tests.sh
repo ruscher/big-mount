@@ -1,5 +1,5 @@
 #!/bin/bash
-# shellcheck disable=SC2016,SC2317  # bash -c '...$1' snippets and helpers called through check()
+# shellcheck disable=SC2016,SC2317,SC2329  # bash -c '...$1' snippets and helpers called through check()
 # Unit tests for /usr/lib/big-mount (diagnosis decisions, process policy,
 # escaping, parsing). System facts are replaced by shell functions that
 # shadow the real helpers, so nothing on the machine is read or changed,
