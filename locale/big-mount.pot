@@ -1,0 +1,848 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: big-mount\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: big-mount/usr/lib/big-mount/cli.sh:17
+msgid "Usage: bigmount [OPTION] [DEVICE|FOLDER]"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:20
+msgid "(none)"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:20
+msgid "mount internal partitions (run at boot by big-mount.service)"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:21
+msgid "show what would be mounted, change nothing"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:22
+msgid "storage overview, or details of one device"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:23
+msgid "show what keeps a device busy"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:24
+msgid "unmount one filesystem safely"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:25
+msgid "unmount every filesystem of the drive and power it off"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:26
+msgid "offer to close the programs that keep it busy"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:27
+msgid "do not ask before closing them (scripts)"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:28
+msgid "graphical diagnosis"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:29
+msgid "graphical safe removal"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:30
+msgid "session service: warn about read-only devices"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:31
+msgid "show this help"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:32
+msgid "TARGET is a device (/dev/sdb1) or any folder inside a mounted device."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:55 big-mount/usr/lib/big-mount/cli.sh:518
+msgid "bigmount: unknown option '%s' (see bigmount --help)"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:69
+msgid "Device ready"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:70
+msgid "You can read and write files on this device."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:73
+msgid "Device not mounted"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:74
+msgid "The filesystem is not mounted at the moment."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:75
+msgid "Open the device in the file manager (Dolphin) to mount it."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:78 big-mount/usr/lib/big-mount/cli.sh:84
+#: big-mount/usr/lib/big-mount/cli.sh:91 big-mount/usr/lib/big-mount/cli.sh:113
+msgid "Device mounted read-only"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:79
+msgid "The device itself is write-protected, so no system can write to it."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:80
+msgid "SD cards and some USB drives have a small lock switch on the side. Remove the device, move the switch to the unlocked position and connect it again."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:81
+msgid "If there is no switch, the device may have locked itself because of wear. Copy your files to another place as soon as possible."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:85
+msgid "This kind of filesystem cannot be written on Linux with the driver in use."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:86
+msgid "CDs, DVDs and disk images (ISO, SquashFS) are read-only by nature."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:87
+msgid "Drives formatted on a Mac (HFS+ with journaling, APFS) can only be read on Linux."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:88
+msgid "To write to it, copy the files elsewhere and format the device with a filesystem such as exFAT. Formatting erases everything on it."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:92
+msgid "Windows did not close this NTFS partition properly (hibernation, Fast Startup or an interrupted shutdown). Writing to it now could damage files."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:93
+msgid "Start Windows and shut it down completely: hold the Shift key while you click Shut down."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:94
+msgid "To avoid this in the future, disable Fast Startup in Windows: Control Panel > Power Options > Choose what the power buttons do."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:95
+msgid "If it still happens, check the partition in Windows: open the Command Prompt as administrator and run chkdsk with the /f option for that drive letter."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:96
+msgid "Big-Mount never repairs NTFS by itself, because the repair tools available on Linux may discard data that Windows still needs."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:99
+msgid "Filesystem error"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:100
+msgid "The system found errors in the filesystem and stopped writing to it to protect your files."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:101
+msgid "First copy your important files to another place."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:102
+msgid "Then check the filesystem with the device unmounted, for example with KDE Partition Manager (Check)."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:103
+msgid "Do not write to the device until it has been checked."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:106
+msgid "Device with read or write errors"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:107
+msgid "The device reported read or write errors. This is usually a bad cable, a weak USB port or a failing drive."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:108
+msgid "Copy your important files to another place as soon as possible."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:109
+msgid "Try another cable and connect the device directly to the computer, without a hub."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:110
+msgid "Check the health of the drive in KDE Partition Manager (SMART status)."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:114
+msgid "The filesystem was mounted read-only, but no problem was found with it."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:115
+msgid "Mount it again with writing enabled."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:116
+msgid "Mount again with writing"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:117
+msgid "The device will be unmounted and mounted again with writing enabled. Nothing on it is changed. Programs using it must be closed first."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:120
+#: big-mount/usr/lib/big-mount/cli.sh:128
+#: big-mount/usr/lib/big-mount/cli.sh:133
+msgid "No permission to write"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:121
+msgid "The device accepts writing, but its main folder belongs to another user and you are not allowed to change it."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:122
+msgid "You can become the owner of the main folder. Only that folder changes: the files and folders inside it keep their owners."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:123
+msgid "This is the usual fix for drives formatted with a Linux filesystem (ext4, Btrfs, XFS)."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:124
+msgid "Become owner of the main folder"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:125
+msgid "The main folder of the device will belong to you (not recursive: the files and folders inside keep their owners). The administrator password may be requested."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:129
+msgid "This partition contains an operating system. Its folders belong to that system and must keep their owners."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:130
+msgid "Save your files in a folder that belongs to you, for example your home folder on that system."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:134
+msgid "The device was mounted for another user, so only that user can write to it."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:135
+msgid "Unmount it and open it again from the file manager while you are logged in."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:136
+msgid "Mount again for my user"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:137
+msgid "The device will be unmounted and mounted again for your user. Nothing on it is changed. Programs using it must be closed first."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:140
+msgid "Unknown state"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:141
+msgid "The state of this device could not be determined."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:150
+msgid "unknown"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:181
+msgid "system"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:186
+msgid "other"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:197
+#: big-mount/usr/lib/big-mount/cli.sh:363
+msgid "Device"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:198
+msgid "Path"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:199
+#: big-mount/usr/lib/big-mount/cli.sh:364
+msgid "Filesystem"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:202
+#: big-mount/usr/lib/big-mount/cli.sh:365
+msgid "Mounted at"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:204
+msgid "Read and write"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:205
+msgid "Writable, but not by your user"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:206
+msgid "Read-only"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:208
+#: big-mount/usr/lib/big-mount/cli.sh:210
+msgid "Status"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:210
+msgid "Not mounted"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:214
+msgid "How to solve:"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:218
+msgid "Attention: the filesystem has recorded errors. Copy important files elsewhere and check it soon."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:251
+#: big-mount/usr/lib/big-mount/cli.sh:413
+#: big-mount/usr/lib/big-mount/cli.sh:522
+msgid "bigmount: '%s' is not a local storage device or a folder on one"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:252
+msgid "bigmount: cannot read information about %s"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:256
+msgid "Technical details:"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:269
+msgid "Storage devices"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:271
+msgid "DEVICE"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:271
+msgid "LABEL"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:271
+msgid "SIZE"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:271
+msgid "FS"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:271
+msgid "MANAGED BY"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:271
+msgid "MOUNTED AT"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:271
+msgid "STATE"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:281
+msgid "not mounted"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:283
+msgid "in use by the system"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:285
+msgid "READ-ONLY"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:287
+msgid "read and write"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:289
+msgid "no write permission"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:294
+msgid "To find out why a device cannot be written to, run: bigmount --diagnose DEVICE"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:296
+msgid "Environment"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:299
+msgid "present: automount disabled"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:300
+msgid "available"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:300
+msgid "not available"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:303
+msgid "installed"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:303
+msgid "missing"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:305
+msgid "readable"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:305
+msgid "not readable (fewer details for errors)"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:306
+msgid "kernel log"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:342
+msgid "Also mounted at %s"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:343
+msgid "Another device is mounted inside it: %s"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:344
+msgid "A swap file on it is in use: %s"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:345
+msgid "It is in use as swap space"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:346
+msgid "A disk image stored on it is attached: %s"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:347
+msgid "It is used by %s (encryption, LVM or RAID)"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:360
+msgid "In use"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:362
+msgid "This device is still in use"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:368
+msgid "Programs using it:"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:370
+#: big-mount/usr/lib/big-mount/cli.sh:372
+msgid "Application"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:370
+#: big-mount/usr/lib/big-mount/cli.sh:372
+msgid "process"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:370
+msgid "User"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:370
+#: big-mount/usr/lib/big-mount/cli.sh:372
+msgid "Activity"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:388
+msgid "Also keeping it busy:"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:393
+msgid "None of your programs is using it. A system service or a program of another user may be holding it, or it was released a moment ago."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:395
+msgid "Close the programs listed, or leave the device's folders in them, then try again. An open file does not necessarily mean that something is being copied."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:435
+msgid "device not found"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:529
+msgid "Device removed safely. It can be disconnected now."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:531
+msgid "Unmounted. Everything was written to the device."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:543
+msgid "These programs can be asked to close (unsaved changes in them may be lost):"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:547
+#: big-mount/usr/lib/big-mount/cli.sh:709
+msgid "Close them"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:547
+#: big-mount/usr/lib/big-mount/cli.sh:644
+#: big-mount/usr/lib/big-mount/cli.sh:685
+#: big-mount/usr/lib/big-mount/cli.sh:709
+msgid "Cancel"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:550
+msgid "Still running: %s"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:552
+msgid "Refused: this drive holds the running system (%s)."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:553
+msgid "Permission to unmount was not granted."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:554
+msgid "Unmounted, but the drive is still in use (%s), so it was not powered off."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:555
+msgid "Unmounted. This drive cannot be powered off by the computer; it can be disconnected now."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:556
+msgid "Could not unmount: %s"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:577
+msgid "No storage device to diagnose was found."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:578
+#: big-mount/usr/lib/big-mount/cli.sh:581
+#: big-mount/usr/lib/big-mount/cli.sh:593
+msgid "Storage diagnostics"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:581
+msgid "Choose a device:"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:592
+msgid "This folder is not on a local storage device."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:604
+#: big-mount/usr/lib/big-mount/cli.sh:606
+#: big-mount/usr/lib/big-mount/cli.sh:608
+#: big-mount/usr/lib/big-mount/cli.sh:617
+#: big-mount/usr/lib/big-mount/cli.sh:698
+msgid "Technical details"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:604
+#: big-mount/usr/lib/big-mount/cli.sh:606
+#: big-mount/usr/lib/big-mount/cli.sh:608
+msgid "Close"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:606
+msgid "Safely remove…"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:631
+#: big-mount/usr/lib/big-mount/cli.sh:830
+msgid "How to solve"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:664
+msgid "Done"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:665
+msgid "You can now write to this device."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:668
+msgid "It was not possible to fix it"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:669
+msgid "Nothing was changed on the device. See the technical details for more information."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:685
+#: big-mount/usr/lib/big-mount/cli.sh:694
+msgid "Device in use"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:685
+msgid "Try again"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:685
+msgid "More options…"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:690
+msgid "Refresh the list"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:690
+msgid "Show technical details"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:692
+msgid "Close the listed programs…"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:693
+msgid "Show programs of all users (administrator)"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:694
+msgid "What do you want to do?"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:702
+msgid "Close these programs?"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:704
+msgid "They will be asked to close, as when you close their windows. Unsaved changes in them may be lost: if possible, close them yourself instead."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:706
+msgid "These will not be closed:"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:709
+msgid "Close programs"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:734
+msgid "This folder is not on a removable storage device."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:735
+#: big-mount/usr/lib/big-mount/cli.sh:765
+#: big-mount/usr/lib/big-mount/cli.sh:771
+#: big-mount/usr/lib/big-mount/cli.sh:778
+#: big-mount/usr/lib/big-mount/cli.sh:785
+msgid "Safely remove"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:747
+msgid "Device removed safely"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:748
+msgid "All pending data was written. The device can be disconnected now."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:750
+#: big-mount/usr/lib/big-mount/cli.sh:756
+msgid "Device unmounted"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:751
+msgid "All pending data was written and its filesystems were unmounted."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:757
+msgid "All pending data was written. This drive cannot be powered off by the computer, but it can be disconnected now."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:762
+msgid "This device cannot be removed"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:763
+msgid "It holds the operating system that is running now."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:769
+msgid "Permission not granted"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:770
+msgid "The device was not unmounted because the authorization was refused or cancelled. It remains mounted."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:775
+msgid "Device still in use"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:776
+msgid "The filesystems were unmounted, but the drive is still in use, so it was not powered off. Lock encrypted volumes in the file manager first."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:782
+msgid "The device could not be unmounted"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:783
+msgid "It remains mounted. Nothing was forced."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:828
+msgid "Device: %s\\nFilesystem: %s\\nPossible reason: %s"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:830
+msgid "View details"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/lib.sh:396
+msgid "Dolphin (file manager)"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/lib.sh:399
+msgid "KDE thumbnail generator"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/lib.sh:400
+msgid "KDE trash"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/lib.sh:401
+msgid "KDE file service (kioworker)"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/lib.sh:402
+msgid "KDE file service (%s)"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/lib.sh:405
+msgid "Baloo file indexer"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/lib.sh:406
+msgid "File indexer (Tracker)"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/lib.sh:408
+msgid "Terminal"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/lib.sh:410
+msgid "Command shell (terminal)"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/lib.sh:412
+msgid "Media player"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/lib.sh:413
+msgid "Thumbnail generator"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/lib.sh:414
+msgid "Document viewer"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/lib.sh:415
+msgid "Image viewer"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/lib.sh:416
+msgid "Text editor"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/lib.sh:418
+msgid "Web browser"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/lib.sh:419
+msgid "File manager"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/lib.sh:421
+msgid "Copy or archive operation"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/lib.sh:422
+msgid "Synchronization service"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/lib.sh:423
+msgid "Backup"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/lib.sh:433
+msgid "Current folder is on the device"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/lib.sh:434
+msgid "Root folder (chroot) is on the device"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/lib.sh:435
+msgid "Program running from the device"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/lib.sh:436
+msgid "File mapped in memory"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/lib.sh:439
+msgid "Open for writing"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/lib.sh:440
+msgid "Open for reading and writing"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/lib.sh:441
+msgid "Folder open"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/lib.sh:441
+msgid "Open for reading"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/lib.sh:546
+msgid "belongs to another user or to the system"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/lib.sh:549
+msgid "part of the desktop session"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/lib.sh:552
+msgid "a terminal: type 'cd' in it or close the tab"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/lib.sh:555
+msgid "this tool"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/lib.sh:560
+msgid "has a file open for writing: finish or cancel the operation in the application"
+msgstr ""
