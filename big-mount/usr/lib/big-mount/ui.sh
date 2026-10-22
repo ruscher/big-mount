@@ -40,10 +40,18 @@ bm_doc_pre() { DOC_KIND+=(pre) DOC_TEXT+=("$1"); }
 
 # Pango and Qt rich text need the same escaping
 bm_doc_render_markup() {
-   local mode="$1" i kind text out="" in_list=0 in_table=0 in_kv=0 cell cells k v
+   local mode="$1" i kind text out="" in_list=0 in_table=0 in_kv=0 cell cells k v prev=""
    for i in "${!DOC_KIND[@]}"; do
       kind="${DOC_KIND[i]}"
       text="${DOC_TEXT[i]}"
+      # Pango: a group of lines (key/value, list, table) ends with an empty line
+      if [ "$mode" != html ] && [ -n "$prev" ]; then
+         case "$prev" in
+            kv | li | pre) [ "$kind" != "$prev" ] && out+=$'\n' ;;
+            th | tr) [ "$kind" != th ] && [ "$kind" != tr ] && out+=$'\n' ;;
+         esac
+      fi
+      prev="$kind"
       if [ "$mode" = html ]; then
          # Consecutive key/value lines form one paragraph (no empty gap)
          if [ "$in_kv" -eq 1 ] && [ "$kind" != kv ]; then out+="</p>"; in_kv=0; fi
@@ -118,7 +126,8 @@ bm_doc_render_markup() {
       [ "$in_table" -eq 1 ] && out+="</table>"
       REPLY="<html>$out</html>"
    else
-      REPLY="${out%$'\n'}"
+      while [[ $out == *$'\n' ]]; do out="${out%$'\n'}"; done
+      REPLY="$out"
    fi
 }
 

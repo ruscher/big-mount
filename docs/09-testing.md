@@ -6,16 +6,17 @@
 | --- | --- | --- |
 | `tests/run-tests.sh new` | stubs for `blkid`, `lsblk`, `udevadm`, `udisksctl`, `findmnt`, `mount`, `ntfsfix`; paths rewritten to a scratch dir | **92 passed, 0 failed** |
 | `tests/run-tests.sh old` | the original script, as a reference | its failures are the bugs that were fixed |
-| `tests/lib-tests.sh` | the library with simulated facts | **135 passed, 0 failed** |
+| `tests/lib-tests.sh` | the library with simulated facts | **136 passed, 0 failed** |
 | `tests/i18n-tests.sh` | the catalog, the generated resources, runtime language selection | **33 passed, 0 failed** |
 | `tests/package-check.sh` | `package()` of the PKGBUILD on the checkout | **41 passed, 0 failed** |
-| `tests/integration.sh` | disposable images as loop devices mounted by UDisks2, no root; GUI flows with scripted clicks; `BM=/usr/bin/bigmount` tests the installed package | **110 passed, 0 failed, 2 skipped** |
+| `tests/integration.sh` | disposable images as loop devices mounted by UDisks2, no root; GUI flows with scripted clicks; `BM=/usr/bin/bigmount` tests the installed package | **119 passed, 0 failed, 1 skipped** |
 | `shellcheck -x` | shipped code, tests, locale scripts | no findings |
 | `bash -n`, `msgfmt --check`, `desktop-file-validate`, `xmllint`, `systemd-analyze verify` | — | pass (part of the suites above) |
 
-Skipped in the integration suite, because this kernel lacks the module:
-LUKS (no dm-crypt target). ISO 9660/SquashFS, skipped in earlier rounds,
-now run.
+Skipped in the integration suite: the nested-mount case, which needs root
+to create (covered by the unit suite). LUKS runs when `dm_crypt` is loaded
+(`sudo modprobe dm_crypt` on a kernel that does not load it by itself).
+ISO 9660/SquashFS, skipped in earlier rounds, now run.
 
 Double and nested mounts need root to create, so they are covered by the
 unit suite instead.
@@ -192,19 +193,29 @@ A root-made namespace and an unprivileged one behave the same here: a plain
 copy of the mount vanishes with the unmount on the host, and a bind mount
 made inside the namespace survives it (kernel 7.2.11).
 
+## Validated with v2.1.2 installed (round 6)
+
+| Item | How | Result |
+| --- | --- | --- |
+| USB SSD connected during boot | boot of round 5 | mounted by UDisks under `/run/media`, absent from the status file and from `/mnt` |
+| Dolphin menu | `KFileItemActions` probe (Dolphin's code path) + KIO launch | correct entries in pt_BR/en, folders only; both actions launch, and the removal completes after "Try again" |
+| Accessibility (what Orca reads) | AT-SPI tree of every dialog, buttons pressed through AT-SPI | titles, plain text and named buttons; default focus on the safe button; Cancel focused in "Close these programs?" |
+| Breeze Light, 125 % | temporary `XDG_CONFIG_HOME`, `QT_SCALE_FACTOR=1.25` | readable, no scroll bar |
+| X11 | XWayland client | same layout and accessibility |
+| GNOME edition (Zenity 4.2) | `BM_UI=zenity` | diagnosis, busy dialog, options list and "Close these programs?" (Cancel focused; Cancel closes nothing, nothing unmounted); spacing fixed (B34) |
+| LUKS | real encrypted loop drive formatted through UDisks | B30 found and fixed |
+| administrator helper | run as root through sudo against a device held by a root process | lists the holder; refuses `/`, `/home`, `/boot/efi` (B33) |
+| notifier after an upgrade | replaced the running v2.1.1 notifier | B31 found and fixed |
+
 ## Manual validation still needed (needs hardware or a person)
 
-1. (done in round 5) Install the package, reboot:
-   `systemd-analyze blame | grep big-mount`, `journalctl -b -u big-mount`.
-2. A USB HDD/SSD connected **during boot** must appear in Dolphin,
-   mounted by UDisks, not under `/mnt`.
-3. Dual boot with Windows Fast Startup: one notification after login;
-   Windows no longer runs chkdsk on every boot.
-4. Dolphin: right-click → Storage device → Safely remove, with the stick's
-   folder open in Dolphin's terminal panel.
-5. Appearance in Breeze light/dark, at 125 %, 150 % and 200 %, with Orca.
-6. Power-off of a real USB HDD (a USB SSD was validated in round 5).
-7. An encrypted USB drive (LUKS) on a kernel with dm-crypt.
-8. "Show programs of all users" (pkexec) and "Become owner" (polkit).
-9. GNOME edition (Zenity) and an X11 session.
-10. Several users logged in: each session only sees its own processes.
+1. Windows Fast Startup: enable it in Windows, shut Windows down, start
+   BigLinux. `/mnt/Basic_data_partition` must come up read-only, with one
+   notification after login. (On this machine `hiberfil.sys` currently has
+   no hibernation image, so the partition is mounted read-write.)
+2. Hearing Orca read the dialogs (the AT-SPI tree it uses was checked).
+3. The physical right-click in Dolphin (its code path was checked).
+4. The password prompts of "Show programs of all users" (pkexec) and
+   "Become owner" (UDisks), both `auth_admin_keep`.
+5. Power-off of a USB HDD; eSATA, Thunderbolt NVMe, an internal SD reader.
+6. A real GNOME session, and several users logged in at once.

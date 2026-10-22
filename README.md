@@ -1064,14 +1064,17 @@ run during boot. Details in [`docs/08-performance.md`](docs/08-performance.md).
   - a real boot (716 ms, three internal partitions, read-write);
   - safe removal and power-off of a real USB SSD (NTFS, used by a Docker
     service), reconnected afterwards, clean.
-- Still to validate on real hardware or by eye:
-  - a USB disk plugged in during boot;
-  - Windows Fast Startup;
-  - eSATA, Thunderbolt NVMe, an internal SD reader;
-  - the power-off of a USB HDD (a USB SSD was validated), LUKS drives;
-  - Breeze with 125/150/200 % scaling, the Orca screen reader, the Dolphin
-    menu;
-  - the GNOME edition.
+  - a USB SSD connected during boot (left to UDisks), an encrypted drive,
+    the Dolphin menu through Dolphin's own code, the accessibility tree
+    read by Orca, Breeze dark and light at 100–200 %, X11, and the Zenity
+    dialogs of the GNOME edition.
+- Still to validate on real hardware or by a person:
+  - Windows Fast Startup (needs a Windows boot);
+  - hearing Orca, the physical right-click in Dolphin, the administrator
+    password prompts;
+  - eSATA, Thunderbolt NVMe, an internal SD reader, the power-off of a
+    USB HDD;
+  - a real GNOME session, several users logged in.
 
   See [`docs/09-testing.md`](docs/09-testing.md).
 

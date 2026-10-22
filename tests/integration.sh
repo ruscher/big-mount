@@ -44,6 +44,12 @@ cleanup() {
         while findmnt -n --source "$d" >/dev/null 2>&1; do
             udisksctl unmount --no-user-interaction -b "$d" >/dev/null 2>&1 || break
         done
+        # An unlocked LUKS volume keeps the loop device busy
+        for h in /sys/class/block/"${d##*/}"/holders/*; do
+            [ -e "$h" ] || continue
+            udisksctl unmount --no-user-interaction -b "/dev/${h##*/}" >/dev/null 2>&1
+            udisksctl lock --no-user-interaction -b "$d" >/dev/null 2>&1
+        done
         udisksctl loop-delete --no-user-interaction -b "$d" >/dev/null 2>&1
     done
     rm -rf "$IMG" "$BIN"
@@ -297,7 +303,8 @@ attach "$IMG/outer.img" && mountdev "$DEV"
 OUT_DEV="$DEV"
 BM_OUT="$("$BM" --busy "$OUT_DEV" 2>&1)"; BM_RC=$?
 check "--busy on an unused device exits 0" test "$BM_RC" -eq 0
-check "  ... and says it is not in use (not 'still in use')" bash -c 'grep -q "BMOUTER is not in use" <<< "$1" && ! grep -q "still in use" <<< "$1"' _ "$BM_OUT"
+check "  ... and says none of your programs uses it (not 'still in use')" bash -c 'grep -q "None of your programs is using BMOUTER" <<< "$1" && ! grep -q "still in use" <<< "$1"' _ "$BM_OUT"
+check "  ... without claiming that nothing in the system uses it" bash -c '! grep -qi "nothing in the system" <<< "$1"' _ "$BM_OUT"
 skip "second/nested mount detection" "needs root to create the extra mount (covered by tests/lib-tests.sh)"
 
 begin "only the requested filesystem is unmounted"
@@ -345,7 +352,25 @@ BM_OUT="$("$BM" --diagnose "$GONE" 2>&1)"; BM_RC=$?
 check "diagnosis of a vanished device fails cleanly (exit 1, message)" bash -c '[ "$1" -eq 1 ] && [ -n "$2" ] && ! grep -qiE "unbound|syntax|command not found" <<< "$2"' _ "$BM_RC" "$BM_OUT"
 BM_OUT="$("$BM" --safe-remove "$GONE" 2>&1)"; BM_RC=$?
 check "removal of a vanished device does not claim success" bash -c '[ "$1" -ne 0 ] && ! grep -qE "Unmounted|removed safely" <<< "$2"' _ "$BM_RC" "$BM_OUT"
-skip "encrypted (LUKS) drive" "no dm-crypt in this kernel; lock-before-power-off is covered by tests/lib-tests.sh"
+
+begin "encrypted (LUKS) drive: removal from the mount point locks it"
+img luks.img 64M
+if ! grep -qw crypt <<< "$(cat /proc/misc /proc/modules 2>/dev/null)" && ! [ -d /sys/module/dm_crypt ]; then
+    skip "encrypted (LUKS) drive" "dm-crypt is not loaded (modprobe dm_crypt as root)"
+elif attach "$IMG/luks.img" && LUKS="$DEV" \
+    && gdbus call --system --dest org.freedesktop.UDisks2 --object-path "/org/freedesktop/UDisks2/block_devices/${LUKS##*/}" \
+        --method org.freedesktop.UDisks2.Block.Format ext4 \
+        "{'encrypt.passphrase': <'bm-test'>, 'label': <'BMLUKS'>, 'auth.no_user_interaction': <true>}" >/dev/null 2>&1 \
+    && udevadm settle && CLEAR="$(lsblk -nrpo NAME "$LUKS" | sed -n 2p)" && [ -n "$CLEAR" ] && mountdev "$CLEAR"; then
+    BM_OUT="$("$BM" --diagnose "$MP" 2>&1)"
+    check "the drive of the decrypted volume is the loop device, not the volume itself" has "disk $LUKS"
+    BM_OUT="$("$BM" --safe-remove "$MP" 2>&1)"; BM_RC=$?
+    check "--safe-remove from the mount point exits 0" test "$BM_RC" -eq 0
+    check "  ... unmounted" bash -c '! findmnt -n --source "$1" >/dev/null' _ "$CLEAR"
+    check "  ... and the encrypted volume is locked" bash -c '[ -z "$(lsblk -nrpo NAME "$1" | sed -n 2p)" ]' _ "$LUKS"
+else
+    skip "encrypted (LUKS) drive" "UDisks could not format or mount the image"
+fi
 
 begin "the running system is never unmounted"
 BM_OUT="$("$BM" --safe-remove / 2>&1)"; BM_RC=$?
@@ -473,7 +498,23 @@ check "writable devices produce no notification" bash -c '! grep -qE "Device: (B
 if mounted "$OS_DEV"; then
     check "a partition holding an operating system produces no notification" bash -c '! grep -q "Device: BMOS " "$1"' _ "$NOTE_HOME/notes"
 fi
-kill "$P_NOTE" 2>/dev/null; pkill -P "$P_NOTE" 2>/dev/null
+NOTE_POLL="$(pgrep -P "$P_NOTE" -x findmnt | tr '\n' ' ')"
+check "the notifier waits on findmnt --poll" test -n "$NOTE_POLL"
+kill "$P_NOTE" 2>/dev/null; sleep 0.5
+# shellcheck disable=SC2086  # a list of PIDs
+check "a stopped notifier leaves no findmnt behind" bash -c '! kill -0 "$@" 2>/dev/null' _ $NOTE_POLL
+NOTE_LOCK_HELD=0
+for f in /proc/[0-9]*/fd/*; do
+    [ "$(readlink "$f" 2>/dev/null)" = "$NOTE_HOME/big-mount-notifier.lock" ] && NOTE_LOCK_HELD=1
+done
+check "  ... nor anything holding its lock" test "$NOTE_LOCK_HELD" -eq 0
+(
+    exec env -u DBUS_SESSION_BUS_ADDRESS -u WAYLAND_DISPLAY -u DISPLAY \
+        XDG_RUNTIME_DIR="$NOTE_HOME" XDG_STATE_HOME="$NOTE_HOME/state" "$BM" --notifier
+) 2>/dev/null &
+P_NOTE2=$!; PIDS+=("$P_NOTE2"); sleep 1
+check "  ... so a new notifier can start" kill -0 "$P_NOTE2"
+kill "$P_NOTE2" 2>/dev/null; sleep 0.3
 rm -rf "$NOTE_HOME"
 
 echo ""

@@ -79,6 +79,18 @@ Found by tests on real devices after rebooting with v2.1.1 installed (round
 | — | Info | caught before release | the first version of the B23 fix compared `/proc/PID/comm` with `mount.lowntfs-3g`, but the kernel keeps 15 characters (`mount.lowntfs-3`), so the internal NTFS and exFAT FUSE daemons were not recognized | the list uses the truncated names; a unit test covers it |
 | — | Info | caught before release | a draft message said bound services "do not start again" when the device comes back; for Immich that is false | the text depends on `WantedBy=` |
 
+Found while validating what was still pending, with v2.1.2 installed (round
+6, v2.1.3):
+
+| # | Severity | Kind | Finding | Status |
+| --- | --- | --- | --- | --- |
+| B30 | High | proven | safe removal started from the folder of an encrypted (LUKS) volume left the volume **unlocked**, and on a USB drive it would not have powered the drive off: `lsblk` reports no parent for a device-mapper device asked about directly, so the "drive" was the decrypted volume itself | the drive is found through `/sys/class/block/*/slaves` when there is exactly one parent; a real LUKS integration test replaces a placeholder skip (v2.1.2 fails it) |
+| B31 | Medium | proven live | the notifier's `findmnt --poll` inherited the single-instance lock. When the notifier stopped (here: replaced after the upgrade), `findmnt` lived on as an orphan holding the lock, and every new notifier quit silently, until the next mount event | children never get the lock fd; `findmnt` runs with a parent-death signal, so the kernel ends it with the notifier |
+| B32 | Low | proven live | as a normal user, `--busy` said "nothing in the system is using it" while a root process held the device: a user cannot see other users' processes | the user is told that none of their programs uses it and that other users' programs are only visible to an administrator; root keeps the plain message |
+| B33 | Low | hardening | the administrator helper accepted mounts of the running system: `bigmount-holders /` listed every process of the machine | refused; the running system is never removed anyway |
+| B34 | Low | seen live | in Zenity (GNOME), no empty line after the key/value block and lists, unlike KDialog | same spacing in both |
+| — | Info | test suite | the integration suite could leave unlocked LUKS loop devices and an orphan `findmnt` behind | its cleanup locks LUKS volumes; the notifier fix removes the orphan |
+
 Not changed, on purpose:
 
 - **Boot path.** It is already minimal: 27 processes, of which one `blkid`,

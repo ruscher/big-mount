@@ -1,5 +1,29 @@
 # 11 — Final report
 
+## Round 6 (the pending validations, release v2.1.3)
+
+With v2.1.2 installed, the remaining items were checked on the machine:
+
+- the Dolphin menu, through Dolphin's own code path;
+- accessibility, through the AT-SPI tree that Orca reads;
+- Breeze Light at 125 %, and X11;
+- the Zenity dialogs of the GNOME edition;
+- LUKS, with `dm_crypt` loaded;
+- the administrator helper.
+
+That found one high-severity bug: safe removal of an encrypted drive left
+it unlocked and would not power it off (B30). It also found a notifier lock
+leak that silently disabled the notifier after any restart (B31), an
+overclaiming "nothing in the system" message (B32), a helper that accepted
+`/` (B33) and a Zenity spacing flaw (B34).
+
+All are fixed. Each fix has a test that fails on v2.1.2: unit 136,
+integration 119 (7 checks fail on v2.1.2).
+
+Left for a person: Windows Fast Startup (needs a Windows boot), hearing
+Orca, the physical click, the password prompts, other hardware, a real
+GNOME session.
+
 ## Round 5 (real devices after a reboot, release v2.1.2)
 
 The user installed v2.1.1, rebooted and allowed tests on the connected

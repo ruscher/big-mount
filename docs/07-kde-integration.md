@@ -86,9 +86,25 @@ on one line (long text used to be cut off), and removed an empty gap.
 
 ![Read-only device diagnosis (real Plasma screenshot)](images/read-only-device.png)
 
-**Not verified on a real Plasma screen:** Breeze theme, 125/150/200 %
-scaling, the Orca screen reader and the Dolphin service menu itself. These
-are listed as manual validation in 09.
+**Verified on the real desktop (rounds 4 and 6):**
+
+- Breeze dark (through the user's Kvantum style) and **Breeze Light** at
+  100, 125, 150 and 200 %. The light theme was applied to the dialog alone
+  through a temporary `XDG_CONFIG_HOME`.
+- An X11 client (XWayland, `QT_QPA_PLATFORM=xcb`).
+- **Dolphin service menu.** `KFileItemActions`, the class Dolphin uses to
+  build its context menu, lists "Storage device" with both actions for a
+  folder, in pt_BR and English, and never for a file. Triggering them
+  through KIO starts `bigmount --gui FOLDER` / `--gui-remove FOLDER`, and
+  the dialogs appear.
+- **Accessibility.** Through AT-SPI, the tree Orca reads, each dialog
+  exposes its title, the whole explanation as plain text and named
+  buttons. The default button carries the focus. In "Close these
+  programs?" that is Cancel, in KDialog and in Zenity. A button pressed
+  through AT-SPI works like a click.
+
+What remains for a person is listed in 09: hearing Orca, and the physical
+right-click in Dolphin. That click uses the same code path as above.
 
 ## Desktop files
 

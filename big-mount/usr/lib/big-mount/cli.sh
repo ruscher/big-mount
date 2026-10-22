@@ -519,12 +519,19 @@ bm_cmd_busy() {
    bm_resolve "${1:-}" || { printf $"bigmount: '%s' is not a local storage device or a folder on one"'\n' "${1:-}" >&2; return 1; }
    bm_busy_doc "$R_DEV"
    if [ "$BUSY_COUNT" -eq 0 ]; then
-      # Nothing visible holds it: say so instead of "still in use"
+      # Nothing visible holds it: say so instead of "still in use". A user
+      # cannot see the programs of other users, so only root may say "nothing"
       bm_short_name
-      printf -v REPLY $"%s is not in use" "$REPLY"
       bm_doc_new
-      bm_doc_h "$REPLY"
-      bm_doc_p $"No program of yours and nothing in the system is using it. It can be unmounted."
+      if [ "$EUID" -eq 0 ]; then
+         printf -v REPLY $"%s is not in use" "$REPLY"
+         bm_doc_h "$REPLY"
+         bm_doc_p $"No program and nothing in the system is using it. It can be unmounted."
+      else
+         printf -v REPLY $"None of your programs is using %s" "$REPLY"
+         bm_doc_h "$REPLY"
+         bm_doc_p $"No program of yours, no other mount and no other device is using it. It can probably be unmounted. Programs of other users and of the system are only visible to an administrator."
+      fi
       bm_ui_show info ""
       return 0
    fi
@@ -1085,7 +1092,7 @@ bm_notifier_check() {
          details | fix) "$BM_SELF" --gui "$dev" ;;
          help) bm_gui_help "$dev" ;;
       esac
-   ) </dev/null >/dev/null &
+   ) </dev/null >/dev/null 8>&- &
 }
 
 bm_notifier() {
@@ -1101,7 +1108,8 @@ bm_notifier() {
       grep -F -- "$boot " "$BM_NOTIFIED" > "$BM_NOTIFIED.tmp" 2>/dev/null
       mv -f -- "$BM_NOTIFIED.tmp" "$BM_NOTIFIED"
    fi
-   # One notifier per session
+   # One notifier per session. Children never get fd 8: one that outlived
+   # the notifier would keep the lock, and every later notifier would quit.
    exec 8> "$rundir/big-mount-notifier.lock" || return 1
    flock -n 8 || return 0
 
@@ -1109,7 +1117,7 @@ bm_notifier() {
    while IFS= read -r line; do
       bm_parse_pairs "$line"
       bm_notifier_check "${KV[SOURCE]%%\[*}" "${KV[TARGET]}"
-   done < <(findmnt -P -n -o SOURCE,TARGET 2>/dev/null)
+   done < <(findmnt -P -n -o SOURCE,TARGET 2>/dev/null 8>&-)
 
    # Then react to mounts and remounts (errors=remount-ro shows up as one)
    while IFS= read -r line; do
@@ -1119,5 +1127,7 @@ bm_notifier() {
             bm_notifier_check "${KV[SOURCE]%%\[*}" "${KV[TARGET]}"
             ;;
       esac
-   done < <(LC_ALL=C findmnt --poll=mount,remount -P -o ACTION,SOURCE,TARGET 2>/dev/null)
+   # The kernel ends findmnt with the notifier (it would otherwise live on
+   # until the next mount event, writing to a closed pipe)
+   done < <(LC_ALL=C setpriv --pdeathsig TERM -- findmnt --poll=mount,remount -P -o ACTION,SOURCE,TARGET 2>/dev/null 8>&-)
 }
