@@ -5,16 +5,20 @@ pkgver=$(date +%y.%m.%d)
 pkgrel=$(date +%H%M)
 arch=('any')
 license=('GPL')
-depends=('udisks2' 'util-linux' 'ntfs-3g' 'lsof')
+depends=('bash' 'udisks2' 'util-linux' 'ntfs-3g' 'lsof')
 optdepends=('kdialog: dialogs on KDE Plasma'
             'zenity: dialogs on GNOME and other desktops'
-            'libnotify: notifications about read-only devices')
+            'libnotify: desktop notifications (otherwise kdialog --passivepopup is used)')
 provides=('big-mount-git')
-backup=('etc/big-mount.conf')
 replaces=('big-mount-git')
-url="https://github.com/biglinux/big-mount"
-pkgdesc="Auto mount partitions in internal disks on boot, diagnose read-only and busy devices"
-source=("git+https://github.com/biglinux/big-mount.git")
+backup=('etc/big-mount.conf')
+install=big-mount.install
+# The development of Big-Mount happens in this fork; it is merged into
+# biglinux/big-mount later. Point url/source back to biglinux/big-mount once
+# the official repository carries the same code.
+url="https://github.com/ruscher/big-mount"
+pkgdesc="Mounts internal partitions at boot; diagnoses read-only and busy devices and removes them safely"
+source=("git+https://github.com/ruscher/big-mount.git")
 makedepends=("git")
 md5sums=(SKIP)
 
@@ -25,7 +29,6 @@ package() {
     else
         InternalDir="${srcdir}/${pkgname}"
     fi
-
 
     # Copy files
     if [ -d "${InternalDir}/usr" ]; then

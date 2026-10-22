@@ -10,6 +10,8 @@
 : "${TESTROOT:?stub called outside the test harness}"
 args=("$@")
 echo "mount ${args[*]}" >> "$TESTROOT/mount.log"
+# A FUSE helper lives on after mount returns: it must not hold bigmount's lock
+[ -e /proc/self/fd/9 ] && echo "mount inherited fd 9" >> "$TESTROOT/fd.log"
 
 typ="auto" opts="" skip_next=0 positional=()
 for ((i = 0; i < ${#args[@]}; i++)); do

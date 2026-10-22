@@ -80,20 +80,20 @@ bm_cause_text() {
          C_HELP=($"Open the device in the file manager (Dolphin) to mount it.")
          ;;
       hw-readonly)
-         C_TITLE=$"Device mounted read-only"
+         C_TITLE=$"Read-only device"
          C_REASON=$"The device itself is write-protected, so no system can write to it."
          C_HELP=($"SD cards and some USB drives have a small lock switch on the side. Remove the device, move the switch to the unlocked position and connect it again."
             $"If there is no switch, the device may have locked itself because of wear. Copy your files to another place as soon as possible.")
          ;;
       unsupported)
-         C_TITLE=$"Device mounted read-only"
+         C_TITLE=$"Read-only device"
          C_REASON=$"This kind of filesystem cannot be written on Linux with the driver in use."
          C_HELP=($"CDs, DVDs and disk images (ISO, SquashFS) are read-only by nature."
             $"Drives formatted on a Mac (HFS+ with journaling, APFS) can only be read on Linux."
             $"To write to it, copy the files elsewhere and format the device with a filesystem such as exFAT. Formatting erases everything on it.")
          ;;
       ntfs-unsafe)
-         C_TITLE=$"Device mounted read-only"
+         C_TITLE=$"Read-only device"
          C_REASON=$"Windows did not close this NTFS partition properly (hibernation, Fast Startup or an interrupted shutdown). Writing to it now could damage files."
          C_HELP=($"Start Windows and shut it down completely: hold the Shift key while you click Shut down."
             $"To avoid this in the future, disable Fast Startup in Windows: Control Panel > Power Options > Choose what the power buttons do."
@@ -101,21 +101,21 @@ bm_cause_text() {
             $"Big-Mount never repairs NTFS by itself, because the repair tools available on Linux may discard data that Windows still needs.")
          ;;
       fs-errors)
-         C_TITLE=$"Filesystem error"
+         C_TITLE=$"The filesystem needs attention"
          C_REASON=$"The system found errors in the filesystem and stopped writing to it to protect your files."
          C_HELP=($"First copy your important files to another place."
             $"Then check the filesystem with the device unmounted, for example with KDE Partition Manager (Check)."
             $"Do not write to the device until it has been checked.")
          ;;
       io-errors)
-         C_TITLE=$"Device with read or write errors"
+         C_TITLE=$"The device has read or write errors"
          C_REASON=$"The device reported read or write errors. This is usually a bad cable, a weak USB port or a failing drive."
          C_HELP=($"Copy your important files to another place as soon as possible."
             $"Try another cable and connect the device directly to the computer, without a hub."
             $"Check the health of the drive in KDE Partition Manager (SMART status).")
          ;;
       mounted-ro)
-         C_TITLE=$"Device mounted read-only"
+         C_TITLE=$"Read-only device"
          C_REASON=$"The filesystem was mounted read-only, but no problem was found with it."
          C_HELP=($"Mount it again with writing enabled.")
          C_FIX_LABEL=$"Mount again with writing"
@@ -357,6 +357,51 @@ bm_other_label() {
    esac
 }
 
+# Plain-language summary of a BUSY collection, from the holder that matters
+# most to the user: something writing, a terminal, a file manager, an
+# indexer, anything else. Sets BUSY_SUMMARY and BUSY_ADVICE.
+bm_busy_summary() {
+   local i best=-1 rank r comm app n="${#BUSY_PIDS[@]}"
+   BUSY_SUMMARY="" BUSY_ADVICE=""
+   for i in "${!BUSY_PID[@]}"; do
+      comm="${BUSY_COMM[i]}" r=1
+      case "$comm" in
+         dolphin | kioworker* | kioslave* | nautilus | nemo | thunar | pcmanfm* | caja | krusader | doublecmd) r=3 ;;
+         baloo_file* | baloorunner | tracker-* | localsearch*) r=2 ;;
+      esac
+      [[ $BM_SHELL_COMM == *" $comm "* || ${BUSY_FD[i]} == cwd ]] && r=4
+      [ "${BUSY_ACCESS[i]}" = w ] || [ "${BUSY_ACCESS[i]}" = u ] && r=5
+      if [ "$r" -gt "$best" ]; then best="$r" rank="$i"; fi
+   done
+   if [ "$best" -lt 0 ]; then
+      if [ "${#O_KIND[@]}" -gt 0 ]; then
+         BUSY_SUMMARY=$"No program is using it, but the system still is (see below)."
+         BUSY_ADVICE=$"Resolve the item listed below, then try again."
+      else
+         BUSY_SUMMARY=$"None of your programs is using it. A system service or a program of another user may be holding it, or it was released a moment ago."
+         BUSY_ADVICE=$"Try again. If it is still busy, show the programs of all users."
+      fi
+      return 0
+   fi
+   app="${BUSY_APP[rank]}"
+   case "$best" in
+      5) printf -v BUSY_SUMMARY $"%s has a file open for writing on this device." "$app"
+         BUSY_ADVICE=$"Let it finish, or cancel the operation in that program, then try again." ;;
+      4) BUSY_SUMMARY=$"A terminal is open in a folder of this device."
+         BUSY_ADVICE=$"Type cd in that terminal, or close it, then try again." ;;
+      3) printf -v BUSY_SUMMARY $"%s is showing or reading files of this device." "$app"
+         BUSY_ADVICE=$"Close the window or tab that shows the device, then try again." ;;
+      2) BUSY_SUMMARY=$"The file indexer is reading this device."
+         BUSY_ADVICE=$"It usually finishes in a moment: try again shortly." ;;
+      *) printf -v BUSY_SUMMARY $"%s is using files on this device." "$app"
+         BUSY_ADVICE=$"Close that program, then try again." ;;
+   esac
+   if [ "$n" -gt 1 ]; then
+      printf -v r $"In total, %d programs are using it." "$n"
+      BUSY_SUMMARY+=" $r"
+   fi
+}
+
 # bm_busy_doc DEV [quiet] [privileged]: document describing what keeps DEV busy
 bm_busy_doc() {
    local dev="$1" mode="${2:-}" priv="${3:-}" i key shown=() access
@@ -367,10 +412,16 @@ bm_busy_doc() {
       [ "$BUSY_COUNT" -gt 0 ] || return 0
       bm_doc_h $"In use"
    else
-      bm_doc_h $"This device is still in use"
+      bm_busy_summary
+      bm_short_name
+      printf -v key $"%s is still in use" "$REPLY"
+      bm_doc_h "$key"
+      bm_doc_p "$BUSY_SUMMARY"
+      bm_doc_p "$BUSY_ADVICE"
       bm_display_name; bm_doc_kv $"Device" "$REPLY"
       bm_fs_label "${F[FSTYPE]}"; bm_doc_kv $"Filesystem" "$REPLY"
       bm_mounts "$dev"; [ "${#M_TARGET[@]}" -gt 0 ] && bm_doc_kv $"Mounted at" "${M_TARGET[0]}"
+      key=""
    fi
    if [ "${#BUSY_PIDS[@]}" -gt 0 ]; then
       bm_doc_p $"Programs using it:"
@@ -397,10 +448,8 @@ bm_busy_doc() {
       for i in "${!O_KIND[@]}"; do bm_other_label "${O_KIND[i]}" "${O_WHAT[i]}"; bm_doc_li "$REPLY"; done
    fi
    [ "$mode" = quiet ] && return 0
-   if [ "$BUSY_COUNT" -eq 0 ]; then
-      bm_doc_p $"None of your programs is using it. A system service or a program of another user may be holding it, or it was released a moment ago."
-   fi
-   bm_doc_p $"Close the programs listed, or leave the device's folders in them, then try again. An open file does not necessarily mean that something is being copied."
+   [ "${#BUSY_PIDS[@]}" -gt 0 ] && bm_doc_p $"An open file does not necessarily mean that something is being copied."
+   return 0
 }
 
 bm_busy_details_file() {
@@ -437,16 +486,27 @@ bm_is_removable_drive() {
 # filesystem of the drive) or "remove" (drive, then power off when it is a
 # removable drive). Returns the exit codes documented at the top.
 # RM_BUSY_DEV, RM_REASON, RM_POWERED and RM_REMOVABLE describe the outcome.
+#
+# Before every step that cannot be undone the disk sequence number is checked
+# again (another device may have taken the name), and nothing is reported as
+# safe while any filesystem of the drive is still mounted.
 bm_remove_core() {
-   local mode="$1" dev="$2" d i t targets=() rc
+   local mode="$1" dev="$2" d i t targets=() types=() rc seq
    RM_BUSY_DEV="" RM_REASON="" RM_POWERED=0 RM_REMOVABLE=0
    bm_facts "$dev" || { RM_REASON=$"device not found"; return 1; }
    local disk="${F[DISK]}" disk_type="${F[DISK_TYPE]}"
    bm_is_removable_drive && RM_REMOVABLE=1
+   bm_diskseq "$disk"; seq="$REPLY"
+   _bm_same_disk() {
+      bm_diskseq "$disk"
+      [ "$REPLY" = "$seq" ] && return 0
+      RM_REASON=$"The device was disconnected or replaced during the operation. Nothing else was done."
+      return 1
+   }
    if [ "$mode" != unmount ]; then
       if bm_system_use "$disk"; then RM_REASON="$REPLY"; return 4; fi
       bm_drive_members "$disk"
-      targets=("${DRIVE_DEVS[@]}")
+      targets=("${DRIVE_DEVS[@]}") types=("${DRIVE_FSTYPES[@]}")
    else
       bm_mounts "$dev"
       for t in "${M_TARGET[@]}"; do
@@ -459,6 +519,7 @@ bm_remove_core() {
       d="${targets[i]}"
       bm_mounts "$d"
       [ "${#M_TARGET[@]}" -eq 0 ] && continue
+      _bm_same_disk || return 1
       if ! bm_unmount_all "$d"; then
          case "$UD_ERROR" in
             *DeviceBusy*) RM_BUSY_DEV="$d"; return 3 ;;
@@ -467,7 +528,32 @@ bm_remove_core() {
          esac
       fi
    done
+   [ "$mode" = unmount ] && return 0
+
+   # Nothing may have been mounted again meanwhile (an automounter, a script)
+   for d in "${targets[@]}"; do
+      bm_mounts "$d"
+      if [ "${#M_TARGET[@]}" -gt 0 ]; then
+         printf -v RM_REASON $"%s was mounted again at %s" "$d" "${M_TARGET[0]}"
+         return 1
+      fi
+   done
    [ "$mode" = remove ] || return 0
+
+   # Lock encrypted volumes that are open (their filesystems are unmounted
+   # by now), as the Plasma device notifier does before a safe removal
+   for i in "${!targets[@]}"; do
+      [ "${types[i]}" = crypto_LUKS ] || continue
+      d="${targets[i]}"
+      bm_has_holders "$d" || continue
+      _bm_same_disk || return 1
+      if ! bm_udisks lock -b "$d"; then
+         [[ $UD_ERROR == *NotAuthorized* ]] && return 5
+         printf -v RM_REASON $"%s: the encrypted volume could not be locked" "$d"
+         return 6
+      fi
+   done
+
    # Internal disks are unmounted, never powered off
    [ "$RM_REMOVABLE" = 1 ] || return 0
 
@@ -481,6 +567,7 @@ bm_remove_core() {
       done
    done
    [ "$disk_type" = loop ] && return 7
+   _bm_same_disk || return 1
    if bm_udisks power-off -b "$disk"; then
       RM_POWERED=1
       return 0
@@ -582,8 +669,7 @@ bm_pick_device() {
       items+=("$dev" "${label:-${dev##*/}} — $REPLY ${KV[FSTYPE]}${mp:+ — $mp}")
    done < <(lsblk -P -b -p -o NAME,TYPE,FSTYPE,LABEL,SIZE,MOUNTPOINTS 2>/dev/null)
    if [ "${#items[@]}" -eq 0 ]; then
-      bm_doc_new; bm_doc_p $"No storage device to diagnose was found."
-      bm_ui_show info $"Storage diagnostics" big-mount
+      bm_notify info big-mount $"Storage diagnostics" $"No storage device to diagnose was found."
       return 1
    fi
    bm_ui_menu $"Storage diagnostics" $"Choose a device:" "${items[@]}"
@@ -597,8 +683,7 @@ bm_gui_diagnose() {
       target="$REPLY"
    fi
    if ! bm_resolve "$target" || ! bm_facts "$R_DEV"; then
-      bm_doc_new; bm_doc_p $"This folder is not on a local storage device."
-      bm_ui_show info $"Storage diagnostics" big-mount
+      bm_notify info big-mount $"Storage diagnostics" $"This folder is not on a local storage device."
       return 1
    fi
    local dev="$R_DEV"
@@ -667,39 +752,44 @@ bm_gui_fix() {
          fi
          ;;
    esac
-   bm_doc_new
+   bm_short_name
    if [ "$ok" -eq 1 ]; then
-      bm_doc_h $"Done"
-      bm_doc_p $"You can now write to this device."
-      bm_ui_show info "$C_FIX_LABEL" dialog-ok
+      bm_notify info dialog-ok $"Device ready" "$REPLY"$'\n'$"You can now write to this device."
    else
-      bm_doc_h $"It was not possible to fix it"
-      bm_doc_p $"Nothing was changed on the device. See the technical details for more information."
-      [ -n "${UD_MESSAGE:-}" ] && bm_doc_pre "$UD_MESSAGE"
-      bm_ui_show error "$C_FIX_LABEL" dialog-error
+      bm_notify warning dialog-error $"Unable to fix the device" \
+         "$REPLY"$'\n'$"Nothing was changed on the device. See the technical details for more information."
    fi
 }
 
 # ---------------------------------------------------------------------------
 # Graphical safe removal (bigmount --gui-remove, Dolphin action)
 
+# The processes of every user, read with administrator rights, are kept only
+# while the busy dialog shows them: never left behind in /tmp
+bm_priv_clear() {
+   [ -n "${BM_PRIV_LSOF:-}" ] && rm -f -- "$BM_PRIV_LSOF"
+   BM_PRIV_LSOF=""
+}
+
 # Busy dialog: returns 0 to try again, 1 to give up
 bm_gui_busy_dialog() {
    local dev="$1" priv="" tmp self
-   BM_PRIV_LSOF=""
+   bm_priv_clear
+   trap 'bm_priv_clear' EXIT
+   trap 'bm_priv_clear; exit 130' INT TERM HUP
    while :; do
       bm_busy_doc "$dev" "" "$priv"
       bm_device_icon
-      bm_ui_choice $"Device in use" dialog-warning $"Try again" $"More options…" $"Cancel"
+      bm_ui_choice $"Device is busy" dialog-warning $"Try again" $"More options…" $"Cancel"
       case "$REPLY" in
-         1) BM_PRIV_LSOF=""; return 0 ;;
-         3) BM_PRIV_LSOF=""; return 1 ;;
+         1) bm_priv_clear; return 0 ;;
+         3) bm_priv_clear; return 1 ;;
       esac
       local opts=(refresh $"Refresh the list" details $"Show technical details")
       bm_close_candidates
       [ "${#CLOSE_PIDS[@]}" -gt 0 ] && opts+=(close $"Close the listed programs…")
       command -v pkexec >/dev/null && opts+=(admin $"Show programs of all users (administrator)")
-      bm_ui_menu $"Device in use" $"What do you want to do?" "${opts[@]}"
+      bm_ui_menu $"Device is busy" $"What do you want to do?" "${opts[@]}"
       case "$REPLY" in
          details)
             tmp="$(mktemp)"; bm_busy_details_file "$tmp" "$dev"
@@ -714,7 +804,7 @@ bm_gui_busy_dialog() {
                bm_doc_p $"These will not be closed:"
                for n in "${!KEEP_NAMES[@]}"; do bm_doc_li "${KEEP_NAMES[n]}: ${KEEP_WHY[n]}"; done
             fi
-            if bm_ui_confirm $"Close programs" dialog-warning $"Close them" $"Cancel"; then
+            if bm_ui_confirm_risky $"Close programs" dialog-warning $"Close them" $"Cancel"; then
                bm_close_args
                bm_close_processes "${CLOSE_ARGS[@]}"
                return 0
@@ -725,76 +815,82 @@ bm_gui_busy_dialog() {
             # org.biglinux.big-mount.inspect-processes); the dialogs stay
             # in the user session
             self="$BM_LIB_DIR/bigmount-holders"
-            tmp="$(mktemp)"
+            bm_priv_clear
+            tmp="$(mktemp)" || continue
+            BM_PRIV_LSOF="$tmp"
             bm_mounts "$dev"
             local mp; for mp in "${M_TARGET[@]}"; do
                pkexec "$self" "$mp" >> "$tmp" 2>/dev/null
             done
-            if [ -s "$tmp" ]; then BM_PRIV_LSOF="$tmp"; priv=1; fi
+            if [ -s "$tmp" ]; then priv=1; else bm_priv_clear; priv=""; fi
             ;;
       esac
    done
 }
 
+# Shown when an unmount or power-off is still running after 2 seconds
+bm_gui_slow_notice() {
+   bm_notify info document-save "$BM_GUI_NAME" $"Writing pending data to the device. Do not disconnect it yet." &
+}
+
 bm_gui_remove() {
-   local target="${1:-}" rc name icon
+   local target="${1:-}" rc name short icon
    if ! bm_resolve "$target" || ! bm_facts "$R_DEV"; then
-      bm_doc_new; bm_doc_p $"This folder is not on a removable storage device."
-      bm_ui_show info $"Safely remove" big-mount
+      bm_notify info big-mount $"Safely remove" $"This folder is not on a removable storage device."
       return 1
    fi
    local dev="$R_DEV"
    bm_display_name; name="$REPLY"
+   bm_short_name; short="$REPLY"
    bm_device_icon; icon="$REPLY"
+   BM_GUI_NAME="$short" BM_SLOW_HOOK=bm_gui_slow_notice
    while :; do
       bm_remove_core remove "$dev"; rc=$?
-      bm_doc_new
       case "$rc" in
          0)
             if [ "$RM_POWERED" = 1 ]; then
-               bm_notify "$icon" $"Device removed safely" \
-                  "$name"$'\n'$"All pending data was written. The device can be disconnected now." >/dev/null &
+               bm_notify info "$icon" $"Safe to disconnect" \
+                  "$name"$'\n'$"Successfully unmounted and powered off. You can disconnect it now." >/dev/null &
+            elif [ "$RM_REMOVABLE" = 1 ]; then
+               bm_notify info "$icon" $"Safe to disconnect" \
+                  "$name"$'\n'$"Successfully unmounted. You can disconnect it now." >/dev/null &
             else
-               bm_notify "$icon" $"Device unmounted" \
+               bm_notify info "$icon" $"Device unmounted" \
                   "$name"$'\n'$"All pending data was written and its filesystems were unmounted." >/dev/null &
             fi
-            return 0
+            break
             ;;
          7)
-            bm_notify "$icon" $"Device unmounted" \
-               "$name"$'\n'$"All pending data was written. This drive cannot be powered off by the computer, but it can be disconnected now." >/dev/null &
-            return 0
+            bm_notify info "$icon" $"Safe to disconnect" \
+               "$name"$'\n'$"Successfully unmounted. This drive cannot be powered off by the computer, but you can disconnect it now." >/dev/null &
+            rc=0
+            break
             ;;
-         3) bm_gui_busy_dialog "$RM_BUSY_DEV" || return 3 ;;
+         3) bm_gui_busy_dialog "$RM_BUSY_DEV" || break ;;
          4)
-            bm_doc_h $"This device cannot be removed"
-            bm_doc_p $"It holds the operating system that is running now."
-            bm_doc_pre "$RM_REASON"
-            bm_ui_show error $"Safely remove" dialog-error
-            return 4
+            bm_notify warning dialog-error $"Unable to remove device" \
+               "$name"$'\n'$"It holds the operating system that is running now." >/dev/null &
+            break
             ;;
          5)
-            bm_doc_h $"Permission not granted"
-            bm_doc_p $"The device was not unmounted because the authorization was refused or cancelled. It remains mounted."
-            bm_ui_show error $"Safely remove" dialog-error
-            return 5
+            bm_notify warning dialog-error $"Unable to unmount device" \
+               "$name"$'\n'$"Permission was not granted. The device remains mounted." >/dev/null &
+            break
             ;;
          6)
-            bm_doc_h $"Device still in use"
-            bm_doc_p $"The filesystems were unmounted, but the drive is still in use, so it was not powered off. Lock encrypted volumes in the file manager first."
-            bm_doc_pre "$RM_REASON"
-            bm_ui_show warning $"Safely remove" dialog-warning
-            return 6
+            bm_notify warning dialog-warning $"Unable to power off device" \
+               "$name"$'\n'$"Its filesystems were unmounted, but the drive is still in use, so it was not powered off. Do not disconnect it yet."$'\n'"$RM_REASON" >/dev/null &
+            break
             ;;
          *)
-            bm_doc_h $"The device could not be unmounted"
-            bm_doc_p $"It remains mounted. Nothing was forced."
-            bm_doc_pre "$RM_REASON"
-            bm_ui_show error $"Safely remove" dialog-error
-            return 1
+            bm_notify warning dialog-error $"Unable to unmount device" \
+               "$name"$'\n'$"It remains mounted. Nothing was forced."$'\n'"${RM_REASON%%$'\n'*}" >/dev/null &
+            break
             ;;
       esac
    done
+   BM_SLOW_HOOK=""
+   return "$rc"
 }
 
 # ---------------------------------------------------------------------------
@@ -815,7 +911,7 @@ bm_notifier_check() {
    local dev="$1" mp="$2" key cause body icon name l_details l_help acts=()
    [[ $dev == /dev/* ]] || return 0
    case "$mp" in
-      /run/media/"$USER"/* | /media/* | /mnt/*) ;;
+      /run/media/"${USER:-$BM_USER}"/* | /media/* | /mnt/*) ;;
       *) return 0 ;;
    esac
    [ "$mp" = /mnt/user-mount ] && return 0
@@ -825,6 +921,10 @@ bm_notifier_check() {
    case "${F[FSTYPE]}" in squashfs | iso9660 | erofs | udf) return 0 ;; esac
    bm_diagnose_write "$dev"
    case "$D_CAUSE" in ok | not-mounted | unsupported) return 0 ;; esac
+   # Another operating system mounted by big-mount (its folders belong to it):
+   # nothing to fix, so no warning at every login. --diagnose still explains it.
+   bm_cause_key
+   [ "$REPLY" = permission-os ] && return 0
    bm_notifier_key "$dev"; key="$REPLY"
    grep -qxF -- "$key" "$BM_NOTIFIED" 2>/dev/null && return 0
    printf '%s\n' "$key" >> "$BM_NOTIFIED"
@@ -840,7 +940,7 @@ bm_notifier_check() {
    # Offered only when a safe, verifiable correction exists for this cause
    [ -n "$D_FIX" ] && acts+=("fix=$C_FIX_LABEL")
    (
-      action="$(bm_notify "$icon" "$C_TITLE" "$body" "${acts[@]}")"
+      action="$(bm_notify warning "$icon" "$C_TITLE" "$body" "${acts[@]}")"
       case "$action" in
          details | fix) "$BM_SELF" --gui "$dev" ;;
          help) bm_gui_help "$dev" ;;
@@ -850,6 +950,7 @@ bm_notifier_check() {
 
 bm_notifier() {
    local line rundir="${XDG_RUNTIME_DIR:-/run/user/$EUID}" statedir="${XDG_STATE_HOME:-$HOME/.local/state}/big-mount"
+   BM_USER="$(id -un)"
    BM_SELF="$(readlink -f "$BM_LIB_DIR/../../bin/bigmount")"
    [ -x /usr/bin/bigmount ] && [ "$BM_LIB_DIR" = /usr/lib/big-mount ] && BM_SELF=/usr/bin/bigmount
    mkdir -p -- "$statedir" || return 1
@@ -875,8 +976,6 @@ bm_notifier() {
       bm_parse_pairs "$line"
       case "${KV[ACTION]}" in
          mount | remount)
-            # Give UDisks a moment to finish (ownership, mount options)
-            sleep 1
             bm_notifier_check "${KV[SOURCE]%%\[*}" "${KV[TARGET]}"
             ;;
       esac

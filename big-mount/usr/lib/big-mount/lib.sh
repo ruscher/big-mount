@@ -158,6 +158,13 @@ bm_display_name() {
    REPLY="$name (${what:+$what, }$size)"
 }
 
+# Short name for titles: the label, else vendor and model, else sdX1
+bm_short_name() {
+   REPLY="${F[LABEL]:-}"
+   [ -n "$REPLY" ] || REPLY="${F[VENDOR]:+${F[VENDOR]} }${F[MODEL]:-}"
+   [ -n "$REPLY" ] || REPLY="${F[NAME]##*/}"
+}
+
 # The icon a file manager would show for this device
 bm_device_icon() {
    if [ "${F[DISK_TYPE]:-}" = rom ]; then REPLY=media-optical
@@ -594,11 +601,32 @@ bm_close_processes() {
 # ---------------------------------------------------------------------------
 # Unmount and power off through UDisks2 (polkit decides about passwords)
 
-# bm_udisks CMD...: run udisksctl, keeping the D-Bus error name in UD_ERROR
+# bm_udisks CMD...: run udisksctl, keeping the D-Bus error name in UD_ERROR.
+# When BM_SLOW_HOOK names a function, it is called once if the operation is
+# still running after 2 seconds (an unmount waits for pending writes): the
+# GUI uses it to say "do not disconnect yet". No polling: wait -n returns
+# when the first of the two finishes.
 bm_udisks() {
    local out rc
-   out="$(udisksctl "$@" 2>&1)"
-   rc=$?
+   if [ -n "${BM_SLOW_HOOK:-}" ]; then
+      local tmp pid timer
+      tmp="$(mktemp)" || return 1
+      udisksctl "$@" > "$tmp" 2>&1 &
+      pid=$!
+      sleep 2 &
+      timer=$!
+      wait -n "$pid" "$timer"
+      if kill -0 "$pid" 2>/dev/null; then "$BM_SLOW_HOOK" "$@"; fi
+      kill "$timer" 2>/dev/null
+      wait "$timer" 2>/dev/null
+      wait "$pid"
+      rc=$?
+      out="$(< "$tmp")"
+      rm -f -- "$tmp"
+   else
+      out="$(udisksctl "$@" 2>&1)"
+      rc=$?
+   fi
    UD_ERROR="" UD_MESSAGE="$out"
    if [ "$rc" -ne 0 ]; then
       if [[ $out =~ GDBus\.Error:([A-Za-z0-9_.]+) ]]; then
@@ -614,13 +642,24 @@ bm_udisks() {
 bm_is_system_mount() { [[ $BM_SYSTEM_MOUNTS == *" $1 "* ]]; }
 
 # bm_drive_members DISK: block devices of a drive (the disk, its partitions
-# and anything stacked on them). Fills DRIVE_DEVS.
+# and anything stacked on them), in lsblk order. Fills DRIVE_DEVS and
+# DRIVE_FSTYPES.
 bm_drive_members() {
-   local name
-   DRIVE_DEVS=()
-   while read -r name; do
-      DRIVE_DEVS+=("$name")
-   done < <(lsblk -n -p -r -o NAME -- "$1" 2>/dev/null)
+   local line
+   DRIVE_DEVS=() DRIVE_FSTYPES=()
+   while IFS= read -r line; do
+      bm_parse_pairs "$line"
+      DRIVE_DEVS+=("${KV[NAME]}") DRIVE_FSTYPES+=("${KV[FSTYPE]}")
+   done < <(lsblk -P -n -p -o NAME,FSTYPE -- "$1" 2>/dev/null)
+}
+
+# Is something (dm-crypt, LVM, md) stacked on this block device?
+bm_has_holders() { compgen -G "/sys/class/block/${1##*/}/holders/*" >/dev/null; }
+
+# Sequence number of a disk: it changes when another device takes the name
+bm_diskseq() {
+   REPLY=""
+   { read -r REPLY < "/sys/block/${1##*/}/diskseq"; } 2>/dev/null
 }
 
 # bm_system_use DISK: non-empty REPLY when the drive holds the running
@@ -642,16 +681,25 @@ bm_system_use() {
 }
 
 # bm_unmount_all DEV: unmount every mount of one filesystem. Returns 0 when
-# none is left, 1 on failure (UD_ERROR/UD_MESSAGE describe it).
+# none is left, 1 on failure (UD_ERROR/UD_MESSAGE describe it). The mount
+# table is the judge, not the answer of udisksctl: a mount that vanished in
+# the meantime is a success, a "success" that left the mount is a failure.
 bm_unmount_all() {
    local dev="$1" n
    for ((n = 0; n < 8; n++)); do
       bm_mounts "$dev"
       [ "${#M_TARGET[@]}" -eq 0 ] && return 0
-      bm_udisks unmount -b "$dev" || return 1
+      if ! bm_udisks unmount -b "$dev"; then
+         bm_mounts "$dev"
+         [ "${#M_TARGET[@]}" -eq 0 ] && return 0
+         return 1
+      fi
    done
    bm_mounts "$dev"
-   [ "${#M_TARGET[@]}" -eq 0 ]
+   [ "${#M_TARGET[@]}" -eq 0 ] && return 0
+   UD_ERROR=still-mounted
+   printf -v UD_MESSAGE $"%s is still mounted at %s after being unmounted" "$dev" "${M_TARGET[0]}"
+   return 1
 }
 
 # Make the current user owner of the root folder of a POSIX filesystem

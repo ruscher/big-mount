@@ -1,11 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE policyconfig PUBLIC
- "-//freedesktop//DTD PolicyKit Policy Configuration 1.0//EN"
- "http://www.freedesktop.org/standards/PolicyKit/1/policyconfig.dtd">
+<!DOCTYPE policyconfig PUBLIC "-//freedesktop//DTD PolicyKit Policy Configuration 1.0//EN" "http://www.freedesktop.org/standards/PolicyKit/1/policyconfig.dtd">
 <policyconfig>
   <vendor>BigLinux</vendor>
   <vendor_url>https://www.biglinux.com.br</vendor_url>
-
   <!-- Read-only: lists the processes of every user that keep one mount point busy -->
   <action id="org.biglinux.big-mount.inspect-processes">
     <description>Show the programs of all users that keep a storage device busy</description>

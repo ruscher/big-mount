@@ -1,40 +1,65 @@
-# 08 — Desempenho do boot
+# 08 — Performance
 
-Medição reproduzível: `tests/bench.sh SCRIPT N`. Roda o script contra os
-dispositivos **reais** desta máquina (`blkid`, `lsblk`, `udevadm`/`udisksctl`,
-`findmnt` e sysfs reais), com `mount`/`ntfsfix` substituídos por stubs,
-`/proc/mounts` vazio (situação de boot) e uma trava que aborta se os stubs não
-forem os executados. Sem root.
+All numbers are medians of repeated runs on the development machine
+(16 CPUs, 9 `blkid` entries: NVMe, 3 SATA, 1 USB SSD, zram). They can be
+reproduced with the two scripts below, and no number here is an estimate.
 
-Máquina: 16 CPUs, 9 entradas no `blkid` (NVMe, 3 SATA, 1 SSD USB, zram).
-Ambas as versões decidem as mesmas 3 montagens.
+| Script | Measures |
+| --- | --- |
+| `tests/bench.sh SCRIPT [N]` | the boot path against the **real** devices, with `mount`/`ntfsfix` replaced by stubs and an empty `/proc/mounts` (the boot situation); wall time, CPU, processes created. It aborts unless the stubs are the ones executed |
+| `tests/measure-session.sh [BIGMOUNT] [N]` | the session tools on disposable images attached through UDisks2: `--diagnose` time, latency from a mount to the notification, idle cost of the notifier |
 
-| Métrica (mediana de 20–30 execuções) | Antes (`master`) | Depois |
-|---|---|---|
-| Tempo de parede | 126,6–133,6 ms | 36,7–40,5 ms |
-| CPU (usuário + sistema) | 129–136 ms | 38–42 ms |
-| Processos criados | 194 | 27 |
-| Chamadas a `ntfsfix` | 1 | 0 |
-| Clientes D-Bus (`udisksctl`) | 10 | 0 |
+## Round 2 (this version, measured before and after)
 
-De onde veio o ganho:
+| Metric | Before (`master` `ee044f9`) | After |
+| --- | --- | --- |
+| Boot path, wall time (30 runs) | 39.9 ms | 40.1 ms |
+| Boot path, CPU | 41 ms | 41 ms |
+| Boot path, processes created | 27 | 27 |
+| `--diagnose`, writable device (5 runs) | 243 ms | 245 ms |
+| `--diagnose`, read-only device | 246 ms | 245 ms |
+| Notifier, idle | 2 processes, 9.2 MB RSS, 0 CPU in 10 s | 2 processes, 9.2 MB RSS, 0 CPU in 10 s |
+| **Mount → notification** (5 runs) | **1044 ms** | **45 ms** |
 
-- um `blkid`, um `lsblk -P` e um `udevadm info` com todos os candidatos, em
-  vez de `lsblk`, `head`, `cat` e dois `udisksctl` por partição;
-- parsing com expressões regulares e arrays do Bash, sem `echo | sed/grep`;
-- funções que devolvem resultado em `REPLY` (sem um subshell por chamada);
-- filtros baratos (tipo, virtual, já montado) antes do `findmnt --fstab`, que
-  continua uma chamada por candidato para manter exatamente a mesma
-  semântica de correspondência do fstab.
+- The boot path did not regress. The new translation support costs nothing
+  in the journal case: gettext is only set up when stdout is a terminal, and
+  `$"..."` is resolved by bash itself.
+- The notification latency came from an artificial `sleep 1` after every
+  mount event. It was not needed: the check reads the final mount options.
+- `--diagnose` is dominated by `lsof` (about 212 of 236 ms, scanning 680
+  processes). Faster alternatives were measured and rejected (see 05). The
+  cost is only paid on request.
 
-No boot o ganho tende a ser maior que o medido, porque a primeira chamada a
-`udisksctl` ativava o `udisksd` via D-Bus. O último boot desta máquina, ainda
-com a versão antiga, registrou `big-mount.service` em **1,019 s**
-(`systemd-analyze blame`). **Ainda não medi um boot com a versão nova**: isso
-exige instalar o pacote e reiniciar.
+Why the boot path stays at 27 processes: one `blkid`, one `lsblk` and one
+`udevadm` are shared by every partition. Each partition that is mounted
+costs one `findmnt --fstab`, one `mkdir`, one `mount` and one `ln`. The
+fstab lookups could be folded into one call, but that would change how
+fstab tags (UUID=, LABEL=, duplicates) are matched, which is not worth a
+few milliseconds.
 
-Pico de memória do serviço antigo no boot: 20,6 MB, segundo `systemctl
-status`. A maior parte vem do daemon FUSE do NTFS, que continua igual.
+## Round 3 (installed package, real root runs)
 
-O diagnóstico (`lsof`, `journalctl`) só roda quando pedido ou quando uma
-montagem não é gravável. O boot não executa nada disso.
+Measured on the running system with the package installed:
+
+| Measure | Value |
+| --- | --- |
+| `bigmount` as root, every partition already mounted (3 runs) | 42.8, 23.5, 21.3 ms |
+| `bigmount --dry-run` as root (2 runs) | 40.4, 20.5 ms |
+| `systemctl restart big-mount`, Starting → Finished in the journal | 33 ms |
+| the very first service run after installing | 1096 ms (not reproduced; cold caches) |
+| mount → notification in the real Plasma session | 77 ms |
+
+## Round 1 (original script → modernized version)
+
+| Metric | Original | Modernized |
+| --- | --- | --- |
+| Wall time | 127 ms | 37–40 ms |
+| CPU | 129 ms | 38–42 ms |
+| Processes | 194 | 27 |
+| `ntfsfix` calls | 1 | 0 |
+| `udisksctl` D-Bus clients | 10 | 0 |
+
+The last real boot with the original version recorded 1.019 s for
+`big-mount.service` (`systemd-analyze blame`), mostly because its first
+`udisksctl` call activated `udisksd`. **A real boot with the new version has
+not been measured yet**: that needs the package installed and a reboot.

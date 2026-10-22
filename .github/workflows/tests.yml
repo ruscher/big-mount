@@ -1,24 +1,28 @@
 name: Tests
 
-# Static checks and the stub based test suites. They never touch a disk.
-# tests/integration.sh needs a local session with UDisks2 and is run by hand.
+# Static checks, the stub based suites, translations and packaging. Nothing
+# here touches a disk: tests/integration.sh needs a local session with
+# UDisks2 and is run by hand (see docs/09-testing.md).
 on:
   pull_request:
   workflow_dispatch:
 
 jobs:
   tests:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
 
       - name: Install tools
-        run: sudo apt-get update && sudo apt-get install -y shellcheck gettext
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y shellcheck gettext desktop-file-utils libxml2-utils
+          sudo locale-gen pt_BR.UTF-8 en_US.UTF-8
 
-      - name: Syntax
+      - name: Bash syntax
         run: |
           for f in big-mount/usr/bin/bigmount big-mount/usr/lib/big-mount/*.sh \
-                   big-mount/usr/lib/big-mount/bigmount-holders tests/*.sh; do
+                   big-mount/usr/lib/big-mount/bigmount-holders tests/*.sh locale/*.sh; do
             bash -n "$f"
           done
 
@@ -26,13 +30,17 @@ jobs:
         run: |
           shellcheck -x -P big-mount/usr/lib/big-mount:tests \
             big-mount/usr/bin/bigmount big-mount/usr/lib/big-mount/*.sh \
-            big-mount/usr/lib/big-mount/bigmount-holders
-
-      - name: Translations compile
-        run: msgfmt --check -o /dev/null locale/pt_BR.po
+            big-mount/usr/lib/big-mount/bigmount-holders locale/*.sh tests/stubs/* \
+            $(ls tests/*.sh | grep -v bigmount.old.sh)
 
       - name: Boot path (stubbed devices)
         run: bash tests/run-tests.sh new
 
       - name: Library
         run: bash tests/lib-tests.sh
+
+      - name: Translations
+        run: bash tests/i18n-tests.sh
+
+      - name: Packaging
+        run: bash tests/package-check.sh

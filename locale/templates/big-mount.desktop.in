@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Storage Diagnostics
+GenericName=Storage device diagnostics
+Comment=Find out why a drive is read-only or busy, and remove it safely
+Exec=/usr/bin/bigmount --gui
+Icon=big-mount
+Terminal=false
+Categories=System;Filesystem;
+Keywords=disk;drive;usb;mount;unmount;read-only;busy;eject;

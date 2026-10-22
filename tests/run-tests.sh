@@ -191,7 +191,7 @@ EOF
     echo "sdb1 sdb" > "$root/fake-lsblk"
     mkdir -p "$root/sys/block/sdb"; echo 0 > "$root/sys/block/sdb/removable"
     run_script "$root" >/dev/null 2>&1
-    # Behaviour change (docs/01-auditoria.md A3): ntfsfix sets the dirty bit
+    # Behaviour change (docs/01-audit.md A3): ntfsfix sets the dirty bit
     # and resets the journal, so it must never run automatically.
     ASSERT_MSG="ntfsfix never invoked [new-only fix]"; assert_false test -s "$root/ntfsfix.log"
     ASSERT_MSG="mount uses lowntfs-3g type"; assert_true mount_log_grep "$root" "-t[[:space:]]+lowntfs-3g"
@@ -360,7 +360,7 @@ simple_case() { # ROOT BLKID_LINE PART DISK [TRAN] [HOTPLUG]
     disk "$1" "$4"
 }
 
-# ===== device identification (docs/02-deteccao-dispositivos.md) =====
+# ===== device identification (docs/02-device-detection.md) =====
 
 test_usb_rm0_transport() {
     begin "usb-hdd-rm0-transport-usb"
@@ -527,7 +527,7 @@ test_device_swapped_during_scan() {
     ASSERT_MSG="not mounted when diskseq changed"; assert_false test -s "$root/mount.log"
 }
 
-# ===== filesystems and options (docs/03-sistemas-arquivos.md) =====
+# ===== filesystems and options (docs/03-filesystem-support.md) =====
 
 test_fat_regex_bug() {
     begin "ext4-partlabel-containing-fat"
@@ -640,13 +640,14 @@ test_permissions_private_and_bad_value() {
     run_script "$root" >/dev/null 2>&1
     ASSERT_MSG="private: umask=077"; assert_true mount_log_grep "$root" ",umask=077,"
     simple_case "$root" '/dev/sdb1: LABEL="Win" TYPE="vfat"' sdb1 sdb sata 0
-    printf 'PERMISSIONS=$(touch %s/PWNED)\n' "$root" > "$root/etc/big-mount.conf"
-    run_script "$root" >/dev/null 2>&1
+    printf 'PERMISSIONS=%%s%%n$(touch %s/PWNED)\n' "$root" > "$root/etc/big-mount.conf"
+    local out; out="$(run_script "$root" 2>&1)"
+    ASSERT_MSG="value with printf directives is printed, not interpreted"; assert_true grep -qF "unknown value '%s%n" <<<"$out"
     ASSERT_MSG="invalid value falls back to shared"; assert_true mount_log_grep "$root" ",umask=000,"
     ASSERT_MSG="config is data, never executed"; assert_false test -e "$root/PWNED"
 }
 
-# ===== labels and paths (docs/10-seguranca.md) =====
+# ===== labels and paths (docs/10-security.md) =====
 
 test_dot_labels() {
     begin "dot-and-dotdot-labels"
@@ -725,6 +726,16 @@ test_status_and_lock() {
     ASSERT_MSG="status entry"; assert_true status_has "$root" "/dev/sda1	u-1	$root/mnt/Data	rw	-"
     ASSERT_MSG="status header"; assert_true status_has "$root" "# big-mount status v1"
     ASSERT_MSG="lock file used"; assert_true test -e "$root/run/lock/big-mount.lock"
+    ASSERT_MSG="mount helpers do not inherit the lock (FUSE daemons outlive bigmount)"; assert_false test -s "$root/fd.log"
+}
+
+test_lock_released_with_fuse_daemon() {
+    begin "lock-free-while-ntfs-daemon-lives"
+    local root="$HERE/tmp-lock-fuse"
+    simple_case "$root" '/dev/sdb3: LABEL="Win" UUID="w" TYPE="ntfs"' sdb3 sdb sata 0
+    run_script "$root" >/dev/null 2>&1
+    ASSERT_MSG="second run is not blocked by the first one's lock"
+    assert_true bash -c 'exec 9>"$1"; flock -n 9' _ "$root/run/lock/big-mount.lock"
 }
 
 # ===== safety policy: forbidden operations in shipped code =====
@@ -797,6 +808,7 @@ test_label_command_substitution
 test_stale_reverse_symlink
 test_dry_run
 test_status_and_lock
+test_lock_released_with_fuse_daemon
 test_no_destructive_commands
 
 echo ""

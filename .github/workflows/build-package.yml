@@ -4,9 +4,20 @@ name: Build Package
 on:
   workflow_dispatch:
   
+  # Asks the BigLinux build service to build the package. In GitHub filters
+  # "*" does not match "/", so work branches such as feature/x or fix/y never
+  # trigger it: experiment there, and merge to master when it is ready.
+  # Changes that cannot alter the package do not trigger it either.
   push:
     #branches: [ "master", "main", "*" ]
     branches: [ "*" ]
+    paths-ignore:
+      - "docs/**"
+      - "tests/**"
+      - "README.md"
+      - ".github/workflows/tests.yml"
+      - "locale/templates/**"
+      - "locale/*.sh"
   #pull_request:
     #branches: [ "master", "main", "*" ]
     #branches: [ "*" ]

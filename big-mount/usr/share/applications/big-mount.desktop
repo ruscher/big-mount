@@ -1,14 +1,14 @@
 [Desktop Entry]
 Type=Application
-Name=Storage Diagnostics
 Name[pt_BR]=Diagnóstico de Armazenamento
-GenericName=Storage device diagnostics
+Name=Storage Diagnostics
 GenericName[pt_BR]=Diagnóstico de dispositivos de armazenamento
-Comment=Find out why a drive is read-only or busy, and remove it safely
+GenericName=Storage device diagnostics
 Comment[pt_BR]=Descubra por que uma unidade está somente leitura ou ocupada e remova-a com segurança
+Comment=Find out why a drive is read-only or busy, and remove it safely
 Exec=/usr/bin/bigmount --gui
 Icon=big-mount
 Terminal=false
 Categories=System;Filesystem;
-Keywords=disk;drive;usb;mount;unmount;read-only;busy;eject;
 Keywords[pt_BR]=disco;unidade;usb;pendrive;montar;desmontar;somente leitura;ocupado;ejetar;
+Keywords=disk;drive;usb;mount;unmount;read-only;busy;eject;
