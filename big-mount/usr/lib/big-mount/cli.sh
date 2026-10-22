@@ -138,6 +138,9 @@ bm_cause_text() {
          C_TITLE=$"No permission to write"
          C_REASON=$"The device was mounted for another user, so only that user can write to it."
          C_HELP=($"Unmount it and open it again from the file manager while you are logged in.")
+         if [[ $D_MP == /mnt/* ]]; then
+            C_HELP=($"This internal partition is mounted by Big-Mount at boot. An administrator can choose who may write to it with PERMISSIONS in /etc/big-mount.conf.")
+         fi
          C_FIX_LABEL=$"Mount again for my user"
          C_FIX_INFO=$"The device will be unmounted and mounted again for your user. Nothing on it is changed. Programs using it must be closed first."
          ;;

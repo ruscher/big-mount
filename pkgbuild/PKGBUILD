@@ -10,6 +10,7 @@ optdepends=('kdialog: dialogs on KDE Plasma'
             'zenity: dialogs on GNOME and other desktops'
             'libnotify: notifications about read-only devices')
 provides=('big-mount-git')
+backup=('etc/big-mount.conf')
 replaces=('big-mount-git')
 url="https://github.com/biglinux/big-mount"
 pkgdesc="Auto mount partitions in internal disks on boot, diagnose read-only and busy devices"

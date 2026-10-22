@@ -37,6 +37,7 @@ transform_script() {
     # Placeholder trick: rewrite /run/media first so later /media rule won't recurse into it.
     sed \
         -e "s|/etc/bigmountall-no|$root/etc/bigmountall-no|g" \
+        -e "s|/etc/big-mount.conf|$root/etc/big-mount.conf|g" \
         -e "s|/var/lib/sddm|$root/var/lib/sddm|g" \
         -e "s|/var/lib/lightdm|$root/var/lib/lightdm|g" \
         -e "s|/run/media|__RUNMEDIA__|g" \
@@ -605,6 +606,46 @@ test_failed_mount_keeps_existing_dir() {
     ASSERT_MSG="pre-existing directory untouched"; assert_true test -e "$root/mnt/Old/.keep"
 }
 
+# ===== permission policy (/etc/big-mount.conf) =====
+
+test_permissions_default_shared() {
+    begin "permissions-default-is-shared"
+    local root="$HERE/tmp-perm-default"
+    simple_case "$root" '/dev/sdb1: LABEL="Win" TYPE="ntfs"' sdb1 sdb sata 0
+    run_script "$root" >/dev/null 2>&1
+    ASSERT_MSG="no config file: umask=000 as before"; assert_true mount_log_grep "$root" ",umask=000,"
+}
+
+test_permissions_owner() {
+    begin "permissions-owner"
+    local root="$HERE/tmp-perm-owner"
+    setup_root "$root"
+    printf '%s\n' '/dev/sdb1: LABEL="Win" TYPE="ntfs"' '/dev/sdb2: LABEL="Pen" TYPE="exfat"' \
+        '/dev/sdb3: LABEL="Lin" TYPE="ext4"' > "$root/fake-blkid"
+    lsblk_map "$root" "sdb1 sdb sata" "sdb2 sdb sata" "sdb3 sdb sata"
+    disk "$root" sdb
+    printf '# comment\n  PERMISSIONS = owner   # trailing comment\n' > "$root/etc/big-mount.conf"
+    run_script "$root" >/dev/null 2>&1
+    ASSERT_MSG="NTFS: owner writes, others read"; assert_true mount_log_grep "$root" "lowntfs-3g .*,dmask=022,fmask=022,"
+    ASSERT_MSG="exFAT: owner writes, others read"; assert_true mount_log_grep "$root" "noatime,rw,dmask=022,fmask=022,.*/dev/sdb2"
+    ASSERT_MSG="no umask=000 left"; assert_false mount_log_grep "$root" "umask=000"
+    ASSERT_MSG="ext4 unaffected"; assert_true mount_log_grep "$root" "-o noatime,rw,nodev,nofail,x-gvfs-show /dev/sdb3"
+}
+
+test_permissions_private_and_bad_value() {
+    begin "permissions-private-and-invalid"
+    local root="$HERE/tmp-perm-private"
+    simple_case "$root" '/dev/sdb1: LABEL="Win" TYPE="vfat"' sdb1 sdb sata 0
+    echo "PERMISSIONS=private" > "$root/etc/big-mount.conf"
+    run_script "$root" >/dev/null 2>&1
+    ASSERT_MSG="private: umask=077"; assert_true mount_log_grep "$root" ",umask=077,"
+    simple_case "$root" '/dev/sdb1: LABEL="Win" TYPE="vfat"' sdb1 sdb sata 0
+    printf 'PERMISSIONS=$(touch %s/PWNED)\n' "$root" > "$root/etc/big-mount.conf"
+    run_script "$root" >/dev/null 2>&1
+    ASSERT_MSG="invalid value falls back to shared"; assert_true mount_log_grep "$root" ",umask=000,"
+    ASSERT_MSG="config is data, never executed"; assert_false test -e "$root/PWNED"
+}
+
 # ===== labels and paths (docs/10-seguranca.md) =====
 
 test_dot_labels() {
@@ -746,6 +787,9 @@ test_ntfs_silent_readonly_fallback
 test_write_protected_fallback
 test_ntfs_inconsistent_unmountable
 test_failed_mount_keeps_existing_dir
+test_permissions_default_shared
+test_permissions_owner
+test_permissions_private_and_bad_value
 test_dot_labels
 test_unicode_label
 test_quoted_label

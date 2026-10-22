@@ -88,6 +88,22 @@ if [ -n "$UserLastLogin" ] && pw_entry="$(getent passwd "$UserLastLogin")"; then
    IFS=: read -r _ _ UserID GroupID _ <<< "$pw_entry"
 fi
 
+# Permission mask for FAT/exFAT/NTFS (see /etc/big-mount.conf). The file is
+# parsed as data, never sourced: this runs as root.
+FILE_MASK="umask=000"
+if [ -r /etc/big-mount.conf ]; then
+   while IFS= read -r line; do
+      line="${line%%#*}"
+      line="${line//[[:space:]]/}"
+      case "$line" in
+         PERMISSIONS=shared) FILE_MASK="umask=000" ;;
+         PERMISSIONS=owner) FILE_MASK="dmask=022,fmask=022" ;;
+         PERMISSIONS=private) FILE_MASK="umask=077" ;;
+         PERMISSIONS=*) warn "/etc/big-mount.conf: unknown value '${line#*=}', using shared" ;;
+      esac
+   done < /etc/big-mount.conf
+fi
+
 # ---------------------------------------------------------------------------
 # Snapshot of the system, taken once. Everything below is parsed with bash
 # builtins instead of one grep/sed pipeline per partition.
@@ -385,7 +401,7 @@ for i in "${CANDIDATES[@]}"; do
    mount_rc=1
    case "$FSTYPE" in
       ntfs)
-         ntfs_opts="uid=$UserID,gid=$GroupID,rw,noatime,exec,umask=000,nodev,nofail,x-gvfs-show"
+         ntfs_opts="uid=$UserID,gid=$GroupID,rw,noatime,exec,$FILE_MASK,nodev,nofail,x-gvfs-show"
          run mount -t lowntfs-3g -o "$ntfs_opts" "$DEV" "$MOUNT_POINT"
          mount_rc=$?
          # ntfs-3g refuses read-write on hibernated (14), inconsistent (13)
@@ -404,7 +420,7 @@ for i in "${CANDIDATES[@]}"; do
          fi
          ;;
       *fat*)
-         run mount -o "uid=$UserID,gid=$GroupID,noatime,rw,umask=000,nodev,nofail,x-gvfs-show" "$DEV" "$MOUNT_POINT"
+         run mount -o "uid=$UserID,gid=$GroupID,noatime,rw,$FILE_MASK,nodev,nofail,x-gvfs-show" "$DEV" "$MOUNT_POINT"
          mount_rc=$?
          ;;
       *)

@@ -38,8 +38,13 @@ argumento é um ponto de montagem exato de um dispositivo de bloco local.
 ## Integração com o Dolphin
 
 O Plasma não oferece um ponto de extensão suportado para acrescentar ações à
-falha de desmontagem, e o Big-Mount não intercepta nem altera o Dolphin. A
-alternativa implementada:
+falha de desmontagem. Também verifiquei se havia algum evento para reagir: o
+`udisksd` **não** registra no journal a desmontagem recusada por estar
+ocupado (0 ocorrências depois de dezenas de recusas provocadas pelos
+testes). A falha só volta pelo D-Bus para quem chamou. Detectá-la exigiria
+espionar as notificações do Plasma e comparar o texto traduzido delas, a
+interceptação frágil que o projeto proíbe. Por isso o Big-Mount não altera
+nem intercepta o Dolphin. A alternativa implementada:
 
 - menu de contexto do Dolphin (`usr/share/kio/servicemenus/big-mount.desktop`),
   submenu "Dispositivo de armazenamento": "Por que não consigo gravar aqui?"
@@ -48,5 +53,7 @@ alternativa implementada:
 - a ferramenta faz `cd /` antes de tudo para não ocupar o dispositivo que
   deve liberar.
 
-**Não validado na interface real**: o menu de contexto e os diálogos KDialog
-precisam de teste manual no Plasma (ver `09-testes.md`).
+Os fluxos gráficos são testados de ponta a ponta com montagens reais e
+cliques roteirizados (`tests/integration.sh`). O KDialog real aceita todas as
+formas de chamada usadas (verificado em plataforma Qt offscreen). O menu de
+contexto em si só pode ser conferido no Dolphin depois da instalação.

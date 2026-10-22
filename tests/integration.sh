@@ -123,6 +123,7 @@ fi
 begin "E: write-protected device"
 img wp.img; mkfs.ext4 -q -F -L BMWP "$IMG/wp.img"
 attach "$IMG/wp.img" ro && mountdev "$DEV"
+WP_DEV="$DEV"
 diag "$DEV"
 check "cause: hw-readonly" has "diagnosis:   hw-readonly"
 check "explains the lock switch" has "lock switch"
@@ -280,6 +281,86 @@ if findmnt -n /home >/dev/null; then
     BM_OUT="$("$BM" --unmount /home 2>&1)"; BM_RC=$?
     check "--unmount /home refused (exit 4)" test "$BM_RC" -eq 4
 fi
+
+# ----- graphical flows with scripted clicks -------------------------------------
+# A fake kdialog answers from a script ("RC [STDOUT]" per dialog) and logs
+# every call; when the script ends it answers "cancel", so no loop can hang.
+mkdir -p "$BIN/fake"
+cat > "$BIN/fake/kdialog" <<'EOF'
+#!/bin/bash
+printf '%s\n' "$*" >> "$FAKE_KD_LOG"
+n=$(($(cat "$FAKE_KD_STATE" 2>/dev/null || echo 0) + 1)); echo "$n" > "$FAKE_KD_STATE"
+line="$(sed -n "${n}p" "$FAKE_KD_ANSWERS")"
+[ -n "$line" ] || exit 2
+rc="${line%% *}"; out="${line#"$rc"}"; out="${out# }"
+[ -n "$out" ] && printf '%s\n' "$out"
+exit "$rc"
+EOF
+cat > "$BIN/fake/notify-send" <<'EOF'
+#!/bin/bash
+printf '%s\n' "$*" >> "$FAKE_NOTIFY_LOG"
+EOF
+chmod +x "$BIN/fake/kdialog" "$BIN/fake/notify-send"
+gui() { # ANSWER... -- bigmount args
+    local answers=()
+    while [ "$1" != -- ]; do answers+=("$1"); shift; done; shift
+    printf '%s\n' "${answers[@]}" > "$BIN/answers"; : > "$BIN/kd.log"; : > "$BIN/notify.log"; rm -f "$BIN/state"
+    BM_UI=kdialog WAYLAND_DISPLAY=fake DBUS_SESSION_BUS_ADDRESS=fake PATH="$BIN/fake:$PATH" \
+        FAKE_KD_ANSWERS="$BIN/answers" FAKE_KD_STATE="$BIN/state" FAKE_KD_LOG="$BIN/kd.log" \
+        FAKE_NOTIFY_LOG="$BIN/notify.log" "$BM" "$@" < /dev/null > /dev/null 2>&1
+    GUI_RC=$?
+    sleep 1
+}
+kd_has() { grep -qF -- "$1" "$BIN/kd.log"; }
+
+begin "GUI remove: busy -> More options -> Close programs -> removed"
+img gui.img; mkfs.ext4 -q -F -L BMGUI -E root_owner="$(id -u):$(id -g)" "$IMG/gui.img"
+attach "$IMG/gui.img" && mountdev "$DEV"
+GUI_DEV="$DEV" GUI_MP="$MP"; echo x > "$GUI_MP/f"
+bg bash -c 'exec 3< "$1/f"; exec sleep 300' _ "$GUI_MP"; P_GUI=$LASTPID; sleep 0.5
+gui "1" "0 close" "0" -- --gui-remove "$GUI_MP/f"
+check "flow ends successfully (exit 0)" test "$GUI_RC" -eq 0
+check "busy dialog shown with the holder's PID" kd_has "$P_GUI"
+check "busy dialog title" kd_has "This device is still in use"
+check "confirmation listed the program before closing it" bash -c 'grep -F -- "--warningyesno" "$1" | grep -qF "PID $2"' _ "$BIN/kd.log" "$P_GUI"
+check "the reader was closed" bash -c '! kill -0 "$1" 2>/dev/null' _ "$P_GUI"
+check "really unmounted" bash -c '! findmnt -n --source "$1" >/dev/null' _ "$GUI_DEV"
+check "notification only after success" grep -q "Device unmounted" "$BIN/notify.log"
+check "no power-off claimed for a loop device" bash -c '! grep -q "removed safely" "$1"' _ "$BIN/notify.log"
+
+begin "GUI remove: busy -> Cancel keeps everything as it was"
+mountdev "$GUI_DEV"; GUI_MP="$MP"
+bg bash -c 'exec 3< "$1/f"; exec sleep 300' _ "$GUI_MP"; P_GUI=$LASTPID; sleep 0.5
+gui "2" -- --gui-remove "$GUI_MP"
+check "exit 3 (busy)" test "$GUI_RC" -eq 3
+check "still mounted" mounted "$GUI_DEV"
+check "holder untouched" kill -0 "$P_GUI"
+check "no notification" test ! -s "$BIN/notify.log"
+kill "$P_GUI" 2>/dev/null
+
+begin "GUI remove: the running system is refused"
+gui -- --gui-remove /
+check "exit 4" test "$GUI_RC" -eq 4
+check "error dialog explains it" kd_has "It holds the operating system that is running now."
+
+begin "GUI diagnose: read-only mount -> Mount again with writing"
+udisksctl unmount --no-user-interaction -b "$GUI_DEV" >/dev/null 2>&1
+mountdev "$GUI_DEV" ro
+if [ "$JOURNAL" -eq 1 ]; then
+    gui "0" "0" "0" "1" -- --gui "$GUI_DEV"
+    check "fix offered in the dialog" kd_has "--yes-label Mount again with writing"
+    check "confirmation explains nothing is changed" kd_has "Nothing on it is changed."
+    check "success reported" kd_has "You can now write to this device."
+    diag "$GUI_DEV"
+    check "device really writable now" test "$BM_RC" -eq 0
+else
+    skip "GUI remount" "kernel log not readable"
+fi
+
+begin "GUI diagnose: write-protected device has no fix button"
+gui "1" -- --gui "$WP_DEV"
+check "no fix label offered" bash -c '! grep -qE "Mount again|Become owner" "$1"' _ "$BIN/kd.log"
+check "explains the lock switch" kd_has "lock switch"
 
 # ----- notifier ------------------------------------------------------------------
 begin "notifier: warns once about a read-only device"

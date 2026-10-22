@@ -29,11 +29,13 @@
 - O processo raiz nunca lê nada da sessão. A sessão lê
   `/run/big-mount/status` (root, 0644) apenas como dados.
 
-## Risco conhecido, mantido por compatibilidade
+## Permissões de FAT/NTFS internos
 
-`umask=000` + `exec` em FAT/NTFS internos: qualquer conta local lê, grava e
-executa. Não permite *setuid* (modo base `0777 & ~umask`). Restringir para
-`dmask=022,fmask=133` quebraria o compartilhamento entre contas e serviços
-(Samba, servidores de mídia) de quem depende disso hoje. Sugestão para os
-mantenedores: uma opção em `/etc` para quem quiser restringir. Não foi
-implementada porque muda uma política de permissões já estabelecida.
+Por padrão continua `umask=000` + `exec`: qualquer conta local lê, grava e
+executa. Não permite *setuid* (modo base `0777 & ~umask`). Mudar o padrão
+quebraria o compartilhamento entre contas e serviços (Samba, servidores de
+mídia) de quem depende disso hoje, e o projeto põe compatibilidade acima de
+segurança. Para quem precisa restringir, existe `PERMISSIONS=owner` ou
+`private` em `/etc/big-mount.conf` (ver `03-sistemas-arquivos.md`). O
+arquivo é analisado como dados; um teste prova que um valor `$(...)` não é
+executado.
