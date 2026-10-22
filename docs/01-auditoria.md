@@ -103,12 +103,21 @@ Reparos não podem ser automáticos. **Recomendação:** remover a chamada.
 
 ### A4 — NTFS hibernado / Inicialização Rápida não é montado e ninguém avisa — Alta
 
-O bigmount passa `rw` explicitamente. Com `rw`, o ntfs-3g **recusa** volumes
-hibernados (código de saída 14, documentado em `ntfs-3g.probe(8)`) em vez de
-cair para somente leitura. Resultado: a partição do Windows some, um
-diretório vazio fica em `/mnt` e não há nenhuma mensagem para o usuário.
-**Recomendação:** nesses códigos (13, 14, 15), tentar de novo em `ro` (leitura
-não altera o volume), registrar o motivo e avisar o usuário.
+> **Correção feita durante os testes.** A primeira versão deste item dizia que,
+> com `rw` explícito, o ntfs-3g recusa volumes hibernados (código 14). O teste
+> de integração com uma imagem hibernada de verdade mostrou que o ntfs-3g
+> 2026.7.7 **monta somente leitura em silêncio** (código 0): o journal só
+> registra `Cmdline options: rw,...` seguido de `Mounted /dev/loop1
+> (Read-Only, ...)`, e o aviso vai para o stderr do `mount`.
+
+O efeito real é: a partição do Windows aparece somente leitura e ninguém diz
+por quê — exatamente o sintoma relatado pelos usuários. Versões antigas do
+ntfs-3g recusavam com o código 14 e a partição simplesmente sumia, deixando um
+diretório vazio em `/mnt`.
+
+**Recomendação:** depois de montar, ler o estado real em `/proc/mounts`,
+registrar o motivo e avisar o usuário; nos códigos 13/14/15 (versões que
+recusam) tentar de novo em `ro`, porque leitura não altera o volume.
 
 ### A5 — Detecção de USB depende do UDisks estar pronto no boot — Alta
 
@@ -254,7 +263,7 @@ chamadas indiretamente) e SC2015 (`A && B || C`) — informativos.
 | A1 | Rejeitar `.`/`..`, remover caracteres de controle, limitar tamanho; usar o nome do dispositivo como alternativa. |
 | A2 | `KillMode=process` no serviço: o systemd deixa de matar os daemons FUSE ao parar a unidade; o desligamento continua desmontando normalmente. |
 | A3 | Remover o `ntfsfix` automático. A orientação de reparo vai para o diagnóstico. |
-| A4 | Reexecutar em `ro` nos códigos 13/14/15 do ntfs-3g, registrar e notificar. |
+| A4 | Registrar o estado real após a montagem; reexecutar em `ro` nos códigos 13/14/15; notificar. |
 | A5 | Decisão por várias fontes independentes: sysfs (`removable`, `TRAN`, `HOTPLUG`, tipo MMC), udev (`ID_BUS`, `ID_PATH`, `ID_DRIVE_FLASH_SD`, `UDISKS_SYSTEM`, `UDISKS_IGNORE`). Se o udev ainda não processou o dispositivo, esperar uma única vez (`udevadm settle`) e, se persistir, **não** montar. |
 | A6 | Comparar só o valor de `TYPE`. |
 | A7 | Substituir o link reverso quando for um link apontando para outro lugar. |
