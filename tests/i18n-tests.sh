@@ -77,7 +77,7 @@ check "code and templates are English (no accented letters outside .po/.mo)" \
 
 begin "language chosen at run time"
 BM=big-mount/usr/bin/bigmount
-help_line() { env -i PATH="$PATH" "$@" bash "$BM" --help | head -n1; }
+help_line() { env -i PATH="$PATH" "$@" bash "$BM" --help 2>/dev/null | head -n1; }
 check "LANG=C: English" test "$(help_line LANG=C)" = "Usage: bigmount [OPTION] [DEVICE|FOLDER]"
 check "LANG=en_US.UTF-8: English" test "$(help_line LANG=en_US.UTF-8)" = "Usage: bigmount [OPTION] [DEVICE|FOLDER]"
 check "LANG=pt_BR.UTF-8: Portuguese" test "$(help_line LANG=pt_BR.UTF-8)" = "Uso: bigmount [OPÇÃO] [DISPOSITIVO|PASTA]"
