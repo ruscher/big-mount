@@ -7,6 +7,11 @@ RequiresMountsFor=/mnt
 Type=oneshot
 RemainAfterExit=yes
 ExecStart=/usr/bin/bigmount
+# NTFS mounts start a FUSE daemon (mount.lowntfs-3g) inside this unit. Only
+# the script itself may be killed when the unit stops or restarts: the daemon
+# has to live until its filesystem is unmounted, otherwise the volume vanishes
+# under the applications that are using it.
+KillMode=process
 
 [Install]
 WantedBy=multi-user.target
