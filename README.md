@@ -60,7 +60,17 @@ That is why Big-Mount **never**:
 
 ## 2. Installation
 
-### 2.1 From the BigLinux repository (recommended)
+### 2.1 From a release (recommended for this version)
+
+Every [release](https://github.com/ruscher/big-mount/releases) has a ready
+package attached:
+
+```bash
+# download big-mount-<version>-any.pkg.tar.zst from the release page, then
+sudo pacman -U ./big-mount-*-any.pkg.tar.zst
+```
+
+### 2.2 From the BigLinux repository
 
 Big-Mount is part of BigLinux. To install or update it:
 
@@ -68,29 +78,44 @@ Big-Mount is part of BigLinux. To install or update it:
 sudo pacman -Syu big-mount
 ```
 
-On the **first** installation a pacman hook enables the service
-(`systemctl enable big-mount`). Updates never restart it; the new version
-takes effect at the next boot. Your `/etc/big-mount.conf` is kept on
-updates.
+The BigLinux repository is built from
+[biglinux/big-mount](https://github.com/biglinux/big-mount), so it gets this
+version once the work has been merged there.
 
-### 2.2 From this repository (development version)
+### 2.3 Build the package yourself
 
-`pkgbuild/PKGBUILD` downloads the **official** repository
-`https://github.com/biglinux/big-mount`. To package **your checkout**
-without touching that file, generate a temporary PKGBUILD outside the
-repository:
+`pkgbuild/PKGBUILD` builds the `master` branch of this repository:
 
 ```bash
 git clone https://github.com/ruscher/big-mount.git
-cd big-mount
-git checkout feature/bigmount-ng-2        # or the branch you want to test
+cd big-mount/pkgbuild
+makepkg -f
+sudo pacman -U ./big-mount-*.pkg.tar*
+```
 
-mkdir -p ~/build/big-mount && cd ~/build/big-mount
+To package a **local checkout or another branch** without touching the
+PKGBUILD, generate a temporary one outside the repository:
+
+```bash
+cd big-mount                               # your checkout
+git checkout my-branch
+mkdir -p ~/build/big-mount && cp pkgbuild/big-mount.install ~/build/big-mount/
+cd ~/build/big-mount
 sed "s|^source=.*|source=(\"big-mount::git+file://$OLDPWD#branch=$(git -C "$OLDPWD" branch --show-current)\")|" \
     "$OLDPWD/pkgbuild/PKGBUILD" > PKGBUILD
 makepkg -f
 sudo pacman -U ./big-mount-*.pkg.tar*
 ```
+
+### 2.4 What happens on installation and updates
+
+- On the **first** installation a pacman hook enables the service
+  (`systemctl enable big-mount`).
+- Nothing is restarted automatically. The new boot code runs at the next
+  boot, and the notifier starts at your next login. The package prints how
+  to apply it right away: `sudo systemctl restart big-mount` is safe, and
+  mounted NTFS volumes stay mounted (verified on a running system).
+- Your `/etc/big-mount.conf` is kept on updates (`backup=`).
 
 Check what was installed:
 
@@ -100,7 +125,7 @@ pacman -Ql big-mount
 systemctl is-enabled big-mount
 ```
 
-### 2.3 Requirements
+### 2.5 Requirements
 
 | Package | Kind | What for |
 | --- | --- | --- |
@@ -116,7 +141,7 @@ systemctl is-enabled big-mount
 
 Without `kdialog` or `zenity`, everything works in the terminal.
 
-### 2.4 Disable or uninstall
+### 2.6 Disable or uninstall
 
 ```bash
 # disable only the automatic mounting, keep everything else
@@ -923,12 +948,17 @@ shellcheck -x -P big-mount/usr/lib/big-mount:tests \
 `.github/workflows/tests.yml` runs syntax, shellcheck and every suite except
 the integration one on each pull request.
 
-### 14.3 Packaging, the fork and the build workflow
+### 14.3 Packaging, releases, the fork and the build workflow
 
 `ruscher/big-mount` is the development fork of `biglinux/big-mount`.
-`pkgbuild/PKGBUILD` always downloads the **official** repository, so
-BigLinux packages only change when the work reaches it. To test a branch,
-use [section 2.2](#22-from-this-repository-development-version).
+`pkgbuild/PKGBUILD` builds this fork (`url`/`source` point to it, with a
+comment explaining why). When the work is merged into `biglinux/big-mount`,
+point them back there. `pkgbuild/big-mount.install` only prints messages; it
+restarts nothing.
+
+Releases are tagged on `master` (`vMAJOR.MINOR.PATCH`), and each one carries
+the package built from that tag by `pkgbuild/PKGBUILD`. To test a branch,
+use [section 2.3](#23-build-the-package-yourself).
 
 `build-package.yml` asks the BigLinux build service to build the package on
 pushes. Its filter `branches: ["*"]` does not match names that contain `/`,
@@ -950,7 +980,7 @@ docs or tests do not trigger it either.
 | [`docs/08-performance.md`](docs/08-performance.md) | measurements |
 | [`docs/09-testing.md`](docs/09-testing.md) | suites, coverage, pending manual validation |
 | [`docs/10-security.md`](docs/10-security.md) | security model |
-| [`docs/11-final-report.md`](docs/11-final-report.md) | summary of the changes |
+| [`docs/11-final-report.md`](docs/11-final-report.md) | summary of the changes, per round and release |
 
 ---
 
@@ -991,11 +1021,23 @@ run during boot. Details in [`docs/08-performance.md`](docs/08-performance.md).
   `/etc/fstab` with `/etc/crypttab`.
 - Btrfs with nested subvolumes: processes inside another subvolume may not
   show up in the `lsof` of the mount point.
-- Still to validate on real hardware and on a real Plasma screen: eSATA,
-  Thunderbolt NVMe, an internal SD reader, the power-off of a USB HDD, LUKS
-  drives, Breeze with 125/150/200 % scaling, the Orca screen reader, the
-  Dolphin menu, and the GNOME edition. See
-  [`docs/09-testing.md`](docs/09-testing.md).
+- Verified on the installed package and a running Plasma 6 session:
+  - the full integration suite against `/usr/bin/bigmount`;
+  - `systemctl restart big-mount` with a mounted NTFS volume, whose FUSE
+    daemon stays alive;
+  - real notifications, 77 ms after the mount, 15 s, with buttons, and no
+    process left behind;
+  - the polkit action, and the language selection.
+- Still to validate on real hardware or by eye:
+  - a real boot, and a USB disk plugged in at boot;
+  - Windows Fast Startup;
+  - eSATA, Thunderbolt NVMe, an internal SD reader;
+  - the power-off of a USB HDD, LUKS drives;
+  - Breeze with 125/150/200 % scaling, the Orca screen reader, the Dolphin
+    menu;
+  - the GNOME edition.
+
+  See [`docs/09-testing.md`](docs/09-testing.md).
 
 ---
 

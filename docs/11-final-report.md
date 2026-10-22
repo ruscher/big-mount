@@ -1,5 +1,24 @@
 # 11 — Final report
 
+## Round 3 (installed package, release v2.1.0)
+
+The package built from round 2 was installed on the development machine
+and tested there:
+
+- integration suite against `/usr/bin/bigmount`;
+- a live service restart with a mounted NTFS volume;
+- real Plasma notifications;
+- root timings.
+
+Two problems found that way were fixed: B16, the lock fd inherited by the
+NTFS FUSE daemon, which would have blocked every later run; and B17,
+warnings at every login about partitions holding another operating system.
+
+`pkgbuild/PKGBUILD` now builds this fork, because the official repository
+does not have the code yet. It gained `pkgbuild/big-mount.install`, which
+only prints messages. Releases: `v2.0.0` (round 1) and `v2.1.0` (rounds 2
+and 3), each with its package attached.
+
 ## Round 2 (branch `feature/bigmount-ng-2`)
 
 Starting point: `master` at `ee044f9`, the modernized version. Mounting at
@@ -72,5 +91,5 @@ See the end of 09. Notably:
   notifier, the Dolphin menu, the launcher, the pt_BR translation,
   `/etc/big-mount.conf`, and the test suites.
 
-The package source in `pkgbuild/PKGBUILD` is still `biglinux/big-mount`, so
-official packages only change when the work reaches that repository.
+Since round 3, `pkgbuild/PKGBUILD` builds `ruscher/big-mount`. Point it back
+to `biglinux/big-mount` once the official repository carries this code.

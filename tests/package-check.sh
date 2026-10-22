@@ -73,8 +73,11 @@ check "every translation in locale/LINGUAS is installed" \
     bash -c 'while read -r l; do [ -f "$1/usr/share/locale/$l/LC_MESSAGES/big-mount.mo" ] || exit 1; done < locale/LINGUAS' _ "$P"
 
 begin "metadata"
-pkginfo="$(source pkgbuild/PKGBUILD 2>/dev/null; printf 'source=%s\n' "${source[*]}"; printf 'depends=%s\n' "${depends[*]}"; printf 'backup=%s\n' "${backup[*]}")"
-check "official source unchanged (biglinux/big-mount)" grep -q "^source=git+https://github.com/biglinux/big-mount.git" <<< "$pkginfo"
+pkginfo="$(source pkgbuild/PKGBUILD 2>/dev/null; printf 'source=%s\n' "${source[*]}"; printf 'depends=%s\n' "${depends[*]}"; printf 'backup=%s\n' "${backup[*]}"; printf 'install=%s\n' "${install:-}"; printf 'url=%s\n' "$url")"
+check "source is the development repository (ruscher/big-mount)" grep -q "^source=git+https://github.com/ruscher/big-mount.git$" <<< "$pkginfo"
+check "url matches the source" grep -q "^url=https://github.com/ruscher/big-mount$" <<< "$pkginfo"
+check "install script exists and is valid" bash -c '[ "$1" = "install=big-mount.install" ] && bash -n pkgbuild/big-mount.install' _ "$(grep ^install= <<< "$pkginfo")"
+check "install script restarts nothing by itself" bash -c '! grep -vE "^\s*(#|echo)" pkgbuild/big-mount.install | grep -qE "systemctl|kill|mount"' 
 check "configuration preserved on upgrades (backup=)" grep -q "^backup=etc/big-mount.conf" <<< "$pkginfo"
 for d in udisks2 util-linux ntfs-3g lsof; do check "depends on $d" grep -qw "$d" <<< "$(grep ^depends= <<< "$pkginfo")"; done
 

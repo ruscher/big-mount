@@ -39,6 +39,14 @@ Severity:
 | B14 | Info | fact | gettext 1.0 writes polkit languages as `pt-BR`; polkit matches POSIX names (`pt_BR`, then `pt`) and the policy always used `pt_BR` | normalized by `locale/compile.sh` |
 | B15 | Info | environment | this kernel has no dm-crypt target and no iso9660/squashfs: LUKS and read-only image tests cannot run here | covered by unit tests; listed as manual validation |
 
+Found while testing the **installed** package (round 3):
+
+| # | Severity | Kind | Finding | Status |
+| --- | --- | --- | --- | --- |
+| B16 | High | latent bug, proven by test | the lock fd was inherited by mount helpers; `mount.lowntfs-3g` lives on as the FUSE daemon, so after the first boot with an NTFS mount every later run (`systemctl restart big-mount`, a manual run) would have waited 60 s for the lock and given up | commands that change the system run with fd 9 closed; the test fails without the fix |
+| B17 | Low | found live | at every login the notifier warned "No permission to write" about `/mnt/root`, the Btrfs top level of another BigLinux install: nothing can or should be fixed there | partitions holding an operating system are not announced (`--diagnose` still explains them) |
+| — | Info | measurement | the first service run right after installing took 1096 ms; the next ones 21–43 ms as root, and a full `systemctl restart` 33 ms (journal timestamps). The first value could not be reproduced (cold caches after installing) | recorded in 08 |
+
 Not changed, on purpose:
 
 - **Boot path.** It is already minimal: 27 processes, of which one `blkid`,

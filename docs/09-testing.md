@@ -4,12 +4,12 @@
 
 | Suite | What it uses | Result on the development machine |
 | --- | --- | --- |
-| `tests/run-tests.sh new` | stubs for `blkid`, `lsblk`, `udevadm`, `udisksctl`, `findmnt`, `mount`, `ntfsfix`; paths rewritten to a scratch dir | **90 passed, 0 failed** |
+| `tests/run-tests.sh new` | stubs for `blkid`, `lsblk`, `udevadm`, `udisksctl`, `findmnt`, `mount`, `ntfsfix`; paths rewritten to a scratch dir | **92 passed, 0 failed** |
 | `tests/run-tests.sh old` | the original script, as a reference | its failures are the bugs that were fixed |
 | `tests/lib-tests.sh` | the library with simulated facts | **100 passed, 0 failed** |
 | `tests/i18n-tests.sh` | the catalog, the generated resources, runtime language selection | **32 passed, 0 failed** |
-| `tests/package-check.sh` | `package()` of the PKGBUILD on the checkout | **38 passed, 0 failed** |
-| `tests/integration.sh` | disposable images as loop devices mounted by UDisks2, no root; GUI flows with scripted clicks; `BM=/usr/bin/bigmount` tests the installed package | **96 passed, 0 failed, 3 skipped** |
+| `tests/package-check.sh` | `package()` of the PKGBUILD on the checkout | **41 passed, 0 failed** |
+| `tests/integration.sh` | disposable images as loop devices mounted by UDisks2, no root; GUI flows with scripted clicks; `BM=/usr/bin/bigmount` tests the installed package | **97 passed, 0 failed, 3 skipped** |
 | `shellcheck -x` | shipped code, tests, locale scripts | no findings |
 | `bash -n`, `msgfmt --check`, `desktop-file-validate`, `xmllint`, `systemd-analyze verify` | — | pass (part of the suites above) |
 
@@ -123,6 +123,20 @@ UDisks2.
 - config values never executed or used as printf formats;
 - dialogs never confirm by themselves, and Enter is safe;
 - the administrator process list is never left behind.
+
+## Validated on the installed package (Plasma 6.7.4, Wayland)
+
+- `BM=/usr/bin/bigmount tests/integration.sh`: 97 passed, 0 failed,
+  3 skipped (same as the checkout).
+- `systemctl restart big-mount` with `/mnt/Basic_data_partition` (NTFS)
+  mounted: the `mount.lowntfs-3g` FUSE daemon stayed alive and the volume
+  stayed readable. The old version killed it.
+- Real notifications in the session: captured with `dbus-monitor`, app
+  "Big-Mount", `desktop-entry=big-mount`, 15 s, actions "details"/"help",
+  77 ms after the mount, and no `notify-send` left after 16 s. This test is
+  what found B17 (see 01).
+- Language selection of the installed files (`C`, `en_US`, `pt_BR`,
+  `de_DE` → English), and the polkit action registered with its exec path.
 
 ## Manual validation still needed (needs hardware or a person)
 

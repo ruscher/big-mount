@@ -37,6 +37,18 @@ fstab lookups could be folded into one call, but that would change how
 fstab tags (UUID=, LABEL=, duplicates) are matched, which is not worth a
 few milliseconds.
 
+## Round 3 (installed package, real root runs)
+
+Measured on the running system with the package installed:
+
+| Measure | Value |
+| --- | --- |
+| `bigmount` as root, every partition already mounted (3 runs) | 42.8, 23.5, 21.3 ms |
+| `bigmount --dry-run` as root (2 runs) | 40.4, 20.5 ms |
+| `systemctl restart big-mount`, Starting → Finished in the journal | 33 ms |
+| the very first service run after installing | 1096 ms (not reproduced; cold caches) |
+| mount → notification in the real Plasma session | 77 ms |
+
 ## Round 1 (original script → modernized version)
 
 | Metric | Original | Modernized |
