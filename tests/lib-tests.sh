@@ -141,6 +141,122 @@ check "same process: asked to exit with SIGTERM" bash -c '! kill -0 "$1" 2>/dev/
 wait "$SPID" 2>/dev/null; rc=$?
 check "it ended by SIGTERM (143), never SIGKILL (137)" eq "$rc" 143
 
+begin "unmount: the mount table is the judge (docs/06-safe-removal.md)"
+FAKE_TABLE=("/run/media/u/X")
+bm_mounts() { M_TARGET=("${FAKE_TABLE[@]}"); M_FSTYPE=() M_VFSOPT=() M_FSOPT=(); }
+bm_udisks() { UD_CALLS+=("$*"); UD_ERROR="$FAKE_UD_ERROR"; UD_MESSAGE="fake"; [ -n "$FAKE_UNMOUNTS" ] && FAKE_TABLE=(); [ -z "$FAKE_UD_ERROR" ]; }
+FAKE_UD_ERROR="org.freedesktop.UDisks2.Error.NotMounted" FAKE_UNMOUNTS=1 UD_CALLS=()
+bm_unmount_all /dev/sdz1; check "mount vanished meanwhile (NotMounted) -> success" eq "$?" 0
+FAKE_TABLE=("/run/media/u/X") FAKE_UD_ERROR="" FAKE_UNMOUNTS="" UD_CALLS=()
+bm_unmount_all /dev/sdz1; rc=$?
+check "udisks says ok but the mount stays -> failure" eq "$rc" 1
+check "  ... with an explicit reason" eq "$UD_ERROR" still-mounted
+check "  ... and a bounded number of attempts" eq "${#UD_CALLS[@]}" 8
+FAKE_TABLE=("/run/media/u/X") FAKE_UD_ERROR="org.freedesktop.UDisks2.Error.DeviceBusy" FAKE_UNMOUNTS=""
+bm_unmount_all /dev/sdz1; check "busy stays busy" eq "$UD_ERROR" org.freedesktop.UDisks2.Error.DeviceBusy
+unset -f bm_mounts bm_udisks
+. "$BIGMOUNT_LIB/lib.sh"
+
+begin "safe removal protections"
+# A removable drive sdz with two partitions (+ a LUKS one) simulated end to end
+fake_drive() {
+    FAKE_SEQ=(7) MOUNTED=([/dev/sdz1]=/run/media/u/A [/dev/sdz2]=/run/media/u/B) BUSY_ON="" CALLS=() HOLDERS=""
+}
+bm_facts() { F=([NAME]="$1" [DISK]=/dev/sdz [DISK_TYPE]=disk [TRAN]=usb [HOTPLUG]=1 [RM]=0 [FSTYPE]=ext4); }
+bm_system_use() { return 1; }
+bm_drive_members() { DRIVE_DEVS=(/dev/sdz /dev/sdz1 /dev/sdz2 /dev/sdz3) DRIVE_FSTYPES=("" ext4 vfat crypto_LUKS); }
+bm_diskseq() { REPLY="${FAKE_SEQ[0]}"; [ "${#FAKE_SEQ[@]}" -gt 1 ] && FAKE_SEQ=("${FAKE_SEQ[@]:1}"); }
+bm_mounts() { M_TARGET=() M_FSTYPE=() M_VFSOPT=() M_FSOPT=(); [ -n "${MOUNTED[$1]:-}" ] && M_TARGET=("${MOUNTED[$1]}"); }
+bm_has_holders() { [[ " $HOLDERS " == *" $1 "* ]]; }
+bm_other_holders() { O_KIND=() O_WHAT=(); }
+bm_udisks() {
+    CALLS+=("$*"); UD_ERROR="" UD_MESSAGE=""
+    local dev="${*: -1}"
+    case "$1" in
+        unmount) if [ "$dev" = "$BUSY_ON" ]; then UD_ERROR=org.freedesktop.UDisks2.Error.DeviceBusy; return 1; fi; unset "MOUNTED[$dev]" ;;
+        lock) HOLDERS="${HOLDERS/$dev/}" ;;
+    esac
+    return 0
+}
+declare -A MOUNTED
+called() { [[ " ${CALLS[*]} " == *" $1 "* ]]; }
+
+fake_drive
+bm_remove_core remove /dev/sdz1; rc=$?
+check "two partitions unmounted, then powered off" eq "$rc:$RM_POWERED" "0:1"
+check "power-off came after both unmounts" eq "${CALLS[*]}" "unmount -b /dev/sdz2 unmount -b /dev/sdz1 power-off -b /dev/sdz"
+
+fake_drive; BUSY_ON=/dev/sdz1
+bm_remove_core remove /dev/sdz1; rc=$?
+check "partial failure (second partition busy) -> busy" eq "$rc" 3
+check "  ... and the drive is NOT powered off" bash -c '[[ $1 != *power-off* ]]' _ "${CALLS[*]}"
+
+fake_drive; FAKE_SEQ=(7 7 9)
+bm_remove_core remove /dev/sdz1; rc=$?
+check "device replaced between two steps -> stop" eq "$rc" 1
+check "  ... the reason says so" bash -c '[[ $1 == *replaced* ]]' _ "$RM_REASON"
+check "  ... nothing done to the new device" eq "${#CALLS[@]}" 1
+
+fake_drive
+bm_udisks() { CALLS+=("$*"); UD_ERROR=""; [ "$1" = unmount ] && unset "MOUNTED[${*: -1}]"; [ "$1" = unmount ] && [ "${*: -1}" = /dev/sdz1 ] && MOUNTED[/dev/sdz2]=/run/media/u/B2; return 0; }
+bm_remove_core remove /dev/sdz1; rc=$?
+check "a partition mounted again meanwhile -> no success" eq "$rc" 1
+check "  ... and no power-off" bash -c '[[ $1 != *power-off* ]]' _ "${CALLS[*]}"
+
+fake_drive; HOLDERS="/dev/sdz3"
+bm_udisks() { CALLS+=("$*"); UD_ERROR=""; case "$1" in unmount) unset "MOUNTED[${*: -1}]" ;; lock) HOLDERS="" ;; esac; return 0; }
+bm_remove_core remove /dev/sdz1; rc=$?
+check "open LUKS volume is locked before the power-off" eq "${CALLS[*]: -2}" "lock -b /dev/sdz3 power-off -b /dev/sdz"
+check "  ... and the removal succeeds" eq "$rc" 0
+
+fake_drive
+bm_facts() { F=([NAME]="$1" [DISK]=/dev/sda [DISK_TYPE]=disk [TRAN]=sata [HOTPLUG]=0 [RM]=0 [FSTYPE]=ext4); }
+bm_remove_core remove /dev/sdz1; rc=$?
+check "internal disk: unmounted, never powered off" eq "$rc:$RM_POWERED" "0:0"
+check "  ... no power-off request at all" bash -c '[[ $1 != *power-off* ]]' _ "${CALLS[*]}"
+unset -f fake_drive bm_facts bm_system_use bm_drive_members bm_diskseq bm_mounts bm_has_holders bm_other_holders bm_udisks
+. "$BIGMOUNT_LIB/lib.sh"
+
+begin "slow operations announce themselves after 2 s, without polling"
+udisksctl() { sleep "$FAKE_DELAY"; }
+slow_hook() { SLOW_CALLED=1; }
+BM_SLOW_HOOK=slow_hook SLOW_CALLED=0 FAKE_DELAY=0.1; bm_udisks unmount -b /dev/x
+check "fast unmount: no notice" eq "$SLOW_CALLED" 0
+BM_SLOW_HOOK=slow_hook SLOW_CALLED=0 FAKE_DELAY=2.6; bm_udisks unmount -b /dev/x; rc=$?
+check "slow unmount: one notice" eq "$SLOW_CALLED" 1
+check "  ... and the real result is still returned" eq "$rc" 0
+BM_SLOW_HOOK=""; unset -f udisksctl slow_hook
+
+begin "notifications: one path, durations from one place"
+notify-send() { printf 'notify-send %s\n' "$*" >> "$WORK/n.log"; }
+kdialog() { printf 'kdialog %s\n' "$*" >> "$WORK/n.log"; }
+: > "$WORK/n.log"; DBUS_SESSION_BUS_ADDRESS=fake BM_UI=kdialog bm_notify info drive-harddisk "Safe to disconnect" "Pen <b>"
+check "info: notify-send, 5000 ms, transient" grep -q -- "--expire-time 5000 --hint string:desktop-entry:big-mount --transient" "$WORK/n.log"
+check "  ... body escaped" grep -q "Pen &lt;b&gt;" "$WORK/n.log"
+check "  ... and never a second popup" eq "$(wc -l < "$WORK/n.log")" 1
+: > "$WORK/n.log"; DBUS_SESSION_BUS_ADDRESS=fake bm_notify warning dialog-warning "Read-only device" "x" "details=View details" >/dev/null
+check "warning: 15000 ms, kept in history, with actions" grep -q -- "--expire-time 15000 --hint string:desktop-entry:big-mount --action details=View details" "$WORK/n.log"
+: > "$WORK/n.log"; DBUS_SESSION_BUS_ADDRESS="" BM_UI=kdialog bm_notify info drive-harddisk "Safe to disconnect" "Pen"
+check "no session bus: kdialog --passivepopup for 5 s" grep -q -- "--passivepopup Pen 5" "$WORK/n.log"
+: > "$WORK/n.log"; out="$(DBUS_SESSION_BUS_ADDRESS="" BM_UI=tty bm_notify info x "Safe to disconnect" "Pen" 2>&1)"
+check "no desktop at all: plain text" eq "$out" "Safe to disconnect: Pen"
+check "  ... and no GUI program started" test ! -s "$WORK/n.log"
+unset -f notify-send kdialog
+BM_UI="tty"
+
+begin "busy summary speaks plain language"
+summary_for() { BUSY_PID=("$@") BUSY_PIDS=("$@"); }
+O_KIND=() O_WHAT=()
+BUSY_PID=(1) BUSY_PIDS=(1) BUSY_COMM=(dolphin) BUSY_APP=("Dolphin (file manager)") BUSY_FD=(12) BUSY_ACCESS=(r)
+bm_busy_summary; check "file manager" eq "$BUSY_ADVICE" "Close the window or tab that shows the device, then try again."
+BUSY_PID=(1 2) BUSY_PIDS=(1 2) BUSY_COMM=(dolphin bash) BUSY_APP=(Dolphin Shell) BUSY_FD=(12 cwd) BUSY_ACCESS=(r "")
+bm_busy_summary; check "a terminal outranks the file manager" eq "$BUSY_SUMMARY" "A terminal is open in a folder of this device. In total, 2 programs are using it."
+BUSY_PID=(1 2) BUSY_PIDS=(1 2) BUSY_COMM=(bash rsync) BUSY_APP=(Shell "Copy or archive operation") BUSY_FD=(cwd 4) BUSY_ACCESS=("" w)
+bm_busy_summary; check "a writer outranks everything" eq "${BUSY_SUMMARY%%.*}" "Copy or archive operation has a file open for writing on this device"
+BUSY_PID=() BUSY_PIDS=() O_KIND=(mount) O_WHAT=(/var/lib/os-prober/mount)
+bm_busy_summary; check "no process, but the system holds it" eq "${BUSY_SUMMARY:0:22}" "No program is using it"
+unset -f summary_for
+
 begin "lsof field parsing"
 cat > "$WORK/lsof" <<'EOF'
 p4242

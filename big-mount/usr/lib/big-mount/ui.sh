@@ -264,17 +264,34 @@ bm_ui_text() {
    esac
 }
 
-# bm_notify ICON TITLE BODY [KEY=LABEL]...: desktop notification. With
-# actions it blocks until the user reacts and prints the chosen key; callers
-# run it in the background.
+# ----- notifications -----------------------------------------------------------
+# One path only, so a message is never shown twice: notify-send (libnotify)
+# when there is a session bus, otherwise kdialog --passivepopup (on Plasma it
+# reaches the same notification server, without action buttons), otherwise
+# stderr. Durations are set here and nowhere else. Plasma honours them, and
+# without one it keeps notifications that have buttons open indefinitely.
+BM_POPUP_SECONDS=5      # information: disappears and is not kept in the history
+BM_WARNING_SECONDS=15   # problems, possibly with buttons: time to click, kept in the history
+
+# bm_notify info|warning ICON TITLE BODY [KEY=LABEL]...: with actions it blocks
+# until the user reacts or the notification expires, and prints the chosen
+# key; callers run it in the background. Decisions never go through here:
+# they use dialogs that do not expire.
 bm_notify() {
-   local icon="$1" title="$2" body="$3" acts=() a
-   shift 3
-   for a in "$@"; do acts+=(--action "$a"); done
+   local kind="$1" icon="$2" title="$3" body="$4" secs="$BM_POPUP_SECONDS" a opts=()
+   shift 4
+   if [ "$kind" = warning ]; then
+      secs="$BM_WARNING_SECONDS"
+   else
+      opts+=(--transient)
+   fi
+   for a in "$@"; do opts+=(--action "$a"); done
+   bm_html "$body"
    if [ -n "${DBUS_SESSION_BUS_ADDRESS:-}" ] && command -v notify-send >/dev/null; then
-      bm_html "$body"
-      notify-send --app-name "$BM_APP_NAME" --icon "$icon" \
-         --hint string:desktop-entry:big-mount "${acts[@]}" -- "$title" "$REPLY" 2>/dev/null
+      notify-send --app-name "$BM_APP_NAME" --icon "$icon" --expire-time "$((secs * 1000))" \
+         --hint string:desktop-entry:big-mount "${opts[@]}" -- "$title" "$REPLY" 2>/dev/null
+   elif [ "$BM_UI" = kdialog ]; then
+      kdialog --title "$title" --icon "$icon" --passivepopup "$REPLY" "$secs" >/dev/null 2>&1
    else
       printf '%s: %s\n' "$title" "$body" >&2
    fi

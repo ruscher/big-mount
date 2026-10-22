@@ -321,11 +321,13 @@ bg bash -c 'exec 3< "$1/f"; exec sleep 300' _ "$GUI_MP"; P_GUI=$LASTPID; sleep 0
 gui "1" "0 close" "0" -- --gui-remove "$GUI_MP/f"
 check "flow ends successfully (exit 0)" test "$GUI_RC" -eq 0
 check "busy dialog shown with the holder's PID" kd_has "$P_GUI"
-check "busy dialog title" kd_has "This device is still in use"
+check "busy dialog title names the device" kd_has "BMGUI is still in use"
+check "plain-language summary first" kd_has "Close that program, then try again."
 check "confirmation listed the program before closing it" bash -c 'grep -F -- "--warningyesno" "$1" | grep -qF "PID $2"' _ "$BIN/kd.log" "$P_GUI"
 check "the reader was closed" bash -c '! kill -0 "$1" 2>/dev/null' _ "$P_GUI"
 check "really unmounted" bash -c '! findmnt -n --source "$1" >/dev/null' _ "$GUI_DEV"
 check "notification only after success" grep -q "Device unmounted" "$BIN/notify.log"
+check "information popup is transient and lasts 5 s" grep -q -- "--expire-time 5000 .*--transient" "$BIN/notify.log"
 check "no power-off claimed for a loop device" bash -c '! grep -q "removed safely" "$1"' _ "$BIN/notify.log"
 
 begin "GUI remove: busy -> Cancel keeps everything as it was"
@@ -341,16 +343,18 @@ kill "$P_GUI" 2>/dev/null
 begin "GUI remove: the running system is refused"
 gui -- --gui-remove /
 check "exit 4" test "$GUI_RC" -eq 4
-check "error dialog explains it" kd_has "It holds the operating system that is running now."
+check "notification explains it" grep -q "It holds the operating system that is running now." "$BIN/notify.log"
+check "errors stay 15 s and are kept in the history" bash -c 'grep -q -- "--expire-time 15000" "$1" && ! grep -q -- "--transient" "$1"' _ "$BIN/notify.log"
+check "no dialog for a mere error" test ! -s "$BIN/kd.log"
 
 begin "GUI diagnose: read-only mount -> Mount again with writing"
 udisksctl unmount --no-user-interaction -b "$GUI_DEV" >/dev/null 2>&1
 mountdev "$GUI_DEV" ro
 if [ "$JOURNAL" -eq 1 ]; then
-    gui "0" "0" "0" "1" -- --gui "$GUI_DEV"
+    gui "0" "0" "1" -- --gui "$GUI_DEV"
     check "fix offered in the dialog" kd_has "--yes-label Mount again with writing"
     check "confirmation explains nothing is changed" kd_has "Nothing on it is changed."
-    check "success reported" kd_has "You can now write to this device."
+    check "success reported by a popup, not a dialog" grep -q "You can now write to this device." "$BIN/notify.log"
     diag "$GUI_DEV"
     check "device really writable now" test "$BM_RC" -eq 0
 else
@@ -374,7 +378,7 @@ P_NOTE=$!; PIDS+=("$P_NOTE")
 sleep 1
 attach "$IMG/note.img" ro && mountdev "$DEV"
 sleep 3
-notes_for() { grep -c "^Device mounted read-only: Device: $1 " "$NOTE_HOME/notes"; }
+notes_for() { grep -c "^Read-only device: Device: $1 " "$NOTE_HOME/notes"; }
 check "initial scan: warns about the device already mounted read-only (BMWP)" test "$(notes_for BMWP)" -eq 1
 check "hot-plugged read-only device: one notification" test "$(notes_for BMNOTE)" -eq 1
 check "the notification names the reason" grep -q "write-protected" "$NOTE_HOME/notes"
