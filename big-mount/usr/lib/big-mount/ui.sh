@@ -120,7 +120,8 @@ bm_doc_render_text() {
       kind="${DOC_KIND[i]}"
       text="${DOC_TEXT[i]}"
       # Terminal output must not carry escape sequences from device data
-      text="${text//[$'\001'-$'\010'$'\013'-$'\037'$'\177']/?}"
+      # (\x1f is the cell separator of tables and is handled below)
+      text="${text//[$'\001'-$'\010'$'\013'-$'\036'$'\177']/?}"
       case "$kind" in
          h) out+="== $text =="$'\n' ;;
          p) out+="$text"$'\n\n' ;;

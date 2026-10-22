@@ -203,6 +203,14 @@ bm_parse_pairs 'NAME="/dev/sdd1" LABEL="Novo volume" MOUNTPOINTS="/a\x0a/b"'
 check "pairs: value with space" eq "${KV[LABEL]}" "Novo volume"
 check "pairs: multiple mount points" eq "${KV[MOUNTPOINTS]}" $'/a\n/b'
 
+bm_doc_new; bm_doc_tr "App"$'\n'"comm" 42 "Open"
+bm_doc_render_text
+check "terminal: table keeps the second line of a cell" bash -c '[[ $1 == *"App  |  comm  |  42  |  Open"* ]]' _ "$REPLY"
+
+begin "an empty target is refused (it must not mean the current folder)"
+( cd / && bm_main --busy "" >/dev/null 2>&1 ); rc=$?
+check "--busy '' exits 2" eq "$rc" 2
+
 begin "dialogs never confirm on their own"
 bm_doc_new
 bm_ui_choice "t" "" A B C < /dev/null > /dev/null

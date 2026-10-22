@@ -37,6 +37,11 @@ bm_main() {
    shift
    # Relative paths are resolved now: we leave the current folder below
    for a in "$@"; do
+      # An empty target must not silently become the current folder
+      if [ -z "$a" ]; then
+         printf $"bigmount: '%s' is not a local storage device or a folder on one"'\n' "" >&2
+         return 2
+      fi
       if [[ $a != -* && $a != /* ]]; then a="$PWD/$a"; fi
       args+=("$a")
    done
