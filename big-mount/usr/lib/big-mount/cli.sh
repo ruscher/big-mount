@@ -583,7 +583,7 @@ bm_pick_device() {
    done < <(lsblk -P -b -p -o NAME,TYPE,FSTYPE,LABEL,SIZE,MOUNTPOINTS 2>/dev/null)
    if [ "${#items[@]}" -eq 0 ]; then
       bm_doc_new; bm_doc_p $"No storage device to diagnose was found."
-      bm_ui_show info $"Storage diagnostics" drive-harddisk
+      bm_ui_show info $"Storage diagnostics" big-mount
       return 1
    fi
    bm_ui_menu $"Storage diagnostics" $"Choose a device:" "${items[@]}"
@@ -598,7 +598,7 @@ bm_gui_diagnose() {
    fi
    if ! bm_resolve "$target" || ! bm_facts "$R_DEV"; then
       bm_doc_new; bm_doc_p $"This folder is not on a local storage device."
-      bm_ui_show info $"Storage diagnostics" drive-harddisk
+      bm_ui_show info $"Storage diagnostics" big-mount
       return 1
    fi
    local dev="$R_DEV"
@@ -740,7 +740,7 @@ bm_gui_remove() {
    local target="${1:-}" rc name icon
    if ! bm_resolve "$target" || ! bm_facts "$R_DEV"; then
       bm_doc_new; bm_doc_p $"This folder is not on a removable storage device."
-      bm_ui_show info $"Safely remove" drive-harddisk
+      bm_ui_show info $"Safely remove" big-mount
       return 1
    fi
    local dev="$R_DEV"

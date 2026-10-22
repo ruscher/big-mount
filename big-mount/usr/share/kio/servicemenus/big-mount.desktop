@@ -5,7 +5,7 @@ X-KDE-Protocols=file
 X-KDE-RequiredNumberOfUrls=1
 X-KDE-Submenu=Storage device
 X-KDE-Submenu[pt_BR]=Dispositivo de armazenamento
-Icon=drive-harddisk
+Icon=big-mount
 Actions=diagnose;safeRemove;
 
 [Desktop Action diagnose]
