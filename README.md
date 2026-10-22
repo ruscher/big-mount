@@ -946,7 +946,18 @@ shellcheck -x -P big-mount/usr/lib/big-mount:tests \
 ```
 
 `.github/workflows/tests.yml` runs syntax, shellcheck and every suite except
-the integration one on each pull request.
+the integration one on each pull request, in an Arch Linux container and as
+a normal user (the generated translation files depend on the gettext
+version, so CI uses the same tools as BigLinux).
+
+What needs a person (the real dialogs, notifications and Dolphin menu, the
+theme and scale, a real boot) is guided by a script that uses only
+disposable devices:
+
+```bash
+bash tests/manual-check.sh              # inside the desktop session
+bash tests/manual-check.sh --after-boot # after rebooting with the package installed
+```
 
 ### 14.3 Packaging, releases, the fork and the build workflow
 

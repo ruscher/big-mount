@@ -47,6 +47,13 @@ Found while testing the **installed** package (round 3):
 | B17 | Low | found live | at every login the notifier warned "No permission to write" about `/mnt/root`, the Btrfs top level of another BigLinux install: nothing can or should be fixed there | partitions holding an operating system are not announced (`--diagnose` still explains them) |
 | — | Info | measurement | the first service run right after installing took 1096 ms; the next ones 21–43 ms as root, and a full `systemctl restart` 33 ms (journal timestamps). The first value could not be reproduced (cold caches after installing) | recorded in 08 |
 
+Found by the first real CI runs (round 3):
+
+| # | Severity | Kind | Finding | Status |
+| --- | --- | --- | --- | --- |
+| B18 | Low | proven | CI had never really run, because every commit carried `[skip ci]`. On Ubuntu 24.04 the translation checks failed: gettext 0.21 has no short `-k` for `msgfmt`, and it formats generated `.desktop` files differently from gettext 1.0 | `compile.sh` uses `--keyword=` (identical output); CI runs in an `archlinux` container, the base of BigLinux, as a normal user |
+| B19 | Low | proven | a translation test depended on the disks of the machine running it (a CI container has none); shellcheck 0.11 reports SC2329 on helpers that are called indirectly | the test uses a fake disk; SC2329 allowed in the tests only |
+
 Not changed, on purpose:
 
 - **Boot path.** It is already minimal: 27 processes, of which one `blkid`,
