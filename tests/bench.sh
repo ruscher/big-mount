@@ -51,6 +51,7 @@ patch_script() {
         -e "s|/mnt|$root/mnt|g" \
         -e "s|/media|$root/media|g" \
         -e "s|__RUNMEDIA__|$root/run/media|g" \
+        -e '/# root-check$/s/\[ "\$EUID" -ne 0 \]/false/' \
         "$SCRIPT_SRC" > "$root/bigmount"
 }
 

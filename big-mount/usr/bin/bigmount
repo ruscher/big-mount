@@ -15,7 +15,8 @@ case "${1:-}" in
    "") ;;
    --dry-run) DRY_RUN=1 ;;
    *)
-      BIGMOUNT_LIB="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/../lib/big-mount"
+      # Normalized: /usr/lib/big-mount, not /usr/bin/../lib/big-mount
+      BIGMOUNT_LIB="$(readlink -f -- "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/../lib/big-mount")"
       # shellcheck source-path=SCRIPTDIR source=../lib/big-mount/cli.sh
       . "$BIGMOUNT_LIB/cli.sh" || exit 1
       bm_main "$@"
@@ -32,11 +33,15 @@ fi
 # bug reports. $"..." is resolved by bash itself: no extra process.
 # journald turns a leading "<N>" into the syslog priority of the line.
 shopt -s noexpand_translation 2>/dev/null
+# Translations are only looked for when a person reads them (a terminal, or
+# a user who ran bigmount without options): the boot run spends no process
+if [ -t 1 ] || { [ -z "$DRY_RUN" ] && [ "$EUID" -ne 0 ]; }; then # root-check
+   TEXTDOMAINDIR="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/../share/locale"
+   export TEXTDOMAINDIR
+fi
 if [ -t 1 ]; then
    P_WARN="" P_ERR=""
    export TEXTDOMAIN=big-mount
-   TEXTDOMAINDIR="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/../share/locale"
-   export TEXTDOMAINDIR
 else
    P_WARN="<4>" P_ERR="<3>"
    # A domain without catalogs: every message stays as written
@@ -68,8 +73,25 @@ run() {
    "$@" 9>&-
 }
 
+# Mounting is the job of big-mount.service, as root. A person who runs
+# "bigmount" at a terminal gets an explanation instead of one permission
+# error per command (exit 5: not authorized, as in the other modes).
+# bash translates $"..." while it parses a command, so the domain is chosen
+# by a command of its own, before the block that prints
+[ -z "$DRY_RUN" ] && [ "$EUID" -ne 0 ] && TEXTDOMAIN=big-mount # root-check
+if [ -z "$DRY_RUN" ] && [ "$EUID" -ne 0 ]; then # root-check
+   printf '%s\n' $"bigmount: mounting the internal partitions needs administrator rights. big-mount.service does it at every boot." \
+      $"To mount them now:            sudo systemctl restart big-mount" \
+      $"To see what would be mounted: bigmount --dry-run" \
+      $"To check the installation:    bigmount --doctor" >&2
+   exit 5
+fi
+
 if [ -z "$DRY_RUN" ]; then
-   exec 9>/run/lock/big-mount.lock
+   if ! { exec 9>/run/lock/big-mount.lock; } 2>/dev/null; then
+      err $"cannot open the lock file /run/lock/big-mount.lock, giving up"
+      exit 1
+   fi
    if ! flock -w 60 9; then
       err $"another bigmount is still running, giving up"
       exit 1
@@ -84,7 +106,20 @@ if [ ! -e "/mnt/user-mount" ] && [ -d /run/media ]; then
    run ln -s /run/media /mnt/user-mount
 fi
 
-# Detect last logged-in user across display managers, fallback to first human UID
+# Owner of the FAT/exFAT/NTFS files: the last user who logged in through
+# the display manager, else the first account in the range of people
+# (UID_MIN..UID_MAX of /etc/login.defs). The display manager files belong
+# to root; they are only read when readable, never with an error. No
+# account at all (a fresh install): root, never a made-up UID.
+UID_MIN=1000 UID_MAX=60000
+if [ -r /etc/login.defs ]; then
+   while read -r key val _; do
+      case "$key" in
+         UID_MIN) [[ $val =~ ^[0-9]+$ ]] && UID_MIN="$val" ;;
+         UID_MAX) [[ $val =~ ^[0-9]+$ ]] && UID_MAX="$val" ;;
+      esac
+   done < /etc/login.defs
+fi
 UserLastLogin=""
 if [ -r /var/lib/sddm/state.conf ]; then
    while IFS= read -r line; do
@@ -95,13 +130,18 @@ fi
 if [ -z "$UserLastLogin" ] && [ -r /var/lib/lightdm/data/last-user ]; then
    read -r UserLastLogin < /var/lib/lightdm/data/last-user
 fi
-if [ -z "$UserLastLogin" ]; then
-   UserLastLogin="$(getent passwd | awk -F: '$3 >= 1000 && $3 < 60000 { print $1; exit }')"
-fi
 
-UserID=1000
-GroupID=1000
-if [ -n "$UserLastLogin" ] && pw_entry="$(getent passwd "$UserLastLogin")"; then
+UserID=0
+GroupID=0
+pw_entry=""
+if [ -n "$UserLastLogin" ] && ! pw_entry="$(getent passwd -- "$UserLastLogin")"; then
+   warn $"last login '%s' is not a known account, ignoring it" "$UserLastLogin"
+   pw_entry=""
+fi
+if [ -z "$pw_entry" ]; then
+   pw_entry="$(getent passwd | awk -F: -v lo="$UID_MIN" -v hi="$UID_MAX" '$3 >= lo && $3 <= hi { print; exit }')"
+fi
+if [ -n "$pw_entry" ]; then
    IFS=: read -r _ _ UserID GroupID _ <<< "$pw_entry"
 fi
 

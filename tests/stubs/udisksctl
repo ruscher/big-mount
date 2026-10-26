@@ -1,13 +1,20 @@
 #!/bin/bash
 : "${TESTROOT:?stub called outside the test harness}"
 # Stub: look up response in $TESTROOT/fake-udisksctl/<devname>
-# Called as: udisksctl info -b /dev/<X>
+# Called as: udisksctl info -b /dev/<X>. Every call is logged. Like the real
+# udisksctl, a name that is not a known block device (a disk or partition
+# of $TESTROOT/fake-lsblk) fails with "Error looking up object".
+echo "udisksctl $*" >> "$TESTROOT/udisksctl.log"
 dev=""
 for a in "$@"; do
     case "$a" in
         /dev/*) dev="${a#/dev/}" ;;
     esac
 done
+if [ -n "$dev" ] && ! awk -v d="$dev" '$1 == d || $2 == d { f = 1 } END { exit !f }' "$TESTROOT/fake-lsblk" 2>/dev/null; then
+    echo "Error looking up object for device /dev/$dev" >&2
+    exit 1
+fi
 f="$TESTROOT/fake-udisksctl/$dev"
 if [ -r "$f" ]; then
     cat "$f"
