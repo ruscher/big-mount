@@ -1,5 +1,25 @@
 # 11 — Final report
 
+## Round 8 (drive health and Secure Erase)
+
+A field case: Calamares could not create a partition on the SATA SSD of a
+notebook. The drive timed out, and then acknowledged every write and kept
+none. An ATA Secure Erase, after a sleep that unfroze it, brought it back
+(14, section 1). Big-Mount now:
+
+- reports the errors of a drive since boot: timeouts on its port, I/O
+  errors, a slowed link and SMART, in `--diagnose DISK`, in the diagnosis
+  of its filesystems, in `--doctor` and in the new `--gui-drive` dialog,
+  also in the launcher;
+- erases an internal SATA drive with its own Secure Erase through UDisks2
+  (`--secure-erase`, **Erase the whole drive…**), after the user types its
+  name, and checks that the old table is gone and a new one is kept.
+
+Tests: boot path 114, library 235, translations 38, packaging 52. The
+UDisks2 calls that write and read back the partition table were validated
+on a loop device. The erase and the sleep through Big-Mount are left for
+the next drive that needs them (14, section 4).
+
 ## Round 7 (field report: SDDM and `/dev/nvme` errors, release v2.2.0)
 
 A user reported *Permission denied* on `/var/lib/sddm/state.conf`,

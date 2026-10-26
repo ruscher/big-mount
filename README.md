@@ -43,6 +43,7 @@
 | **Diagnosis** (`bigmount --diagnose`, `--gui`) | on request | you | explains why a device cannot be written to, and offers the fix when it is safe |
 | **Busy device** (`bigmount --busy`) | on request | you | shows which programs, or other holders, prevent the unmount |
 | **Safe removal** (`--unmount`, `--safe-remove`, `--gui-remove`) | on request | you | unmounts and powers off the drive through UDisks2, without forcing anything |
+| **Drive check and Secure Erase** (`--diagnose DISK`, `--gui-drive`, `--secure-erase`) | on request | you (UDisks2 asks for the administrator password to erase) | tells whether a drive stopped answering or failed to read and write since boot; erases a SATA SSD that no longer keeps what is written, and checks that it keeps it again |
 | **Notifier** (`bigmount --notifier`) | when you log in | you | tells you, once per boot, when a device was mounted read-only, and why |
 
 The priorities of the project, in order: **data integrity**, stability and
@@ -55,6 +56,10 @@ That is why Big-Mount **never**:
 - touches partitions listed in `/etc/fstab`;
 - mounts removable devices, which belong to UDisks/Plasma;
 - opens windows as root.
+
+The one operation that erases data, the Secure Erase of a whole drive
+([5.4](#54-drive-errors-and-secure-erase)), runs only when you ask for it,
+confirm it, type the name of the drive and give the administrator password.
 
 ---
 
@@ -475,6 +480,49 @@ Environment
 "Managed by" tells who mounted it: `big-mount`, `fstab`, `UDisks` (Plasma or
 Dolphin), `system` (`/`, `/home`, `/boot`...) or `other`.
 
+### 5.4 Drive errors and Secure Erase
+
+Some problems belong to the drive, not to a filesystem. A failing SSD can
+stop answering, and then lock itself in a protection mode in which it
+**acknowledges every write and keeps none**. An installer then fails with
+something like `sfdisk --force --append /dev/sda ... Failed to add
+partition`, and a partition table you erased comes back.
+
+```bash
+bigmount --diagnose /dev/sda        # the drive, then each of its filesystems
+bigmount --gui-drive                # in a dialog (launcher: Check a drive)
+sudo bigmount --secure-erase /dev/sda
+```
+
+The check reads, as your user and without changing anything: the kernel
+messages of this boot about the disk, its partitions and **its port**
+(`ata1`, `nvme0`, where timeouts are reported), the SMART verdict from
+UDisks2, and the ATA security state from udev. It reports timeouts and link
+resets, read/write errors, a slowed-down link, and a drive that predicts its
+own failure. A few damaged sectors replaced by spare ones are shown but are
+not an alarm. When a filesystem is diagnosed, the errors of its drive are
+mentioned, and the dialog offers **Check the drive…**.
+
+For an internal SATA drive that supports it, **Erase the whole drive…**
+(or `--secure-erase`) runs the drive's own ATA Secure Erase through UDisks2:
+
+1. shows what will be lost (every partition), with Cancel as the default;
+2. asks you to type the name of the drive (`sda`);
+3. unmounts its filesystems and locks its encrypted volumes;
+4. if the firmware froze the security commands at power-on, asks whether
+   the computer may sleep a moment to unfreeze them;
+5. erases (UDisks2 asks for the administrator password);
+6. checks the result: the old partition table must be gone, and a new empty
+   one (GPT on UEFI computers, MBR otherwise) must be read back from the
+   drive.
+
+It is refused for the drive of the running system (start from a live USB
+drive), USB and hot-plug drives, NVMe, drives without the feature, and
+drives with a security password. If the drive ignores the erase, or still
+does not keep what is written, Big-Mount says so: replace it. The case that
+led to this feature, and every decision, are in
+[`docs/14-drive-health-and-secure-erase.md`](docs/14-drive-health-and-secure-erase.md).
+
 ---
 
 ## 6. Busy devices and safe removal
@@ -624,7 +672,7 @@ Final messages, shown only after verification:
 | Integration | Where | Details |
 | --- | --- | --- |
 | Dolphin service menu | right-click a folder → **Storage device** | **Why can't I write here?** (`bigmount --gui %f`) and **Safely remove (shows what keeps it busy)** (`bigmount --gui-remove %f`) |
-| Launcher | application menu → **Storage Diagnostics** | choose a device from a list |
+| Launcher | application menu → **Storage Diagnostics** | choose a device from a list; its action **Check a drive (errors, Secure Erase)** opens `bigmount --gui-drive` |
 | Notifications | when a device you cannot write to is mounted, and when a removal ends | see below |
 | Dialogs | KDialog (Plasma) or Zenity (GNOME) | light/dark theme, HiDPI and screen readers come from the toolkit |
 
@@ -690,7 +738,7 @@ empty target is refused.
 | `bigmount` | yes | automatic mounting (what the service runs); as a user it explains and exits with 5 |
 | `bigmount --dry-run` | no (recommended as root) | shows the decisions and commands, changes nothing |
 | `bigmount --diagnose` | no | overview of the devices and the environment |
-| `bigmount --diagnose TARGET` | no | why it cannot be written, possible fix, technical details, who is using it |
+| `bigmount --diagnose TARGET` | no | why it cannot be written, possible fix, technical details, who is using it; for a whole disk, first the errors of the drive ([5.4](#54-drive-errors-and-secure-erase)) |
 | `bigmount --busy TARGET` | no | what keeps the device busy |
 | `bigmount --unmount TARGET` | no (polkit may ask) | unmounts every mount of this filesystem |
 | `bigmount --safe-remove TARGET` | no (polkit) | unmounts every partition of the drive, locks LUKS, powers it off if removable |
@@ -699,6 +747,8 @@ empty target is refused.
 | `  --assume-yes` | — | do not ask before closing programs (with `--close-apps`) or stopping services that depend on the device (scripts) |
 | `bigmount --gui [TARGET]` | no | diagnosis in a dialog; without a target, a list |
 | `bigmount --gui-remove TARGET` | no | safe removal in dialogs |
+| `bigmount --gui-drive [DISK]` | no | drive check in a dialog, with **Erase the whole drive…** when it is possible |
+| `bigmount --secure-erase DISK` | no (UDisks2 asks for the administrator password; `sudo` when there is no graphical session) | erases a whole internal SATA drive with its own Secure Erase, after confirmation, then checks it ([5.4](#54-drive-errors-and-secure-erase)) |
 | `bigmount --notifier` | no | session notifier (started by autostart) |
 | `bigmount --doctor` | no | read-only self-check of the installation, the service, the session and the storage stack; anonymized, for bug reports ([12.2](#122-bigmount---doctor)) |
 | `bigmount -V`, `--version` | no | version, package and source revision |
@@ -709,16 +759,18 @@ Exit codes:
 | Code | Meaning |
 | --- | --- |
 | 0 | done (or, for `--diagnose TARGET`, the device is fine) |
-| 1 | error; for `--diagnose TARGET`, the device cannot be written to |
+| 1 | error; for `--diagnose TARGET`, the device cannot be written to, or its drive reported errors |
 | 2 | wrong usage (unknown option, empty target) |
 | 3 | device busy |
 | 4 | refused: the drive holds the running system |
-| 5 | authorization refused or cancelled |
+| 5 | authorization refused or cancelled (for `--secure-erase`, also: the name of the drive was not typed) |
 | 6 | unmounted, but the drive is still in use (LVM/RAID); not powered off |
 | 7 | unmounted, but the drive cannot be powered off by the computer |
 | 8 | unmounted, but powering it off failed (wait a moment before unplugging) |
 | 9 | nothing done: systemd services depend on the device (`--assume-yes` stops them) |
-| 10 | nothing done: another removal of the same drive is in progress |
+| 10 | nothing done: another operation on the same drive is in progress |
+| 11 | nothing erased: the drive stays frozen |
+| 12 | the drive did not do what it was told: the erase was ignored or what was written afterwards was not kept (replace it), or the result could not be checked |
 
 For `--doctor`: 0 when no problem was found (warnings may exist), 1 when at
 least one problem was found.
@@ -853,6 +905,11 @@ user actions ── udisksctl/D-Bus ──▶ UDisks2 ── polkit decides (pas
 - **Mounting, unmounting, locking, powering off and taking ownership** go
   through UDisks2, whose own polkit policy decides. Big-Mount widens no
   permission.
+- **Secure Erase** also goes through UDisks2
+  (`org.freedesktop.udisks2.ata-secure-erase`: the administrator password,
+  always). Big-Mount adds no privileged code for it. It is reachable only
+  from `--secure-erase` and the **Erase the whole drive…** dialog, after the
+  name of the drive is typed, and a test checks that nothing else calls it.
 - **Other users' data:** as a user, `lsof` sees only your processes. Other
   accounts appear only with the administrator password.
 - **Untrusted data** (labels, file and process names) never goes through
@@ -1121,6 +1178,7 @@ docs or tests do not trigger it either.
 | [`docs/11-final-report.md`](docs/11-final-report.md) | summary of the changes, per round and release |
 | [`docs/12-field-report.md`](docs/12-field-report.md) | the SDDM/NVMe field report: evidence, root causes, fixes, tests |
 | [`docs/13-versioning-and-doctor.md`](docs/13-versioning-and-doctor.md) | traceable versions, `--version`, `--doctor`, separating desktop problems |
+| [`docs/14-drive-health-and-secure-erase.md`](docs/14-drive-health-and-secure-erase.md) | the failing SSD field case, drive health, Secure Erase and its verification |
 
 ---
 
@@ -1183,6 +1241,13 @@ run during boot. Details in [`docs/08-performance.md`](docs/08-performance.md).
   the **Unable to access storage device** dialog on screen (it was driven
   by scripted KDialog calls), and the Plasma symptoms of the reporter's
   computer, which are not caused by Big-Mount.
+- Secure Erase covers internal SATA drives only (not NVMe, not USB). The
+  erase call and the sleep that unfreezes a drive have been validated with
+  `hdparm`/`rtcwake` on the field machine and with simulated UDisks2 in
+  the tests, but not yet through Big-Mount on real hardware
+  ([`docs/14`](docs/14-drive-health-and-secure-erase.md)). Some computers
+  freeze the drive again when they wake up; then it can only be erased in
+  another computer, or by hot-plugging it.
 - Users of the `biglinux-stable` repository get these fixes only after
   BigLinux merges this work and publishes the package; until then the
   repository ships the December 2025 script ([12.1](#121-errors-about-sddm-or-devnvme)).
