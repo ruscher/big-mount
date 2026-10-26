@@ -1,8 +1,13 @@
 # Maintainer: Bruno Goncalves <bigbruno@gmail.com>
 
 pkgname=big-mount
-pkgver=$(date +%y.%m.%d)
-pkgrel=$(date +%H%M)
+# The version is the date and time (UTC) of the commit the package is built
+# from, set by pkgver() below: the same source always gives the same
+# version, and it keeps growing like the build dates used before
+# (26.10.25.1342 > 26.10.22-1342). The commit itself goes into
+# /usr/lib/big-mount/version, shown by "bigmount --version".
+pkgver=$(date -u +%y.%m.%d.%H%M)
+pkgrel=1
 arch=('any')
 license=('GPL')
 depends=('bash' 'udisks2' 'util-linux' 'ntfs-3g' 'lsof')
@@ -10,6 +15,7 @@ optdepends=('kdialog: dialogs on KDE Plasma'
             'zenity: dialogs on GNOME and other desktops'
             'libnotify: desktop notifications (otherwise kdialog --passivepopup is used)')
 provides=('big-mount-git')
+conflicts=('big-mount-git')
 replaces=('big-mount-git')
 backup=('etc/big-mount.conf')
 install=big-mount.install
@@ -21,6 +27,11 @@ pkgdesc="Mounts internal partitions at boot; diagnoses read-only and busy device
 source=("git+https://github.com/ruscher/big-mount.git")
 makedepends=("git")
 md5sums=(SKIP)
+
+pkgver() {
+    cd "${srcdir}/${pkgname}" || return 1
+    TZ=UTC git log -1 --date=format-local:%y.%m.%d.%H%M --format=%cd
+}
 
 package() {
     # Verify default folder
@@ -41,5 +52,16 @@ package() {
 
     if [ -d "${InternalDir}/opt" ]; then
         cp -r "${InternalDir}/opt" "${pkgdir}/"
+    fi
+
+    # The revision this package was built from (bigmount --version, --doctor)
+    local rev
+    if rev="$(git -C "${srcdir}/${pkgname}" rev-parse HEAD 2>/dev/null)"; then
+        {
+            printf 'revision=%s\n' "$rev"
+            printf 'date=%s\n' "$(TZ=UTC git -C "${srcdir}/${pkgname}" log -1 --date=format-local:%Y-%m-%dT%H:%M:%SZ --format=%cd)"
+            printf 'source=%s\n' "$url"
+        } > "${pkgdir}/usr/lib/big-mount/version"
+        chmod 644 "${pkgdir}/usr/lib/big-mount/version"
     fi
 }
