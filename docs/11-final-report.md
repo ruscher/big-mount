@@ -1,5 +1,34 @@
 # 11 — Final report
 
+## Round 7 (field report: SDDM and `/dev/nvme` errors, release v2.2.0)
+
+A user reported *Permission denied* on `/var/lib/sddm/state.conf`,
+`cat: /sys/block/nvme/removable` and *Error looking up object for device
+/dev/nvme* on every command. The cause was found in the
+`biglinux-stable` package, not in this code: `big-mount 25.12.23-2237` is
+byte for byte the December 2025 script. It reads the SDDM file without
+checking, cuts `nvme0n1p1` down to `nvme`, and ignores every option. The
+fixed package (26.04.24) had been in `biglinux-testing` for six months. The
+messages were reproduced exactly on an NVMe machine with that package.
+
+Auditing this fork against the report found ten smaller problems (F1–F10).
+The most visible: `bigmount` run by a user failed with raw errors and a
+false "another bigmount is still running"; an unplugged device ended as
+"It remains mounted"; two removals of one drive could run at once; and no
+version could be traced to its code. All are fixed and tested. There is
+now `bigmount --version`, an anonymized read-only `bigmount --doctor`, and
+package versions that come from the commit.
+
+Tests: boot path 109, library 179, translations 37, packaging 51,
+integration 130 (2 skipped). The new checks fail on the stable script, on
+`f547e4b` or on the installed 26.10.22 package. Details:
+[12](12-field-report.md), [13](13-versioning-and-doctor.md).
+
+Left open: shipping it through the BigLinux repositories; Thunderbolt
+NVMe, SD readers and multi-namespace NVMe on real hardware; looking at the
+new dialog on screen; the Plasma symptoms of the reporter's computer,
+which are not Big-Mount's (12, section 5).
+
 ## Round 6 (the pending validations, release v2.1.3)
 
 With v2.1.2 installed, the remaining items were checked on the machine:

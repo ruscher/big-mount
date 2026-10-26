@@ -82,6 +82,13 @@ The BigLinux repository is built from
 [biglinux/big-mount](https://github.com/biglinux/big-mount), so it gets this
 version once the work has been merged there.
 
+> **Check what you have.** On 2026-10-25 the `biglinux-stable` repository
+> still shipped `big-mount 25.12.23-2237`, the script from December 2025
+> (the fixed `26.04.24` package was only in `biglinux-testing`). That
+> version prints `grep: /var/lib/sddm/state.conf: Permission denied` and
+> `Error looking up object for device /dev/nvme`, and ignores every option.
+> See [12.1](#121-errors-about-sddm-or-devnvme).
+
 ### 2.3 Build the package yourself
 
 `pkgbuild/PKGBUILD` builds the `master` branch of this repository:
@@ -117,13 +124,28 @@ sudo pacman -U ./big-mount-*.pkg.tar*
   mounted NTFS volumes stay mounted (verified on a running system).
 - Your `/etc/big-mount.conf` is kept on updates (`backup=`).
 
-Check what was installed:
+Check what was installed, and which code it runs:
 
 ```bash
+bigmount --version          # version, package and the exact git revision it was built from
+bigmount --doctor           # full self-check (see 12.2)
 pacman -Qi big-mount
-pacman -Ql big-mount
 systemctl is-enabled big-mount
 ```
+
+```text
+$ bigmount --version
+Big-Mount 2.2.0
+  package:   big-mount 26.10.25.1342-1
+  revision:  0123456789abcdef0123456789abcdef01234567 (2026-10-25T13:42:07Z)
+  source:    https://github.com/ruscher/big-mount
+```
+
+The package version is the UTC date and time of the commit it was built
+from (`YY.MM.DD.HHMM`), so the same source always gives the same version,
+and the full commit is stored in `/usr/lib/big-mount/version`. Packages
+built before this change used the build time instead (`26.10.22-1342`) and
+cannot be traced to a commit.
 
 ### 2.5 Requirements
 
@@ -169,7 +191,12 @@ bigmount --busy /run/media/$USER/HDD   # what is using this device?
 bigmount --safe-remove /dev/sdc        # unmount everything and power the drive off
 bigmount --gui                         # the same, in dialogs
 sudo bigmount --dry-run                # what the boot would mount, without mounting
+bigmount --doctor                      # is the installation healthy? (for bug reports)
+bigmount --version                     # which version and which code is installed
 ```
+
+`bigmount` without options is the boot service's job and needs root. Run by
+a user, it only explains that (exit 5) instead of failing on each step.
 
 In Dolphin: right-click a folder → **Storage device** → **Why can't I
 write here?** or **Safely remove**.
@@ -656,7 +683,7 @@ empty target is refused.
 
 | Command | Needs root | Description |
 | --- | --- | --- |
-| `bigmount` | yes | automatic mounting (what the service runs) |
+| `bigmount` | yes | automatic mounting (what the service runs); as a user it explains and exits with 5 |
 | `bigmount --dry-run` | no (recommended as root) | shows the decisions and commands, changes nothing |
 | `bigmount --diagnose` | no | overview of the devices and the environment |
 | `bigmount --diagnose TARGET` | no | why it cannot be written, possible fix, technical details, who is using it |
@@ -669,6 +696,8 @@ empty target is refused.
 | `bigmount --gui [TARGET]` | no | diagnosis in a dialog; without a target, a list |
 | `bigmount --gui-remove TARGET` | no | safe removal in dialogs |
 | `bigmount --notifier` | no | session notifier (started by autostart) |
+| `bigmount --doctor` | no | read-only self-check of the installation, the service, the session and the storage stack; anonymized, for bug reports ([12.2](#122-bigmount---doctor)) |
+| `bigmount -V`, `--version` | no | version, package and source revision |
 | `bigmount -h`, `--help` | no | help |
 
 Exit codes:
@@ -685,6 +714,16 @@ Exit codes:
 | 7 | unmounted, but the drive cannot be powered off by the computer |
 | 8 | unmounted, but powering it off failed (wait a moment before unplugging) |
 | 9 | nothing done: systemd services depend on the device (`--assume-yes` stops them) |
+| 10 | nothing done: another removal of the same drive is in progress |
+
+For `--doctor`: 0 when no problem was found (warnings may exist), 1 when at
+least one problem was found.
+
+When a target cannot be used, the message says why: it does not exist (an
+unplugged device), it is an NVMe controller (`/dev/nvme0`: its storage is
+`/dev/nvme0n1`), it is not a storage device, or it is a folder on a network
+share or in memory. Nothing is ever derived from a device name by cutting
+it.
 
 In a script:
 
@@ -763,6 +802,8 @@ To mount a partition somewhere else or with other options, put it in
 | `/usr/lib/big-mount/lib.sh` | device facts, diagnosis, holders, closing programs, UDisks |
 | `/usr/lib/big-mount/ui.sh` | dialogs (KDialog/Zenity/terminal) and notifications |
 | `/usr/lib/big-mount/cli.sh` | commands, texts, graphical flows and the notifier |
+| `/usr/lib/big-mount/doctor.sh` | `--version` and `--doctor` (loaded only by them) |
+| `/usr/lib/big-mount/version` | the git revision the package was built from |
 | `/usr/lib/big-mount/bigmount-holders` | privileged, read-only helper (through `pkexec`) |
 | `/usr/lib/systemd/system/big-mount.service` | boot service |
 | `/usr/share/libalpm/hooks/big-mount.hook` | enables the service on the first installation |
@@ -782,6 +823,7 @@ Files created while running:
 | `/media` → `/mnt`, `/mnt/user-mount` → `/run/media` | service | compatibility links |
 | `/run/big-mount/status` | service | state of the boot mounts |
 | `/run/lock/big-mount.lock` | service | lock against simultaneous runs |
+| `$XDG_RUNTIME_DIR/big-mount-drive-<disk>.lock` | removal | one removal of a drive at a time (private to the user) |
 | `~/.local/state/big-mount/notified` | notifier | warnings already shown during this boot |
 
 ---
@@ -814,9 +856,14 @@ user actions ── udisksctl/D-Bus ──▶ UDisks2 ── polkit decides (pas
   escape sequences in the terminal. Translation catalogs are loaded with
   `noexpand_translation`, and configuration values are never used as printf
   formats.
-- **Races:** `flock` at boot, and the disk sequence number between the scan
-  and the mount and before every irreversible removal step. The process
-  start time is checked before any `SIGTERM`.
+- **Races:** `flock` at boot, a per-drive lock for removals (a double
+  click on the Dolphin action cannot start two), and the disk sequence
+  number between the scan and the mount and before every irreversible
+  removal step. The process start time is checked before any `SIGTERM`.
+- **Device identity:** device names are never built by cutting strings.
+  Parents come from `lsblk` (sysfs), UDisks2 objects from UDisks2 itself
+  (`udisksctl info`), and a name UDisks2 does not know stops the operation
+  as "disconnected" instead of being retried or forced.
 - A test scans the shipped code for forbidden commands (`ntfsfix`, `mkfs`,
   `fsck`, `umount -f/-l`, `kill -9`, `fuser -k`, `chmod -R`, `chown -R`,
   `remove_hiberfile`, `--force`).
@@ -824,6 +871,61 @@ user actions ── udisksctl/D-Bus ──▶ UDisks2 ── polkit decides (pas
 ---
 
 ## 12. Troubleshooting
+
+### 12.1 Errors about SDDM or `/dev/nvme`
+
+If every `bigmount` command prints:
+
+```text
+grep: /var/lib/sddm/state.conf: Permission denied
+cat: /sys/block/nvme/removable: No such file or directory
+Error looking up object for device /dev/nvme
+```
+
+the installed package is the **legacy script** (December 2025 and earlier,
+`big-mount 25.12.23-2237` in `biglinux-stable`). It has two defects, both
+reproduced and fixed: it reads the private state file of SDDM without
+checking whether it may, and it cuts device names at the first digit, so
+`nvme0n1p1` becomes `nvme`, a device that does not exist. It also ignores
+every option, so `bigmount --diagnose` runs the boot mount instead. **Your
+disks and data are not affected by these messages.** Update the package
+(`sudo pacman -Syu`, or install a [release](#21-from-a-release-recommended-for-this-version))
+and check with `bigmount --version`. Do not change the permissions of the
+SDDM files, and there is no need to reinstall the system. Details in
+[`docs/12-field-report.md`](docs/12-field-report.md).
+
+### 12.2 `bigmount --doctor`
+
+A read-only self-check for the "it works on the other computer" cases. It
+changes nothing and needs no password, and it leaves out labels, serial
+numbers, UUIDs, the user name and the folders where devices are mounted,
+so its output can be attached to an issue or a forum post:
+
+```bash
+bigmount --doctor > big-mount-report.txt
+```
+
+It checks:
+
+- which Big-Mount is installed, and whether `/usr/bin/bigmount` carries a
+  known defect of older versions;
+- other copies of `bigmount` in `PATH`, files changed since installation,
+  and owners and permissions of the code that runs as root;
+- the repository version against the installed one, and the obsolete
+  `big-mount-git` package;
+- the boot service: enabled, ran, replaced in `/etc`, warnings of this boot;
+- dialogs, notifications and the notifier;
+- dependencies, UDisks2 and polkit, and whether every disk the kernel shows
+  is known to UDisks2 under the same name;
+- read-only mounts.
+
+A last section, **outside Big-Mount**, lists two facts that explain common
+desktop symptoms without touching them. One is settings files in
+`~/.config` that do not belong to you: Plasma cannot save them, so settings
+seem to reset. The other is pending updates, because a system updated only
+in part is inconsistent.
+
+### 12.3 Other problems
 
 **My USB disk appears under `/mnt` instead of as a removable device in
 Dolphin.** Look at the decision with `sudo bigmount --dry-run`. If the disk
@@ -915,14 +1017,14 @@ never put a variable inside `$"..."`.
 ```text
 big-mount/                  tree the PKGBUILD copies to /
   usr/bin/bigmount          boot path + entry point of the commands
-  usr/lib/big-mount/        lib.sh, ui.sh, cli.sh, bigmount-holders
+  usr/lib/big-mount/        lib.sh, ui.sh, cli.sh, doctor.sh, bigmount-holders
   usr/lib/systemd/system/   big-mount.service
   usr/share/...             hook, desktop files, service menu, polkit, icon, locale
   etc/                      big-mount.conf, autostart
 pkgbuild/PKGBUILD           official packaging (source: biglinux/big-mount)
 locale/                     translations (see 13)
 tests/                      suites, stubs, benchmarks, fixtures
-docs/                       audits, decisions and results (01-11)
+docs/                       audits, decisions and results (01-13)
 .github/workflows/          BigLinux build and tests
 ```
 
@@ -985,7 +1087,10 @@ point them back there. `pkgbuild/big-mount.install` only prints messages; it
 restarts nothing.
 
 Releases are tagged on `master` (`vMAJOR.MINOR.PATCH`), and each one carries
-the package built from that tag by `pkgbuild/PKGBUILD`. The screenshots in
+the package built from that tag by `pkgbuild/PKGBUILD`. The package version
+comes from `pkgver()`: the UTC date and time of the commit, never the build
+time, and `package()` writes the commit to `/usr/lib/big-mount/version`
+([2.4](#24-what-happens-on-installation-and-updates)). The screenshots in
 this README are real captures of the dialogs on Plasma 6 (Breeze, dark). To test a branch,
 use [section 2.3](#23-build-the-package-yourself).
 
@@ -1010,6 +1115,8 @@ docs or tests do not trigger it either.
 | [`docs/09-testing.md`](docs/09-testing.md) | suites, coverage, pending manual validation |
 | [`docs/10-security.md`](docs/10-security.md) | security model |
 | [`docs/11-final-report.md`](docs/11-final-report.md) | summary of the changes, per round and release |
+| [`docs/12-field-report.md`](docs/12-field-report.md) | the SDDM/NVMe field report: evidence, root causes, fixes, tests |
+| [`docs/13-versioning-and-doctor.md`](docs/13-versioning-and-doctor.md) | traceable versions, `--version`, `--doctor`, separating desktop problems |
 
 ---
 
@@ -1021,7 +1128,7 @@ simulated `mount`, empty `/proc/mounts` as at boot, 9 partitions) and
 
 | Metric (median) | Original script | Current |
 | --- | --- | --- |
-| Boot path, time | 127 ms | 40 ms |
+| Boot path, time | 127 ms | 42 ms |
 | Boot path, processes | 194 | 27 |
 | `ntfsfix` calls | 1 | 0 |
 | `udisksctl` D-Bus clients at boot | 10 | 0 |
@@ -1068,6 +1175,13 @@ run during boot. Details in [`docs/08-performance.md`](docs/08-performance.md).
     the Dolphin menu through Dolphin's own code, the accessibility tree
     read by Orca, Breeze dark and light at 100–200 %, X11, and the Zenity
     dialogs of the GNOME edition.
+- Not verified in round 7 (see [`docs/12-field-report.md`](docs/12-field-report.md)):
+  the **Unable to access storage device** dialog on screen (it was driven
+  by scripted KDialog calls), and the Plasma symptoms of the reporter's
+  computer, which are not caused by Big-Mount.
+- Users of the `biglinux-stable` repository get these fixes only after
+  BigLinux merges this work and publishes the package; until then the
+  repository ships the December 2025 script ([12.1](#121-errors-about-sddm-or-devnvme)).
 - Still to validate on real hardware or by a person:
   - Windows Fast Startup (needs a Windows boot);
   - hearing Orca, the physical right-click in Dolphin, the administrator
