@@ -6,7 +6,9 @@ pkgname=big-mount
 # version, and it keeps growing like the build dates used before
 # (26.10.25.1342 > 26.10.22-1342). The commit itself goes into
 # /usr/lib/big-mount/version, shown by "bigmount --version".
-pkgver=$(date -u +%y.%m.%d.%H%M)
+# makepkg writes the result of pkgver() on the next line with
+# ${line/#pkgver=*([^ ])/...}: it must stay a single word, never $(date ...)
+pkgver=26.10.26.0137
 pkgrel=1
 arch=('any')
 license=('GPL')

@@ -62,6 +62,20 @@ if command -v vercmp >/dev/null; then
         bash -c '[ "$(vercmp "$1-1" 26.10.22-1342)" = 1 ] && [ "$(vercmp "$1-1" 25.12.23-2237)" = 1 ]' _ "$ver"
     check "  ... and a later commit on the same day is newer still" test "$(vercmp 26.10.25.1343-1 "$ver-1")" = 1
 fi
+# makepkg writes the new version into the PKGBUILD with this substitution
+# (/usr/bin/makepkg, update_pkgver); a pkgver= with a space, such as
+# $(date ...), turned into a syntax error on the next build
+rewrite_pkgver() {
+    local l out=()
+    shopt -s extglob
+    while IFS= read -r l; do out+=("${l/#pkgver=*([^ ])/pkgver=$2}"); done < "$1"
+    printf '%s\n' "${out[@]}" > "$1"
+}
+cp pkgbuild/PKGBUILD "$WORK/PKGBUILD.rewritten"
+rewrite_pkgver "$WORK/PKGBUILD.rewritten" 26.10.25.1342
+rewrite_pkgver "$WORK/PKGBUILD.rewritten" 26.10.25.1343
+check "the PKGBUILD survives makepkg writing pkgver twice (second build)" \
+    bash -c 'bash -n "$1" && ( source "$1" >/dev/null 2>&1; [ "$pkgver" = 26.10.25.1343 ] )' _ "$WORK/PKGBUILD.rewritten"
 rev="$(git -C "$WORK/src/big-mount" rev-parse HEAD)"
 check "version file names the exact commit (bigmount --version)" \
     grep -qx "revision=$rev" "$WORK/pkg/usr/lib/big-mount/version"
