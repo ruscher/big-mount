@@ -352,6 +352,23 @@ BM_OUT="$("$BM" --diagnose "$GONE" 2>&1)"; BM_RC=$?
 check "diagnosis of a vanished device fails cleanly (exit 1, message)" bash -c '[ "$1" -eq 1 ] && [ -n "$2" ] && ! grep -qiE "unbound|syntax|command not found" <<< "$2"' _ "$BM_RC" "$BM_OUT"
 BM_OUT="$("$BM" --safe-remove "$GONE" 2>&1)"; BM_RC=$?
 check "removal of a vanished device does not claim success" bash -c '[ "$1" -ne 0 ] && ! grep -qE "Unmounted|removed safely" <<< "$2"' _ "$BM_RC" "$BM_OUT"
+check "  ... and says it may have been disconnected" grep -q "disconnected" <<< "$BM_OUT"
+
+begin "two removals of the same drive at the same time"
+img conc.img 32M; mkfs.ext4 -q -F -L BMCONC "$IMG/conc.img"
+attach "$IMG/conc.img" && mountdev "$DEV"; CONC="$DEV"
+# The first removal is simulated by holding its lock, as it would while a
+# dialog is open or a slow unmount runs
+flock "${XDG_RUNTIME_DIR:-/run/user/$EUID}/big-mount-drive-${CONC##*/}.lock" sleep 3 & HOLD=$!; PIDS+=("$HOLD")
+sleep 0.5
+BM_OUT="$("$BM" --safe-remove "$CONC" 2>&1)"; BM_RC=$?
+check "a second removal while one runs: refused (exit 10)" test "$BM_RC" -eq 10
+check "  ... nothing was unmounted" mounted "$CONC"
+check "  ... and the user is told why" grep -q "in progress" <<< "$BM_OUT"
+wait "$HOLD" 2>/dev/null
+BM_OUT="$("$BM" --safe-remove "$CONC" 2>&1)"; BM_RC=$?
+check "once the first one ended, the removal works (exit 0: a loop drive is internal)" test "$BM_RC" -eq 0
+check "  ... unmounted" bash -c '! findmnt -n --source "$1" >/dev/null' _ "$CONC"
 
 begin "encrypted (LUKS) drive: removal from the mount point locks it"
 img luks.img 64M
@@ -380,6 +397,15 @@ if findmnt -n /home >/dev/null; then
     BM_OUT="$("$BM" --unmount /home 2>&1)"; BM_RC=$?
     check "--unmount /home refused (exit 4)" test "$BM_RC" -eq 4
 fi
+
+begin "bigmount --doctor changes nothing and keeps private data out"
+before="$(findmnt -rn -o SOURCE,TARGET,OPTIONS | sort)"
+BM_OUT="$("$BM" --doctor 2>&1)"; BM_RC=$?
+check "runs to the end" grep -q "^Result: " <<< "$BM_OUT"
+check "no shell error" bash -c '! grep -qiE "unbound|syntax error|command not found" <<< "$1"' _ "$BM_OUT"
+check "the mount table is unchanged" test "$before" = "$(findmnt -rn -o SOURCE,TARGET,OPTIONS | sort)"
+check "no volume label of the mounted test devices in the report" bash -c '! grep -qE "BMOK|BMWP|BMRO|BMPERM" <<< "$1"' _ "$BM_OUT"
+check "no home folder in the report" bash -c '! grep -qF "$2" <<< "$1"' _ "$BM_OUT" "$HOME"
 
 # ----- graphical flows with scripted clicks -------------------------------------
 # A fake kdialog answers from a script ("RC [STDOUT]" per dialog) and logs
@@ -469,6 +495,17 @@ if [ "$JOURNAL" -eq 1 ]; then
 else
     skip "GUI remount" "kernel log not readable"
 fi
+
+begin "GUI: a device that disappeared"
+# Created and detached right here: loop numbers are reused by later images
+img gone2.img 16M; mkfs.ext4 -q -F "$IMG/gone2.img"
+attach "$IMG/gone2.img"; GONE="$DEV"
+udisksctl loop-delete --no-user-interaction -b "$GONE" >/dev/null 2>&1; udevadm settle
+gui "2" -- --gui "$GONE"
+check "dialog 'Unable to access storage device'" kd_has "Unable to access storage device"
+check "  ... in plain words" kd_has "It may have been disconnected or become temporarily unavailable."
+check "  ... offers Try again and the technical details" bash -c 'grep -qF -- "--yes-label Try again" "$1" && grep -qF -- "--no-label Technical details" "$1"' _ "$BIN/kd.log"
+check "  ... Close ends it without an error dialog loop" test "$GUI_RC" -eq 1
 
 begin "GUI diagnose: write-protected device has no fix button"
 gui "1" -- --gui "$WP_DEV"

@@ -29,6 +29,7 @@ eq() { [ "$1" = "$2" ] || { printf '      got: [%s]\n expected: [%s]\n' "$1" "$2
 begin() { echo "— $1"; }
 
 WORK="$(mktemp -d)"
+ORIG_HOME="$HOME"
 trap 'chmod -R u+w "$WORK" 2>/dev/null; rm -rf "$WORK"' EXIT
 
 # ----- fake facts for bm_diagnose_write ----------------------------------------
@@ -264,6 +265,21 @@ fake_drive; POWER_TRIES=0
 bm_udisks() { CALLS+=("$*"); UD_ERROR="" UD_MESSAGE=""; case "$1" in unmount) unset "MOUNTED[${*: -1}]" ;; power-off) POWER_TRIES=$((POWER_TRIES + 1)); [ "$POWER_TRIES" -ge 2 ] && return 0; UD_ERROR=org.freedesktop.UDisks2.Error.Failed; return 1 ;; esac; return 0; }
 bm_remove_core remove /dev/sdz1; rc=$?
 check "power-off that succeeds on the second attempt -> success" eq "$rc:$RM_POWERED" "0:1"
+fake_drive
+bm_udisks() { CALLS+=("$*"); UD_ERROR="" UD_MESSAGE=""; [ "$1" = unmount ] && { UD_ERROR="no-object"; UD_MESSAGE="Error looking up object for device ${*: -1}"; return 1; }; return 0; }
+bm_remove_core remove /dev/sdz1; rc=$?
+check "device unknown to UDisks2 during the unmount -> stop, marked as gone" eq "$rc:$RM_GONE" "1:1"
+check "  ... in plain words, not the udisksctl message" bash -c '[[ $1 == *disconnected* && $1 != *"looking up"* ]]' _ "$RM_REASON"
+check "  ... and no power-off" bash -c '[[ $1 != *power-off* ]]' _ "${CALLS[*]}"
+fake_drive; FAKE_SEQ=(7 "")
+bm_udisks() { CALLS+=("$*"); UD_ERROR=""; [ "$1" = unmount ] && unset "MOUNTED[${*: -1}]"; return 0; }
+bm_remove_core remove /dev/sdz1; rc=$?
+check "drive unplugged between two steps (no diskseq any more) -> gone" eq "$rc:$RM_GONE" "1:1"
+fake_drive
+bm_facts() { return 1; }
+bm_remove_core remove /dev/sdz1; rc=$?
+check "device unknown from the start -> gone, nothing called" eq "$rc:$RM_GONE:${#CALLS[@]}" "1:1:0"
+bm_facts() { F=([NAME]="$1" [DISK]=/dev/sdz [DISK_TYPE]=disk [TRAN]=usb [HOTPLUG]=1 [RM]=0 [FSTYPE]=ext4); }
 unset -f fake_drive bm_facts bm_system_use bm_drive_members bm_diskseq bm_mounts bm_has_holders bm_other_holders bm_udisks bm_mount_dependents udevadm sleep
 . "$BIGMOUNT_LIB/lib.sh"
 
@@ -499,6 +515,120 @@ bm_human_size 512; check "512 B" eq "$REPLY" "512 B"
 bm_is_system_mount /home && r=0 || r=1; check "/home is a system mount" eq "$r" 0
 bm_is_system_mount /run/media/u/X && r=0 || r=1; check "/run/media/... is not" eq "$r" 1
 bm_opt_value "rw,uid=1000,gid=1007" uid; check "option value" eq "$REPLY" 1000
+
+begin "targets are validated, never guessed from a name (field report: /dev/nvme)"
+bm_resolve /dev/nvme; rc=$?
+check "/dev/nvme (a name cut at the first digit) is refused" eq "$rc:$R_ERR" "1:missing"
+bm_resolve_message /dev/nvme
+check "  ... with an explanation, not a technical error" bash -c '[[ $1 == *"does not exist"*disconnected* ]]' _ "$REPLY"
+bm_resolve /dev/null; check "a character device is not storage" eq "$R_ERR" not-block
+bm_resolve /proc/self; check "a folder on a filesystem without a device" eq "$R_ERR" not-local
+bm_resolve ""; check "an empty target" eq "$R_ERR" empty
+ctrl="$(for c in /sys/class/nvme/nvme*; do [ -c "/dev/${c##*/}" ] && { echo "/dev/${c##*/}"; break; }; done)"
+if [ -n "$ctrl" ]; then
+    bm_resolve "$ctrl"; check "the NVMe controller $ctrl is not taken for its storage" eq "$R_ERR" controller
+    bm_resolve_message "$ctrl"
+    check "  ... and the message names its namespace" bash -c '[[ $1 == *"NVMe controller"*"/dev/nvme"*n* ]]' _ "$REPLY"
+else
+    echo "  - no NVMe controller on this machine: controller case not exercised"
+fi
+nvp="$(lsblk -nrpo NAME,TYPE 2>/dev/null | awk '$1 ~ /nvme[0-9]+n[0-9]+p[0-9]+$/ && $2 == "part" { print $1; exit }')"
+if [ -n "$nvp" ]; then
+    bm_resolve "$nvp"; check "a real NVMe partition ($nvp) resolves to itself" eq "$R_DEV" "$nvp"
+    bm_facts "$nvp"; check "  ... and its disk is the namespace, not 'nvme'" bash -c '[[ $1 =~ ^/dev/nvme[0-9]+n[0-9]+$ ]]' _ "${F[DISK]}"
+fi
+
+begin "UDisks2 objects come from UDisks2"
+udisksctl() { case "$*" in "info -b /dev/sdz1") printf '%s\n' "/org/freedesktop/UDisks2/block_devices/sdz1:" "  org.freedesktop.UDisks2.Block:" ;;
+    "info -b /dev/dm-3") printf '%s\n' "/org/freedesktop/UDisks2/block_devices/dm_2d3:" ;;
+    "unmount -b /dev/nvme") echo "Error looking up object for device /dev/nvme" >&2; return 1 ;;
+    *) echo "Error looking up object for device ${*: -1}" >&2; return 1 ;; esac; }
+bm_udisks_object /dev/sdz1; check "object path read from udisksctl" eq "$REPLY" /org/freedesktop/UDisks2/block_devices/sdz1
+bm_udisks_object /dev/dm-3; check "  ... with UDisks2's own escaping (dm-3 -> dm_2d3)" eq "$REPLY" /org/freedesktop/UDisks2/block_devices/dm_2d3
+bm_udisks_object /dev/nvme; check "  ... none for an unknown device" eq "$?:$REPLY" "1:"
+bm_udisks unmount -b /dev/nvme; check "udisksctl lookup failure is classified (no-object)" eq "$UD_ERROR" no-object
+# gdbus runs in a $(...) subshell: its arguments are kept in a file
+gdbus() { printf '%s' "$*" > "$WORK/gdbus.args"; }
+: > "$WORK/gdbus.args"; bm_take_ownership /dev/nvme; rc=$?
+check "take ownership of an unknown device: refused before any D-Bus call" eq "$rc:$UD_ERROR:$(cat "$WORK/gdbus.args")" "1:no-object:"
+bm_take_ownership /dev/dm-3; GDBUS_ARGS="$(cat "$WORK/gdbus.args")"
+check "take ownership talks to the object UDisks2 named" bash -c '[[ $1 == *"--object-path /org/freedesktop/UDisks2/block_devices/dm_2d3 "* ]]' _ "$GDBUS_ARGS"
+check "  ... never recursive" bash -c '[[ $1 == *"<false>"* ]]' _ "$GDBUS_ARGS"
+unset -f udisksctl gdbus
+
+begin "one removal of a drive at a time"
+XDG_RUNTIME_DIR="$WORK" bm_drive_lock /dev/sdz; rc=$?
+check "first operation takes the lock" eq "$rc" 0
+( XDG_RUNTIME_DIR="$WORK" bm_drive_lock /dev/sdz ); rc=$?
+check "a second, concurrent one is refused" eq "$rc" 1
+( XDG_RUNTIME_DIR="$WORK" bm_drive_lock /dev/sdy ); rc=$?
+check "another drive is not blocked" eq "$rc" 0
+sleep 30 & SPID=$!
+bm_drive_unlock
+( XDG_RUNTIME_DIR="$WORK" bm_drive_lock /dev/sdz ); rc=$?
+check "released even while a child (a notification) still holds the fd" eq "$rc" 0
+kill "$SPID" 2>/dev/null; wait "$SPID" 2>/dev/null
+exec {held}>"$WORK/big-mount-drive-sdz.lock"; flock -n "$held"
+bm_resolve() { R_DEV=/dev/sdz1; }
+bm_facts() { F=([NAME]=/dev/sdz1 [DISK]=/dev/sdz); }
+bm_remove_core() { CORE_RAN=1; return 0; }
+CORE_RAN=0; XDG_RUNTIME_DIR="$WORK" bm_cmd_remove remove /dev/sdz1 >/dev/null 2>&1; rc=$?
+check "bigmount --safe-remove while another removal runs -> 10, nothing done" eq "$rc:$CORE_RAN" "10:0"
+exec {held}>&-
+CORE_RAN=0; XDG_RUNTIME_DIR="$WORK" bm_cmd_remove remove /dev/sdz1 >/dev/null 2>&1; rc=$?
+check "  ... and works once it is free" eq "$rc:$CORE_RAN" "0:1"
+unset -f bm_resolve bm_facts bm_remove_core
+. "$BIGMOUNT_LIB/lib.sh"; . "$BIGMOUNT_LIB/ui.sh"; . "$BIGMOUNT_LIB/cli.sh"; BM_UI="tty"; bm_ui_init
+
+begin "terminal tables count characters, not bytes"
+bm_pad "Não" 5; check "accented text padded to 5 columns" eq "$REPLY" "Não  "
+bm_pad "Fotografias" 6; check "long text shortened with an ellipsis, never cut mid-character" eq "$REPLY" "Fotog…"
+bm_pad "Ação" 3; check "  ... also when the cut falls on an accent" eq "$REPLY" "Aç…"
+bm_pad $'A\033[31mB' 8; check "  ... and control characters are neutralized" eq "$REPLY" "A?[31mB "
+
+begin "graphical commands: a device that cannot be found"
+bm_ui_choice() { CHOICE_TITLE="$1"; CHOICES=$((CHOICES + 1)); REPLY="${PICK[CHOICES-1]:-3}"; }
+bm_ui_text() { DETAILS="$(cat "$2")"; }
+bm_notify() { NOTIFIED="$3|$4"; }
+CHOICES=0 PICK=(3) NOTIFIED=""
+bm_gui_target /dev/sdq9 "T" "X"; rc=$?
+check "missing device: 'Unable to access storage device' dialog, Close -> 1" eq "$rc:$CHOICE_TITLE" "1:Unable to access storage device"
+CHOICES=0 PICK=(2 3) DETAILS=""
+bm_gui_target /dev/sdq9 "T" "X"
+check "  ... Technical details explain the reason" bash -c '[[ $1 == *"reason: missing"*"does not exist"* ]]' _ "$DETAILS"
+R_ERR=unavailable; bm_resolve_message /dev/loop9
+check "a node without a device behind it: 'not available', may be disconnected" bash -c '[[ $1 == *"is not available"*disconnected* ]]' _ "$REPLY"
+CHOICES=0 PICK=(1 3)
+bm_gui_target /dev/sdq9 "T" "X"
+check "  ... Try again looks again" eq "$CHOICES" 2
+CHOICES=0 PICK=() NOTIFIED=""
+bm_gui_target /proc/self "Storage diagnostics" "Not local"
+check "a folder that is not on a local device: a notification, no error dialog" eq "$CHOICES:$NOTIFIED" "0:Storage diagnostics|Not local"
+unset -f bm_ui_choice bm_ui_text bm_notify
+. "$BIGMOUNT_LIB/ui.sh"; BM_UI="tty"; bm_ui_init
+
+begin "bigmount --version and --doctor"
+bm_load doctor.sh
+printf '%s\n' 'revision=0123456789abcdef0123456789abcdef01234567' 'date=2026-10-25T13:42:00Z' \
+    'source=https://github.com/biglinux/big-mount' > "$WORK/version"
+( BM_LIB_DIR="$WORK"; bm_version_info; printf '%s|%s|%s' "$V_REVISION" "$V_DATE" "$V_SOURCE" ) > "$WORK/v.out"
+check "version file of the package is read" eq "$(cat "$WORK/v.out")" "0123456789abcdef0123456789abcdef01234567|2026-10-25T13:42:00Z|https://github.com/biglinux/big-mount"
+printf '%s\n' 'revision=$(touch '"$WORK"'/pwned)' 'date=`id`' 'source=javascript:alert(1)' > "$WORK/version"
+( BM_LIB_DIR="$WORK"; bm_version_info; printf '%s|%s|%s' "$V_REVISION" "$V_DATE" "$V_SOURCE" ) > "$WORK/v.out"
+check "  ... values that are not a revision, date or URL are dropped" eq "$(cat "$WORK/v.out")" "||"
+check "  ... and never executed" test ! -e "$WORK/pwned"
+DR_WARN=0 DR_FAIL=0 DR_COLOR="" DR_USER=maria HOME=/home/maria
+bm_dr_anon "/home/maria/x /run/media/maria/Fotos https://github.com/maria/x"
+# shellcheck disable=SC2088  # the report shows a literal ~
+check "report: home and media folders anonymized, URLs kept" eq "$REPLY" "~/x /run/media/<user>/Fotos https://github.com/maria/x"
+HOME="$ORIG_HOME"
+bm_dr_legacy_check "$HERE/bigmount.old.sh" > /dev/null; rc=$?
+check "the script of the biglinux-stable package is recognized as legacy" eq "$rc:$DR_FAIL" "1:3"
+DR_FAIL=0
+bm_dr_legacy_check "$REPO/big-mount/usr/bin/bigmount" > /dev/null; rc=$?
+check "the current script is not" eq "$rc:$DR_FAIL" "0:0"
+bm_cmd_doctor --fix >/dev/null 2>&1; rc=$?
+check "--doctor takes no option (it never changes anything)" eq "$rc" 2
 
 echo ""
 echo "========================================="
