@@ -17,17 +17,24 @@ stable repository kept the December 2025 script (12, E1–E2).
 ## 2. Versioning
 
 - `pkgver()` returns the UTC date and time of the **commit**, as
-  `YY.MM.DD.HHMM`, and `pkgrel=1`. The static `pkgver=` line stays
-  date-based, for tools that read the PKGBUILD without running makepkg;
-  makepkg replaces it.
+  `YY.MM.DD.HHMM`, and `pkgrel=1`.
 - Ordering with the versions already published (checked with `vercmp` in
   `tests/package-check.sh`):
   `26.10.25.1342-1 > 26.10.22-1342 > 26.04.24-0149 > 25.12.23-2237`. A
   version with one more numeric field is newer, so no `epoch` is needed,
-  and the BigLinux convention (dates) is kept.
+  and the BigLinux convention (dates) is kept. The real build
+  `26.10.26.0139-1` was checked with `vercmp` against the three published
+  versions.
 - The same commit always gives the same version. Commits less than a
   minute apart would share it, which is acceptable for a repository
   updated by hand.
+- The static `pkgver=` is a single word. makepkg writes the result of
+  `pkgver()` back with `${line/#pkgver=*([^ ])/…}`
+  (`/usr/bin/makepkg`, `update_pkgver`), which stops at the first space. A
+  first draft used `pkgver=$(date -u …)`: the first build worked, and the
+  second failed with a syntax error. Two real `makepkg` runs in a row now
+  give the same `26.10.26.0139-1`, and `package-check.sh` applies the same
+  substitution twice.
 - `package()` writes `/usr/lib/big-mount/version`:
 
   ```text

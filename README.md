@@ -133,16 +133,20 @@ pacman -Qi big-mount
 systemctl is-enabled big-mount
 ```
 
+Output of the package built from commit `0cbac17` of this repository
+(`big-mount 26.10.26.0139-1`); once it is installed by pacman, a
+`package:` line with the installed package and version is added:
+
 ```text
 $ bigmount --version
 Big-Mount 2.2.0
-  package:   big-mount 26.10.25.1342-1
-  revision:  0123456789abcdef0123456789abcdef01234567 (2026-10-25T13:42:07Z)
-  source:    https://github.com/ruscher/big-mount
+  revision: 0cbac17f698415ab584a4ba5db0ecb2f7e273a31 (2026-10-26T01:39:00Z)
+  source:   https://github.com/ruscher/big-mount
 ```
 
 The package version is the UTC date and time of the commit it was built
-from (`YY.MM.DD.HHMM`), so the same source always gives the same version,
+from (`YY.MM.DD.HHMM`), so the same source always gives the same version
+(two builds of `0cbac17` both gave `26.10.26.0139-1`),
 and the full commit is stored in `/usr/lib/big-mount/version`. Packages
 built before this change used the build time instead (`26.10.22-1342`) and
 cannot be traced to a commit.

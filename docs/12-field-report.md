@@ -156,7 +156,7 @@ development machine after the last change.
 | `run-tests.sh` against `f547e4b` | 8 new checks fail | F1 and F9: user run, lock file, unknown SDDM account |
 | `lib-tests.sh` | 179 passed, 0 failed | F2–F7, `--version`, `--doctor` |
 | `i18n-tests.sh` | 38 passed, 0 failed | runtime translation of the F1 message; `--version` labels aligned by characters; no obsolete catalog entries |
-| `package-check.sh` | 51 passed, 0 failed | commit-derived `pkgver`, version file, `conflicts=` |
+| `package-check.sh` | 52 passed, 0 failed | commit-derived `pkgver`, a PKGBUILD that survives makepkg writing it back, version file, `conflicts=` |
 | `integration.sh` (real UDisks2 mounts of loop images) | 130 passed, 0 failed, 2 skipped | against the installed 26.10.22 package, 13 checks fail; 8 of them are the new ones (disconnected message, concurrent removal, `--doctor`, GUI dialog) |
 | `shellcheck -x`, `bash -n` | clean | — |
 
