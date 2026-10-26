@@ -7,4 +7,10 @@ Exec=/usr/bin/bigmount --gui
 Icon=big-mount
 Terminal=false
 Categories=System;Filesystem;
-Keywords=disk;drive;usb;mount;unmount;read-only;busy;eject;
+Keywords=disk;drive;usb;mount;unmount;read-only;busy;eject;ssd;erase;
+Actions=checkDrive;
+
+[Desktop Action checkDrive]
+Name=Check a drive (errors, Secure Erase)
+Icon=drive-harddisk
+Exec=/usr/bin/bigmount --gui-drive
