@@ -375,6 +375,13 @@ bm_dr_storage() {
       else
          bm_dr ok "$s"
       fi
+      # SMART failure, timeouts and I/O errors of this boot (read-only, as the user)
+      bm_drive_health "$name" </dev/null
+      if [ "${#DH_FIND[@]}" -gt 0 ]; then
+         bm_fmt $"%s: the drive reports problems (%s)" "${name##*/}" "${DH_FIND[*]}"; s="$REPLY"
+         bm_fmt $"For details: bigmount --diagnose %s" "$name"
+         bm_dr warn "$s" "$REPLY"
+      fi
    done < <(lsblk -P -b -p -d -o NAME,TYPE,TRAN,RM,HOTPLUG,SIZE 2>/dev/null)
 
    # NVMe: a controller (/dev/nvme0) holds namespaces (/dev/nvme0n1), which

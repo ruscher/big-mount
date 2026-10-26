@@ -1,8 +1,9 @@
 # shellcheck shell=bash
-# shellcheck disable=SC2034  # R_*, F, D_*, H_*, O_*, UD_* are read by cli.sh
+# shellcheck disable=SC2034  # R_*, F, D_*, DH_*, ER_*, H_*, O_*, UD_* are read by cli.sh
 #
 # big-mount library: device facts, read-only diagnosis, what keeps a device
-# busy, graceful closing of applications and safe removal.
+# busy, graceful closing of applications, safe removal, drive health and
+# Secure Erase.
 #
 # Sourced by /usr/bin/bigmount for every mode except the boot automount. It
 # runs as the logged-in user; the only privileged entry point is
@@ -232,6 +233,11 @@ bm_device_icon() {
    elif [ "${F[TRAN]:-}" = usb ] || [ "${F[HOTPLUG]:-0}" = 1 ] || [ "${F[RM]:-0}" = 1 ]; then REPLY=drive-removable-media
    else REPLY=drive-harddisk
    fi
+}
+
+# Drives that are meant to be unplugged (and powered off before that)
+bm_is_removable_drive() {
+   [ "${F[TRAN]:-}" = usb ] || [ "${F[TRAN]:-}" = ieee1394 ] || [ "${F[HOTPLUG]:-0}" = 1 ] || [ "${F[RM]:-0}" = 1 ]
 }
 
 # bm_mounts DEV: every mount of DEV (a device can be mounted more than once,
@@ -977,16 +983,275 @@ bm_mount_dependents() {
 # Make the current user owner of the root folder of a POSIX filesystem
 # (not recursive), through the UDisks2 TakeOwnership API and polkit.
 bm_take_ownership() {
-   local dev="$1" out
+   local dev="$1"
    UD_ERROR="" UD_MESSAGE=""
    if ! bm_udisks_object "$dev"; then
       UD_ERROR=no-object; return 1
    fi
-   out="$(gdbus call --system --dest org.freedesktop.UDisks2 --object-path "$REPLY" \
-      --method org.freedesktop.UDisks2.Filesystem.TakeOwnership "{'recursive': <false>}" 2>&1)" && return 0
+   bm_gdbus "$REPLY" org.freedesktop.UDisks2.Filesystem.TakeOwnership "{'recursive': <false>}"
+}
+
+# bm_gdbus OBJECT METHOD ARGS...: call a UDisks2 method that udisksctl does
+# not offer, keeping the D-Bus error name in UD_ERROR (as bm_udisks does).
+# Methods that wait for the hardware set BM_GDBUS_TIMEOUT (seconds).
+bm_gdbus() {
+   local obj="$1" method="$2" out
+   shift 2
+   UD_ERROR="" UD_MESSAGE=""
+   out="$(gdbus call --system --timeout "${BM_GDBUS_TIMEOUT:-120}" --dest org.freedesktop.UDisks2 \
+      --object-path "$obj" --method "$method" "$@" 2>&1)" && return 0
    UD_MESSAGE="$out" UD_ERROR=unknown
    [[ $out =~ GDBus\.Error:([A-Za-z0-9_.]+) ]] && UD_ERROR="${BASH_REMATCH[1]}"
    return 1
+}
+
+# ---------------------------------------------------------------------------
+# Drive health and Secure Erase
+#
+# A failing SSD can stop answering (ATA timeouts, link resets) and then lock
+# itself in a protection mode in which it acknowledges every write and keeps
+# none: an installer cannot create partitions, and an erased partition table
+# comes back. The kernel log shows the first part. The ATA Secure Erase of
+# the drive itself can bring such a drive back. It goes through UDisks2,
+# whose polkit action always asks for the administrator password, and it
+# only runs when the user asks for it and types the name of the drive.
+
+# Kernel messages of a drive that stopped answering: a command timed out and
+# the link was reset (SATA), or the controller aborted a command (NVMe)
+BM_RE_TIMEOUT='failed command: |qc timeout|COMRESET failed|I/O (tag )?[0-9]+ .*timeout'
+BM_RE_SLOWLINK='limiting SATA link speed'
+BM_RE_MEDIUM='critical medium error|Medium Error|Unrecovered read error'
+
+# Findings of the last bm_drive_health (bm_diag_doc reads them)
+DH_FIND=() DH_DISK=""
+
+# The port of a disk in kernel messages (REPLY, empty if none): ata1 for
+# "ata1.00: failed command", nvme0 for "nvme nvme0: I/O 12 QID 3 timeout".
+# Timeouts are reported on the port, never with the name of the disk.
+bm_drive_port() {
+   local p
+   REPLY=""
+   p="$(readlink -f -- "/sys/block/${1##*/}" 2>/dev/null)"
+   if [[ $p =~ /(ata[0-9]+)/ ]]; then
+      REPLY="${BASH_REMATCH[1]}"
+   elif [[ ${1##*/} =~ ^(nvme[0-9]+)n[0-9]+$ ]]; then
+      REPLY="${BASH_REMATCH[1]}"
+   fi
+}
+
+# bm_drive_kmsg NAME_RE PORT: kernel messages of this boot about a disk,
+# its partitions or its port (DKMSG). Fails when this user cannot read them.
+bm_drive_kmsg() {
+   local re="$1"
+   DKMSG=()
+   [ -n "$2" ] && re+="|$2"
+   command -v journalctl >/dev/null || return 1
+   [ -n "$(journalctl -k -b -q -n 1 --no-pager 2>/dev/null)" ] || return 1
+   mapfile -t DKMSG < <(journalctl -k -b -q --no-pager -o cat -n 400 --grep "\\b(${re})\\b" 2>/dev/null)
+}
+
+# bm_udev_props DEV: the udev properties of a device (UP). ata_id publishes
+# the ATA security state there, readable by every user.
+declare -gA UP
+bm_udev_props() {
+   local k v
+   UP=()
+   while IFS='=' read -r k v; do
+      [ -n "$k" ] && UP[$k]="$v"
+   done < <(udevadm info --query=property --name="$1" 2>/dev/null)
+}
+
+# bm_udisks_drive DISK: the UDisks2 drive object of a disk (REPLY), as
+# UDisks2 names it
+bm_udisks_drive() {
+   local out
+   bm_udisks_object "$1" || return 1
+   out="$(busctl --system get-property org.freedesktop.UDisks2 "$REPLY" org.freedesktop.UDisks2.Block Drive 2>/dev/null)"
+   REPLY=""
+   [[ $out =~ ^o\ \"(/org/freedesktop/UDisks2/drives/[A-Za-z0-9_]+)\"$ ]] || return 1
+   REPLY="${BASH_REMATCH[1]}"
+}
+
+# bm_drive_health DISK: what the drive and the kernel reported since the
+# computer was started. Read-only, as the user. Sets:
+#   DH_FIND       findings, most serious first: smart-failing timeouts
+#                 io-errors slow-link
+#   DH_COUNT      kernel messages counted, by finding
+#   DH_LINES      the kernel messages that were counted
+#   DH_KLOG       1 when the kernel log could be read
+#   DH_SMART      ok | failing | "" (not available)
+#   DH_BAD        damaged sectors the drive counts (SMART): not a finding by
+#                 itself, an SSD replaces a few of them in normal use
+#   DH_PORT       ata1, nvme0... or ""
+#   DH_ATA        1 for an ATA drive on an ATA/SATA port (not behind USB)
+#   DH_SEC        ATA security: "" not supported | off | enabled (password set)
+#   DH_FROZEN     1 when its security commands are locked until a sleep
+#   DH_ERASE_MIN  minutes the drive announces for an erase (0: unknown)
+declare -gA DH_COUNT
+bm_drive_health() {
+   local disk="$1" kn="${1##*/}" l k n io_re smart=()
+   DH_DISK="$disk" DH_FIND=() DH_COUNT=() DH_LINES=() DH_KLOG=0 DH_SMART="" DH_BAD=0
+   DH_ATA=0 DH_SEC="" DH_FROZEN=0 DH_ERASE_MIN=0
+   bm_drive_port "$disk"; DH_PORT="$REPLY"
+   # "I/O error, dev sda, sector 73448" and "Buffer I/O error on dev sda1"
+   io_re="I/O error(,| on) dev ${kn}(p?[0-9]+)?(,|$)|$BM_RE_MEDIUM"
+   if bm_drive_kmsg "${kn}(p?[0-9]+)?" "$DH_PORT"; then
+      DH_KLOG=1
+      for l in "${DKMSG[@]}"; do
+         if [[ $l =~ $BM_RE_TIMEOUT ]]; then k=timeouts
+         elif [[ $l =~ $io_re ]]; then k=io-errors
+         elif [[ $l =~ $BM_RE_SLOWLINK ]]; then k=slow-link
+         else continue
+         fi
+         DH_COUNT[$k]=$((${DH_COUNT[$k]:-0} + 1))
+         DH_LINES+=("$l")
+      done
+   fi
+
+   bm_udev_props "$disk"
+   # A SATA drive in a USB enclosure also has ID_ATA, but its bridge may not
+   # pass security commands through safely: only ID_BUS=ata counts
+   [ "${UP[ID_ATA]:-0}" = 1 ] && [ "${UP[ID_BUS]:-}" = ata ] && DH_ATA=1
+   if [ "${UP[ID_ATA_FEATURE_SET_SECURITY]:-0}" = 1 ]; then
+      DH_SEC=off
+      [ "${UP[ID_ATA_FEATURE_SET_SECURITY_ENABLED]:-0}" = 1 ] && DH_SEC=enabled
+      [ "${UP[ID_ATA_FEATURE_SET_SECURITY_FROZEN]:-0}" = 1 ] && DH_FROZEN=1
+      DH_ERASE_MIN="${UP[ID_ATA_FEATURE_SET_SECURITY_ERASE_UNIT_MIN]:-0}"
+      [[ $DH_ERASE_MIN =~ ^[0-9]+$ ]] || DH_ERASE_MIN=0
+   fi
+   if [ "$DH_ATA" = 1 ] && bm_udisks_drive "$disk"; then
+      mapfile -t smart < <(busctl --system get-property org.freedesktop.UDisks2 "$REPLY" org.freedesktop.UDisks2.Drive.Ata \
+         SmartSupported SmartEnabled SmartFailing SmartNumBadSectors 2>/dev/null)
+      if [ "${smart[0]:-}" = "b true" ] && [ "${smart[1]:-}" = "b true" ]; then
+         DH_SMART=ok
+         [ "${smart[2]:-}" = "b true" ] && DH_SMART=failing
+         n="${smart[3]:-}"; n="${n#x }"
+         [[ $n =~ ^[0-9]+$ ]] && DH_BAD="$n"
+      fi
+   fi
+
+   [ "$DH_SMART" = failing ] && DH_FIND+=(smart-failing)
+   for k in timeouts io-errors slow-link; do
+      [ -n "${DH_COUNT[$k]:-}" ] && DH_FIND+=("$k")
+   done
+   return 0
+}
+
+# bm_erase_check DISK: may DISK be erased with its ATA Secure Erase? Needs F
+# (bm_facts DISK) and bm_drive_health DISK. On refusal ER_WHY says why:
+#   not-disk | system (ER_DETAIL: what) | removable | not-ata | unsupported | password
+bm_erase_check() {
+   ER_WHY="" ER_DETAIL=""
+   if [ "${F[TYPE]:-}" != disk ] || [ "${F[NAME]:-}" != "${F[DISK]:-}" ]; then
+      ER_WHY=not-disk
+   elif bm_system_use "$1"; then
+      ER_WHY=system ER_DETAIL="$REPLY"
+   elif bm_is_removable_drive; then
+      ER_WHY=removable
+   elif [ "$DH_ATA" != 1 ]; then
+      ER_WHY=not-ata
+   elif [ -z "$DH_SEC" ]; then
+      ER_WHY=unsupported
+   elif [ "$DH_SEC" = enabled ]; then
+      ER_WHY=password
+   fi
+   [ -z "$ER_WHY" ]
+}
+
+# The partition table written after an erase, as installers expect it on
+# this computer: GPT when it started in UEFI mode, MBR (dos) otherwise
+bm_erase_table() {
+   if [ -d /sys/firmware/efi ]; then REPLY=gpt; else REPLY=dos; fi
+}
+
+# bm_erase_unfreeze DISK: most firmwares lock ("freeze") the security
+# commands of every drive when the computer starts, and sleeping once
+# unlocks them. As root, rtcwake wakes the computer up by itself; a user
+# goes through logind and wakes it with the power button. udev reads the
+# security state again (ata_id) on a change event, which Block.Rescan asks
+# for. Returns 0 when the drive is no longer frozen.
+bm_erase_unfreeze() {
+   local disk="$1" blk="" n
+   if [ "$EUID" -eq 0 ] && command -v rtcwake >/dev/null; then
+      rtcwake -m mem -s 20 >/dev/null 2>&1 || return 1
+   else
+      systemctl suspend >/dev/null 2>&1 || return 1
+   fi
+   bm_udisks_object "$disk" && blk="$REPLY"
+   # sleep counts awake time only: about 3 minutes after the computer wakes
+   for ((n = 0; n < 60; n++)); do
+      sleep 3
+      [ -n "$blk" ] && bm_gdbus "$blk" org.freedesktop.UDisks2.Block.Rescan "{}"
+      udevadm settle --timeout=10 >/dev/null 2>&1
+      bm_udev_props "$disk"
+      [ "${UP[ID_ATA_FEATURE_SET_SECURITY_FROZEN]:-1}" = 0 ] && return 0
+   done
+   return 1
+}
+
+# bm_erase_run DISK SEQ TABLE: erase the drive with its own ATA Secure Erase
+# (UDisks2 Drive.Ata.SecurityEraseUnit: it refuses a drive that is mounted
+# or in use, and removes its temporary password if the erase fails), then
+# check that the drive really did it and keeps what is written again:
+#   1. its old partition table must be gone after the erase;
+#   2. a new, empty partition table (TABLE: dos or gpt) is written through
+#      UDisks2, and must be read back from the drive with a new identifier.
+# SEQ is the disk sequence number seen when the user confirmed: another
+# drive that took the name in the meantime is never touched.
+# Returns 0 erased and verified, 1 error (ER_REASON), 3 still mounted or in
+# use, 5 not authorized, 11 frozen, 12 the drive did not do what it was told
+# (ER_STAGE: erase-ignored | table-lost | unverified).
+bm_erase_run() {
+   local disk="$1" seq="$2" ptable="$3" d dobj blk old t u min
+   ER_REASON="" ER_STAGE=""
+   bm_diskseq "$disk"
+   if [ "$REPLY" != "$seq" ] || [ ! -b "$disk" ]; then
+      ER_REASON=$"The drive was disconnected or replaced. Nothing was erased."
+      return 1
+   fi
+   bm_drive_members "$disk"
+   for d in "${DRIVE_DEVS[@]}"; do
+      bm_mounts "$d"
+      if [ "${#M_TARGET[@]}" -gt 0 ]; then
+         printf -v ER_REASON $"%s is mounted at %s" "$d" "${M_TARGET[0]}"; return 3
+      fi
+      if bm_has_holders "$d"; then
+         printf -v ER_REASON $"%s is in use (encryption, LVM or RAID)" "$d"; return 3
+      fi
+   done
+   bm_udev_props "$disk"
+   [ "${UP[ID_ATA_FEATURE_SET_SECURITY_FROZEN]:-0}" = 1 ] && return 11
+   if ! bm_udisks_drive "$disk"; then
+      ER_REASON=$"UDisks2 does not know this drive."; return 1
+   fi
+   dobj="$REPLY"
+   bm_udisks_object "$disk"; blk="$REPLY"
+   old="$(lsblk -dn -o PTUUID -- "$disk" 2>/dev/null)"
+   # The call returns when the drive is done: allow twice its own estimate
+   min="${UP[ID_ATA_FEATURE_SET_SECURITY_ERASE_UNIT_MIN]:-0}"
+   { [[ $min =~ ^[0-9]+$ ]] && [ "$min" -gt 0 ]; } || min=60
+   if ! BM_GDBUS_TIMEOUT=$((min * 120 + 300)) bm_gdbus "$dobj" \
+      org.freedesktop.UDisks2.Drive.Ata.SecurityEraseUnit "{'enhanced': <false>}"; then
+      [[ $UD_ERROR == *NotAuthorized* ]] && return 5
+      [[ $UD_MESSAGE == *[Ff]rozen* ]] && return 11
+      ER_REASON="${UD_MESSAGE##*: }"
+      return 1
+   fi
+   udevadm settle --timeout=30 >/dev/null 2>&1
+   # UDisks2 has the drive read again after the erase: nothing may be left
+   if [ -n "$(lsblk -dn -o PTTYPE -- "$disk" 2>/dev/null)" ]; then
+      ER_STAGE=erase-ignored; return 12
+   fi
+   if ! bm_gdbus "$blk" org.freedesktop.UDisks2.Block.Format "'$ptable'" "{}"; then
+      ER_STAGE=unverified ER_REASON="${UD_MESSAGE##*: }"; return 12
+   fi
+   bm_gdbus "$blk" org.freedesktop.UDisks2.Block.Rescan "{}"
+   udevadm settle --timeout=30 >/dev/null 2>&1
+   read -r t u < <(lsblk -dn -o PTTYPE,PTUUID -- "$disk" 2>/dev/null)
+   if [ "${t:-}" != "$ptable" ] || [ -z "${u:-}" ] || [ "$u" = "$old" ]; then
+      ER_STAGE=table-lost; return 12
+   fi
+   return 0
 }
 
 # ---------------------------------------------------------------------------
