@@ -46,12 +46,17 @@ bm_version_info() {
 }
 
 bm_cmd_version() {
+   local l_pkg=$"package:" l_rev=$"revision:" l_src=$"source:" w
    bm_version_info
+   # Labels are aligned by characters (translations have accents)
+   w="${#l_pkg}"
+   [ "${#l_rev}" -gt "$w" ] && w="${#l_rev}"
+   [ "${#l_src}" -gt "$w" ] && w="${#l_src}"
    printf 'Big-Mount %s\n' "$BM_VERSION"
-   [ -n "$V_PKG" ] && printf '  %-10s %s\n' $"package:" "$V_PKG"
+   [ -n "$V_PKG" ] && { bm_pad "$l_pkg" "$w"; printf '  %s %s\n' "$REPLY" "$V_PKG"; }
    [ -n "$V_REVISION" ] || V_REVISION=$"unknown"
-   printf '  %-10s %s\n' $"revision:" "$V_REVISION${V_DATE:+ ($V_DATE)}"
-   [ -n "$V_SOURCE" ] && printf '  %-10s %s\n' $"source:" "$V_SOURCE"
+   bm_pad "$l_rev" "$w"; printf '  %s %s\n' "$REPLY" "$V_REVISION${V_DATE:+ ($V_DATE)}"
+   [ -n "$V_SOURCE" ] && { bm_pad "$l_src" "$w"; printf '  %s %s\n' "$REPLY" "$V_SOURCE"; }
    return 0
 }
 
@@ -141,7 +146,7 @@ bm_dr_bigmount() {
    bm_version_info
    bm_dr info "Big-Mount $BM_VERSION, ${V_REVISION:-?}${V_DATE:+ ($V_DATE)}" "$V_PKG"
    if [ "$BM_LIB_DIR" != /usr/lib/big-mount ]; then
-      bm_dr info $"Running from a source checkout; the installed copy is checked below."
+      bm_dr info $"This is not the installed copy (a source checkout or an unpacked package); the installed one is checked below."
    fi
 
    # Every bigmount in PATH: a copy in /usr/local/bin or ~/bin hides the

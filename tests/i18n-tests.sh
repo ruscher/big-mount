@@ -94,6 +94,10 @@ if [ "$EUID" -ne 0 ]; then
         bash -c 'env -i PATH="$PATH" LANG=pt_BR.UTF-8 bash "$1" 2>&1 </dev/null | grep -q "exige direitos de administrador"' _ "$BM"
 fi
 check "--version translated" bash -c 'env -i PATH="$PATH" LANG=pt_BR.UTF-8 bash "$1" --version | grep -q "revisão:"' _ "$BM"
+check "--version: translated labels aligned by characters, not bytes" env LC_ALL=C.UTF-8 bash -c '
+    cols="$(env -i PATH="$PATH" LANG=pt_BR.UTF-8 bash "$1" --version | tail -n +2 | while IFS= read -r l; do
+        [[ $l =~ ^([^:]*:\ +) ]] && echo "${#BASH_REMATCH[1]}"; done | sort -u | wc -l)"
+    [ "$cols" -eq 1 ]' _ "$BM"
 check "--doctor translated" bash -c 'env -i PATH="$PATH" LANG=pt_BR.UTF-8 HOME="$HOME" bash "$1" --doctor 2>/dev/null | grep -q "^Resultado: "' _ "$BM"
 
 # A translation that lacks one message: that one stays English, the rest is translated

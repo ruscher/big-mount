@@ -19,7 +19,7 @@ version could be traced to its code. All are fixed and tested. There is
 now `bigmount --version`, an anonymized read-only `bigmount --doctor`, and
 package versions that come from the commit.
 
-Tests: boot path 109, library 179, translations 37, packaging 51,
+Tests: boot path 109, library 179, translations 38, packaging 51,
 integration 130 (2 skipped). The new checks fail on the stable script, on
 `f547e4b` or on the installed 26.10.22 package. Details:
 [12](12-field-report.md), [13](13-versioning-and-doctor.md).
