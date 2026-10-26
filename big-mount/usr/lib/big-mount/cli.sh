@@ -7,7 +7,8 @@
 # running system), 5 not authorized, 6 unmounted but still in use by a
 # stacked device, 7 unmounted, the drive cannot be powered off by the
 # computer, 8 unmounted but powering it off failed, 9 not done: services
-# depend on the device and the user did not confirm stopping them.
+# depend on the device and the user did not confirm stopping them, 10 not
+# done: another removal of the same drive is in progress.
 
 BM_LIB_DIR="${BIGMOUNT_LIB:-/usr/lib/big-mount}"
 # shellcheck source=lib.sh
@@ -31,8 +32,16 @@ bm_usage() {
       "--gui [TARGET]" $"graphical diagnosis" \
       "--gui-remove TARGET" $"graphical safe removal" \
       "--notifier" $"session service: warn about read-only devices" \
+      "--doctor" $"check the installation and the storage stack (for bug reports)" \
+      "-V, --version" $"show the version and the source revision" \
       "-h, --help" $"show this help"
    printf '\n%s\n' $"TARGET is a device (/dev/sdb1) or any folder inside a mounted device."
+}
+
+# Parts that only one command needs are loaded by that command
+bm_load() {
+   # shellcheck source=doctor.sh
+   . "$BM_LIB_DIR/$1"
 }
 
 bm_main() {
@@ -42,7 +51,7 @@ bm_main() {
    for a in "$@"; do
       # An empty target must not silently become the current folder
       if [ -z "$a" ]; then
-         printf $"bigmount: '%s' is not a local storage device or a folder on one"'\n' "" >&2
+         R_ERR=empty; bm_resolve_fail ""
          return 2
       fi
       if [[ $a != -* && $a != /* ]]; then a="$PWD/$a"; fi
@@ -52,6 +61,8 @@ bm_main() {
    cd / || return 1
    case "$cmd" in
       -h | --help) bm_usage ;;
+      -V | --version) bm_load doctor.sh && bm_cmd_version ;;
+      --doctor) bm_load doctor.sh && bm_cmd_doctor "${args[@]}" ;;
       --diagnose) BM_UI="tty"; bm_ui_init; bm_cmd_diagnose "${args[@]}" ;;
       --busy) BM_UI="tty"; bm_ui_init; bm_cmd_busy "${args[@]}" ;;
       --unmount) BM_UI="tty"; bm_ui_init; bm_cmd_remove unmount "${args[@]}" ;;
@@ -280,8 +291,8 @@ bm_cmd_diagnose() {
       bm_overview
       return
    fi
-   bm_resolve "$target" || { printf $"bigmount: '%s' is not a local storage device or a folder on one"'\n' "$target" >&2; return 1; }
-   bm_facts "$R_DEV" || { printf $"bigmount: cannot read information about %s"'\n' "$R_DEV" >&2; return 1; }
+   bm_resolve "$target" || { bm_resolve_fail "$target"; return 1; }
+   bm_facts "$R_DEV" || { R_ERR=unavailable; bm_resolve_fail "$R_DEV"; return 1; }
    # A whole disk: diagnose each of its filesystems
    if [ "${F[TYPE]}" = disk ] && [ -z "${F[FSTYPE]}" ]; then
       bm_disk_parts "$R_DEV"
@@ -310,10 +321,9 @@ bm_cmd_diagnose() {
 
 # Overview of every filesystem, plus a quick self-check of the environment
 bm_overview() {
-   local line dev fstype label size mp state mgr hint=0
-   printf '%s\n\n' $"Storage devices"
-   printf '  %-16s %-18s %8s %-7s %-14s %-30s %s\n' \
-      $"DEVICE" $"LABEL" $"SIZE" $"FS" $"MANAGED BY" $"MOUNTED AT" $"STATE"
+   local line dev fstype label size mp state mgr hint=0 rows=() r c out w=() i
+   # Header first; column widths come from the longest cell (in characters)
+   rows+=($"DEVICE"$'\t'$"LABEL"$'\t'$"SIZE"$'\t'$"FS"$'\t'$"MANAGED BY"$'\t'$"MOUNTED AT"$'\t'$"STATE")
    while IFS= read -r line; do
       bm_parse_pairs "$line"
       dev="${KV[NAME]}" fstype="${KV[FSTYPE]}" label="${KV[LABEL]}"
@@ -334,8 +344,31 @@ bm_overview() {
          state=$"no write permission"; hint=1
       fi
       label="${label//[[:cntrl:]]/?}" mp="${mp//[[:cntrl:]]/?}"
-      printf '  %-16s %-18.18s %8s %-7s %-14s %-30s %s\n' "$dev" "${label:--}" "$size" "$fstype" "$mgr" "${mp:--}" "$state"
+      rows+=("$dev"$'\t'"${label:--}"$'\t'"$size"$'\t'"$fstype"$'\t'"$mgr"$'\t'"${mp:--}"$'\t'"$state")
    done < <(lsblk -P -b -p -o NAME,TYPE,FSTYPE,LABEL,SIZE,MOUNTPOINTS 2>/dev/null)
+   # Long labels and mount points are shortened (…), never cut mid-character
+   local max=(24 20 9 8 16 40 0)
+   for r in "${rows[@]}"; do
+      IFS=$'\t' read -r -a c <<< "$r"
+      for i in 0 1 2 3 4 5; do
+         [ "${#c[i]}" -gt "${w[i]:-0}" ] && w[i]="${#c[i]}"
+         [ "${w[i]}" -gt "${max[i]}" ] && w[i]="${max[i]}"
+      done
+   done
+   printf '%s\n\n' $"Storage devices"
+   for r in "${rows[@]}"; do
+      IFS=$'\t' read -r -a c <<< "$r"
+      out=" "
+      for i in 0 1 2 3 4 5; do
+         if [ "$i" -eq 2 ]; then
+            # Sizes are right-aligned
+            printf -v line '%*s' $((w[i] - ${#c[i]})) ""; out+=" $line${c[i]}"
+         else
+            bm_pad "${c[i]}" "${w[i]}"; out+=" $REPLY"
+         fi
+      done
+      printf '%s %s\n' "$out" "${c[6]}"
+   done
    [ "$hint" -eq 1 ] && printf '\n%s\n' $"To find out why a device cannot be written to, run: bigmount --diagnose DEVICE"
 
    printf '\n%s\n' $"Environment"
@@ -516,7 +549,7 @@ bm_busy_details_file() {
 }
 
 bm_cmd_busy() {
-   bm_resolve "${1:-}" || { printf $"bigmount: '%s' is not a local storage device or a folder on one"'\n' "${1:-}" >&2; return 1; }
+   bm_resolve "${1:-}" || { bm_resolve_fail "${1:-}"; return 1; }
    bm_busy_doc "$R_DEV"
    if [ "$BUSY_COUNT" -eq 0 ]; then
       # Nothing visible holds it: say so instead of "still in use". A user
@@ -550,22 +583,29 @@ bm_is_removable_drive() {
 # bm_remove_core MODE DEV: MODE "unmount" (one filesystem), "drive" (every
 # filesystem of the drive) or "remove" (drive, then power off when it is a
 # removable drive). Returns the exit codes documented at the top.
-# RM_BUSY_DEV, RM_REASON, RM_POWERED and RM_REMOVABLE describe the outcome.
+# RM_BUSY_DEV, RM_REASON, RM_POWERED and RM_REMOVABLE describe the outcome;
+# RM_GONE=1 when it stopped because the device disappeared (unplugged, or
+# replaced by another one under the same name).
 #
 # Before every step that cannot be undone the disk sequence number is checked
 # again (another device may have taken the name), and nothing is reported as
 # safe while any filesystem of the drive is still mounted.
 bm_remove_core() {
    local mode="$1" dev="$2" d i t targets=() types=() rc seq n
-   RM_BUSY_DEV="" RM_REASON="" RM_POWERED=0 RM_REMOVABLE=0 RM_DEP_UNITS=() RM_DEP_NAMES=() RM_DEP_BACK=()
-   bm_facts "$dev" || { RM_REASON=$"device not found"; return 1; }
+   RM_BUSY_DEV="" RM_REASON="" RM_POWERED=0 RM_REMOVABLE=0 RM_GONE=0 RM_DEP_UNITS=() RM_DEP_NAMES=() RM_DEP_BACK=()
+   _bm_gone() {
+      RM_GONE=1
+      RM_REASON=$"The device was disconnected or replaced during the operation. Nothing else was done."
+   }
+   bm_facts "$dev" || { _bm_gone; return 1; }
    local disk="${F[DISK]}" disk_type="${F[DISK_TYPE]}"
    bm_is_removable_drive && RM_REMOVABLE=1
    bm_diskseq "$disk"; seq="$REPLY"
    _bm_same_disk() {
       bm_diskseq "$disk"
-      [ "$REPLY" = "$seq" ] && return 0
-      RM_REASON=$"The device was disconnected or replaced during the operation. Nothing else was done."
+      # Kernels before 5.15 have no diskseq: then at least the node must exist
+      [ "$REPLY" = "$seq" ] && { [ -n "$seq" ] || [ -b "$disk" ]; } && return 0
+      _bm_gone
       return 1
    }
    if [ "$mode" != unmount ]; then
@@ -603,6 +643,7 @@ bm_remove_core() {
          case "$UD_ERROR" in
             *DeviceBusy*) RM_BUSY_DEV="$d"; return 3 ;;
             *NotAuthorized*) return 5 ;;
+            no-object) _bm_gone; return 1 ;;
             *) RM_REASON="$UD_MESSAGE"; return 1 ;;
          esac
       fi
@@ -628,6 +669,7 @@ bm_remove_core() {
       _bm_same_disk || return 1
       if ! bm_udisks lock -b "$d"; then
          [[ $UD_ERROR == *NotAuthorized* ]] && return 5
+         [ "$UD_ERROR" = no-object ] && { _bm_gone; return 1; }
          printf -v RM_REASON $"%s: the encrypted volume could not be locked" "$d"
          return 6
       fi
@@ -657,6 +699,7 @@ bm_remove_core() {
       case "$UD_ERROR" in
          *NotAuthorized*) return 5 ;;
          *NotSupported*) RM_REASON="$UD_MESSAGE"; return 7 ;;
+         no-object) _bm_gone; return 1 ;;
       esac
       udevadm settle --timeout=5 >/dev/null 2>&1
       sleep 1
@@ -700,7 +743,7 @@ bm_close_args() {
 }
 
 bm_cmd_remove() {
-   local mode="$1" target="" close=0 yes=0 a rc tries=0
+   local mode="$1" target="" close=0 yes=0 a rc
    shift
    RM_ALLOW_SERVICES=0
    for a in "$@"; do
@@ -712,8 +755,19 @@ bm_cmd_remove() {
          *) target="$a" ;;
       esac
    done
-   bm_resolve "$target" || { printf $"bigmount: '%s' is not a local storage device or a folder on one"'\n' "$target" >&2; return 1; }
-   local dev="$R_DEV"
+   bm_resolve "$target" || { bm_resolve_fail "$target"; return 1; }
+   if bm_facts "$R_DEV" && ! bm_drive_lock "${F[DISK]}"; then
+      printf '%s\n' $"Another removal of this drive is in progress. Nothing was done." >&2
+      return 10
+   fi
+   bm_remove_tty "$mode" "$R_DEV" "$close" "$yes"; rc=$?
+   bm_drive_unlock
+   return "$rc"
+}
+
+# The terminal dialogue of bm_cmd_remove, with the drive locked
+bm_remove_tty() {
+   local mode="$1" dev="$2" close="$3" yes="$4" a rc tries=0
    while :; do
       bm_remove_core "$mode" "$dev"; rc=$?
       case "$rc" in
@@ -762,7 +816,12 @@ bm_cmd_remove() {
          5) printf '%s\n' $"Permission to unmount was not granted." >&2; return 5 ;;
          6) printf $"Unmounted, but the drive is still in use (%s), so it was not powered off."'\n' "$RM_REASON" >&2; return 6 ;;
          7) printf '%s\n' $"Unmounted. This drive cannot be powered off by the computer; it can be disconnected now." ; return 7 ;;
-         *) printf $"Could not unmount: %s"'\n' "$RM_REASON" >&2; return 1 ;;
+         *)
+            if [ "$RM_GONE" = 1 ]; then printf '%s\n' "$RM_REASON" >&2
+            else printf $"Could not unmount: %s"'\n' "$RM_REASON" >&2
+            fi
+            return 1
+            ;;
       esac
    done
 }
@@ -790,16 +849,47 @@ bm_pick_device() {
    [ -n "$REPLY" ]
 }
 
+# bm_gui_target TARGET TITLE TEXT: resolve TARGET for a graphical command,
+# setting R_DEV, R_PATH and F. A folder that is not on a local device is a
+# fact, not a failure: a notification (TITLE, TEXT) says so. A device that
+# cannot be found (unplugged, not ready yet) gets a dialog that can try
+# again and show the technical reason.
+bm_gui_target() {
+   local target="$1" tmp
+   while :; do
+      if bm_resolve "$target"; then
+         bm_facts "$R_DEV" && return 0
+         R_ERR=unavailable
+      fi
+      if [ "$R_ERR" = not-local ]; then
+         bm_notify info big-mount "$2" "$3"
+         return 1
+      fi
+      bm_doc_new
+      bm_doc_h $"Unable to access storage device"
+      bm_doc_p $"Big-Mount could not identify this storage device. It may have been disconnected or become temporarily unavailable."
+      bm_doc_p $"If you disconnected it, connect it again and choose Try again."
+      bm_ui_choice $"Unable to access storage device" dialog-warning $"Try again" $"Technical details" $"Close"
+      case "$REPLY" in
+         1) ;;
+         2)
+            tmp="$(mktemp)" || return 1
+            bm_resolve_message "$target"
+            printf '%s\n' "target: $target" "node:   ${R_NODE:--}" "reason: ${R_ERR:-?}" "" "$REPLY" > "$tmp"
+            bm_ui_text $"Technical details" "$tmp"; rm -f -- "$tmp"
+            ;;
+         *) return 1 ;;
+      esac
+   done
+}
+
 bm_gui_diagnose() {
    local target="${1:-}" key icon tmp
    if [ -z "$target" ]; then
       bm_pick_device || return 0
       target="$REPLY"
    fi
-   if ! bm_resolve "$target" || ! bm_facts "$R_DEV"; then
-      bm_notify info big-mount $"Storage diagnostics" $"This folder is not on a local storage device."
-      return 1
-   fi
+   bm_gui_target "$target" $"Storage diagnostics" $"This folder is not on a local storage device." || return 1
    local dev="$R_DEV" path="$R_PATH"
    # A whole disk: its only filesystem, or let the user choose one
    if [ "${F[TYPE]}" = disk ] && [ -z "${F[FSTYPE]}" ]; then
@@ -815,7 +905,10 @@ bm_gui_diagnose() {
       fi
    fi
    while :; do
-      bm_facts "$dev"
+      # The device may have been unplugged while a dialog was open
+      if ! bm_facts "$dev"; then
+         bm_gui_target "$dev" $"Storage diagnostics" "" || return 1
+      fi
       bm_diagnose_write "$dev" "$path"
       bm_diag_doc "$dev"
       bm_device_icon; icon="$REPLY"
@@ -868,15 +961,21 @@ bm_gui_fix() {
          [ -w "$mp" ] && ok=1
          ;;
       remount)
+         if ! bm_drive_lock "${F[DISK]:-$dev}"; then
+            bm_notify info dialog-information "$C_FIX_LABEL" $"Another operation on this drive is in progress. Try again when it finishes."
+            return 0
+         fi
          if bm_unmount_all "$dev"; then
             if bm_udisks mount -b "$dev"; then
                bm_diagnose_write "$dev"
                [ "$D_CAUSE" = ok ] && ok=1
             fi
          elif [[ $UD_ERROR == *DeviceBusy* ]]; then
+            bm_drive_unlock
             bm_gui_busy_dialog "$dev"
             return 0
          fi
+         bm_drive_unlock
          ;;
    esac
    bm_short_name
@@ -902,8 +1001,8 @@ bm_priv_clear() {
 bm_gui_busy_dialog() {
    local dev="$1" priv="" tmp self
    bm_priv_clear
-   trap 'bm_priv_clear' EXIT
-   trap 'bm_priv_clear; exit 130' INT TERM HUP
+   trap 'bm_priv_clear; bm_drive_unlock' EXIT
+   trap 'bm_priv_clear; bm_drive_unlock; exit 130' INT TERM HUP
    while :; do
       bm_busy_doc "$dev" "" "$priv"
       bm_device_icon
@@ -965,14 +1064,15 @@ bm_gui_slow_notice() {
 
 bm_gui_remove() {
    local target="${1:-}" rc name short icon
-   if ! bm_resolve "$target" || ! bm_facts "$R_DEV"; then
-      bm_notify info big-mount $"Safely remove" $"This folder is not on a removable storage device."
-      return 1
-   fi
+   bm_gui_target "$target" $"Safely remove" $"This folder is not on a removable storage device." || return 1
    local dev="$R_DEV"
    bm_display_name; name="$REPLY"
    bm_short_name; short="$REPLY"
    bm_device_icon; icon="$REPLY"
+   if ! bm_drive_lock "${F[DISK]}"; then
+      bm_notify info "$icon" $"Safely remove" "$name"$'\n'$"The removal of this drive is already in progress." >/dev/null &
+      return 10
+   fi
    BM_GUI_NAME="$short" BM_SLOW_HOOK=bm_gui_slow_notice BM_GUI_SLOW_SHOWN=0 RM_ALLOW_SERVICES=0
    while :; do
       bm_remove_core remove "$dev"; rc=$?
@@ -1030,13 +1130,19 @@ bm_gui_remove() {
             break
             ;;
          *)
-            bm_notify warning dialog-error $"Unable to unmount device" \
-               "$name"$'\n'$"It remains mounted. Nothing was forced."$'\n'"${RM_REASON%%$'\n'*}" >/dev/null &
+            if [ "$RM_GONE" = 1 ]; then
+               bm_notify warning dialog-warning $"Device disconnected" \
+                  "$name"$'\n'$"The device was disconnected before the removal finished. If files were being written to it, check them when you connect it again." >/dev/null &
+            else
+               bm_notify warning dialog-error $"Unable to unmount device" \
+                  "$name"$'\n'$"It remains mounted. Nothing was forced."$'\n'"${RM_REASON%%$'\n'*}" >/dev/null &
+            fi
             break
             ;;
       esac
    done
    BM_SLOW_HOOK=""
+   bm_drive_unlock
    return "$rc"
 }
 

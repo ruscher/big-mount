@@ -36,6 +36,15 @@ BM_SHELL_COMM=" bash zsh fish sh dash ksh mksh tcsh csh nu elvish xonsh "
 
 bm_warn() { printf 'bigmount: %s\n' "$*" >&2; }
 
+# Pad or cut TEXT to WIDTH characters for terminal tables. printf counts
+# bytes: "%-18.18s" misaligns accented labels and can cut one in the middle
+# of a character. Control characters (from device data) become "?".
+bm_pad() {
+   local s="${1//[[:cntrl:]]/?}" w="$2"
+   [ "${#s}" -gt "$w" ] && s="${s:0:w-1}…"
+   printf -v REPLY '%s%*s' "$s" $((w - ${#s})) ""
+}
+
 # Decode the \xHH escapes used by lsblk -P and findmnt -P
 bm_unescape() { printf -v REPLY '%b' "$1"; }
 
@@ -84,27 +93,71 @@ bm_human_size() {
 # bm_resolve TARGET: block device behind a /dev path, a mount point or any
 # path inside a mounted filesystem. Sets R_DEV (e.g. /dev/sdd1), R_PATH (the
 # path asked for, if any) and R_SUBVOL (btrfs subvolume, if any).
+# Nothing is ever derived from the name: the kernel must know the device.
+# On failure R_ERR says why (bm_resolve_message explains it):
+#   empty | missing (no such device or folder) | controller (an NVMe
+#   controller such as /dev/nvme0, not its storage) | not-block (another
+#   kind of file in /dev) | not-local (a folder on a network share, tmpfs...)
+# Callers set unavailable when the node exists but the kernel has no device
+# behind it any more (bm_facts failed: unplugged, detached loop device).
 bm_resolve() {
    local target="$1" src
-   R_DEV="" R_PATH="" R_SUBVOL=""
+   R_DEV="" R_PATH="" R_SUBVOL="" R_ERR="" R_NODE=""
    if [ -z "$target" ]; then
-      return 1
+      R_ERR=empty; return 1
    fi
    if [[ $target == /dev/* ]]; then
-      target="$(readlink -f -- "$target")"
-      [ -b "$target" ] || return 1
-      R_DEV="$target"
-      return 0
+      src="$(readlink -f -- "$target")"
+      R_NODE="$src"
+      if [ -b "$src" ]; then
+         R_DEV="$src"; return 0
+      fi
+      if [ ! -e "$src" ]; then R_ERR=missing
+      elif [[ ${src##*/} =~ ^nvme[0-9]+$ ]] && [ -d "/sys/class/nvme/${src##*/}" ]; then R_ERR=controller
+      else R_ERR=not-block
+      fi
+      return 1
    fi
-   [ -e "$target" ] || return 1
+   [ -e "$target" ] || { R_ERR=missing; return 1; }
    R_PATH="$target"
    src="$(findmnt -n -o SOURCE -T "$target" 2>/dev/null | head -n1)"
    if [[ $src == *\[*\] ]]; then
       R_SUBVOL="${src#*\[}"; R_SUBVOL="${R_SUBVOL%\]}"
       src="${src%%\[*}"
    fi
-   [[ $src == /dev/* ]] && [ -b "$src" ] || return 2
+   if [[ $src != /dev/* ]] || [ ! -b "$src" ]; then
+      R_ERR=not-local; return 2
+   fi
    R_DEV="$(readlink -f -- "$src")"
+}
+
+# One translated sentence for the R_ERR of a failed bm_resolve TARGET. For
+# an NVMe controller the storage it holds is named (from sysfs, not guessed).
+bm_resolve_message() {
+   local target="$1" ns=() n
+   case "${R_ERR:-}" in
+      empty) REPLY=$"No device or folder was given." ;;
+      missing) printf -v REPLY $"'%s' does not exist. If it is a removable device, it may have been disconnected." "$target" ;;
+      unavailable) printf -v REPLY $"'%s' is not available. If it is a removable device, it may have been disconnected." "$target" ;;
+      controller)
+         # Namespaces are block devices; hidden multipath paths (nvme0c0n1)
+         # have no node in /dev
+         for n in /sys/class/nvme/"${R_NODE##*/}"/nvme*n*; do
+            [ -b "/dev/${n##*/}" ] && ns+=("/dev/${n##*/}")
+         done
+         printf -v REPLY $"'%s' is an NVMe controller, not a storage device. Its storage is: %s" "$target" "${ns[*]:-?}"
+         ;;
+      not-block) printf -v REPLY $"'%s' is not a storage device." "$target" ;;
+      not-local) printf -v REPLY $"'%s' is not on a local storage device (it may be a network share or a memory filesystem)." "$target" ;;
+      *) printf -v REPLY $"'%s' is not a local storage device or a folder on one" "$target" ;;
+   esac
+}
+
+# For the terminal commands: the explanation on stderr, prefixed like every
+# other message of bigmount
+bm_resolve_fail() {
+   bm_resolve_message "$1"
+   printf 'bigmount: %s\n' "$REPLY" >&2
 }
 
 # bm_facts DEV: fills the F array with what diagnosis and dialogs need.
@@ -671,11 +724,26 @@ bm_udisks() {
    if [ "$rc" -ne 0 ]; then
       if [[ $out =~ GDBus\.Error:([A-Za-z0-9_.]+) ]]; then
          UD_ERROR="${BASH_REMATCH[1]}"
+      elif [[ $out == *"Error looking up object for device"* ]]; then
+         # udisksctl's own message (no D-Bus error): UDisks2 has no object
+         # for this name, so the device is gone or was never a block device
+         UD_ERROR=no-object
       else
          UD_ERROR=unknown
       fi
    fi
    return "$rc"
+}
+
+# bm_udisks_object DEV: the UDisks2 object of a block device, as UDisks2
+# itself names it (REPLY), never built from the device name. Fails when
+# UDisks2 does not know the device (disconnected, or not a block device).
+bm_udisks_object() {
+   local line
+   REPLY=""
+   line="$(LC_ALL=C udisksctl info -b "$1" 2>/dev/null | head -n1)"
+   [[ $line =~ ^(/org/freedesktop/UDisks2/block_devices/[A-Za-z0-9_]+):$ ]] || return 1
+   REPLY="${BASH_REMATCH[1]}"
 }
 
 # bm_is_system_mount MOUNTPOINT
@@ -700,6 +768,31 @@ bm_has_holders() { compgen -G "/sys/class/block/${1##*/}/holders/*" >/dev/null; 
 bm_diskseq() {
    REPLY=""
    { read -r REPLY < "/sys/block/${1##*/}/diskseq"; } 2>/dev/null
+}
+
+# bm_drive_lock DISK: one removal or remount of a drive at a time. A double
+# click on the Dolphin action, or the action and a terminal command, must
+# not unmount and power off the same drive concurrently. The lock file is
+# in the private runtime folder of the user, where nobody else can plant a
+# symlink. Returns 1 when another operation holds it. bm_drive_unlock
+# releases it even if a child process (a notification) inherited the fd.
+bm_drive_lock() {
+   local dir="${XDG_RUNTIME_DIR:-/run/user/$EUID}"
+   BM_LOCK_FD=""
+   # Without a private folder (an unusual environment) there is no lock
+   { [ -d "$dir" ] && [ -O "$dir" ]; } || return 0
+   { exec {BM_LOCK_FD}>"$dir/big-mount-drive-${1##*/}.lock"; } 2>/dev/null || { BM_LOCK_FD=""; return 0; }
+   flock -n "$BM_LOCK_FD" && return 0
+   exec {BM_LOCK_FD}>&-
+   BM_LOCK_FD=""
+   return 1
+}
+
+bm_drive_unlock() {
+   [ -n "${BM_LOCK_FD:-}" ] || return 0
+   flock -u "$BM_LOCK_FD" 2>/dev/null
+   exec {BM_LOCK_FD}>&-
+   BM_LOCK_FD=""
 }
 
 # bm_system_use DISK: non-empty REPLY when the drive holds the running
@@ -884,11 +977,16 @@ bm_mount_dependents() {
 # Make the current user owner of the root folder of a POSIX filesystem
 # (not recursive), through the UDisks2 TakeOwnership API and polkit.
 bm_take_ownership() {
-   local dev="$1" obj
-   obj="/org/freedesktop/UDisks2/block_devices/${dev##*/}"
-   obj="${obj//-/_2d}"
-   gdbus call --system --dest org.freedesktop.UDisks2 --object-path "$obj" \
-      --method org.freedesktop.UDisks2.Filesystem.TakeOwnership "{'recursive': <false>}" >/dev/null 2>&1
+   local dev="$1" out
+   UD_ERROR="" UD_MESSAGE=""
+   if ! bm_udisks_object "$dev"; then
+      UD_ERROR=no-object; return 1
+   fi
+   out="$(gdbus call --system --dest org.freedesktop.UDisks2 --object-path "$REPLY" \
+      --method org.freedesktop.UDisks2.Filesystem.TakeOwnership "{'recursive': <false>}" 2>&1)" && return 0
+   UD_MESSAGE="$out" UD_ERROR=unknown
+   [[ $out =~ GDBus\.Error:([A-Za-z0-9_.]+) ]] && UD_ERROR="${BASH_REMATCH[1]}"
+   return 1
 }
 
 # ---------------------------------------------------------------------------

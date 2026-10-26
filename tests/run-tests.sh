@@ -48,6 +48,7 @@ transform_script() {
         -e "s|/mnt|$root/mnt|g" \
         -e "s|/media|$root/media|g" \
         -e "s|__RUNMEDIA__|$root/run/media|g" \
+        -e '/# root-check$/s/\[ "\$EUID" -ne 0 \]/[ "${FAKE_EUID:-0}" -ne 0 ]/' \
         "$src" > "$dst"
     chmod +x "$dst"
 }
@@ -62,6 +63,7 @@ setup_root() {
     : > "$root/mount.log"
     : > "$root/ntfsfix.log"
     : > "$root/udevadm.log"
+    : > "$root/udisksctl.log"
     : > "$root/fake-lsblk"
     : > "$root/fake-blkid"
     : > "$root/fake-fstab"
@@ -73,7 +75,7 @@ run_script() {
     shift
     local tmp="$root/bigmount.patched"
     transform_script "$SCRIPT_SRC" "$tmp" "$root"
-    env -i TESTROOT="$root" HOME="$HOME" PATH="$HERE/stubs:/usr/bin:/bin" \
+    env -i TESTROOT="$root" HOME="$HOME" PATH="$HERE/stubs:/usr/bin:/bin" FAKE_EUID="${FAKE_EUID:-0}" \
         MOUNT_FAIL_DEVS="${MOUNT_FAIL_DEVS:-}" MOUNT_RC_RW="${MOUNT_RC_RW:-}" \
         MOUNT_RC_RO="${MOUNT_RC_RO:-}" MOUNT_FALLBACK_RO="${MOUNT_FALLBACK_RO:-}" bash "$tmp" "$@"
 }
@@ -738,6 +740,89 @@ test_lock_released_with_fuse_daemon() {
     assert_true bash -c 'exec 9>"$1"; flock -n 9' _ "$root/run/lock/big-mount.lock"
 }
 
+# ===== field report (docs/12-field-report.md) =====
+# A user ran bigmount on a computer with an NVMe disk and got, for every
+# command: "grep: /var/lib/sddm/state.conf: Permission denied",
+# "cat: /sys/block/nvme/removable: No such file or directory" and
+# "Error looking up object for device /dev/nvme". These fail on the
+# script of the biglinux-stable package (tests/bigmount.old.sh).
+
+test_field_report_messages() {
+    begin "field-report-sddm-and-nvme"
+    local root="$HERE/tmp-field"
+    setup_root "$root"
+    printf '%s\n' '/dev/nvme0n1p1: UUID="AB12-CD34" TYPE="vfat" PARTLABEL="EFI system partition"' \
+        '/dev/nvme0n1p2: LABEL="Arquivos" UUID="u-2" TYPE="ext4"' > "$root/fake-blkid"
+    lsblk_map "$root" "nvme0n1p1 nvme0n1 nvme 0" "nvme0n1p2 nvme0n1 nvme 0"
+    disk "$root" nvme0n1
+    echo "User=$(id -un)" > "$root/var/lib/sddm/state.conf"
+    chmod 000 "$root/var/lib/sddm/state.conf"
+    run_script "$root" >/dev/null 2>"$root/stderr"
+    chmod 644 "$root/var/lib/sddm/state.conf"
+    if [ "$EUID" -ne 0 ]; then
+        ASSERT_MSG="an unreadable SDDM state file gives no 'Permission denied'"
+        assert_false grep -q 'state.conf' "$root/stderr"
+    fi
+    ASSERT_MSG="never reads /sys/block/nvme/ (a device name cut at the first digit)"
+    assert_false grep -q '/sys/block/nvme/' "$root/stderr"
+    ASSERT_MSG="UDisks2 is never asked about /dev/nvme"
+    assert_false grep -qE '/dev/nvme( |$)' "$root/udisksctl.log"
+    ASSERT_MSG="no error output at all"
+    assert_false test -s "$root/stderr"
+    ASSERT_MSG="the internal NVMe partition is still mounted"
+    assert_true mounted "$root" "$root/mnt/Arquivos"
+}
+
+test_mmc_name_not_cut() {
+    begin "field-report-mmc-name"
+    local root="$HERE/tmp-field-mmc"
+    simple_case "$root" '/dev/mmcblk0p1: LABEL="CAMERA" TYPE="exfat"' mmcblk0p1 mmcblk0 "" 0
+    echo 1 > "$root/sys/block/mmcblk0/removable"
+    run_script "$root" >/dev/null 2>"$root/stderr"
+    ASSERT_MSG="never reads /sys/block/mmcblk/ (cut name)"; assert_false grep -q '/sys/block/mmcblk/' "$root/stderr"
+    ASSERT_MSG="removable card read through its real name is left to UDisks"; assert_false test -s "$root/mount.log"
+}
+
+test_user_runs_boot_mode() {
+    begin "user-runs-bigmount-without-options"
+    local root="$HERE/tmp-user-run" rc
+    simple_case "$root" '/dev/sda1: LABEL="Data" TYPE="ext4"' sda1 sda sata 0
+    : > "$root/run/lock/big-mount.lock"; chmod 444 "$root/run/lock/big-mount.lock"
+    FAKE_EUID=1000 run_script "$root" >"$root/stdout" 2>"$root/stderr"; rc=$?
+    ASSERT_MSG="exit 5 (not authorized)"; assert_true test "$rc" -eq 5
+    ASSERT_MSG="explains that big-mount.service does it at boot"; assert_true grep -q 'big-mount.service' "$root/stderr"
+    ASSERT_MSG="no raw permission error"; assert_false grep -qi 'permission denied\|negada' "$root/stderr"
+    ASSERT_MSG="not the misleading 'another bigmount is still running'"; assert_false grep -q 'still running' "$root/stderr" "$root/stdout"
+    ASSERT_MSG="nothing mounted"; assert_false test -s "$root/mount.log"
+}
+
+test_unknown_last_user() {
+    begin "sddm-names-unknown-account"
+    local root="$HERE/tmp-ghost" first
+    simple_case "$root" '/dev/sda1: LABEL="Win" TYPE="ntfs"' sda1 sda sata 0
+    echo "User=no-such-account-$$" > "$root/var/lib/sddm/state.conf"
+    first="$(getent passwd | awk -F: '$3 >= 1000 && $3 <= 60000 { print $3; exit }')"
+    run_script "$root" >"$root/stdout" 2>&1
+    ASSERT_MSG="an unknown account is reported"; assert_true grep -q 'no-such-account' "$root/stdout"
+    if [ -n "$first" ]; then
+        ASSERT_MSG="files belong to the first person account (uid=$first)"; assert_true mount_log_has "$root" "uid=$first,"
+    else
+        ASSERT_MSG="no person account: files belong to root, never a made-up uid"; assert_true mount_log_has "$root" "uid=0,"
+    fi
+}
+
+test_lock_file_unwritable() {
+    begin "lock-file-cannot-be-opened"
+    local root="$HERE/tmp-lock-ro"
+    [ "$EUID" -eq 0 ] && { echo "  (skipped as root: permissions are not enforced)"; return; }
+    simple_case "$root" '/dev/sda1: LABEL="Data" TYPE="ext4"' sda1 sda sata 0
+    : > "$root/run/lock/big-mount.lock"; chmod 444 "$root/run/lock/big-mount.lock"
+    run_script "$root" >"$root/stdout" 2>"$root/stderr"
+    ASSERT_MSG="says the lock file cannot be opened"; assert_true grep -q 'cannot open the lock file' "$root/stdout"
+    ASSERT_MSG="not the misleading 'another bigmount is still running'"; assert_false grep -q 'still running' "$root/stdout"
+    ASSERT_MSG="no raw shell error"; assert_false test -s "$root/stderr"
+}
+
 # ===== safety policy: forbidden operations in shipped code =====
 
 test_no_destructive_commands() {
@@ -809,6 +894,11 @@ test_stale_reverse_symlink
 test_dry_run
 test_status_and_lock
 test_lock_released_with_fuse_daemon
+test_field_report_messages
+test_mmc_name_not_cut
+test_user_runs_boot_mode
+test_unknown_last_user
+test_lock_file_unwritable
 test_no_destructive_commands
 
 echo ""

@@ -4,18 +4,23 @@
 
 | Suite | What it uses | Result on the development machine |
 | --- | --- | --- |
-| `tests/run-tests.sh new` | stubs for `blkid`, `lsblk`, `udevadm`, `udisksctl`, `findmnt`, `mount`, `ntfsfix`; paths rewritten to a scratch dir | **92 passed, 0 failed** |
-| `tests/run-tests.sh old` | the original script, as a reference | its failures are the bugs that were fixed |
-| `tests/lib-tests.sh` | the library with simulated facts | **136 passed, 0 failed** |
-| `tests/i18n-tests.sh` | the catalog, the generated resources, runtime language selection | **33 passed, 0 failed** |
-| `tests/package-check.sh` | `package()` of the PKGBUILD on the checkout | **41 passed, 0 failed** |
-| `tests/integration.sh` | disposable images as loop devices mounted by UDisks2, no root; GUI flows with scripted clicks; `BM=/usr/bin/bigmount` tests the installed package | **119 passed, 0 failed, 1 skipped** |
+| `tests/run-tests.sh new` | stubs for `blkid`, `lsblk`, `udevadm`, `udisksctl`, `findmnt`, `mount`, `ntfsfix`; paths rewritten to a scratch dir | **109 passed, 0 failed** |
+| `tests/run-tests.sh old` | the original script (byte for byte the `biglinux-stable` package 25.12.23), as a reference | its failures are the bugs that were fixed (46 passed, 63 failed) |
+| `tests/lib-tests.sh` | the library with simulated facts | **179 passed, 0 failed** |
+| `tests/i18n-tests.sh` | the catalog, the generated resources, runtime language selection | **38 passed, 0 failed** |
+| `tests/package-check.sh` | `package()` and `pkgver()` of the PKGBUILD on the checkout | **52 passed, 0 failed** |
+| `tests/integration.sh` | disposable images as loop devices mounted by UDisks2, no root; GUI flows with scripted clicks; `BM=/usr/bin/bigmount` tests the installed package | **130 passed, 0 failed, 2 skipped** |
 | `shellcheck -x` | shipped code, tests, locale scripts | no findings |
 | `bash -n`, `msgfmt --check`, `desktop-file-validate`, `xmllint`, `systemd-analyze verify` | — | pass (part of the suites above) |
 
+Results of round 7 (2026-10-25), after the last change; see
+[12](12-field-report.md) for what each new test proves and on which older
+version it fails.
+
 Skipped in the integration suite: the nested-mount case, which needs root
 to create (covered by the unit suite). LUKS runs when `dm_crypt` is loaded
-(`sudo modprobe dm_crypt` on a kernel that does not load it by itself).
+(`sudo modprobe dm_crypt` on a kernel that does not load it by itself); in
+round 7 it was not loaded, so it was skipped.
 ISO 9660/SquashFS, skipped in earlier rounds, now run.
 
 Double and nested mounts need root to create, so they are covered by the

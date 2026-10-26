@@ -39,6 +39,7 @@ for po in locale/*.po; do
     check "$lang: no untranslated message" test -z "$(msgattrib --untranslated --no-obsolete "$po" | grep '^msgid' | tail -n +2)"
     check "$lang: no fuzzy (unreviewed) message" test -z "$(msgattrib --only-fuzzy --no-obsolete "$po" | grep '^msgid' | tail -n +2)"
     check "$lang: listed in locale/LINGUAS" grep -qx "$lang" locale/LINGUAS
+    check "$lang: no obsolete message left behind (#~)" bash -c '! grep -q "^#~" "$1"' _ "$po"
     check "$lang: every msgid of the template exists in the translation" \
         test -z "$(comm -23 <(msgids locale/big-mount.pot) <(msgids "$po"))"
     # The same printf directives, in the same order, in msgid and msgstr
@@ -86,6 +87,18 @@ check "LANGUAGE=fr:pt_BR falls back to the next language" \
     test "$(help_line LANG=pt_BR.UTF-8 LANGUAGE=fr:pt_BR)" = "Uso: bigmount [OPÇÃO] [DISPOSITIVO|PASTA]"
 check "errors are translated too" \
     bash -c 'env -i PATH="$PATH" LANG=pt_BR.UTF-8 bash "$1" --bogus 2>&1 | grep -q "opção desconhecida"' _ "$BM"
+# bash translates $"..." while parsing a command: a text domain chosen inside
+# the same block would come too late (the message stayed English)
+if [ "$EUID" -ne 0 ]; then
+    check "bigmount without options as a user: explanation translated, even without a terminal" \
+        bash -c 'env -i PATH="$PATH" LANG=pt_BR.UTF-8 bash "$1" 2>&1 </dev/null | grep -q "exige direitos de administrador"' _ "$BM"
+fi
+check "--version translated" bash -c 'env -i PATH="$PATH" LANG=pt_BR.UTF-8 bash "$1" --version | grep -q "revisão:"' _ "$BM"
+check "--version: translated labels aligned by characters, not bytes" env LC_ALL=C.UTF-8 bash -c '
+    cols="$(env -i PATH="$PATH" LANG=pt_BR.UTF-8 bash "$1" --version | tail -n +2 | while IFS= read -r l; do
+        [[ $l =~ ^([^:]*:\ +) ]] && echo "${#BASH_REMATCH[1]}"; done | sort -u | wc -l)"
+    [ "$cols" -eq 1 ]' _ "$BM"
+check "--doctor translated" bash -c 'env -i PATH="$PATH" LANG=pt_BR.UTF-8 HOME="$HOME" bash "$1" --doctor 2>/dev/null | grep -q "^Resultado: "' _ "$BM"
 
 # A translation that lacks one message: that one stays English, the rest is translated
 mkdir -p "$WORK/tree/usr/bin" "$WORK/tree/usr/share/locale/pt_BR/LC_MESSAGES"
