@@ -145,7 +145,7 @@ check "install script restarts nothing by itself" bash -c '! grep -vE "^\s*(#|ec
 check "configuration preserved on upgrades (backup=)" grep -q "^backup=etc/big-mount.conf" <<< "$pkginfo"
 check "the obsolete big-mount-git is replaced and cannot be installed beside it" \
     bash -c 'source pkgbuild/PKGBUILD 2>/dev/null; [[ " ${replaces[*]} " == *" big-mount-git "* && " ${conflicts[*]} " == *" big-mount-git "* ]]'
-for d in udisks2 util-linux ntfs-3g lsof gtk4 libadwaita python-gobject; do check "depends on $d" grep -qw "$d" <<< "$(grep ^depends= <<< "$pkginfo")"; done
+for d in udisks2 util-linux polkit ntfs-3g lsof rsync smartmontools python python-gobject gtk4 libadwaita; do check "depends on $d" grep -qw "$d" <<< "$(grep ^depends= <<< "$pkginfo")"; done
 
 begin "installed files are valid"
 check "syntax: every module of the application" python3 -I -c 'import ast,sys; [ast.parse(open(f, encoding="utf-8").read()) for f in sys.argv[1:]]' "$P/usr/lib/big-mount/drive-gui.py" "$P"/usr/lib/big-mount/gui/*.py "$P"/usr/lib/big-mount/gui/pages/*.py

@@ -72,6 +72,37 @@ The one operation that erases data, the Secure Erase of a whole drive
 ([5.4](#54-drive-errors-and-secure-erase)), runs only when you ask for it,
 confirm it, type the name of the drive and give the administrator password.
 
+### New in 2.4.0: one application
+
+The drive manager window (PySide6) and the dialogs of the drive check
+(KDialog/Zenity) did almost the same thing, in two different ways. They are now one
+application in GTK 4 and libadwaita:
+
+- `bigmount --gui-drive` and `bigmount --gui-drive-check` open the **same window**; the
+  second one opens on the health of the drive. A second call goes to the window that is
+  already open.
+- **Home** shows every drive as a card: kind, size, health in words and an icon, room,
+  volumes, and **Rescue my files** when a drive is at risk.
+- **Recover files** is an assistant in five steps (from where, what, how, where,
+  confirm), with four ways: copy directly, quick analysis, deep analysis (PhotoRec,
+  after a ddrescue image of a physical disk) and lost partitions (TestDisk, read only).
+  It never offers the same physical disk as the destination.
+- **What was found** stays light with a million entries, and says whether these are
+  files that exist, candidates found by content, or files already copied.
+- **Erase data permanently** lives apart, under **Advanced maintenance**: two
+  confirmations, the typed name checked again by the engine, polkit as always.
+- Light and dark styles, a narrow window, keyboard, Brazilian Portuguese.
+- PySide6 is no longer needed. The terminal commands (`--drive`, `--secure-erase`) and
+  the boot did not change.
+
+<p align="center">
+  <img src="docs/images/app-rescue-how-dark.png" width="420" alt="The assistant in the dark style: the advised way first, with why">
+  <img src="docs/images/app-results-dark.png" width="420" alt="What was found, in the dark style: filters by type, search, selection">
+</p>
+
+How it was designed, tested and reviewed:
+[`docs/gtk-unification/`](docs/gtk-unification/08-final-report.md) (in Portuguese).
+
 ---
 
 ## 2. Installation
@@ -86,8 +117,9 @@ package attached:
 sudo pacman -U ./big-mount-*-any.pkg.tar.zst
 ```
 
-Check the version of the release: the drive manager needs 2.3.0 or later. Until there
-is a release of it, [build the package](#23-build-the-package-yourself).
+Check the version of the release: the single application of the drive manager (GTK 4
+and libadwaita) needs 2.4.0 or later. Until there is a release of it,
+[build the package](#23-build-the-package-yourself).
 
 ### 2.2 From the BigLinux repository
 
@@ -176,27 +208,33 @@ cannot be traced to a commit.
 | Package | Kind | What for |
 | --- | --- | --- |
 | `bash` ≥ 5.2 | required (base) | every script |
-| `util-linux` | required | `blkid`, `lsblk`, `findmnt`, `mount`, `flock` |
-| `udisks2` | required | unmount, mount, lock, power off and take ownership through polkit |
+| `util-linux` | required | `blkid`, `lsblk`, `findmnt`, `mount`, `flock`, `setsid` |
+| `udisks2` | required | unmount, mount, unlock, power off and take ownership through polkit |
+| `polkit` | required | authorization; `pkexec` for the administrator view and the helper of the drive manager |
 | `ntfs-3g` | required | `lowntfs-3g` for NTFS |
 | `lsof` | required | find what keeps a device busy |
-| `kdialog` | optional | dialogs on KDE Plasma |
-| `zenity` | optional | dialogs on GNOME and other desktops |
+| `rsync` | required | every copy off a drive, in the window and in `--drive copy` |
+| `smartmontools` | required | the SMART counters on the health page (read only when you ask) |
+| `python`, `python-gobject`, `gtk4`, `libadwaita` ≥ 1.5 | required | the application (`--gui-drive`, `--gui-drive-check`). Never loaded at boot |
+| `kdialog` | optional | dialogs on KDE Plasma (read-only device, busy device) |
+| `zenity` | optional | the same dialogs on GNOME and other desktops |
 | `libnotify` | optional | notifications (`notify-send`); without it `kdialog --passivepopup` is used |
-| `polkit` | comes with `udisks2` | authorization; `pkexec` for the administrator view and the helper of the drive manager |
-| `rsync` | optional | copying files off a drive (`--drive copy`) |
-| `gtk4`, `libadwaita`, `python-gobject` | required | the application (`--gui-drive`). Never loaded at boot |
-| `smartmontools` | optional | SMART details of a drive |
-| `ddrescue` | optional | disk images of a failing drive |
+| `ddrescue` | optional | disk images of a failing drive, before a deep analysis |
 | `testdisk` | optional | finding lost partitions, searching files by content (PhotoRec) |
+
+`coreutils`, `findutils`, `gawk` and `systemd` (`udevadm`, `journalctl`) come with every
+Arch-based system and are not listed.
 
 Without `kdialog` or `zenity`, everything works in the terminal. Optional packages
 are detected when they are needed, and what is missing is explained. Big-Mount
-never installs anything by itself. To have the whole drive manager:
+never installs anything by itself. To have every way of rescuing files:
 
 ```bash
-sudo pacman -S --needed rsync smartmontools ddrescue testdisk
+sudo pacman -S --needed ddrescue testdisk
 ```
+
+PySide6 was needed up to 2.3.0 and is not anymore. If no other program uses it,
+`sudo pacman -Rs pyside6` removes it.
 
 ### 2.6 Disable or uninstall
 
@@ -704,8 +742,8 @@ Final messages, shown only after verification:
 
 For a drive that may be failing, a drive the desktop cannot open, or any time files
 must come off a disk and you want to know that they really did. This is new in
-2.3.0. It works in a window, in menus in any terminal (also over SSH), and as
-commands for scripts. All three use the same engine, so they say the same things.
+2.3.0, and one GTK 4 application since 2.4.0. It works in a window, in menus in any
+terminal (also over SSH), and as commands for scripts. All three use the same engine, so they say the same things.
 
 <p align="center">
   <img src="docs/images/app-health.png" width="820" alt="The health of a failing disk: critical, what was found, and what to do">
@@ -1143,6 +1181,7 @@ Details: [architecture](docs/15-drive-architecture.md),
 | Dolphin service menu | right-click a folder → **Storage device** | **Diagnose the drive and rescue files** (`bigmount --gui-drive %f`), **Why can't I write here?** (`bigmount --gui %f`) and **Safely remove (shows what keeps it busy)** (`bigmount --gui-remove %f`) |
 | Launcher | application menu → **Big-Mount** | opens the drive manager (`bigmount --gui-drive`); its action **Storage Diagnostics** chooses a device from a list (`bigmount --gui`) |
 | Notifications | when a device you cannot write to is mounted, and when a removal ends | see below |
+| Application | GTK 4 and libadwaita (`--gui-drive`, `--gui-drive-check`) | one window; light/dark style, narrow windows, keyboard and screen readers come from the toolkit |
 | Dialogs | KDialog (Plasma) or Zenity (GNOME) | light/dark theme, HiDPI and screen readers come from the toolkit |
 
 ### 7.1 Notifications
@@ -1745,7 +1784,7 @@ version activated `udisksd` over D-Bus (`systemd-analyze blame` recorded
 run during boot. Details in [`docs/08-performance.md`](docs/08-performance.md).
 
 The drive manager adds nothing to the boot or the session: nothing of it is loaded
-unless you ask for it, and Python and Qt only start with `--gui-drive`. Diagnosing a
+unless you ask for it, and Python and GTK only start with `--gui-drive`. Diagnosing a
 failing disk took 0.15 s on the development machine, because it reads nothing from it.
 
 ---

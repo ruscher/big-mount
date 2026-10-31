@@ -26,7 +26,8 @@
   `partitions --search/--json`, `--items-from`, `--results-of`, `--expect-diskseq`,
   `safe-remove`, identidade estável no JSON, `drive-erase.sh` (04).
 - **pt_BR** completo (1110 mensagens), README e documentos atualizados, capturas reais
-  novas em `docs/images/app-*.png`, PKGBUILD e CI sem PySide6.
+  novas em `docs/images/app-*.png`, PKGBUILD e CI sem PySide6; `rsync`,
+  `smartmontools`, `polkit` e `python` agora obrigatórios; versão 2.4.0.
 
 ## Como rodar e validar
 

@@ -31,8 +31,9 @@ Adw.StyleManager.get_default().set_color_scheme(Adw.ColorScheme.FORCE_DARK if DA
 
 from gui.window import MainWindow  # noqa: E402
 
-MOUNT = WORK / "ssd"
-MOUNT.mkdir()
+# What the pictures show for the backup disk: a path like the others, never the
+# random scratch folder, so the same code always gives the same pictures
+MOUNT = pathlib.PurePath("/run/media/maria/Backup")
 SOURCE = WORK / "arquivos"
 (SOURCE / "Fotos").mkdir(parents=True)
 (SOURCE / "Documentos").mkdir()
@@ -78,7 +79,7 @@ fix("copy-dry", {"error": "", "error_text": "", "source": str(SOURCE), "destinat
 
 def job(**kw):
     base = {"id": "20261031-120000-abcd", "kind": "copy", "result_kind": "copied-files", "state": "running", "state_label": "Copying", "reason": "", "reason_text": "",
-            "source": str(SOURCE), "destination": str(MOUNT), "name": "ARQUIVOS", "current": "Fotos/2019/ferias/DSC_0142.jpg", "verify": "basic", "verify_result": "", "dir": str(WORK),
+            "source": "/run/media/maria/ARQUIVOS", "destination": str(MOUNT), "name": "ARQUIVOS", "current": "Fotos/2019/ferias/DSC_0142.jpg", "verify": "basic", "verify_result": "", "dir": str(WORK),
             "categories": "", "then_carve": "", "copy_to": "", "map": "", "level": "critical", "files_done": 18342, "files_total": 0, "bytes_done": 148 * GB, "bytes_total": 412 * GB,
             "rate_now": 94 * 1000 * 1000, "rate_avg": 88 * 1000 * 1000, "elapsed": 1720, "eta": 2800, "deferred": 2, "failed": 0, "differ": 0, "conflicts": 0, "read_errors": 3, "stuck": 0,
             "created": 1793419273, "finished": None, "scanned": 0, "pass": 0, "bad_bytes": 0, "total_estimate": True, "pausable": True}

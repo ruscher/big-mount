@@ -56,5 +56,8 @@ trabalhos; `fstype` nos destinos; `powered_off` em `unmount`.
 - `bm_gui_drive`, `bm_pick_drive` e `bm_gui_secure_erase` de `cli.sh` (o caminho de
   diálogos). Os textos de `bm_erase_*_doc` continuam, usados pelo terminal e pela
   aplicação.
-- `pyside6` das dependências opcionais; `gtk4`, `libadwaita` e `python-gobject`
-  entraram nas dependências (só carregados por `--gui-drive*`).
+- `pyside6` das dependências opcionais; `python`, `python-gobject`, `gtk4` e
+  `libadwaita>=1.5` entraram nas dependências (só carregados por `--gui-drive*`), e
+  `polkit` (o `pkexec` do helper), `rsync` (toda cópia) e `smartmontools` (a página
+  Saúde) passaram de opcionais a obrigatórios. `ddrescue` e `testdisk` continuam
+  opcionais: a aplicação diz o que falta. A versão passou a 2.4.0.
