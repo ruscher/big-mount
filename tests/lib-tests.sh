@@ -381,6 +381,9 @@ check "warning: 15000 ms, kept in history, with actions" grep -q -- "--expire-ti
 : > "$WORK/n.log"; out="$(DBUS_SESSION_BUS_ADDRESS="" BM_UI=gtk bm_notify info drive-harddisk "Safe to disconnect" "Pen" 2>&1)"
 check "no session bus: plain text, no window instead" eq "$out" "Safe to disconnect: Pen"
 check "  ... and no notification program started" test ! -s "$WORK/n.log"
+notify-send() { return 1; }
+out="$(DBUS_SESSION_BUS_ADDRESS=fake bm_notify info x $'Pen\e[2J' $'Body\nForged line' 2>&1)"
+check "notify-send failed: the message goes to the terminal instead, on one line" eq "$out" "Pen?[2J: Body; Forged line"
 unset -f notify-send
 BM_UI="tty"
 

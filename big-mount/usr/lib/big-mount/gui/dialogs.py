@@ -157,11 +157,8 @@ class Dialog:
 
     def _text(self, _doc):
         self._respond([("close", _("Close"))], "close", "close")
-        try:
-            with open(self.args.file, encoding="utf-8", errors="replace") as f:
-                text = f.read()
-        except OSError:
-            text = ""
+        # Read by dialog.py, which refuses a file it cannot read: never an empty text
+        text = self.args.content
         view = Gtk.TextView(editable=False, monospace=True, cursor_visible=False, wrap_mode=Gtk.WrapMode.WORD_CHAR)
         for side in ("top", "bottom", "left", "right"):
             getattr(view, f"set_{side}_margin")(8)

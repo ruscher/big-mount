@@ -201,7 +201,7 @@ bm_ui_text() {
 
 # ----- notifications -----------------------------------------------------------
 # One path only, so a message is never shown twice: notify-send (libnotify)
-# when there is a session bus, otherwise stderr. Durations are set here and nowhere else. Plasma honours them, and
+# when there is a session bus, otherwise (or when it fails) stderr. Durations are set here and nowhere else. Plasma honours them, and
 # without one it keeps notifications that have buttons open indefinitely.
 BM_POPUP_SECONDS=5      # information: disappears and is not kept in the history
 BM_WARNING_SECONDS=15   # problems, possibly with buttons: time to click, kept in the history
@@ -220,10 +220,13 @@ bm_notify() {
    fi
    for a in "$@"; do opts+=(--action "$a"); done
    bm_html "$body"
-   if [ -n "${DBUS_SESSION_BUS_ADDRESS:-}" ] && command -v notify-send >/dev/null; then
-      notify-send --app-name "$BM_APP_NAME" --icon "$icon" --expire-time "$((secs * 1000))" \
-         --hint string:desktop-entry:big-mount "${opts[@]}" -- "$title" "$REPLY" 2>/dev/null
-   else
-      printf '%s: %s\n' "$title" "$body" >&2
+   if [ -n "${DBUS_SESSION_BUS_ADDRESS:-}" ] && command -v notify-send >/dev/null \
+      && notify-send --app-name "$BM_APP_NAME" --icon "$icon" --expire-time "$((secs * 1000))" \
+         --hint string:desktop-entry:big-mount "${opts[@]}" -- "$title" "$REPLY" 2>/dev/null; then
+      return 0
    fi
+   # No notification server, or it refused: the message is not lost. One line,
+   # and device data brings no escape sequence to the terminal
+   title="${title//$'\n'/; }" body="${body//$'\n'/; }"
+   printf '%s: %s\n' "${title//[[:cntrl:]]/?}" "${body//[[:cntrl:]]/?}" >&2
 }

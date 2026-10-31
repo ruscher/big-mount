@@ -18,8 +18,10 @@ chosen, or the line typed.
   dialog.py input    --title T --text TEXT
   dialog.py text     --title T --file PATH
 
-Exit codes: 0 answered, 1 closed or cancelled, 2 wrong arguments, 5 run as
-administrator, 25 GTK 4, libadwaita or a display are not available.
+Exit codes: 0 answered (a message or a text that was shown and closed counts as
+answered: it has nothing to choose), 1 closed or cancelled without an answer, 2
+wrong arguments or a text file that cannot be read, 5 run as administrator, 25
+GTK 4, libadwaita or a display are not available.
 """
 
 import argparse
@@ -93,6 +95,13 @@ def main(argv):
     if os.geteuid() == 0:
         print("dialog.py: dialogs do not run as administrator", file=sys.stderr)
         return 5
+    if args.mode == "text":
+        try:
+            with open(args.file, encoding="utf-8", errors="replace") as f:
+                args.content = f.read()
+        except OSError as exc:
+            print(f"dialog.py: cannot read {args.file}: {exc.strerror}", file=sys.stderr)
+            return 2
     doc = []
     if not sys.stdin.isatty():
         doc = read_document(sys.stdin.buffer.read())

@@ -1736,7 +1736,12 @@ class ShellDialogs(unittest.TestCase):
     def test_technical_text_is_shown_whole(self):
         path = WORK / "details.txt"
         path.write_text("open files:\n  pid=7 comm=<b>x</b>\n")
-        d = self.make(["text", "--title=Technical details", f"--file={path}"])
+        args = shell_dialog.parse(["text", "--title=Technical details", f"--file={path}"])
+        args.content = path.read_text()
+        d = shell_dialogs.Dialog(args, [])
+        d.dialog.present(None)
+        pump(timeout=0.05)
+        self.addCleanup(d.dialog.force_close)
         view = next(x for x in widgets(d.dialog) if isinstance(x, Gtk.TextView))
         buf = view.get_buffer()
         self.assertIn("comm=<b>x</b>", buf.get_text(buf.get_start_iter(), buf.get_end_iter(), False))
@@ -1747,6 +1752,9 @@ class ShellDialogs(unittest.TestCase):
             return subprocess.run([sys.executable, "-I", str(LIB / "dialog.py"), *a], capture_output=True, text=True, env=env, stdin=subprocess.DEVNULL)
         self.assertEqual(run("question").returncode, 2)
         self.assertEqual(run("question", "--button=nolabel").returncode, 2)
+        unreadable = run("text", f"--file={WORK / 'no-such-file'}")
+        self.assertEqual(unreadable.returncode, 2)
+        self.assertEqual(unreadable.stdout, "")
         # No display at all: nothing to connect to, here or in the session of whoever runs this
         nowhere = WORK / "no-session"
         nowhere.mkdir(mode=0o700, exist_ok=True)
