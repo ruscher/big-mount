@@ -37,8 +37,8 @@ bm_usage() {
       "--gui-remove TARGET" $"graphical safe removal" \
       "--secure-erase DISK" $"erase a whole SATA drive with its own Secure Erase (asks first)" \
       "--drive [COMMAND]" $"drive manager and file rescue in the terminal (bigmount --drive --help)" \
-      "--gui-drive [DISK]" $"graphical drive manager and file rescue" \
-      "--gui-drive-check [DISK]" $"graphical drive check, with Secure Erase" \
+      "--gui-drive [DISK]" $"the application: drives, health and file rescue" \
+      "--gui-drive-check [DISK]" $"the same application, opened on the health of the drive" \
       "--notifier" $"session service: warn about read-only devices" \
       "--doctor" $"check the installation and the storage stack (for bug reports)" \
       "-V, --version" $"show the version and the source revision" \
@@ -63,6 +63,21 @@ bm_main() {
       bm_load drive.sh && bm_drive_main "$@"
       return
    fi
+   # The application takes a device, a folder or a UUID, which is not a path
+   case "$cmd" in
+      --gui-drive | --gui-drive-check)
+         if [ "$#" -gt 0 ] && [ -z "$1" ]; then
+            R_ERR=empty; bm_resolve_fail ""
+            return 2
+         fi
+         # shellcheck disable=SC2034  # read by drive.sh
+         BM_CWD="$PWD"
+         cd / || return 1
+         bm_load drive.sh || return 1
+         if [ "$cmd" = --gui-drive-check ]; then bm_gui_drive_main health "$@"; else bm_gui_drive_main "" "$@"; fi
+         return
+         ;;
+   esac
    # Relative paths are resolved now: we leave the current folder below
    for a in "$@"; do
       # An empty target must not silently become the current folder
@@ -86,8 +101,6 @@ bm_main() {
       --gui) bm_ui_init; bm_gui_diagnose "${args[@]}" ;;
       --gui-remove) bm_ui_init; bm_gui_remove "${args[@]}" ;;
       --secure-erase) BM_UI="tty"; bm_ui_init; bm_cmd_secure_erase "${args[@]}" ;;
-      --gui-drive) bm_load drive.sh && bm_gui_drive_main "${args[@]}" ;;
-      --gui-drive-check) bm_ui_init; bm_gui_drive "${args[@]}" ;;
       --notifier) bm_ui_init; bm_notifier ;;
       *)
          printf $"bigmount: unknown option '%s' (see bigmount --help)"'\n' "$cmd" >&2
@@ -1136,119 +1149,6 @@ bm_secure_erase_tty() {
    return "$rc"
 }
 
-# bigmount --gui-drive [DISK]: choose a drive when none is given
-bm_pick_drive() {
-   local line items=() size
-   while IFS= read -r line; do
-      bm_parse_pairs "$line"
-      [ "${KV[TYPE]}" = disk ] || continue
-      case "${KV[NAME]##*/}" in zram* | ram*) continue ;; esac
-      bm_human_size "${KV[SIZE]}"; size="$REPLY"
-      bm_tran_label "${KV[TRAN]}"
-      items+=("${KV[NAME]}" "${KV[NAME]##*/} — ${KV[MODEL]:-?} — $size — $REPLY")
-   done < <(lsblk -P -b -p -d -o NAME,TYPE,MODEL,SIZE,TRAN 2>/dev/null)
-   if [ "${#items[@]}" -eq 0 ]; then
-      bm_notify info big-mount $"Check a drive" $"No drive was found."
-      return 1
-   fi
-   bm_ui_menu $"Check a drive" $"Choose a drive:" "${items[@]}"
-   [ -n "$REPLY" ]
-}
-
-bm_gui_drive() {
-   local target="${1:-}" disk tmp icon
-   if [ -z "$target" ]; then
-      bm_pick_drive || return 0
-      target="$REPLY"
-   fi
-   bm_gui_target "$target" $"Check a drive" $"This folder is not on a local storage device." || return 1
-   disk="${F[DISK]}"
-   while :; do
-      if ! bm_facts "$disk"; then
-         bm_gui_target "$disk" $"Check a drive" "" || return 1
-      fi
-      bm_drive_health "$disk"
-      bm_drive_doc
-      icon=drive-harddisk
-      [ "${#DH_FIND[@]}" -gt 0 ] && icon=dialog-warning
-      if bm_erase_check "$disk"; then
-         bm_ui_choice "$DT_TITLE" "$icon" $"Technical details" $"Erase the whole drive…" $"Close"
-      elif bm_ui_confirm "$DT_TITLE" "$icon" $"Technical details" $"Close"; then
-         REPLY=1
-      else
-         REPLY=3
-      fi
-      case "$REPLY" in
-         1)
-            tmp="$(mktemp)" || return 1
-            bm_drive_report > "$tmp"
-            bm_ui_text $"Technical details" "$tmp"; rm -f -- "$tmp"
-            ;;
-         2) bm_gui_secure_erase "$disk"; return ;;
-         *) return 0 ;;
-      esac
-   done
-}
-
-# Graphical Secure Erase of DISK (F holds its facts, after bm_erase_check)
-bm_gui_secure_erase() {
-   local disk="$1" seq rc text table="" u
-   bm_erase_intro_doc "$disk"
-   bm_ui_confirm_risky $"Erase the whole drive" dialog-warning $"Continue…" $"Cancel" || return 5
-   printf -v text $"To confirm, type the name of the drive (%s):" "${disk##*/}"
-   bm_ui_input $"Erase the whole drive" "$text" || return 5
-   if [ "$REPLY" != "${disk##*/}" ]; then
-      bm_notify info dialog-information $"Erase the whole drive" $"The name did not match. Nothing was erased." &
-      return 5
-   fi
-   if ! bm_drive_lock "$disk"; then
-      bm_notify info dialog-information $"Erase the whole drive" $"Another operation on this drive is in progress. Nothing was done." &
-      return 10
-   fi
-   bm_diskseq "$disk"; seq="$REPLY"
-   RM_ALLOW_SERVICES=0 ER_REASON=""
-   while :; do
-      bm_remove_core release "$disk"; rc=$?
-      case "$rc" in
-         0) break ;;
-         3) bm_gui_busy_dialog "$RM_BUSY_DEV" || break ;;
-         9)
-            bm_doc_new
-            bm_doc_h $"Services use this device"
-            bm_doc_p $"Erasing it will stop these services:"
-            for u in "${!RM_DEP_UNITS[@]}"; do bm_doc_li "${RM_DEP_NAMES[u]} (${RM_DEP_UNITS[u]})"; done
-            bm_ui_confirm_risky $"Services use this device" dialog-warning $"Stop them and continue" $"Cancel" || break
-            RM_ALLOW_SERVICES=1
-            ;;
-         *) ER_REASON="$RM_REASON"; [ "$rc" -eq 6 ] && rc=3; break ;;
-      esac
-   done
-   if [ "$rc" -eq 0 ]; then
-      bm_udev_props "$disk"
-      if [ "${UP[ID_ATA_FEATURE_SET_SECURITY_FROZEN]:-0}" = 1 ]; then
-         bm_erase_frozen_doc
-         if ! bm_ui_confirm_risky "$E_TITLE" system-suspend $"Sleep now" $"Cancel"; then
-            bm_drive_unlock
-            return 11
-         fi
-         bm_erase_unfreeze "$disk" || rc=11
-      fi
-   fi
-   if [ "$rc" -eq 0 ]; then
-      bm_erase_table; table="$REPLY"
-      bm_short_name
-      bm_notify info drive-harddisk $"Erasing the drive" \
-         "$REPLY"$'\n'$"Do not turn off the computer or disconnect the drive." >/dev/null &
-      bm_erase_run "$disk" "$seq" "$table"; rc=$?
-   fi
-   bm_drive_unlock
-   # Cancelled by the user (busy, services): nothing to report
-   case "$rc" in 3 | 9) [ -z "$ER_REASON" ] && return "$rc" ;; esac
-   bm_erase_result_doc "$rc" "$table"
-   bm_ui_show "$E_KIND" "$E_TITLE"
-   return "$rc"
-}
-
 # ---------------------------------------------------------------------------
 # Graphical diagnosis (bigmount --gui)
 
@@ -1357,7 +1257,7 @@ bm_gui_diagnose() {
             bm_ui_text $"Technical details" "$tmp"; rm -f -- "$tmp"
             ;;
          4) bm_gui_remove "$dev"; return ;;
-         5) bm_gui_drive "${F[DISK]}"; return ;;
+         5) bm_load drive.sh && bm_gui_drive_main health "${F[DISK]}"; return ;;
          *) return 0 ;;
       esac
    done

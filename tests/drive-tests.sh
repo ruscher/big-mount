@@ -1,5 +1,5 @@
 #!/bin/bash
-# shellcheck disable=SC2016,SC2317,SC2329,SC2218,SC2034,SC2209,SC2015,SC2031,SC2178,SC2128,SC2153  # helpers called through check(), library functions replaced later
+# shellcheck disable=SC2016,SC2317,SC2329,SC2218,SC2034,SC2209,SC2015,SC2030,SC2031,SC2178,SC2128,SC2153  # helpers called through check(), library functions replaced later
 # Unit tests of the drive manager: facts are replaced by fixtures, so these run
 # anywhere, as any user, and read nothing from the machine's disks. The real
 # scenarios, with real filesystems and real I/O errors, are in
@@ -419,14 +419,17 @@ run_b --drive </dev/null >/dev/null 2>&1; check "the interactive manager without
 out="$(NO_COLOR=1 run_b --drive --help | grep -c $'\033')"; check "NO_COLOR: no escape sequences" eq "$out" 0
 LC_ALL=C bash -c 'BIGMOUNT_X=1; "$0" --drive list >/dev/null' "$B"; check "a plain terminal locale works" eq "$?" 0
 check "the old commands are still in the help" bash -c 'h="$("$1" --help)"; for c in --dry-run --diagnose --busy --unmount --safe-remove --gui --gui-remove --secure-erase --doctor --version; do [[ $h == *"$c"* ]] || exit 1; done' _ "$B"
-check "--gui-drive falls back to dialogs without Qt" bash -c 'grep -q "BM_NO_QT" "$1/drive.sh" && grep -q "bm_gui_drive \"\$@\"" "$1/drive.sh"' _ "$L"
+env -u WAYLAND_DISPLAY -u DISPLAY "$B" --gui-drive >/dev/null 2>"$WORK/nogui"; check "no graphical session: exit 25" eq "$?" 25
+check "  ... and it says where the same tools are" grep -q 'bigmount --drive' "$WORK/nogui"
+env -u WAYLAND_DISPLAY -u DISPLAY "$B" --gui-drive-check /dev/null >/dev/null 2>&1; check "  ... also for the alias" eq "$?" 25
+check "the two flags go to one program, GTK 4 and libadwaita" bash -c '[ "$(grep -c "python3 -I \"\$py\"" "$1/drive.sh")" = 1 ] && grep -q "gi.require_version(\"Adw\", \"1\")" "$1/drive-gui.py" && ! grep -rqE "PySide|PyQt|kdialog|zenity" "$1/drive-gui.py" "$1/gui"' _ "$L"
 
 begin "the boot path knows nothing of this"
-check "bigmount loads no drive module by itself" bash -c '! grep -nE "drive[-.]|PySide|python" "$1" | grep -v "^[0-9]*:#"' _ "$B"
+check "bigmount loads no drive module by itself" bash -c '! grep -nE "drive[-.]|python|gtk|Gtk" "$1" | grep -v "^[0-9]*:#"' _ "$B"
 check "cli.sh does not load them either until asked" bash -c '[ "$(grep -cE "^\. .*drive" "$1/cli.sh")" = 0 ]' _ "$L"
 
 begin "commands that must not exist in the drive manager"
-grep -hvE '^[[:space:]]*#' "$L"/drive*.sh "$L"/bigmount-drive-helper "$L"/drive-gui.py > "$WORK/code.txt"
+grep -hvE '^[[:space:]]*#' "$L"/drive*.sh "$L"/bigmount-drive-helper "$L"/drive-gui.py "$L"/gui/*.py "$L"/gui/pages/*.py > "$WORK/code.txt"
 for bad in 'fsck' 'mkfs' 'wipefs' 'dd if=' 'umount -f' 'umount -l' 'kill -9' 'kill -KILL' 'fuser -k' 'chmod -R' 'chown -R' 'btrfs check' 'ntfsfix' 'shred' 'blkdiscard' 'sgdisk' 'parted' ' eval ' 'rm -rf /'; do
    check "no '$bad'" bash -c '! grep -nF -- "$2" "$1"' _ "$WORK/code.txt" "$bad"
 done
@@ -434,6 +437,93 @@ check "the helper changes a device only through the read-only flag" bash -c '[ "
 check "the helper has a fixed library path" grep -q '^BM_LIB="/usr/lib/big-mount"$' "$L/bigmount-drive-helper"
 check "the helper resets PATH" grep -q '^export PATH=/usr/bin:/bin:/usr/sbin:/sbin$' "$L/bigmount-drive-helper"
 check "rsync is started with fixed options, in one place" eq "$(grep -cE '^ *ionice .*rsync ' "$L/drive-copy.sh")" 1
+
+begin "the application: what the window is told"
+. "$L/drive-erase.sh"
+bm_dv_scan
+bm_dv_stable_id /dev/sdc; check "a drive is known by its serial, not its name" eq "$REPLY" serial:S1
+bm_dv_stable_id /dev/sdg; check "  ... without a serial, by its first filesystem" eq "$REPLY" uuid:multi
+bm_dv_stable_id /dev/sde; check "  ... without either, by name and size, which says so" eq "$REPLY" device:/dev/sde:16000000000
+bm_dv_disk_json /dev/sdc | json_ok; check "the JSON of a drive is valid" eq "$?" 0
+bm_dv_disk_json /dev/sdc | grep -q '"stable_id":"serial:S1"'; check "  ... with its identity" eq "$?" 0
+bm_dv_disk_json /dev/sdc | grep -q '"diskseq":7'; check "  ... and this connection of it" eq "$?" 0
+bm_rec_categories_valid photos,videos; check "types of file: known ones" eq "$?" 0
+bm_rec_categories_valid all; check "  ... all" eq "$?" 0
+bm_rec_categories_valid "photos,evil;rm"; check "  ... anything else is refused" eq "$?" 1
+bm_rec_categories_valid ""; check "  ... nothing is not a choice" eq "$?" 1
+bm_rec_carve_commands photos,documents
+check "PhotoRec: only the families asked for" eq "$REPLY" "partition_none,fileopt,everything,disable,jpg,enable,png,enable,gif,enable,bmp,enable,tif,enable,orf,enable,pdf,enable,doc,enable,zip,enable,txt,enable,wholespace,search"
+bm_rec_carve_commands documents,archives
+check "  ... a family asked twice counts once" eq "$(grep -o 'zip,enable' <<< "$REPLY" | wc -l)" 1
+bm_rec_carve_commands all
+check "  ... all of them, without the one that matches empty blocks where it exists" bash -c '[[ $1 == partition_none,fileopt,everything,enable,*wholespace,search ]]' _ "$REPLY"
+screen=$'\033[6;6HPartition\033[6;33HStart\n\033[9;3HLinux\033[9;27H0  32 33\033[9;42H4  52 48\033[9;58H65536 [TEST LOST]\r\n\033[10;3HLinux\033[10;27H0  32 33\033[10;42H4  52 48\033[10;58H65536 [TEST LOST]\n Analyse cylinder     4/8: 51%\n 2 P HPFS - NTFS              1  37 37     2  10  8      14336\n'
+bm_rec_parse_partitions <<< "$screen"
+check "TestDisk: the analysis screen, each partition once" eq "${#PT_TYPE[@]}" 2
+check "  ... its type" eq "${PT_TYPE[0]}" Linux
+check "  ... its size in sectors" eq "${PT_SECTORS[0]}" 65536
+check "  ... its label, with spaces" eq "${PT_LABEL[0]}" "TEST LOST"
+check "  ... the list format too" eq "${PT_TYPE[1]}:${PT_SECTORS[1]}" "HPFS - NTFS:14336"
+DV=() bm_drive_is_uuid UUID=ABCD; check "a UUID is a target" eq "$REPLY" ABCD
+bm_drive_is_uuid /dev/sda; check "  ... a path is not" eq "$?" 1
+bm_drive_uuid_device u-a1; check "UUID of one device: found" eq "$?:$REPLY" 0:/dev/sda1
+bm_drive_uuid_device multi; check "  ... of two devices: ambiguous, nothing is guessed" eq "$?" 2
+bm_drive_uuid_device nope; check "  ... of none: not found" eq "$?" 1
+bm_rec_methods_case() { bm_resolve() { R_DEV="$1"; R_PATH=""; }; bm_rec_methods "$1" --json; }
+bm_dv_fs_supported() { return 0; }
+bm_ds_level() { DS_LEVEL="${FAKE_LEVEL:-normal}"; DS_WHY=() DS_BASIS=log; }
+method() { python3 -I -c 'import json,sys; d=json.load(sys.stdin); m={x["id"]:x for x in d["methods"]}; print(d["recommended"], m[sys.argv[1]]["available"], m[sys.argv[1]]["why"])' "$1"; }
+out="$(bm_rec_methods_case /dev/sda1)"; printf '%s' "$out" | json_ok; check "methods: valid JSON" eq "$?" 0
+FAKE_LEVEL=normal; check "  ... a healthy volume: list first" eq "$(bm_rec_methods_case /dev/sda1 | python3 -I -c 'import json,sys; print(json.load(sys.stdin)["recommended"])')" quick
+FAKE_LEVEL=critical; check "  ... a drive at risk with a volume: copy what matters" eq "$(bm_rec_methods_case /dev/sda1 | python3 -I -c 'import json,sys; print(json.load(sys.stdin)["recommended"])')" copy
+check "  ... a locked volume cannot be listed, and says why" bash -c '[[ $1 == *"False locked" ]]' _ "$(bm_rec_methods_case /dev/sdb1 | method quick)"
+FAKE_LEVEL=critical; check "  ... a drive at risk that cannot be opened: an image" eq "$(bm_rec_methods_case /dev/sdb1 | python3 -I -c 'import json,sys; print(json.load(sys.stdin)["recommended"])')" image
+FAKE_LEVEL=normal; check "  ... a whole disk has no files to list until a volume is chosen" bash -c '[[ $1 == *"False pick-volume" ]]' _ "$(bm_rec_methods_case /dev/sdc | method copy)"
+printf 'x' > "$WORK/some.img"; check "  ... an image: search it, it touches no disk" bash -c '[[ $1 == deep* ]]' _ "$(bm_rec_methods_case "$WORK/some.img" | method deep)"
+check "  ... an image is not imaged again" bash -c '[[ $1 == *"False image-file" ]]' _ "$(bm_rec_methods_case "$WORK/some.img" | method image)"
+unset -f bm_resolve bm_dv_fs_supported bm_ds_level bm_rec_methods_case method
+. "$L/lib.sh"; . "$L/drive-diag.sh"
+
+begin "the application: a list of what exists, for real, in a scratch folder"
+# /var/tmp: on a filesystem of its own, as the copy below needs
+SC="$(mktemp -d -p /var/tmp bm-scan-XXXXXX)"; mkdir -p "$SC/fotos" "$SC/com espaco"
+trap 'rm -rf "$WORK" "$SC"' EXIT
+printf a > "$SC/fotos/ferias.JPG"; printf bb > "$SC/com espaco/nota.pdf"; printf c > "$SC/musica.mp3"; printf d > "$SC/-traco.txt"; printf e > "$SC/outro.xyz"; printf f > "$SC"/$'tab\taqui.png'; printf g > "$SC"/$'linha\nquebra.jpg'
+wait_job() { local i; for ((i = 0; i < 100; i++)); do run_b --drive status "$1" --json | grep -qE '"state":"(pending|analyzing|running|stopping)"' || return 0; sleep 0.1; done; return 1; }
+id="$(run_b --drive scan --source "$SC" --categories photos,documents --no-wait --json | python3 -I -c 'import json,sys; print(json.load(sys.stdin)["id"])')"
+check "it starts as a job" bash -c '[[ $1 =~ ^[0-9]{8}-[0-9]{6}-[0-9a-f]{4}$ ]]' _ "$id"
+wait_job "$id"; check "  ... and it ends" eq "$?" 0
+st="$(run_b --drive status "$id" --json)"; printf '%s' "$st" | json_ok; check "  ... its status is valid JSON" eq "$?" 0
+check "  ... it is called what it is" grep -q '"result_kind":"existing-files"' <<< "$st"
+check "  ... 7 examined, 5 of the types asked for" bash -c '[[ $1 == *"\"files_done\":5,"* && $1 == *"\"scanned\":7,"* ]]' _ "$st"
+check "  ... it cannot be paused" grep -q '"pausable":false' <<< "$st"
+res="$(run_b --drive results "$id" --json)"; printf '%s' "$res" | json_ok; check "results: valid JSON" eq "$?" 0
+check "  ... names and dates are real here" bash -c '[[ $1 == *"\"names_kept\":true"* && $1 == *"\"dates_kept\":true"* ]]' _ "$res"
+idx="$(python3 -I -c 'import json,sys; print(json.load(sys.stdin)["index"])' <<< "$res")"
+check "  ... every hostile name is there, byte for byte" python3 -I -c 'import sys; names={r.split(b"\t",3)[3] for r in open(sys.argv[1],"rb").read().split(b"\0") if r}; want={b"-traco.txt",b"tab\taqui.png",b"linha\nquebra.jpg",b"com espaco/nota.pdf",b"fotos/ferias.JPG"}; sys.exit(names!=want)' "$idx"
+run_b --drive pause "$id" >/dev/null 2>&1; check "pause of a list: refused" eq "$?" 2
+run_b --drive scan --source "$WORK/none" --no-wait --json >/dev/null 2>&1; check "a list of what does not exist: refused" eq "$?" 20
+run_b --drive scan --source "$SC" --categories evil --no-wait --json >/dev/null 2>&1; check "  ... of a type that does not exist: refused" eq "$?" 2
+run_b --drive results 20261031-000000-dead --json >/dev/null 2>&1; check "results of nothing: an error" eq "$?" 1
+
+begin "the application: a selection of many files, with hostile names"
+OUTD="/dev/shm/bm-test-$$"
+trap 'rm -rf "$WORK" "$SC" "$OUTD"' EXIT
+if [ "$(command findmnt -n -o SOURCE -T "$SC")" != "$(command findmnt -n -o SOURCE -T /dev/shm 2>/dev/null)" ] && command -v rsync >/dev/null; then
+   mkdir -p "$OUTD"
+   printf 'fotos/ferias.JPG\0-traco.txt\0com espaco\0' > "$WORK/items"
+   out="$(run_b --drive copy --source "$SC" --destination "$OUTD/d" --items-from "$WORK/items" --dry-run --json)"; rc=$?
+   check "--items-from: accepted (exit $rc)" eq "$rc" 0
+   check "  ... it measures only what was chosen" grep -q '"total_files":3' <<< "$out"
+   printf 'fotos/ferias.JPG\0../../etc/passwd\0' > "$WORK/items2"
+   out="$(run_b --drive copy --source "$SC" --destination "$OUTD/d" --items-from "$WORK/items2" --dry-run --json)"; rc=$?
+   check "  ... an item outside the source: refused" eq "$rc:$(grep -o '"error":"[a-z-]*"' <<< "$out")" '20:"error":"item-bad"'
+   printf 'nao-existe\0' > "$WORK/items3"
+   run_b --drive copy --source "$SC" --destination "$OUTD/d" --items-from "$WORK/items3" --dry-run --json >/dev/null; check "  ... an item that is not there: refused" eq "$?" 20
+   run_b --drive copy --source "$SC" --destination "$SC/dentro" --dry-run --json >/dev/null; check "the destination inside the source: refused" eq "$?" 20
+fi
+run_b --drive copy --results-of 20261031-000000-dead --destination "$WORK/x" --dry-run --json >/dev/null 2>&1; check "--results-of nothing: refused" eq "$?" 1
+run_b --drive copy --results-of "$id" --destination "$WORK/x" --dry-run --json >/dev/null 2>&1; check "--results-of a list (not a search): refused" eq "$?" 2
 
 echo "========================================="
 echo "drive result: $PASS passed, $FAIL failed"

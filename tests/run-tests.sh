@@ -847,7 +847,7 @@ test_secure_erase_only_on_request() {
     ASSERT_MSG="  ... both inside bm_erase_run"; assert_true test "$(awk '/^[a-z_]+\(\) \{/ { f = $1 } /SecurityEraseUnit|Block\.Format/ && !/^[[:space:]]*#/ { print f }' "$lib/lib.sh" | sort -u)" = "bm_erase_run()"
     callers="$(awk '/^[a-z_]+\(\) \{/ { f = $1 } /bm_erase_run / && !/^[[:space:]]*#/ && !/^bm_erase_run\(\)/ { print f }' "$lib"/*.sh | sort | tr '\n' ' ')"
     ASSERT_MSG="bm_erase_run only from the confirmed flows (got: $callers)"
-    assert_true test "$callers" = "bm_gui_secure_erase() bm_secure_erase_tty() "
+    assert_true test "$callers" = "bm_er_cmd_run() bm_secure_erase_tty() "
     ASSERT_MSG="the boot script knows nothing about it"; assert_false grep -qE 'erase|Format' "$SCRIPT_SRC"
 }
 

@@ -310,8 +310,8 @@ bm_dr_session() {
       else bm_fmt $"Drive manager, %s: %s is not installed" "${dt_uses[dt]}" "${dt_tools[dt]}"; bm_dr info "$REPLY"
       fi
    done
-   if command -v python3 >/dev/null && python3 -I -c 'import PySide6.QtWidgets' 2>/dev/null; then bm_dr ok $"Drive manager window: PySide6"
-   else bm_dr info $"PySide6 is not installed: bigmount --gui-drive uses dialogs"
+   if command -v python3 >/dev/null && python3 -I -c 'import gi; gi.require_version("Gtk", "4.0"); gi.require_version("Adw", "1"); from gi.repository import Adw; raise SystemExit((Adw.MAJOR_VERSION, Adw.MINOR_VERSION) < (1, 5))' 2>/dev/null; then bm_dr ok $"Application: GTK 4 and libadwaita"
+   else bm_dr warn $"The application needs gtk4, libadwaita 1.5 or later and python-gobject: bigmount --gui-drive cannot open. bigmount --drive works without them"
    fi
    if command -v notify-send >/dev/null; then bm_dr ok $"Notifications: notify-send"
    else bm_dr info $"notify-send (libnotify) is not installed: kdialog popups are used instead"

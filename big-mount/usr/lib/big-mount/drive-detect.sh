@@ -143,6 +143,35 @@ bm_dv_name() {
    [ -n "$REPLY" ] || REPLY="${d##*/}"
 }
 
+# A name that survives a reconnection, for the window to keep a drive selected
+# (REPLY). /dev/sdb is not one: another disk can take it. Serial first; a USB
+# bridge without one is known by its first filesystem. An image has neither.
+bm_dv_stable_id() {
+   local d="$1" p
+   REPLY=""
+   if [ -n "${DV[$d|SERIAL]:-}" ]; then
+      REPLY="serial:${DV[$d|SERIAL]}"
+      return 0
+   fi
+   bm_dv_tree "$d"
+   for p in "${DV_TREE[@]}"; do
+      if [ -n "${DV[$p|UUID]:-}" ]; then
+         REPLY="uuid:${DV[$p|UUID]}"
+         return 0
+      fi
+   done
+   REPLY="device:$d:${DV[$d|SIZE]:-0}"
+}
+
+# Does the device discard deleted blocks? Then what was deleted may be gone for
+# good, however deep the search. From the kernel: it does not ask the drive.
+bm_dv_has_trim() {
+   local g=0
+   [ "${DV[$1|ROTA]:-1}" = 0 ] || return 1
+   { read -r g < "/sys/block/${1##*/}/queue/discard_granularity"; } 2>/dev/null
+   [[ $g =~ ^[0-9]+$ ]] && [ "$g" -gt 0 ]
+}
+
 # Disks a device really lives on, through partitions, LUKS, LVM and RAID
 # (DV_DISKS, by stable-enough names for this moment). Comes from the topology
 # the kernel reports, not from the device name.
@@ -265,8 +294,13 @@ bm_dv_disk_json() {
    bm_ds_level "$d"
    local tran="${DV[$d|TRAN]:-}"
    bm_tran_label "$tran"; local tlabel="$REPLY"
-   printf '%s,"volumes":[%s],%s}' "$(bm_jo_open device "$d" name "$name" kind "$kind" kind_label "$label" icon "$icon" \
-      model "${DV[$d|MODEL]:-}" vendor "${DV[$d|VENDOR]:-}" serial "${DV[$d|SERIAL]:-}" transport "$tran" transport_label "$tlabel")" \
+   bm_diskseq "$d"; local seq="$REPLY"
+   bm_dv_stable_id "$d"; local sid="$REPLY"
+   printf '%s,%s,%s,"volumes":[%s],%s}' "$(bm_jo_open device "$d" name "$name" kind "$kind" kind_label "$label" icon "$icon" \
+      model "${DV[$d|MODEL]:-}" vendor "${DV[$d|VENDOR]:-}" serial "${DV[$d|SERIAL]:-}" transport "$tran" transport_label "$tlabel" \
+      stable_id "$sid" pttype "${DV[$d|PTTYPE]:-}")" \
+      "$(bm_jn size "${DV[$d|SIZE]:-}" diskseq "$seq")" \
+      "$(bm_jb removable "${DV[$d|RM]:-0}" hotplug "${DV[$d|HOTPLUG]:-0}" rotational "${DV[$d|ROTA]:-0}" trim "$(bm_dv_has_trim "$d" && echo 1)")" \
       "$parts" "$(bm_ds_json)"
 }
 

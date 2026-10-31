@@ -80,7 +80,7 @@ bm_ds_smart_read() {
 #             never means healthy: it means no check found anything
 bm_ds_level() {
    local disk="$1" w
-   DS_LEVEL=unknown DS_WHY=() DS_BASIS=none SM_VERDICT="" SM_PENDING="" SM_OFFLINE="" SM_REALLOC="" SM_UNCORR="" SM_CRC="" SM_HOURS=""
+   DS_LEVEL=unknown DS_WHY=() DS_BASIS=none DS_SMART_AT="" SM_VERDICT="" SM_PENDING="" SM_OFFLINE="" SM_REALLOC="" SM_UNCORR="" SM_CRC="" SM_HOURS=""
    SM_NVME_WARN="" SM_NVME_MEDIA="" SM_NVME_USED=""
    case "${DV[$disk|TYPE]:-disk}" in
       loop | rom) DS_LEVEL=na; return 0 ;;
@@ -88,7 +88,11 @@ bm_ds_level() {
    bm_drive_health "$disk"
    bm_ds_smart_file "$disk"
    local have_smart=0
-   if [ -s "$REPLY" ]; then bm_ds_smart_parse "$REPLY"; have_smart=1; fi
+   DS_SMART_AT=""
+   if [ -s "$REPLY" ]; then
+      bm_ds_smart_parse "$REPLY"; have_smart=1
+      DS_SMART_AT="$(stat -c %Y -- "$REPLY" 2>/dev/null)"
+   fi
    if [ "$DH_KLOG" = 1 ] && { [ "$have_smart" = 1 ] || [ -n "$DH_SMART" ]; }; then DS_BASIS=smart+log
    elif [ "$DH_KLOG" = 1 ]; then DS_BASIS=log
    elif [ "$have_smart" = 1 ] || [ -n "$DH_SMART" ]; then DS_BASIS=smart
@@ -171,7 +175,7 @@ bm_ds_json() {
    bm_ds_level_label; local label="$REPLY"
    printf '"health":{"level":"%s","label":%s,"basis":"%s","reasons":[%s],"smart":{%s}}' \
       "$DS_LEVEL" "$(bm_js "$label"; printf '%s' "$REPLY")" "$DS_BASIS" "$why" \
-      "$(bm_jn pending "$SM_PENDING" offline "$SM_OFFLINE" reallocated "$SM_REALLOC" uncorrectable "$SM_UNCORR" crc "$SM_CRC" hours "$SM_HOURS"),$(bm_jo_inner verdict "$SM_VERDICT")"
+      "$(bm_jn pending "$SM_PENDING" offline "$SM_OFFLINE" reallocated "$SM_REALLOC" uncorrectable "$SM_UNCORR" crc "$SM_CRC" hours "$SM_HOURS" read_at "$DS_SMART_AT" nvme_media "$SM_NVME_MEDIA" nvme_used "$SM_NVME_USED"),$(bm_jo_inner verdict "$SM_VERDICT" nvme_warning "$SM_NVME_WARN")"
 }
 
 # ---------------------------------------------------------------------------
