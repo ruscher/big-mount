@@ -160,10 +160,12 @@ class DeviceListTests(Base):
         self.assertIn("Critical", all_text, "health must be in words, never colour alone")
         shot(self.win, "01-devices")
 
-    def test_the_window_is_not_wider_than_it_needs_to_be(self):
-        # Found in the screenshots: buttons a job never shows together made it 1109 wide
-        self.assertLess(self.win.minimumSizeHint().width(), 900)
-        self.assertEqual(self.win.width(), 1040)
+    def test_buttons_a_job_never_shows_together_do_not_widen_the_window(self):
+        # Found in the screenshots. Compared to the buttons, not in pixels: it depends on the fonts
+        page = self.win.job_page
+        buttons = (page.open_btn, page.retry_btn, page.cancel_btn, page.pause_btn, page.resume_btn)
+        self.assertFalse([b for b in buttons if b.isVisibleTo(page)])
+        self.assertLess(page.minimumSizeHint().width(), sum(b.sizeHint().width() for b in buttons))
 
     def test_the_list_has_room_for_a_model_name(self):
         # Found in the screenshots: "ST1000DM003-1CH16" was cut, a label cannot wrap one word
