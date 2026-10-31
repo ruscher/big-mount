@@ -444,7 +444,10 @@ check "  ... and the terminal is used from then on" eq "$BM_UI" tty
 BM_UI=gtk BM_DIALOG_PROGRAM="$EXE/fake-dialog"
 notify-send() { return 1; }
 bm_doc_new; bm_doc_p "the caller's own document"
-dlg "0 details"; out="$(DBUS_SESSION_BUS_ADDRESS=fake bm_notify warning dialog-warning "Read-only device" "Pen" "details=View details" 2>/dev/null)"
+# Not in a subshell: a change to the caller's document must show
+dlg "0 details"
+DBUS_SESSION_BUS_ADDRESS=fake bm_notify warning dialog-warning "Read-only device" "Pen" "details=View details" > "$WORK/notify.out" 2>/dev/null
+out="$(cat "$WORK/notify.out")"
 check "no notification server: a warning becomes a window" grep -qF -- "question --title=Read-only device --button=close=Close --button=details=View details --default=close --cancel=close" "$WORK/dlg.log"
 check "  ... with its text" grep -qF "p|Pen|" "$WORK/dlg.log"
 check "  ... and the action chosen is the answer, as with notify-send" eq "$out" details
