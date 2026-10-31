@@ -835,6 +835,22 @@ test_no_destructive_commands() {
     ASSERT_MSG="no repair/format/force/kill -9/recursive chmod in big-mount/"; assert_true test -z "$hits"
 }
 
+# The one operation that erases data (docs/14) is reachable only from the two
+# confirmed flows: the terminal command and the dialog, never from the boot
+# run, the diagnosis or the notifier
+test_secure_erase_only_on_request() {
+    begin "secure-erase-only-on-request"
+    local lib="$REPO/big-mount/usr/lib/big-mount" callers
+    code() { grep -rnE "$1" "$REPO/big-mount" | grep -vE '^[^:]+:[0-9]+:[[:space:]]*#'; }
+    ASSERT_MSG="SecurityEraseUnit is called in one place"; assert_true test "$(code 'Drive\.Ata\.SecurityEraseUnit' | wc -l)" -eq 1
+    ASSERT_MSG="Block.Format is called in one place"; assert_true test "$(code 'Block\.Format' | wc -l)" -eq 1
+    ASSERT_MSG="  ... both inside bm_erase_run"; assert_true test "$(awk '/^[a-z_]+\(\) \{/ { f = $1 } /SecurityEraseUnit|Block\.Format/ && !/^[[:space:]]*#/ { print f }' "$lib/lib.sh" | sort -u)" = "bm_erase_run()"
+    callers="$(awk '/^[a-z_]+\(\) \{/ { f = $1 } /bm_erase_run / && !/^[[:space:]]*#/ && !/^bm_erase_run\(\)/ { print f }' "$lib"/*.sh | sort | tr '\n' ' ')"
+    ASSERT_MSG="bm_erase_run only from the confirmed flows (got: $callers)"
+    assert_true test "$callers" = "bm_gui_secure_erase() bm_secure_erase_tty() "
+    ASSERT_MSG="the boot script knows nothing about it"; assert_false grep -qE 'erase|Format' "$SCRIPT_SRC"
+}
+
 # ===== run all =====
 echo "========================================="
 echo "Running tests against: $VERSION_LABEL"
@@ -900,6 +916,7 @@ test_user_runs_boot_mode
 test_unknown_last_user
 test_lock_file_unwritable
 test_no_destructive_commands
+test_secure_erase_only_on_request
 
 echo ""
 echo "========================================="

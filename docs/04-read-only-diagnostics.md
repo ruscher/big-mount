@@ -29,6 +29,13 @@ Rules that tests enforce:
 - Every correction asks for confirmation and is verified afterwards. On
   failure the user is told that nothing was changed.
 
+## The drive itself
+
+The diagnosis of a filesystem also looks at the drive that holds it
+(timeouts on its port, I/O errors, SMART), and says so when the drive
+reported errors since boot. A drive that acknowledges writes and keeps
+none is described in [14](14-drive-health-and-secure-erase.md).
+
 ## Why `ioerr_cnt` is not used as a cause
 
 The healthy USB SSD of the development machine has

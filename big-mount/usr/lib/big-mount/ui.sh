@@ -296,6 +296,22 @@ bm_ui_menu() {
    esac
 }
 
+# bm_ui_input TITLE TEXT: a line typed by the user (REPLY). Fails on Cancel,
+# and in a terminal without input. TEXT is plain text.
+bm_ui_input() {
+   local title="$1" text="$2" out
+   case "$BM_UI" in
+      kdialog) out="$(kdialog --title "$title" --inputbox "$text" "" 2>/dev/null)" || return 1 ;;
+      zenity) out="$(zenity --entry --title "$title" --text "$text" --width 460 2>/dev/null)" || return 1 ;;
+      *)
+         [ -t 0 ] || return 1
+         printf '%s ' "$text"
+         read -r out || return 1
+         ;;
+   esac
+   REPLY="$out"
+}
+
 # bm_ui_text TITLE FILE: a scrollable technical text
 bm_ui_text() {
    case "$BM_UI" in

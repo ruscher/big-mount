@@ -533,7 +533,8 @@ else
     echo "  - no NVMe controller on this machine: controller case not exercised"
 fi
 nvp="$(lsblk -nrpo NAME,TYPE 2>/dev/null | awk '$1 ~ /nvme[0-9]+n[0-9]+p[0-9]+$/ && $2 == "part" { print $1; exit }')"
-if [ -n "$nvp" ]; then
+# In a container lsblk sees the disks of the host, and /dev does not have them
+if [ -n "$nvp" ] && [ -b "$nvp" ]; then
     bm_resolve "$nvp"; check "a real NVMe partition ($nvp) resolves to itself" eq "$R_DEV" "$nvp"
     bm_facts "$nvp"; check "  ... and its disk is the namespace, not 'nvme'" bash -c '[[ $1 =~ ^/dev/nvme[0-9]+n[0-9]+$ ]]' _ "${F[DISK]}"
 fi
@@ -606,6 +607,213 @@ bm_gui_target /proc/self "Storage diagnostics" "Not local"
 check "a folder that is not on a local device: a notification, no error dialog" eq "$CHOICES:$NOTIFIED" "0:Storage diagnostics|Not local"
 unset -f bm_ui_choice bm_ui_text bm_notify
 . "$BIGMOUNT_LIB/ui.sh"; BM_UI="tty"; bm_ui_init
+
+begin "drive health (docs/14-drive-health-and-secure-erase.md)"
+readlink() { case "${*: -1}" in
+    /sys/block/sda) echo /sys/devices/pci0000:00/0000:00:1f.2/ata1/host0/target0:0:0/0:0:0:0/block/sda ;;
+    /sys/block/nvme0n1) echo /sys/devices/pci0000:00/0000:00:1d.0/0000:3d:00.0/nvme/nvme0/nvme0n1 ;;
+    *) command readlink "$@" ;; esac; }
+bm_drive_port /dev/sda; check "a SATA disk is reported on its ata port" eq "$REPLY" ata1
+bm_drive_port /dev/nvme0n1; check "an NVMe namespace on its controller" eq "$REPLY" nvme0
+unset -f readlink
+# Kernel messages of the field case: an AL-SSD-256 that dropped every write
+FIELD_KMSG=(
+    "EXT4-fs (sda): VFS: Can't find ext4 filesystem"
+    "ata1.00: exception Emask 0x0 SAct 0x80000 SErr 0x0 action 0x6 frozen"
+    "ata1.00: failed command: READ FPDMA QUEUED"
+    "ata1.00: cmd 60/20:98:e8:1e:01/00:00:00:00:00/40 tag 19 ncq dma 16384 in"
+    "ata1: hard resetting link"
+    "ata1: SATA link up 3.0 Gbps (SStatus 123 SControl 300)"
+    "ata1.00: qc timeout after 15000 msecs (cmd 0x47)"
+    "sd 0:0:0:0: [sda] tag#19 Sense Key : Aborted Command [current] "
+    "I/O error, dev sda, sector 73448 op 0x0:(READ) flags 0x80700 phys_seg 1 prio class 2"
+    "ata1: limiting SATA link speed to 1.5 Gbps"
+    "ata1.00: failed command: READ DMA"
+    "I/O error, dev sda, sector 409672 op 0x0:(READ) flags 0x80700 phys_seg 3 prio class 2"
+    "I/O error, dev sdab, sector 8 op 0x0:(READ) flags 0x0 phys_seg 1 prio class 2"
+)
+FAKE_DKMSG=() FAKE_KLOG=0 FAKE_SMART="" FAKE_DRIVE=""
+declare -A FAKE_UP=()
+bm_drive_port() { REPLY=ata1; }
+bm_drive_kmsg() { DKMSG=("${FAKE_DKMSG[@]}"); [ "$FAKE_KLOG" = 1 ]; }
+bm_udev_props() { UP=(); local k; for k in "${!FAKE_UP[@]}"; do UP[$k]="${FAKE_UP[$k]}"; done; }
+bm_udisks_drive() { REPLY="$FAKE_DRIVE"; [ -n "$FAKE_DRIVE" ]; }
+busctl() { printf '%s\n' "${FAKE_SMART[@]}"; }
+sata_up() { FAKE_UP=([ID_ATA]=1 [ID_BUS]=ata [ID_ATA_FEATURE_SET_SECURITY]=1 [ID_ATA_FEATURE_SET_SECURITY_ENABLED]=0 \
+    [ID_ATA_FEATURE_SET_SECURITY_FROZEN]=1 [ID_ATA_FEATURE_SET_SECURITY_ERASE_UNIT_MIN]=2); }
+FAKE_DKMSG=("${FIELD_KMSG[@]}") FAKE_KLOG=1; sata_up; FAKE_DRIVE=/org/freedesktop/UDisks2/drives/AL
+FAKE_SMART=("b true" "b true" "b false" "x 0")
+bm_drive_health /dev/sda
+check "field case: timeouts, I/O errors and a slowed link" eq "${DH_FIND[*]}" "timeouts io-errors slow-link"
+check "  ... timeouts counted by failed or timed-out command" eq "${DH_COUNT[timeouts]}" 3
+check "  ... I/O errors of this disk only (never sdab)" eq "${DH_COUNT[io-errors]}" 2
+check "  ... probing noise and a link that came back up are not errors" eq "${#DH_LINES[@]}" 6
+check "  ... SMART still says ok: the kernel log is what tells" eq "$DH_SMART" ok
+check "  ... ATA security read from udev: frozen, 2 minutes" eq "$DH_ATA:$DH_SEC:$DH_FROZEN:$DH_ERASE_MIN" "1:off:1:2"
+FAKE_DKMSG=("Buffer I/O error on dev sda1, logical block 0, async page read"); bm_drive_health /dev/sda
+check "a partition of the drive counts for the drive" eq "${DH_FIND[*]}" io-errors
+FAKE_DKMSG=("nvme nvme0: I/O tag 25 (1019) opcode 0x2 (Admin Cmd) QID 0 timeout, aborting"); bm_drive_health /dev/nvme0n1
+check "an NVMe command timeout" eq "${DH_FIND[*]}" timeouts
+FAKE_DKMSG=("ata1: SATA link up 6.0 Gbps (SStatus 133 SControl 300)" "EXT4-fs (sda): mounted filesystem"); bm_drive_health /dev/sda
+check "a healthy boot: nothing found" eq "${#DH_FIND[@]}:$DH_KLOG" "0:1"
+FAKE_SMART=("b true" "b true" "b false" "x 1"); bm_drive_health /dev/sda
+check "one damaged sector replaced (the development SSD): shown, never an alarm" eq "${#DH_FIND[@]}:$DH_BAD" "0:1"
+FAKE_SMART=("b true" "b true" "b true" "x 0"); FAKE_DKMSG=("${FIELD_KMSG[@]}"); bm_drive_health /dev/sda
+check "SMART predicts a failure: first finding" eq "${DH_FIND[0]}:$DH_SMART" "smart-failing:failing"
+FAKE_SMART=("b true" "b false" "b true" "x 9"); bm_drive_health /dev/sda
+check "SMART disabled: no verdict from it" eq "$DH_SMART:$DH_BAD" ":0"
+FAKE_KLOG=0 FAKE_DKMSG=(); bm_drive_health /dev/sda
+check "unreadable kernel log: no finding, and it is known" eq "${#DH_FIND[@]}:$DH_KLOG" "0:0"
+FAKE_UP=([ID_ATA]=1 [ID_BUS]=usb [ID_ATA_FEATURE_SET_SECURITY]=1); bm_drive_health /dev/sda
+check "a SATA drive behind a USB bridge is not an ATA drive here" eq "$DH_ATA" 0
+sata_up; FAKE_UP[ID_ATA_FEATURE_SET_SECURITY_ENABLED]=1; bm_drive_health /dev/sda
+check "a security password is seen" eq "$DH_SEC" enabled
+FAKE_UP[ID_ATA_FEATURE_SET_SECURITY_ERASE_UNIT_MIN]='$(id)'; bm_drive_health /dev/sda
+check "an estimate that is not a number is ignored" eq "$DH_ERASE_MIN" 0
+
+begin "who may be erased"
+bm_system_use() { return 1; }
+erase_facts() { F=([NAME]=/dev/sda [DISK]=/dev/sda [TYPE]=disk [TRAN]=sata [HOTPLUG]=0 [RM]=0); }
+erase_facts; sata_up; bm_drive_health /dev/sda
+bm_erase_check /dev/sda; check "an internal SATA drive with security support" eq "$?:$ER_WHY" "0:"
+F[NAME]=/dev/sda1 F[TYPE]=part; bm_erase_check /dev/sda1; check "never a partition" eq "$ER_WHY" not-disk
+erase_facts; bm_system_use() { REPLY="/dev/sda2 → /"; return 0; }
+bm_erase_check /dev/sda; check "never the drive of the running system" eq "$ER_WHY:$ER_DETAIL" "system:/dev/sda2 → /"
+bm_system_use() { return 1; }
+F[TRAN]=usb; bm_erase_check /dev/sda; check "never through USB" eq "$ER_WHY" removable
+erase_facts; F[HOTPLUG]=1; bm_erase_check /dev/sda; check "  ... nor a hot-plug bay" eq "$ER_WHY" removable
+erase_facts; FAKE_UP=([ID_ATA]=0); bm_drive_health /dev/sda
+bm_erase_check /dev/sda; check "not an ATA drive (NVMe, SCSI)" eq "$ER_WHY" not-ata
+FAKE_UP=([ID_ATA]=1 [ID_BUS]=ata); bm_drive_health /dev/sda
+bm_erase_check /dev/sda; check "no ATA security feature set" eq "$ER_WHY" unsupported
+sata_up; FAKE_UP[ID_ATA_FEATURE_SET_SECURITY_ENABLED]=1; bm_drive_health /dev/sda
+bm_erase_check /dev/sda; check "a password is already set: refused, it could lock the drive" eq "$ER_WHY" password
+unset -f bm_drive_port bm_drive_kmsg bm_udisks_drive busctl erase_facts bm_system_use
+
+begin "Secure Erase: only what was confirmed, and checked afterwards"
+# lsblk answers what a probe of the drive would read at each stage
+ER_CALLS=() LS_PT="gpt OLDID" ERASE_SEQ=7 FAKE_MOUNTED="" FAKE_HELD="" ERASE_ERR="" ERASE_KEEPS="" FORMAT_ERR="" FORMAT_KEEPS=1 FORMAT_ID=NEWID
+bm_diskseq() { REPLY="$ERASE_SEQ"; }
+bm_drive_members() { DRIVE_DEVS=(/dev/sda /dev/sda1 /dev/sda2) DRIVE_FSTYPES=("" vfat apfs); }
+bm_mounts() { M_TARGET=() M_FSTYPE=() M_VFSOPT=() M_FSOPT=(); [ "$1" = "$FAKE_MOUNTED" ] && M_TARGET=(/mnt/x); return 0; }
+bm_has_holders() { [ "$1" = "$FAKE_HELD" ]; }
+bm_udisks_drive() { REPLY=/org/freedesktop/UDisks2/drives/AL; }
+bm_udisks_object() { REPLY=/org/freedesktop/UDisks2/block_devices/sda; }
+udevadm() { :; }
+lsblk() { case "$*" in *PTTYPE,PTUUID*) echo "$LS_PT" ;; *PTTYPE*) echo "${LS_PT% *}" ;; *PTUUID*) echo "${LS_PT#* }" ;; esac; }
+bm_gdbus() {
+    ER_CALLS+=("${2##*.} ${*:3} timeout=${BM_GDBUS_TIMEOUT:-}")
+    UD_ERROR="" UD_MESSAGE=""
+    case "$2" in
+        *SecurityEraseUnit)
+            if [ -n "$ERASE_ERR" ]; then UD_ERROR="$ERASE_ERR" UD_MESSAGE="GDBus.Error:$ERASE_ERR: Error erasing: drive is frozen"; return 1; fi
+            [ -z "$ERASE_KEEPS" ] && LS_PT=" "; return 0 ;;
+        *Format)
+            if [ -n "$FORMAT_ERR" ]; then UD_ERROR=unknown UD_MESSAGE="GDBus.Error:x: $FORMAT_ERR"; return 1; fi
+            [ "$FORMAT_KEEPS" = 1 ] && LS_PT="${3//\'/} $FORMAT_ID"; return 0 ;;
+    esac
+    return 0
+}
+erase_case() { ER_CALLS=() LS_PT="gpt OLDID"; sata_up; FAKE_UP[ID_ATA_FEATURE_SET_SECURITY_FROZEN]=0; }
+# Not a block device: the name is gone, even with the same sequence number
+erase_case; bm_erase_run /dev/null 7 dos; rc=$?
+check "what is no longer a block device -> 1, nothing sent to it" eq "$rc:${#ER_CALLS[@]}" "1:0"
+# The drive of these tests does not exist. Whether the machine has a /dev/sda must not matter
+bm_is_block() { :; }
+erase_case; bm_erase_run /dev/sda 7 dos; rc=$?
+check "erased, a new empty table written and read back -> 0" eq "$rc" 0
+check "  ... erase (never enhanced), then table, then a fresh read" eq "${ER_CALLS[*]}" \
+    "SecurityEraseUnit {'enhanced': <false>} timeout=540 Format 'dos' {} timeout= Rescan {} timeout="
+check "  ... the erase may take twice the drive's own estimate (2 min)" bash -c '[[ $1 == *"timeout=540"* ]]' _ "${ER_CALLS[0]}"
+erase_case; ERASE_SEQ=8; bm_erase_run /dev/sda 7 dos; rc=$?; ERASE_SEQ=7
+check "another drive took the name -> 1, nothing sent to it" eq "$rc:${#ER_CALLS[@]}" "1:0"
+erase_case; FAKE_MOUNTED=/dev/sda2; bm_erase_run /dev/sda 7 dos; rc=$?; FAKE_MOUNTED=""
+check "a partition is mounted again -> 3, nothing erased" eq "$rc:${#ER_CALLS[@]}" "3:0"
+erase_case; FAKE_HELD=/dev/sda1; bm_erase_run /dev/sda 7 dos; rc=$?; FAKE_HELD=""
+check "encryption/LVM still open on it -> 3, nothing erased" eq "$rc:${#ER_CALLS[@]}" "3:0"
+erase_case; FAKE_UP[ID_ATA_FEATURE_SET_SECURITY_FROZEN]=1; bm_erase_run /dev/sda 7 dos; rc=$?
+check "still frozen -> 11, the erase is not even tried" eq "$rc:${#ER_CALLS[@]}" "11:0"
+erase_case; ERASE_ERR=org.freedesktop.UDisks2.Error.NotAuthorizedCanObtain; bm_erase_run /dev/sda 7 dos; rc=$?; ERASE_ERR=""
+check "administrator password refused -> 5" eq "$rc" 5
+erase_case; ERASE_ERR=org.freedesktop.UDisks2.Error.Failed; bm_erase_run /dev/sda 7 dos; rc=$?; ERASE_ERR=""
+check "the drive answered frozen to UDisks2 -> 11" eq "$rc" 11
+erase_case; ERASE_KEEPS=1; bm_erase_run /dev/sda 7 dos; rc=$?; ERASE_KEEPS=""
+check "the old table survived the erase (field case) -> 12 erase-ignored" eq "$rc:$ER_STAGE" "12:erase-ignored"
+check "  ... and nothing is written on top of it" eq "${#ER_CALLS[@]}" 1
+erase_case; FORMAT_KEEPS=0; bm_erase_run /dev/sda 7 dos; rc=$?; FORMAT_KEEPS=1
+check "the new table was not kept -> 12 table-lost" eq "$rc:$ER_STAGE" "12:table-lost"
+erase_case; FORMAT_ID=OLDID; bm_erase_run /dev/sda 7 gpt; rc=$?; FORMAT_ID=NEWID
+check "the old identifier read back is not the new table -> 12 table-lost" eq "$rc:$ER_STAGE" "12:table-lost"
+erase_case; FORMAT_ERR="Permission denied"; bm_erase_run /dev/sda 7 dos; rc=$?; FORMAT_ERR=""
+check "erased, but the table could not be written -> 12 unverified" eq "$rc:$ER_STAGE:$ER_REASON" "12:unverified:Permission denied"
+unset -f bm_diskseq bm_drive_members bm_mounts bm_has_holders bm_udisks_drive bm_udisks_object udevadm lsblk bm_gdbus erase_case
+
+begin "Secure Erase in the terminal and in dialogs"
+bm_remove_core() { SE_CALLS+=("$1:$2:$RM_ALLOW_SERVICES"); return "$FAKE_RELEASE"; }
+bm_erase_run() { SE_CALLS+=("erase:$3"); return "$FAKE_RUN"; }
+bm_erase_unfreeze() { SE_CALLS+=(unfreeze); FAKE_UP[ID_ATA_FEATURE_SET_SECURITY_FROZEN]=0; return 0; }
+bm_ui_input() { REPLY="$TYPED"; [ -n "$TYPED" ]; }
+bm_diskseq() { REPLY=7; }
+lsblk() { :; }
+bm_erase_table() { REPLY=dos; }
+se_case() { SE_CALLS=() FAKE_RELEASE=0 FAKE_RUN=0 TYPED=sda; sata_up; F=([NAME]=/dev/sda [DISK]=/dev/sda [TYPE]=disk [TRAN]=sata [SIZE]=256060514304 [MODEL]=AL-SSD-256); }
+se_case; TYPED=sdb; bm_secure_erase_tty /dev/sda > /dev/null 2>&1; rc=$?
+check "terminal: another name typed -> nothing done, 5" eq "$rc:${#SE_CALLS[@]}" "5:0"
+se_case; TYPED=""; bm_secure_erase_tty /dev/sda > /dev/null 2>&1; rc=$?
+check "  ... no answer (no terminal) -> nothing done" eq "$rc:${#SE_CALLS[@]}" "5:0"
+se_case; bm_ui_confirm() { return 1; }; bm_secure_erase_tty /dev/sda > /dev/null 2>&1; rc=$?
+check "  ... frozen, the user does not want the computer to sleep -> 11, no erase" eq "$rc:${SE_CALLS[*]}" "11:release:/dev/sda:0"
+se_case; bm_ui_confirm() { return 0; }; bm_secure_erase_tty /dev/sda > "$WORK/se.out" 2>&1; rc=$?
+check "  ... frozen, sleep accepted: release, unfreeze, erase with the table of this computer" eq "$rc:${SE_CALLS[*]}" "0:release:/dev/sda:0 unfreeze erase:dos"
+check "  ... and the result says the drive keeps what is written" grep -q "keeps what is written again" "$WORK/se.out"
+se_case; FAKE_RUN=12 ER_STAGE=erase-ignored; bm_secure_erase_tty /dev/sda > "$WORK/se.out" 2>&1; rc=$?
+check "  ... a drive that ignored the erase is called failing" eq "$rc:$(grep -c 'Replace it' "$WORK/se.out")" "12:1"
+se_case; FAKE_RELEASE=4 RM_REASON="/dev/sda2 → /"; bm_secure_erase_tty /dev/sda > /dev/null 2>&1; rc=$?
+check "  ... the system appeared on it meanwhile -> 4, no erase" eq "$rc:${#SE_CALLS[@]}" "4:1"
+CONFIRMS=()
+bm_ui_confirm_risky() { CONFIRMS+=("$1"); [ "${RISKY:-1}" = 0 ]; }
+bm_notify() { :; }
+bm_ui_show() { SHOWN="$1|$2"; }
+se_case; RISKY=1; XDG_RUNTIME_DIR="$WORK" bm_gui_secure_erase /dev/sda; rc=$?
+check "dialogs: Cancel (the default button) -> nothing done" eq "$rc:${#SE_CALLS[@]}:${CONFIRMS[0]}" "5:0:Erase the whole drive"
+se_case; RISKY=0 TYPED=SDA; XDG_RUNTIME_DIR="$WORK" bm_gui_secure_erase /dev/sda; rc=$?
+check "  ... a name that is almost right is not right" eq "$rc:${#SE_CALLS[@]}" "5:0"
+se_case; RISKY=0; FAKE_UP[ID_ATA_FEATURE_SET_SECURITY_FROZEN]=0; XDG_RUNTIME_DIR="$WORK" bm_gui_secure_erase /dev/sda; rc=$?
+check "  ... confirmed and typed: erased, the result is shown in a dialog" eq "$rc:${SE_CALLS[*]}:$SHOWN" "0:release:/dev/sda:0 erase:dos:info|Drive erased"
+( XDG_RUNTIME_DIR="$WORK" bm_drive_lock /dev/sda ); check "  ... and the drive lock is released" eq "$?" 0
+exec {held}>"$WORK/big-mount-drive-sda.lock"; flock -n "$held"
+se_case; RISKY=0; XDG_RUNTIME_DIR="$WORK" bm_gui_secure_erase /dev/sda; rc=$?
+check "  ... another operation on the drive -> 10, nothing done" eq "$rc:${#SE_CALLS[@]}" "10:0"
+exec {held}>&-
+unset -f bm_remove_core bm_erase_run bm_erase_unfreeze bm_ui_input bm_diskseq lsblk bm_erase_table se_case bm_ui_confirm \
+    bm_ui_confirm_risky bm_notify bm_ui_show bm_udev_props sata_up
+. "$BIGMOUNT_LIB/lib.sh"; . "$BIGMOUNT_LIB/ui.sh"; . "$BIGMOUNT_LIB/cli.sh"; BM_UI="tty"; bm_ui_init
+
+begin "release before an erase: unmounted and locked, never powered off"
+fake_rel() { F=([NAME]="$1" [DISK]=/dev/sdz [DISK_TYPE]=disk [TRAN]="$REL_TRAN" [HOTPLUG]=0 [RM]=0 [FSTYPE]=""); }
+bm_facts() { fake_rel "$@"; }
+bm_system_use() { return 1; }
+bm_drive_members() { DRIVE_DEVS=(/dev/sdz /dev/sdz1 /dev/sdz2) DRIVE_FSTYPES=("" ext4 crypto_LUKS); }
+bm_diskseq() { REPLY=1; }
+bm_mounts() { M_TARGET=() M_FSTYPE=() M_VFSOPT=() M_FSOPT=(); }
+bm_has_holders() { [ "$1" = /dev/sdz2 ]; }
+bm_other_holders() { O_KIND=() O_WHAT=(); }
+bm_mount_dependents() { DEP_UNITS=() DEP_NAMES=() DEP_BACK=(); }
+bm_udisks() { REL_CALLS+=("$1 ${*: -1}"); UD_ERROR=""; return 0; }
+REL_CALLS=() REL_TRAN=sata; bm_remove_core release /dev/sdz; rc=$?
+check "an open LUKS volume is locked" eq "$rc:${REL_CALLS[*]}" "0:lock /dev/sdz2"
+REL_CALLS=() REL_TRAN=usb; bm_remove_core release /dev/sdz; rc=$?
+check "  ... and even a removable drive is not powered off" eq "$rc:${REL_CALLS[*]}:$RM_POWERED" "0:lock /dev/sdz2:0"
+unset -f fake_rel bm_facts bm_system_use bm_drive_members bm_diskseq bm_mounts bm_has_holders bm_other_holders bm_mount_dependents bm_udisks
+. "$BIGMOUNT_LIB/lib.sh"; . "$BIGMOUNT_LIB/ui.sh"; . "$BIGMOUNT_LIB/cli.sh"; BM_UI="tty"; bm_ui_init
+
+begin "a partition diagnosis mentions the errors of its drive"
+F=([NAME]=/dev/sda2 [DISK]=/dev/sda [FSTYPE]=apfs [SIZE]=1) D_CAUSE=not-mounted D_FIX="" D_MP="" D_PATH="" D_WARN=()
+DH_DISK=/dev/sda DH_FIND=(timeouts); bm_diag_doc /dev/sda2; bm_doc_render_text
+check "the drive's errors are mentioned" grep -q "the drive that holds this device reported errors" <<< "$REPLY"
+DH_DISK=/dev/sdb; bm_diag_doc /dev/sda2; bm_doc_render_text
+check "  ... never the findings of another drive" bash -c '! grep -q "drive that holds" <<< "$1"' _ "$REPLY"
+DH_DISK="" DH_FIND=()
 
 begin "bigmount --version and --doctor"
 bm_load doctor.sh

@@ -7,4 +7,10 @@ Exec=/usr/bin/bigmount --gui
 Icon=big-mount
 Terminal=false
 Categories=System;Filesystem;
-Keywords=disk;drive;usb;mount;unmount;read-only;busy;eject;
+Keywords=disk;drive;usb;mount;unmount;read-only;busy;eject;ssd;erase;recover;rescue;backup;smart;
+Actions=checkDrive;
+
+[Desktop Action checkDrive]
+Name=Drive manager and file rescue
+Icon=drive-harddisk
+Exec=/usr/bin/bigmount --gui-drive

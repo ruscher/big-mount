@@ -1,0 +1,138 @@
+#!/bin/bash
+# shellcheck disable=SC2015  # "check && check || die" on purpose: die does not return
+#
+# bigmount-drive-helper - privileged helper of the big-mount drive manager.
+#
+# Started through pkexec (polkit action org.biglinux.big-mount.drive-helper).
+# It does five small things and nothing else, with its arguments treated as
+# untrusted:
+#
+#   protect DEV     block writing on a device and everything it sits on
+#   unprotect DEV   allow writing again
+#   smart DEV       print `smartctl -H -A -i` (read-only, never starts a test)
+#   partitions DEV  print what `testdisk /list` finds (read-only)
+#   image DEV FILE MAP RETRIES STOPFILE
+#                   read DEV into FILE with GNU ddrescue
+#
+# pkexec gives it a clean environment. Exit codes: 0 done, 1 failed, 2 bad
+# arguments, 3 another volume of the drive is mounted with writing enabled,
+# 4 refused: the running system, 25 tool missing.
+
+BM_LIB="/usr/lib/big-mount"
+export PATH=/usr/bin:/bin:/usr/sbin:/sbin
+
+die() { printf 'bigmount-drive-helper: %s\n' "$1" >&2; exit "${2:-2}"; }
+
+[ "$#" -ge 2 ] || die "usage: bigmount-drive-helper protect|unprotect|smart|image DEV ..."
+[ "$EUID" -eq 0 ] || die "must run as root" 1
+# shellcheck source=lib.sh
+. "$BM_LIB/lib.sh" || exit 1
+
+verb="$1" dev="$2"
+[[ $dev =~ ^/dev/[A-Za-z0-9._/:+-]+$ ]] && [[ $dev != *..* ]] || die "not a device name"
+dev="$(readlink -f -- "$dev")"
+[ -b "$dev" ] || die "not a block device"
+
+# The chain the device sits on: itself, its partition, LUKS, LVM, its disks
+chain=() disks=()
+while read -r name type; do
+   chain+=("$name")
+   case "$type" in disk | loop) disks+=("$name") ;; esac
+done < <(lsblk -s -n -p -r -o NAME,TYPE -- "$dev" 2>/dev/null)
+[ "${#chain[@]}" -gt 0 ] || die "unknown device"
+
+refuse_system() {
+   local d
+   for d in "${disks[@]}"; do
+      bm_system_use "$d" && die "refused: $d holds the running system ($REPLY)" 4
+   done
+}
+
+case "$verb" in
+   protect)
+      [ "$#" -eq 2 ] || die "protect DEV"
+      refuse_system
+      # Blocking a disk also blocks its other partitions: never under a
+      # volume that is writing
+      for d in "${disks[@]}"; do
+         bm_drive_members "$d"
+         for m in "${DRIVE_DEVS[@]}"; do
+            bm_mounts "$m"
+            for i in "${!M_TARGET[@]}"; do
+               bm_has_opt "${M_VFSOPT[i]}" ro || die "$m is mounted with writing enabled at ${M_TARGET[i]}" 3
+            done
+         done
+      done
+      for d in "${chain[@]}"; do blockdev --setro "$d" || die "blockdev failed on $d" 1; done
+      ;;
+   unprotect)
+      [ "$#" -eq 2 ] || die "unprotect DEV"
+      refuse_system
+      for d in "${chain[@]}"; do blockdev --setrw "$d" || die "blockdev failed on $d" 1; done
+      ;;
+   smart)
+      [ "$#" -eq 2 ] || die "smart DEV"
+      command -v smartctl >/dev/null || exit 25
+      # Whole disks only, whatever partition was named
+      [ "${#disks[@]}" -eq 1 ] || die "not a single drive"
+      out="$(timeout 180 smartctl -H -A -i -- "${disks[0]}" 2>&1)"
+      if [[ $out != *"SMART"*"Attributes"* && $out != *"SMART/Health Information"* ]]; then
+         # USB bridges usually need the SAT pass-through named
+         out="$(timeout 180 smartctl -d sat -H -A -i -- "${disks[0]}" 2>&1)"
+      fi
+      printf '%s\n' "$out"
+      [[ $out == *"overall-health"* || $out == *"SMART Health Status"* || $out == *"SMART/Health Information"* ]]
+      exit
+      ;;
+   partitions)
+      [ "$#" -eq 2 ] || die "partitions DEV"
+      command -v testdisk >/dev/null || exit 25
+      cd /tmp || exit 1
+      exec testdisk /nolog /list "$dev"
+      ;;
+   image)
+      [ "$#" -eq 6 ] || die "image DEV FILE MAP RETRIES STOPFILE"
+      file="$3" map="$4" retries="$5" stop="$6"
+      command -v ddrescue >/dev/null || exit 25
+      uid="${PKEXEC_UID:-}"
+      [[ $uid =~ ^[0-9]+$ ]] || die "no user"
+      [[ $retries =~ ^[0-9]+$ ]] && [ "$retries" -le 5 ] || die "bad retries"
+      for p in "$file" "$map" "$stop"; do
+         [[ $p == /* && $p != *..* && $p != *$'\n'* ]] || die "bad path"
+         parent="${p%/*}"
+         # Written as root: only into a real folder of the user who asked
+         [ "$(readlink -f -- "$parent")" = "$parent" ] && [ "$(stat -c %u -- "$parent")" = "$uid" ] || die "$parent is not a folder of the user"
+         [ ! -L "$p" ] || die "$p is a link"
+      done
+      for p in "$file" "$map"; do
+         if [ -e "$p" ]; then
+            [ -f "$p" ] || die "$p is not a file"
+            owner="$(stat -c %u -- "$p")"
+            [ "$owner" = "$uid" ] || [ "$owner" = 0 ] || die "$p belongs to someone else"
+         fi
+      done
+      # Never onto the disk that is being read
+      target="$(findmnt -n -o SOURCE -T "${file%/*}" 2>/dev/null)"; target="${target%%\[*}"
+      if [ -b "$target" ]; then
+         while read -r name _; do
+            for d in "${disks[@]}"; do [ "$name" != "$d" ] || die "the image cannot be on the disk being read"; done
+         done < <(lsblk -s -n -p -r -o NAME,TYPE -- "$target" 2>/dev/null)
+      fi
+      # Hand the files over to the user whatever happens next
+      give_back() { chown "$uid" -- "$file" "$map" 2>/dev/null; chmod 600 -- "$file" 2>/dev/null; chmod 644 -- "$map" 2>/dev/null; }
+      args=(--idirect --no-scrape)
+      [ "$retries" -gt 0 ] && args=(--idirect "--retry-passes=$retries")
+      ddrescue "${args[@]}" -- "$dev" "$file" "$map" &
+      pid=$!
+      trap 'kill -TERM "$pid" 2>/dev/null' TERM INT HUP
+      while kill -0 "$pid" 2>/dev/null; do
+         [ -e "$stop" ] && kill -TERM "$pid" 2>/dev/null
+         chmod 644 -- "$map" 2>/dev/null
+         sleep 2
+      done
+      wait "$pid"; rc=$?
+      give_back
+      exit "$rc"
+      ;;
+   *) die "unknown command" ;;
+esac

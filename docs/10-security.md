@@ -54,6 +54,28 @@ them:
 Taking ownership is never recursive, and never offered on a partition that
 holds an operating system.
 
+## Secure Erase: the one operation that erases data
+
+Erasing a whole drive (14) is not automatic, and it is not a repair of a
+filesystem. It exists to bring back a failing SSD that keeps nothing it is
+given. The guards:
+
+- reachable only from `bigmount --secure-erase DISK` (a terminal is
+  required) and from **Erase the whole drive…** in `bigmount --gui-drive-check`;
+  a test fails if any other function calls it;
+- never the drive of the running system, a partition, a USB or hot-plug
+  drive, or a drive with a security password;
+- every partition that will be lost is listed, Cancel is the default, and
+  the name of the drive must be typed exactly;
+- the per-drive lock and the disk sequence number: a drive that took the
+  name after the confirmation is never touched;
+- the erase is a UDisks2 method, under UDisks2's polkit action
+  (`org.freedesktop.udisks2.ata-secure-erase`, administrator password);
+  Big-Mount ships no privileged code for it and does not use `hdparm`;
+- sleeping to unfreeze the drive is a separate question;
+- the result is verified, and a drive that ignored the erase is reported
+  as failing instead of "erased".
+
 ## Permissions of internal FAT/NTFS
 
 The default stays `umask=000` + `exec`: every local account can read, write

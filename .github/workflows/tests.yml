@@ -3,8 +3,8 @@ name: Tests
 # Static checks, the stub based suites, translations and packaging, on Arch
 # Linux (the base of BigLinux): the generated .desktop/polkit files depend on
 # the gettext version, so the same tools as on the users' systems are used.
-# Nothing here touches a disk: tests/integration.sh needs a local session with
-# UDisks2 and is run by hand (see docs/09-testing.md).
+# Nothing here touches a disk: tests/integration.sh and tests/drive-integration.sh
+# need a local session with UDisks2 and are run by hand (see docs/09-testing.md).
 on:
   pull_request:
   workflow_dispatch:
@@ -17,19 +17,23 @@ jobs:
       - name: Install tools
         run: |
           pacman -Syu --noconfirm --needed git bash shellcheck gettext desktop-file-utils \
-            libxml2 python glibc-locales util-linux systemd diffutils
+            libxml2 python glibc-locales util-linux systemd diffutils rsync pyside6
           # The suites must not run as root: permission checks would be meaningless
           useradd --create-home ci
 
       - uses: actions/checkout@v4
 
       - name: Prepare the checkout for the test user
-        run: chown -R ci:ci "$GITHUB_WORKSPACE"
+        run: |
+          chown -R ci:ci "$GITHUB_WORKSPACE"
+          # systemd-analyze verify needs this, and a container does not have it
+          install -d -m 1777 /run/systemd
 
       - name: Bash syntax
         run: |
           for f in big-mount/usr/bin/bigmount big-mount/usr/lib/big-mount/*.sh \
-                   big-mount/usr/lib/big-mount/bigmount-holders tests/*.sh locale/*.sh \
+                   big-mount/usr/lib/big-mount/bigmount-holders big-mount/usr/lib/big-mount/bigmount-drive-helper \
+                   tests/*.sh locale/*.sh \
                    pkgbuild/PKGBUILD pkgbuild/big-mount.install; do
             bash -n "$f"
           done
@@ -38,7 +42,8 @@ jobs:
         run: |
           shellcheck -x -P big-mount/usr/lib/big-mount:tests \
             big-mount/usr/bin/bigmount big-mount/usr/lib/big-mount/*.sh \
-            big-mount/usr/lib/big-mount/bigmount-holders locale/*.sh tests/stubs/* \
+            big-mount/usr/lib/big-mount/bigmount-holders big-mount/usr/lib/big-mount/bigmount-drive-helper \
+            locale/*.sh tests/stubs/* \
             $(ls tests/*.sh | grep -v bigmount.old.sh)
 
       - name: Boot path (stubbed devices)
@@ -46,6 +51,12 @@ jobs:
 
       - name: Library
         run: runuser -u ci -- bash tests/lib-tests.sh
+
+      - name: Drive manager (stubbed devices)
+        run: runuser -u ci -- bash tests/drive-tests.sh
+
+      - name: Drive manager window (off screen)
+        run: runuser -u ci -- python3 tests/gui-tests.py
 
       - name: Translations
         run: runuser -u ci -- bash tests/i18n-tests.sh

@@ -1,0 +1,99 @@
+# 15 — Drive manager: architecture
+
+`bigmount --drive` (terminal) and `bigmount --gui-drive` (window) diagnose a
+drive, mount it without changing it, and copy files off it. Both are thin:
+every fact and every operation comes from one engine.
+
+## 1. Layout
+
+```text
+usr/bin/bigmount                    boot automount; anything else loads cli.sh
+usr/lib/big-mount/
+  cli.sh, lib.sh, ui.sh, doctor.sh  existing modes (reused, see 3)
+  drive.sh                          --drive: commands, JSON, usage, exit codes
+  drive-detect.sh                   one lsblk snapshot: drives, volumes, stacks
+  drive-diag.sh                     health level, SMART, read-only mounting
+  drive-copy.sh                     preflight checks, jobs, supervisor, reports
+  drive-recovery.sh                 ddrescue, TestDisk, PhotoRec
+  drive-tui.sh                      the interactive terminal menus
+  drive-gui.py                      the window (PySide6), calls --drive ... --json
+  bigmount-drive-helper             the only new privileged code (polkit)
+```
+
+The window has no recovery logic. `tests/gui-tests.py` checks that it does not
+even import `subprocess`; it talks to `bigmount --drive ... --json` through
+`QProcess`, without blocking.
+
+## 2. Nothing of this runs at boot
+
+`usr/bin/bigmount` without options never reads these files, and `cli.sh` only
+loads them when `--drive` or `--gui-drive` is asked for. `tests/drive-tests.sh`
+checks both. Python and Qt are only touched by `--gui-drive`. The automount and
+its policy (removable devices belong to UDisks2 and the desktop) did not change.
+
+## 3. What was reused
+
+| From | Used for |
+| --- | --- |
+| `bm_facts`, `bm_mounts`, `bm_parse_pairs` | device facts |
+| `bm_drive_health` | kernel log and UDisks2 SMART. Extended: it now knows the USB port of a disk (`usb 1-9.1: reset…`) |
+| `bm_diagnose_write`, `bm_cause_text` | why a mounted volume cannot be written, in the same words as `--diagnose` |
+| `bm_remove_core`, `bm_unmount_all`, `bm_drive_lock` | unmounting, with every check of safe removal |
+| `bm_udisks`, `bm_doc_*`, `bm_ui_show` | UDisks2 calls, text output |
+
+## 4. `--gui-drive` already existed
+
+It used to open the drive check with Secure Erase. Now:
+
+- `--gui-drive [DISK|FOLDER]` opens the manager when a display, Python and
+  PySide6 are available, and otherwise falls back to that same check in dialogs
+  (`BM_NO_QT=1` forces the fallback).
+- `--gui-drive-check [DISK]` always opens the old dialog. The manager reaches it
+  through **Check and erase…**, and Secure Erase is still only in `bm_erase_run`.
+
+## 5. Commands
+
+```text
+bigmount --drive                         interactive, needs a terminal
+bigmount --drive list | inspect | diagnose [--smart] | report
+bigmount --drive mount DEV [--read-only] [--protect] [--remount] [--read-write]
+bigmount --drive unmount | protect | unprotect | unlock
+bigmount --drive destinations --source FOLDER [--need BYTES]
+bigmount --drive copy --source S --destination D [--item PATH]...
+bigmount --drive jobs | status ID [--watch] | pause ID | cancel ID
+bigmount --drive resume ID [--retry-deferred]
+bigmount --drive image --source DEV --image FILE [--map FILE] [--retries N]
+bigmount --drive partitions TARGET
+bigmount --drive carve --source IMAGE --destination FOLDER
+```
+
+`--json`, `--dry-run` and `--help` are available where they make sense. Exit
+codes: 0 done, 1 error, 2 usage, 3 busy, 4 running system, 5 not authorized,
+20 refused by a safety check, 21 no space, 22 finished but files were not copied
+or the check found differences, 23 cancelled or paused, 24 a device went away or
+did not answer, 25 a tool is missing.
+
+## 6. Levels of health
+
+`bm_ds_level` never calls a drive healthy. The word used is "no alerts", and it
+says what that rests on.
+
+| Level | Meaning |
+| --- | --- |
+| `critical` | the drive reports failure, unreadable sectors, or 3+ read errors |
+| `attention` | timeouts, 3+ USB resets, replaced sectors on a hard disk, one read error, CRC errors |
+| `normal` | nothing found, and it says in what: SMART and log, log only, SMART only |
+| `unknown` | neither the log nor SMART could be read |
+| `na` | a disk image |
+
+The field case in numbers: the Seagate of `12` said `PASSED` with 1,848 pending
+sectors. The raw counters decide, not the verdict. Diagnosis itself never reads
+the device: only `/proc`, `/sys`, udev, UDisks2 and the journal. SMART is read
+only on request, because it asks for a password and took over a minute through
+that USB bridge.
+
+## 7. Dependencies
+
+Required, as before: `bash`, `udisks2`, `util-linux`, `ntfs-3g`, `lsof`. Optional,
+each detected at run time and explained when missing: `rsync` (copying),
+`pyside6` (the window), `smartmontools`, `ddrescue`, `testdisk`.

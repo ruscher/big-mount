@@ -11,7 +11,7 @@
 # volume labels, serial numbers, UUIDs, the user name, the home folder or
 # the folders where devices are mounted (they usually carry the label).
 
-BM_VERSION=2.2.0
+BM_VERSION=2.3.0
 
 # ---------------------------------------------------------------------------
 # --version
@@ -302,6 +302,17 @@ bm_dr_session() {
    elif command -v zenity >/dev/null; then bm_dr_ver zenity --version; bm_fmt $"Dialogs: %s" "zenity $REPLY"; bm_dr ok "$REPLY"
    else bm_dr warn $"Neither kdialog nor zenity is installed: no dialogs, terminal only" $"Install kdialog (Plasma) or zenity (GNOME)."
    fi
+   # Drive manager: only what it offers depends on these
+   local dt=0 dt_tools=(rsync smartctl ddrescue testdisk photorec)
+   local dt_uses=($"copying files off a drive" $"SMART details" $"disk images" $"lost partitions" $"search by content")
+   for dt in "${!dt_tools[@]}"; do
+      if command -v "${dt_tools[dt]}" >/dev/null; then bm_fmt $"Drive manager, %s: %s" "${dt_uses[dt]}" "${dt_tools[dt]}"; bm_dr ok "$REPLY"
+      else bm_fmt $"Drive manager, %s: %s is not installed" "${dt_uses[dt]}" "${dt_tools[dt]}"; bm_dr info "$REPLY"
+      fi
+   done
+   if command -v python3 >/dev/null && python3 -I -c 'import PySide6.QtWidgets' 2>/dev/null; then bm_dr ok $"Drive manager window: PySide6"
+   else bm_dr info $"PySide6 is not installed: bigmount --gui-drive uses dialogs"
+   fi
    if command -v notify-send >/dev/null; then bm_dr ok $"Notifications: notify-send"
    else bm_dr info $"notify-send (libnotify) is not installed: kdialog popups are used instead"
    fi
@@ -374,6 +385,13 @@ bm_dr_storage() {
          bm_dr warn "$s" $"UDisks2 does not know this device: Plasma and Big-Mount cannot manage it"
       else
          bm_dr ok "$s"
+      fi
+      # SMART failure, timeouts and I/O errors of this boot (read-only, as the user)
+      bm_drive_health "$name" </dev/null
+      if [ "${#DH_FIND[@]}" -gt 0 ]; then
+         bm_fmt $"%s: the drive reports problems (%s)" "${name##*/}" "${DH_FIND[*]}"; s="$REPLY"
+         bm_fmt $"For details: bigmount --diagnose %s" "$name"
+         bm_dr warn "$s" "$REPLY"
       fi
    done < <(lsblk -P -b -p -d -o NAME,TYPE,TRAN,RM,HOTPLUG,SIZE 2>/dev/null)
 

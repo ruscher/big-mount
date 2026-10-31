@@ -1,14 +1,18 @@
 # shellcheck shell=bash
 #
 # big-mount entry points other than the boot automount: storage diagnosis,
-# "what is using this device", safe removal and the session notifier.
+# "what is using this device", safe removal, drive health, Secure Erase
+# and the session notifier.
 #
 # Exit codes: 0 done, 1 error, 2 usage, 3 device busy, 4 refused (holds the
-# running system), 5 not authorized, 6 unmounted but still in use by a
-# stacked device, 7 unmounted, the drive cannot be powered off by the
-# computer, 8 unmounted but powering it off failed, 9 not done: services
+# running system), 5 not authorized or cancelled, 6 unmounted but still in
+# use by a stacked device, 7 unmounted, the drive cannot be powered off by
+# the computer, 8 unmounted but powering it off failed, 9 not done: services
 # depend on the device and the user did not confirm stopping them, 10 not
-# done: another removal of the same drive is in progress.
+# done: another operation on the same drive is in progress, 11 not erased:
+# the drive stays frozen, 12 the drive did not do what it was told (the
+# Secure Erase was ignored, or what was written afterwards was not kept).
+# The drive manager adds 20 to 25 (drive.sh).
 
 BM_LIB_DIR="${BIGMOUNT_LIB:-/usr/lib/big-mount}"
 # shellcheck source=lib.sh
@@ -22,7 +26,7 @@ bm_usage() {
    printf '  %-28s %s\n' \
       $"(none)" $"mount internal partitions (run at boot by big-mount.service)" \
       "--dry-run" $"show what would be mounted, change nothing" \
-      "--diagnose [TARGET]" $"storage overview, or details of one device" \
+      "--diagnose [TARGET]" $"storage overview, or details of one device (a whole disk: drive errors)" \
       "--busy TARGET" $"show what keeps a device busy" \
       "--unmount TARGET" $"unmount one filesystem safely" \
       "--safe-remove TARGET" $"unmount every filesystem of the drive and power it off" \
@@ -31,6 +35,10 @@ bm_usage() {
       "  --assume-yes" $"do not ask before closing them or stopping services (scripts)" \
       "--gui [TARGET]" $"graphical diagnosis" \
       "--gui-remove TARGET" $"graphical safe removal" \
+      "--secure-erase DISK" $"erase a whole SATA drive with its own Secure Erase (asks first)" \
+      "--drive [COMMAND]" $"drive manager and file rescue in the terminal (bigmount --drive --help)" \
+      "--gui-drive [DISK]" $"graphical drive manager and file rescue" \
+      "--gui-drive-check [DISK]" $"graphical drive check, with Secure Erase" \
       "--notifier" $"session service: warn about read-only devices" \
       "--doctor" $"check the installation and the storage stack (for bug reports)" \
       "-V, --version" $"show the version and the source revision" \
@@ -47,6 +55,14 @@ bm_load() {
 bm_main() {
    local cmd="$1" a args=()
    shift
+   # The drive manager has subcommands and resolves paths on its own
+   if [ "$cmd" = --drive ]; then
+      # shellcheck disable=SC2034  # read by drive.sh
+      BM_CWD="$PWD"
+      cd / || return 1
+      bm_load drive.sh && bm_drive_main "$@"
+      return
+   fi
    # Relative paths are resolved now: we leave the current folder below
    for a in "$@"; do
       # An empty target must not silently become the current folder
@@ -69,6 +85,9 @@ bm_main() {
       --safe-remove) BM_UI="tty"; bm_ui_init; bm_cmd_remove remove "${args[@]}" ;;
       --gui) bm_ui_init; bm_gui_diagnose "${args[@]}" ;;
       --gui-remove) bm_ui_init; bm_gui_remove "${args[@]}" ;;
+      --secure-erase) BM_UI="tty"; bm_ui_init; bm_cmd_secure_erase "${args[@]}" ;;
+      --gui-drive) bm_load drive.sh && bm_gui_drive_main "${args[@]}" ;;
+      --gui-drive-check) bm_ui_init; bm_gui_drive "${args[@]}" ;;
       --notifier) bm_ui_init; bm_notifier ;;
       *)
          printf $"bigmount: unknown option '%s' (see bigmount --help)"'\n' "$cmd" >&2
@@ -248,6 +267,17 @@ bm_diag_doc() {
    if [ "${#D_WARN[@]}" -gt 0 ]; then
       bm_doc_p $"Attention: the filesystem has recorded errors. Copy important files elsewhere and check it soon."
    fi
+   if [ "$DH_DISK" = "${F[DISK]:-}" ] && [ "${#DH_FIND[@]}" -gt 0 ]; then
+      bm_doc_p $"Attention: the drive that holds this device reported errors since the computer was started. Copy important files elsewhere and check the drive."
+   fi
+}
+
+# Health of the drive of the device in F, for the diagnosis of one of its
+# filesystems (loop devices and optical drives have nothing to report)
+bm_diag_drive() {
+   DH_FIND=() DH_DISK=""
+   [ "${F[DISK_TYPE]:-}" = disk ] && bm_drive_health "${F[DISK]}"
+   return 0
 }
 
 # Technical report for "Details" and for the terminal
@@ -264,9 +294,11 @@ bm_tech_report() {
    bm_boot_status "$dev" && printf '%s\n' "big-mount:   $REPLY"
    printf '%s\n' "diagnosis:   ${D_CAUSE}${D_DETAIL:+ ($D_DETAIL)}${D_FIX:+ fix=$D_FIX}"
    for l in "${D_WARN[@]}"; do printf '%s\n' "warning:     $l"; done
+   [ "$DH_DISK" = "${F[DISK]}" ] && [ "${#DH_FIND[@]}" -gt 0 ] &&
+      printf '%s\n' "drive:       ${F[DISK]} reported: ${DH_FIND[*]} (bigmount --diagnose ${F[DISK]})"
    if [ "${#KMSG[@]}" -gt 0 ]; then
       printf '%s\n' "kernel:"
-      for l in "${KMSG[@]: -10}"; do printf '             %s\n' "$l"; done
+      for l in "${KMSG[@]:$((${#KMSG[@]} > 10 ? ${#KMSG[@]} - 10 : 0))}"; do printf '             %s\n' "$l"; done
    fi
 }
 
@@ -293,20 +325,23 @@ bm_cmd_diagnose() {
    fi
    bm_resolve "$target" || { bm_resolve_fail "$target"; return 1; }
    bm_facts "$R_DEV" || { R_ERR=unavailable; bm_resolve_fail "$R_DEV"; return 1; }
-   # A whole disk: diagnose each of its filesystems
+   # A whole disk: the health of the drive, then each of its filesystems
    if [ "${F[TYPE]}" = disk ] && [ -z "${F[FSTYPE]}" ]; then
+      bm_drive_show "$R_DEV" || rc=1
       bm_disk_parts "$R_DEV"
-      if [ "${#DISK_PARTS[@]}" -gt 0 ]; then
-         for part in "${DISK_PARTS[@]}"; do
-            bm_cmd_diagnose "$part" || rc=1
-            printf '\n'
-         done
-         return "$rc"
-      fi
+      for part in "${DISK_PARTS[@]}"; do
+         printf '\n'
+         BM_DRIVE_SHOWN=1 bm_cmd_diagnose "$part" || rc=1
+      done
+      return "$rc"
    fi
    bm_diagnose_write "$R_DEV" "$R_PATH"
+   bm_diag_drive
    bm_diag_doc "$R_DEV"
    bm_ui_show info "$C_TITLE"
+   if [ "${#DH_FIND[@]}" -gt 0 ] && [ -z "${BM_DRIVE_SHOWN:-}" ]; then
+      printf $"To see the errors of the drive: bigmount --diagnose %s"'\n' "${F[DISK]}"
+   fi
    printf '\n%s\n' $"Technical details:"
    bm_tech_report "$R_DEV" | sed 's/^/  /'
    # The running system is used by every program and is never removed:
@@ -575,14 +610,11 @@ bm_cmd_busy() {
 # ---------------------------------------------------------------------------
 # Safe removal
 
-# Drives that are meant to be unplugged (and powered off before that)
-bm_is_removable_drive() {
-   [ "${F[TRAN]:-}" = usb ] || [ "${F[TRAN]:-}" = ieee1394 ] || [ "${F[HOTPLUG]:-0}" = 1 ] || [ "${F[RM]:-0}" = 1 ]
-}
-
 # bm_remove_core MODE DEV: MODE "unmount" (one filesystem), "drive" (every
-# filesystem of the drive) or "remove" (drive, then power off when it is a
-# removable drive). Returns the exit codes documented at the top.
+# filesystem of the drive), "release" (drive, then lock its encrypted
+# volumes: nothing of it stays in use, before a Secure Erase) or "remove"
+# (release, then power off when it is a removable drive). Returns the exit
+# codes documented at the top.
 # RM_BUSY_DEV, RM_REASON, RM_POWERED and RM_REMOVABLE describe the outcome;
 # RM_GONE=1 when it stopped because the device disappeared (unplugged, or
 # replaced by another one under the same name).
@@ -658,7 +690,7 @@ bm_remove_core() {
          return 1
       fi
    done
-   [ "$mode" = remove ] || return 0
+   case "$mode" in remove | release) ;; *) return 0 ;; esac
 
    # Lock encrypted volumes that are open (their filesystems are unmounted
    # by now), as the Plasma device notifier does before a safe removal
@@ -676,7 +708,7 @@ bm_remove_core() {
    done
 
    # Internal disks are unmounted, never powered off
-   [ "$RM_REMOVABLE" = 1 ] || return 0
+   [ "$mode" = remove ] && [ "$RM_REMOVABLE" = 1 ] || return 0
 
    # Nothing may use the drive any more before it is powered off
    for d in "${targets[@]}"; do
@@ -827,6 +859,397 @@ bm_remove_tty() {
 }
 
 # ---------------------------------------------------------------------------
+# Drive health and Secure Erase
+
+bm_tran_label() {
+   case "$1" in
+      sata) REPLY="SATA" ;; ata) REPLY="ATA" ;; nvme) REPLY="NVMe" ;; usb) REPLY="USB" ;;
+      mmc) REPLY="SD/MMC" ;; "") REPLY=$"unknown" ;; *) REPLY="$1" ;;
+   esac
+}
+
+# The drive document (DT_TITLE) for F, the whole disk, after bm_drive_health
+bm_drive_doc() {
+   local k s
+   if [ "${#DH_FIND[@]}" -gt 0 ]; then DT_TITLE=$"The drive reports errors"; else DT_TITLE=$"No drive errors found"; fi
+   bm_doc_new
+   bm_doc_h "$DT_TITLE"
+   bm_display_name; bm_doc_kv $"Drive" "$REPLY"
+   bm_tran_label "${F[TRAN]:-}"; bm_doc_kv $"Connection" "$REPLY"
+   case "$DH_SMART" in
+      ok) s=$"no problem reported" ;;
+      failing) s=$"the drive predicts its own failure" ;;
+      *) s=$"not available" ;;
+   esac
+   if [ "$DH_SMART" = ok ] && [ "$DH_BAD" -gt 0 ]; then
+      printf -v s $"no failure predicted (%s damaged sectors were replaced by spare ones)" "$DH_BAD"
+   fi
+   bm_doc_kv $"SMART status" "$s"
+   if [ "${#DH_FIND[@]}" -eq 0 ]; then
+      if [ "$DH_KLOG" = 1 ]; then
+         bm_doc_p $"Since the computer was started, the system recorded no read, write or connection errors for this drive."
+      else
+         bm_doc_p $"The kernel log cannot be read by your user, so recent errors of this drive cannot be checked."
+      fi
+      return 0
+   fi
+   bm_doc_p $"Problems found:"
+   for k in "${DH_FIND[@]}"; do
+      case "$k" in
+         smart-failing) bm_doc_li $"The drive itself reports that it is failing (SMART)." ;;
+         timeouts) printf -v s $"Since the computer was started, it stopped answering and the connection had to be reset (%s kernel messages)." "${DH_COUNT[$k]}"; bm_doc_li "$s" ;;
+         io-errors) printf -v s $"Since the computer was started, reading or writing failed (%s kernel messages)." "${DH_COUNT[$k]}"; bm_doc_li "$s" ;;
+         slow-link) bm_doc_li $"Since the computer was started, the connection was slowed down after errors." ;;
+         usb-resets) printf -v s $"Since the computer was started, the USB connection was reset or lost %s times." "${DH_COUNT[$k]}"; bm_doc_li "$s" ;;
+      esac
+   done
+   bm_doc_p $"How to solve:"
+   bm_doc_li $"Copy your important files to another place as soon as possible."
+   [ "${F[TRAN]:-}" = sata ] && bm_doc_li $"Check the data and power cables of the drive, or try another SATA port."
+   [ "$DH_ATA" = 1 ] && bm_doc_li $"An SSD that fails like this may lock itself in a protection mode: it seems to accept writing, but keeps nothing. Installers then cannot create partitions, and erased partitions come back. The drive's own Secure Erase can bring it back to work, but it erases everything on it."
+   bm_doc_li $"If the errors come back, replace the drive."
+}
+
+# Technical report of the drive (F, after bm_drive_health)
+bm_drive_report() {
+   local k l counts=""
+   printf '%s\n' "drive:       ${F[DISK]} model='${F[VENDOR]:+${F[VENDOR]} }${F[MODEL]}' transport=${F[TRAN]:-?} port=${DH_PORT:--}"
+   printf '%s\n' "smart:       ${DH_SMART:-n/a} bad-sectors=$DH_BAD"
+   printf '%s\n' "ata:         ata=$DH_ATA security=${DH_SEC:-unsupported} frozen=$DH_FROZEN erase-minutes=$DH_ERASE_MIN"
+   if [ "$DH_KLOG" = 1 ]; then
+      for k in timeouts io-errors slow-link usb-resets; do counts+="${counts:+ }$k=${DH_COUNT[$k]:-0}"; done
+      printf '%s\n' "kernel log:  $counts"
+      for l in "${DH_LINES[@]:$((${#DH_LINES[@]} > 15 ? ${#DH_LINES[@]} - 15 : 0))}"; do printf '             %s\n' "$l"; done
+   else
+      printf '%s\n' "kernel log:  not readable"
+   fi
+}
+
+# bigmount --diagnose DISK: the health of the drive. Fails when it reported errors.
+bm_drive_show() {
+   local disk="$1"
+   bm_drive_health "$disk"
+   bm_drive_doc
+   bm_ui_show info "$DT_TITLE"
+   printf '\n%s\n' $"Technical details:"
+   bm_drive_report | sed 's/^/  /'
+   [ "${#DH_FIND[@]}" -eq 0 ] && return 0
+   bm_erase_check "$disk" && printf '\n'$"Secure Erase is available for this drive: bigmount --secure-erase %s"'\n' "$disk"
+   return 1
+}
+
+# Why a drive cannot be erased (ER_WHY of bm_erase_check), in REPLY
+bm_erase_refusal() {
+   case "$ER_WHY" in
+      not-disk) REPLY=$"Secure Erase works on a whole drive, not on a partition." ;;
+      system) REPLY=$"It holds the operating system that is running now. Start the computer from a live USB drive to erase it." ;;
+      removable) REPLY=$"Secure Erase is only offered for drives connected inside the computer, not through USB." ;;
+      not-ata) REPLY=$"Secure Erase is only available for SATA drives." ;;
+      unsupported) REPLY=$"This drive does not support Secure Erase." ;;
+      password) REPLY=$"A security password is set on this drive. Remove it first, in the firmware setup (BIOS) or with the tool of the manufacturer." ;;
+      *) REPLY=$"This drive cannot be erased." ;;
+   esac
+}
+
+# What will happen, before anything is done (F is the disk)
+bm_erase_intro_doc() {
+   local disk="$1" line parts=() s
+   bm_doc_new
+   bm_doc_h $"Erase the whole drive"
+   bm_display_name; bm_doc_kv $"Drive" "$REPLY"
+   bm_doc_p $"The drive will erase itself completely, with its own Secure Erase command. Every partition and every file on it will be lost for good. This cannot be undone."
+   while IFS= read -r line; do
+      bm_parse_pairs "$line"
+      [ "${KV[NAME]}" = "$disk" ] && continue
+      bm_human_size "${KV[SIZE]}"
+      parts+=("${KV[NAME]} — ${KV[LABEL]:+${KV[LABEL]} — }$REPLY${KV[FSTYPE]:+ — ${KV[FSTYPE]}}")
+   done < <(lsblk -P -b -p -n -o NAME,FSTYPE,LABEL,SIZE -- "$disk" 2>/dev/null)
+   if [ "${#parts[@]}" -gt 0 ]; then
+      bm_doc_p $"These partitions will be lost:"
+      for s in "${parts[@]}"; do bm_doc_li "$s"; done
+   fi
+   if [ "$DH_ERASE_MIN" -ge 508 ]; then
+      bm_doc_p $"The drive announces that erasing takes more than 8 hours."
+   elif [ "$DH_ERASE_MIN" -gt 0 ]; then
+      printf -v s $"The drive announces that erasing takes about %d minutes." "$DH_ERASE_MIN"; bm_doc_p "$s"
+   fi
+   bm_erase_table
+   if [ "$REPLY" = gpt ]; then s="GPT"; else s="MBR"; fi
+   printf -v s $"Afterwards an empty %s partition table is written and read back, to check that the drive keeps what is written again." "$s"
+   bm_doc_p "$s"
+   bm_doc_p $"Use it to bring back an SSD that no longer keeps what is written, or before giving a drive away. It is not a repair: if the drive fails again, replace it."
+   [ "$DH_FROZEN" = 1 ] && bm_doc_p $"The computer may have to sleep for a moment first."
+   bm_doc_p $"The administrator password will be requested."
+}
+
+# The drive is frozen: what sleeping does (E_TITLE)
+bm_erase_frozen_doc() {
+   E_TITLE=$"The drive is locked against erasing"
+   bm_doc_new
+   bm_doc_h "$E_TITLE"
+   bm_doc_p $"When the computer starts, its firmware locks the security commands of the drives (they are frozen). Sleeping once usually unlocks them."
+   if [ "$EUID" -eq 0 ] && command -v rtcwake >/dev/null; then
+      bm_doc_p $"The computer will sleep and wake up by itself after about 20 seconds."
+   else
+      bm_doc_p $"The computer will go to sleep. Wake it up with the power button, and unlock the session if asked: the erase continues afterwards."
+   fi
+}
+
+# Outcome of a Secure Erase (exit code RC, TABLE written) as a document:
+# E_TITLE, E_KIND (info|warning|error)
+bm_erase_result_doc() {
+   local rc="$1" table="$2" s
+   E_KIND=error E_TITLE=$"Unable to erase the drive"
+   bm_doc_new
+   case "$rc" in
+      0)
+         E_KIND=info E_TITLE=$"Drive erased"
+         bm_doc_h "$E_TITLE"
+         if [ "$table" = gpt ]; then s="GPT"; else s="MBR"; fi
+         printf -v s $"The drive was erased and keeps what is written again. It now has an empty %s partition table: you can install a system or create partitions on it." "$s"
+         bm_doc_p "$s"
+         bm_doc_p $"It failed once: keep a copy of what you store on it, and replace it if the errors come back."
+         ;;
+      11)
+         E_KIND=warning E_TITLE=$"The drive is still locked"
+         bm_doc_h "$E_TITLE"
+         bm_doc_p $"The drive is still locked against erasing. Nothing was erased."
+         bm_doc_li $"Some computers lock the drives again when they wake up. Try once more, or erase the drive in another computer."
+         bm_doc_li $"If the computer supports hot-plugging SATA drives, disconnecting and connecting the drive while the computer is on also unlocks it."
+         ;;
+      12)
+         case "$ER_STAGE" in
+            unverified)
+               E_KIND=warning E_TITLE=$"Drive erased, not verified"
+               bm_doc_h "$E_TITLE"
+               printf -v s $"The drive was erased, but writing a new partition table failed (%s), so it could not be checked." "$ER_REASON"
+               bm_doc_p "$s"
+               bm_doc_p $"Create a partition table with KDE Partition Manager, and check that it is still there after a restart."
+               ;;
+            erase-ignored)
+               E_TITLE=$"The drive is failing"
+               bm_doc_h "$E_TITLE"
+               bm_doc_p $"The drive accepted the erase command, but its old contents are still there: it no longer does what it is told. Replace it."
+               ;;
+            *)
+               E_TITLE=$"The drive is failing"
+               bm_doc_h "$E_TITLE"
+               bm_doc_p $"The drive was erased, but it still does not keep what is written. Replace it."
+               ;;
+         esac
+         ;;
+      3) bm_doc_h "$E_TITLE"; bm_doc_p $"The drive is still in use. Nothing was erased."; [ -n "$ER_REASON" ] && bm_doc_p "$ER_REASON" ;;
+      4) bm_doc_h "$E_TITLE"; bm_doc_p $"It holds the operating system that is running now. Nothing was erased." ;;
+      5) bm_doc_h "$E_TITLE"; bm_doc_p $"Permission was not granted. Nothing was erased." ;;
+      *)
+         bm_doc_h "$E_TITLE"
+         if [ -n "$ER_REASON" ]; then bm_doc_p "$ER_REASON"; else bm_doc_p $"The drive could not be erased."; fi
+         ;;
+   esac
+}
+
+# bigmount --secure-erase DISK
+bm_cmd_secure_erase() {
+   local target="" a disk rc
+   for a in "$@"; do
+      case "$a" in
+         -*) printf $"bigmount: unknown option '%s' (see bigmount --help)"'\n' "$a" >&2; return 2 ;;
+         *) target="$a" ;;
+      esac
+   done
+   bm_resolve "$target" || { bm_resolve_fail "$target"; return 1; }
+   bm_facts "$R_DEV" || { R_ERR=unavailable; bm_resolve_fail "$R_DEV"; return 1; }
+   disk="${F[DISK]}"
+   if [ "$R_DEV" != "$disk" ] || [ -n "$R_PATH" ]; then
+      printf $"bigmount: Secure Erase works on a whole drive: name the drive itself (%s)"'\n' "$disk" >&2
+      return 2
+   fi
+   bm_drive_health "$disk"
+   if ! bm_erase_check "$disk"; then
+      bm_erase_refusal; printf 'bigmount: %s\n' "$REPLY" >&2
+      [ "$ER_WHY" = system ] && return 4
+      return 1
+   fi
+   if [ ! -t 0 ]; then
+      printf '%s\n' $"bigmount: --secure-erase asks for confirmation and needs a terminal" >&2
+      return 2
+   fi
+   if ! bm_drive_lock "$disk"; then
+      printf '%s\n' $"Another operation on this drive is in progress. Nothing was done." >&2
+      return 10
+   fi
+   bm_secure_erase_tty "$disk"; rc=$?
+   bm_drive_unlock
+   return "$rc"
+}
+
+# The terminal dialogue of bm_cmd_secure_erase, with the drive locked
+bm_secure_erase_tty() {
+   local disk="$1" seq rc a table
+   bm_erase_intro_doc "$disk"
+   bm_ui_show info ""
+   printf '\n'
+   printf -v a $"To confirm, type the name of the drive (%s):" "${disk##*/}"
+   if ! bm_ui_input "" "$a" || [ "$REPLY" != "${disk##*/}" ]; then
+      printf '%s\n' $"Nothing was erased." >&2
+      return 5
+   fi
+   bm_diskseq "$disk"; seq="$REPLY"
+   RM_ALLOW_SERVICES=0
+   while :; do
+      bm_remove_core release "$disk"; rc=$?
+      case "$rc" in
+         0) break ;;
+         3) bm_busy_doc "$RM_BUSY_DEV"; bm_ui_show warning ""; printf '%s\n' $"Nothing was erased." >&2; return 3 ;;
+         9)
+            printf '%s\n' $"These services use the drive and will be stopped:" >&2
+            for a in "${!RM_DEP_UNITS[@]}"; do printf '  %s (%s)\n' "${RM_DEP_NAMES[a]}" "${RM_DEP_UNITS[a]}" >&2; done
+            bm_doc_new
+            bm_ui_confirm "" "" $"Stop them and continue" $"Cancel" || return 9
+            RM_ALLOW_SERVICES=1
+            ;;
+         *)
+            ER_REASON="$RM_REASON"; [ "$rc" -eq 6 ] && rc=3
+            bm_erase_result_doc "$rc" ""; bm_ui_show "$E_KIND" "" >&2
+            return "$rc"
+            ;;
+      esac
+   done
+   bm_udev_props "$disk"
+   if [ "${UP[ID_ATA_FEATURE_SET_SECURITY_FROZEN]:-0}" = 1 ]; then
+      bm_erase_frozen_doc
+      bm_ui_confirm "" "" $"Sleep now" $"Cancel" || return 11
+      if ! bm_erase_unfreeze "$disk"; then
+         bm_erase_result_doc 11 ""; bm_ui_show warning ""
+         return 11
+      fi
+   fi
+   bm_erase_table; table="$REPLY"
+   printf $"Erasing %s. Do not turn off the computer or disconnect the drive."'\n' "$disk"
+   bm_erase_run "$disk" "$seq" "$table"; rc=$?
+   bm_erase_result_doc "$rc" "$table"
+   bm_ui_show "$E_KIND" ""
+   # Over SSH there is no polkit agent to ask for the password
+   if [ "$rc" -eq 5 ] && [ "$EUID" -ne 0 ]; then
+      printf '%s\n' $"Without a graphical session, run it as administrator: sudo bigmount --secure-erase DISK" >&2
+   fi
+   return "$rc"
+}
+
+# bigmount --gui-drive [DISK]: choose a drive when none is given
+bm_pick_drive() {
+   local line items=() size
+   while IFS= read -r line; do
+      bm_parse_pairs "$line"
+      [ "${KV[TYPE]}" = disk ] || continue
+      case "${KV[NAME]##*/}" in zram* | ram*) continue ;; esac
+      bm_human_size "${KV[SIZE]}"; size="$REPLY"
+      bm_tran_label "${KV[TRAN]}"
+      items+=("${KV[NAME]}" "${KV[NAME]##*/} — ${KV[MODEL]:-?} — $size — $REPLY")
+   done < <(lsblk -P -b -p -d -o NAME,TYPE,MODEL,SIZE,TRAN 2>/dev/null)
+   if [ "${#items[@]}" -eq 0 ]; then
+      bm_notify info big-mount $"Check a drive" $"No drive was found."
+      return 1
+   fi
+   bm_ui_menu $"Check a drive" $"Choose a drive:" "${items[@]}"
+   [ -n "$REPLY" ]
+}
+
+bm_gui_drive() {
+   local target="${1:-}" disk tmp icon
+   if [ -z "$target" ]; then
+      bm_pick_drive || return 0
+      target="$REPLY"
+   fi
+   bm_gui_target "$target" $"Check a drive" $"This folder is not on a local storage device." || return 1
+   disk="${F[DISK]}"
+   while :; do
+      if ! bm_facts "$disk"; then
+         bm_gui_target "$disk" $"Check a drive" "" || return 1
+      fi
+      bm_drive_health "$disk"
+      bm_drive_doc
+      icon=drive-harddisk
+      [ "${#DH_FIND[@]}" -gt 0 ] && icon=dialog-warning
+      if bm_erase_check "$disk"; then
+         bm_ui_choice "$DT_TITLE" "$icon" $"Technical details" $"Erase the whole drive…" $"Close"
+      elif bm_ui_confirm "$DT_TITLE" "$icon" $"Technical details" $"Close"; then
+         REPLY=1
+      else
+         REPLY=3
+      fi
+      case "$REPLY" in
+         1)
+            tmp="$(mktemp)" || return 1
+            bm_drive_report > "$tmp"
+            bm_ui_text $"Technical details" "$tmp"; rm -f -- "$tmp"
+            ;;
+         2) bm_gui_secure_erase "$disk"; return ;;
+         *) return 0 ;;
+      esac
+   done
+}
+
+# Graphical Secure Erase of DISK (F holds its facts, after bm_erase_check)
+bm_gui_secure_erase() {
+   local disk="$1" seq rc text table="" u
+   bm_erase_intro_doc "$disk"
+   bm_ui_confirm_risky $"Erase the whole drive" dialog-warning $"Continue…" $"Cancel" || return 5
+   printf -v text $"To confirm, type the name of the drive (%s):" "${disk##*/}"
+   bm_ui_input $"Erase the whole drive" "$text" || return 5
+   if [ "$REPLY" != "${disk##*/}" ]; then
+      bm_notify info dialog-information $"Erase the whole drive" $"The name did not match. Nothing was erased." &
+      return 5
+   fi
+   if ! bm_drive_lock "$disk"; then
+      bm_notify info dialog-information $"Erase the whole drive" $"Another operation on this drive is in progress. Nothing was done." &
+      return 10
+   fi
+   bm_diskseq "$disk"; seq="$REPLY"
+   RM_ALLOW_SERVICES=0 ER_REASON=""
+   while :; do
+      bm_remove_core release "$disk"; rc=$?
+      case "$rc" in
+         0) break ;;
+         3) bm_gui_busy_dialog "$RM_BUSY_DEV" || break ;;
+         9)
+            bm_doc_new
+            bm_doc_h $"Services use this device"
+            bm_doc_p $"Erasing it will stop these services:"
+            for u in "${!RM_DEP_UNITS[@]}"; do bm_doc_li "${RM_DEP_NAMES[u]} (${RM_DEP_UNITS[u]})"; done
+            bm_ui_confirm_risky $"Services use this device" dialog-warning $"Stop them and continue" $"Cancel" || break
+            RM_ALLOW_SERVICES=1
+            ;;
+         *) ER_REASON="$RM_REASON"; [ "$rc" -eq 6 ] && rc=3; break ;;
+      esac
+   done
+   if [ "$rc" -eq 0 ]; then
+      bm_udev_props "$disk"
+      if [ "${UP[ID_ATA_FEATURE_SET_SECURITY_FROZEN]:-0}" = 1 ]; then
+         bm_erase_frozen_doc
+         if ! bm_ui_confirm_risky "$E_TITLE" system-suspend $"Sleep now" $"Cancel"; then
+            bm_drive_unlock
+            return 11
+         fi
+         bm_erase_unfreeze "$disk" || rc=11
+      fi
+   fi
+   if [ "$rc" -eq 0 ]; then
+      bm_erase_table; table="$REPLY"
+      bm_short_name
+      bm_notify info drive-harddisk $"Erasing the drive" \
+         "$REPLY"$'\n'$"Do not turn off the computer or disconnect the drive." >/dev/null &
+      bm_erase_run "$disk" "$seq" "$table"; rc=$?
+   fi
+   bm_drive_unlock
+   # Cancelled by the user (busy, services): nothing to report
+   case "$rc" in 3 | 9) [ -z "$ER_REASON" ] && return "$rc" ;; esac
+   bm_erase_result_doc "$rc" "$table"
+   bm_ui_show "$E_KIND" "$E_TITLE"
+   return "$rc"
+}
+
+# ---------------------------------------------------------------------------
 # Graphical diagnosis (bigmount --gui)
 
 bm_pick_device() {
@@ -910,11 +1333,15 @@ bm_gui_diagnose() {
          bm_gui_target "$dev" $"Storage diagnostics" "" || return 1
       fi
       bm_diagnose_write "$dev" "$path"
+      bm_diag_drive
       bm_diag_doc "$dev"
       bm_device_icon; icon="$REPLY"
-      [ "$D_CAUSE" = ok ] || icon=dialog-warning
+      [ "$D_CAUSE" = ok ] && [ "${#DH_FIND[@]}" -eq 0 ] || icon=dialog-warning
       if [ -n "$D_FIX" ]; then
          bm_ui_choice "$C_TITLE" "$icon" "$C_FIX_LABEL" $"Technical details" $"Close"
+      elif [ "${#DH_FIND[@]}" -gt 0 ]; then
+         bm_ui_choice "$C_TITLE" "$icon" $"Check the drive…" $"Technical details" $"Close"
+         [ "$REPLY" = 1 ] && REPLY=5
       elif bm_is_removable_drive && [ -n "$D_MP" ]; then
          bm_ui_choice "$C_TITLE" "$icon" $"Technical details" $"Safely remove…" $"Close"
          case "$REPLY" in 1) REPLY=2 ;; 2) REPLY=4 ;; esac
@@ -930,6 +1357,7 @@ bm_gui_diagnose() {
             bm_ui_text $"Technical details" "$tmp"; rm -f -- "$tmp"
             ;;
          4) bm_gui_remove "$dev"; return ;;
+         5) bm_gui_drive "${F[DISK]}"; return ;;
          *) return 0 ;;
       esac
    done
