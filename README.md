@@ -72,6 +72,35 @@ The one operation that erases data, the Secure Erase of a whole drive
 ([5.4](#54-drive-errors-and-secure-erase)), runs only when you ask for it,
 confirm it, type the name of the drive and give the administrator password.
 
+### New in 2.5.0: a Home that shows everything, health in one word
+
+- **Home** is a list by default, or a grid, and remembers which. Drives are grouped:
+  **On this computer**, **External devices**, **Disk images**. A search finds a drive
+  by name, model, volume label, folder or health, with or without accents.
+- Every drive says how it is doing in **one word**: **Critical**, **Poor**, **Good**
+  or **Healthy** (or *Not assessed*). See [6a.2](#6a2-rescue-files-step-by-step-in-the-window)
+  for what each one needs. **Healthy** is only said when the drive's own report
+  (SMART) was read and nothing is wrong, so a USB drive is at most **Good** until you
+  read its SMART. Internal SATA and NVMe drives are read without a password, through
+  UDisks2: hours powered on, temperature, NVMe life used.
+- Each drive has its actions at hand: open its files, recover them, **safely remove**,
+  and in its menu **unmount**, **force unmount** and **erase data permanently**.
+  *Force* never forces the filesystem: it shows which programs keep the drive busy
+  and, if you agree, asks them to close as when you close their windows (never a
+  program that is writing, never the system), then unmounts. Erasing warns first,
+  then the drive is checked and you confirm twice more.
+- **Copies and searches** in the side shows how many there are, and below it every
+  running one with its bar and its percentage (only when the total is measured). A
+  click opens its page.
+- When a drive with problems is **mounted** (at boot, or when you plug it in), a
+  window says what was found, with **Open Big-Mount** or **Close**. Once per boot and
+  drive.
+
+<p align="center">
+  <img src="docs/images/app-overview-grid-dark.png" width="420" alt="Home as a grid, in the dark style: each drive with its health in one word, usage and actions">
+  <img src="docs/images/app-job-running.png" width="420" alt="A copy in progress, and the same progress in the side under Copies and searches">
+</p>
+
 ### New in 2.4.0: one application
 
 The drive manager window (PySide6) and the dialogs of the drive check
@@ -81,7 +110,7 @@ application in GTK 4 and libadwaita:
 - `bigmount --gui-drive` and `bigmount --gui-drive-check` open the **same window**; the
   second one opens on the health of the drive. A second call goes to the window that is
   already open.
-- **Home** shows every drive as a card: kind, size, health in words and an icon, room,
+- **Home** shows every drive: kind, size, health in words and an icon, room,
   volumes, and **Rescue my files** when a drive is at risk.
 - **Recover files** is an assistant in five steps (from where, what, how, where,
   confirm), with four ways: copy directly, quick analysis, deep analysis (PhotoRec,
@@ -118,7 +147,7 @@ sudo pacman -U ./big-mount-*-any.pkg.tar.zst
 ```
 
 Check the version of the release: the single application of the drive manager (GTK 4
-and libadwaita) needs 2.4.0 or later. Until there is a release of it,
+and libadwaita) needs 2.4.0 or later, and its new Home 2.5.0. Until there is a release of it,
 [build the package](#23-build-the-package-yourself).
 
 ### 2.2 From the BigLinux repository
@@ -797,17 +826,27 @@ down to a phone-sized window.
   <img src="docs/images/app-overview-dark.png" width="620" alt="Home in the dark style: every drive, its health in words and an icon, and what can be done">
 </p>
 
-**1. Look at the drive.** The side lists every drive, and the page beside it what is
-known about its health, in words and an icon, never in colour alone. Reading this
-touches nothing on the disk: it comes from the kernel log, udev and UDisks2. The page
-says where the verdict comes from, and *not examined* is never shown as *no alerts*.
+**1. Look at the drive.** Home lists every drive, as a list or a grid, grouped by
+where it is, with a search. Each one says how it is doing in one word and an icon,
+never in colour alone. Reading this touches nothing on the disk: it comes from the
+kernel log, udev and UDisks2. The page says where the verdict comes from, and *not
+examined* is never shown as *no alerts*.
 
-| Level | Meaning |
+<p align="center">
+  <img src="docs/images/app-overview-grid.png" width="620" alt="Home as a grid: each drive with its health in one word, usage, volumes and actions">
+</p>
+
+| Health | When |
 | --- | --- |
-| **Critical** | the drive reports failure, unreadable sectors, or 3 or more read errors |
-| **Attention** | timeouts, 3 or more USB resets, replaced sectors on a hard disk, one read error, CRC errors |
-| **No alerts** | nothing was found, and it says where it looked: SMART and log, log only, SMART only. It never says "healthy" |
-| **Unknown** | neither the log nor SMART could be read |
+| **Critical** | the drive reports failure (SMART), unreadable sectors, an NVMe critical warning or media errors, or 3 or more read errors since boot |
+| **Poor** | timeouts, 3 or more USB resets, replaced sectors on a hard disk, one read error, CRC errors, SMART values below their limit now, or an SSD that used 90 % or more of its rated life |
+| **Good** | no alert, but: SMART was not read (the system log alone), an SSD past half of its rated life, SMART values that were below their limit in the past, a hard disk powered on for 35,000 hours or more (about four years), an SSD for 50,000, or a drive that is hot now (55 °C for a hard disk, 70 °C or its own limit for an SSD) |
+| **Healthy** | the drive's own report (SMART) was read with the system log, and none of the above |
+| **Not assessed** | neither the log nor SMART could be read |
+
+Why a drive without alerts is not **Healthy** is listed on its health page. Age alone
+never makes a drive *Poor*: the rest of its report does. There is no date of
+manufacture to read, so its use is measured in hours powered on.
 
 **Read SMART…** asks for the password, starts no test, and adds the counters of the
 drive with the time they were read. The raw counters decide, not the verdict: that
@@ -1027,7 +1066,10 @@ bigmount --drive resume ID --retry-deferred    # also what was set aside: more s
 | `diagnose TARGET` | explains the state of the drive, reading nothing from it |
 | `diagnose TARGET --smart` | also reads SMART (asks for the password) |
 | `mount DEV` | mounts a volume without changing it; `--read-only` is the default |
-| `unmount TARGET` | unmounts with every check of safe removal |
+| `unmount TARGET` | unmounts with every check of safe removal; a whole drive: all of its volumes |
+| `safe-remove TARGET` | unmounts everything on the drive and powers it off |
+| `busy TARGET` | which programs keep it busy, and which of them may be closed (and why not) |
+| `close-apps TARGET` | asks your programs that keep it busy to close, as closing their windows: never the system, never one that is writing |
 | `protect DEV`, `unprotect DEV` | blocks or allows writing on the device itself (asks for the password) |
 | `unlock DEV` | unlocks an encrypted volume |
 | `destinations --source FOLDER [--need BYTES]` | where the files can go, best first |
@@ -1042,7 +1084,9 @@ bigmount --drive resume ID --retry-deferred    # also what was set aside: more s
 | `carve --source DEV\|IMAGE --destination FOLDER` | searches for files by content with PhotoRec |
 
 Every command is `bigmount --drive COMMAND`. `TARGET` is a device or a folder inside
-a mounted device. `--json` gives output for programs, `--dry-run` says what would be
+a mounted device. `unmount` and `safe-remove` stop at services that use the device
+(exit 9) unless `--allow-services` is given, and at programs that keep it busy (exit 3):
+nothing is ever forced or lazily unmounted. `--json` gives output for programs, `--dry-run` says what would be
 done, and `bigmount --drive --help` lists all of this in your language.
 
 Options of `mount`:
@@ -1215,6 +1259,10 @@ The **notifier** is started by autostart
 - warns at most **once per device and cause per boot**
   (`~/.local/state/big-mount/notified`);
 - ignores CDs, DVDs and images, which are read-only by nature;
+- when a mounted volume belongs to a drive that reported problems (the same diagnosis
+  as the window: kernel log, udev, UDisks2; it reads nothing from the disk), opens a
+  window with what was found, **Open Big-Mount** and **Close**, once per boot and
+  drive (not per volume);
 - runs as one instance per session (`$XDG_RUNTIME_DIR/big-mount-notifier.lock`).
 
 To disable it: **System Settings → Autostart**, or

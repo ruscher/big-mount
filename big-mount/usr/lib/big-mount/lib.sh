@@ -1093,11 +1093,20 @@ bm_udisks_drive() {
 #   DH_SEC        ATA security: "" not supported | off | enabled (password set)
 #   DH_FROZEN     1 when its security commands are locked until a sleep
 #   DH_ERASE_MIN  minutes the drive announces for an erase (0: unknown)
+# What UDisks2 keeps of SMART without a password (internal ATA and NVMe drives;
+# nothing through USB). "" when not known:
+#   DH_HOURS      hours powered on       DH_TEMP     temperature now, °C
+#   DH_ATTR_FAIL  ATA attributes below their threshold now
+#   DH_ATTR_PAST  ATA attributes that were below it in the past
+#   DH_NVME_WARN  NVMe critical warnings, as words ("" none)
+#   DH_NVME_USED  NVMe life used, %      DH_NVME_MEDIA  NVMe media errors
+#   DH_NVME_HOT   NVMe warning temperature, °C
 declare -gA DH_COUNT
 bm_drive_health() {
-   local disk="$1" kn="${1##*/}" l k n io_re off_re usb_re="" smart=()
+   local disk="$1" kn="${1##*/}" l k n io_re off_re usb_re="" smart=() obj
    DH_DISK="$disk" DH_FIND=() DH_COUNT=() DH_LINES=() DH_KLOG=0 DH_SMART="" DH_BAD=0
    DH_ATA=0 DH_SEC="" DH_FROZEN=0 DH_ERASE_MIN=0
+   DH_HOURS="" DH_TEMP="" DH_ATTR_FAIL="" DH_ATTR_PAST="" DH_NVME_WARN="" DH_NVME_USED="" DH_NVME_MEDIA="" DH_NVME_HOT=""
    bm_drive_port "$disk"; DH_PORT="$REPLY"
    # "I/O error, dev sda, sector 73448" and "Buffer I/O error on dev sda1"
    io_re="I/O error(,| on) dev ${kn}(p?[0-9]+)?(,|$)|$BM_RE_MEDIUM"
@@ -1133,13 +1142,25 @@ bm_drive_health() {
    fi
    if [ "$DH_ATA" = 1 ] && bm_udisks_drive "$disk"; then
       mapfile -t smart < <(busctl --system get-property org.freedesktop.UDisks2 "$REPLY" org.freedesktop.UDisks2.Drive.Ata \
-         SmartSupported SmartEnabled SmartFailing SmartNumBadSectors 2>/dev/null)
+         SmartSupported SmartEnabled SmartFailing SmartNumBadSectors SmartPowerOnSeconds SmartTemperature \
+         SmartNumAttributesFailing SmartNumAttributesFailedInThePast 2>/dev/null)
       if [ "${smart[0]:-}" = "b true" ] && [ "${smart[1]:-}" = "b true" ]; then
          DH_SMART=ok
          [ "${smart[2]:-}" = "b true" ] && DH_SMART=failing
          n="${smart[3]:-}"; n="${n#x }"
          [[ $n =~ ^[0-9]+$ ]] && DH_BAD="$n"
+         n="${smart[4]:-}"; n="${n#t }"
+         [[ $n =~ ^[0-9]+$ ]] && [ "$n" -gt 0 ] && DH_HOURS=$((n / 3600))
+         # Kelvin, as a double; 0 when the drive does not say
+         n="${smart[5]:-}"; n="${n#d }"; n="${n%%.*}"
+         [[ $n =~ ^[0-9]+$ ]] && [ "$n" -gt 200 ] && DH_TEMP=$((n - 273))
+         n="${smart[6]:-}"; n="${n#i }"
+         [[ $n =~ ^[0-9]+$ ]] && DH_ATTR_FAIL="$n"
+         n="${smart[7]:-}"; n="${n#i }"
+         [[ $n =~ ^[0-9]+$ ]] && DH_ATTR_PAST="$n"
       fi
+   elif [[ $kn == nvme* ]] && bm_udisks_drive "$disk"; then
+      bm_drive_health_nvme "$REPLY"
    fi
 
    [ "$DH_SMART" = failing ] && DH_FIND+=(smart-failing)
@@ -1147,6 +1168,34 @@ bm_drive_health() {
       [ -n "${DH_COUNT[$k]:-}" ] && DH_FIND+=("$k")
    done
    [ "${DH_COUNT[usb-resets]:-0}" -ge "$BM_USB_RESETS_ALERT" ] && DH_FIND+=(usb-resets)
+   return 0
+}
+
+# bm_drive_health_nvme OBJECT: the health log of an NVMe drive, as UDisks2
+# keeps it (read without a password; UDisks2 refreshes it by itself)
+bm_drive_health_nvme() {
+   local obj="$1" props=() line n w
+   local nv=org.freedesktop.UDisks2.NVMe.Controller
+   mapfile -t props < <(busctl --system get-property org.freedesktop.UDisks2 "$obj" "$nv" \
+      SmartUpdated SmartCriticalWarning SmartPowerOnHours SmartTemperature 2>/dev/null)
+   # Never updated: UDisks2 has nothing to say yet
+   n="${props[0]:-}"; n="${n#t }"
+   [[ $n =~ ^[0-9]+$ ]] && [ "$n" -gt 0 ] || return 0
+   DH_SMART=ok
+   # as 2 "spare" "temperature"
+   line="${props[1]:-}"
+   if [[ $line =~ ^as\ [1-9] ]]; then
+      for w in ${line#as * }; do DH_NVME_WARN+="${DH_NVME_WARN:+,}${w//\"/}"; done
+   fi
+   n="${props[2]:-}"; n="${n#t }"
+   [[ $n =~ ^[0-9]+$ ]] && DH_HOURS="$n"
+   n="${props[3]:-}"; n="${n#q }"
+   [[ $n =~ ^[0-9]+$ ]] && [ "$n" -gt 200 ] && DH_TEMP=$((n - 273))
+   # a{sv} 15 "avail_spare" y 100 "percent_used" y 5 ... "media_errors" t 0 "wctemp" q 356
+   line="$(busctl --system call org.freedesktop.UDisks2 "$obj" "$nv" SmartGetAttributes 'a{sv}' 0 2>/dev/null)"
+   [[ $line =~ \"percent_used\"\ y\ ([0-9]+) ]] && DH_NVME_USED="${BASH_REMATCH[1]}"
+   [[ $line =~ \"media_errors\"\ t\ ([0-9]+) ]] && DH_NVME_MEDIA="${BASH_REMATCH[1]}"
+   [[ $line =~ \"wctemp\"\ q\ ([0-9]+) ]] && [ "${BASH_REMATCH[1]}" -gt 273 ] && DH_NVME_HOT=$((BASH_REMATCH[1] - 273))
    return 0
 }
 

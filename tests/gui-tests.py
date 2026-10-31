@@ -78,6 +78,7 @@ def reset():
     for path in FIX.iterdir():
         path.unlink()
     forget_calls()
+    (WORK / "config/big-mount/gui.ini").unlink(missing_ok=True)
     fix("list", {"partial": False, "devices": [system_disk(), seagate(), backup(DEST)]})
     fix("jobs", {"jobs": []})
     fix("methods", METHODS)
@@ -268,10 +269,12 @@ class Home(Base):
         for name in ("ST1000DM003-1CH162", "SanDisk Portable SSD", "ADATA LEGEND 800"):
             self.see(name)
 
-    def test_never_says_healthy(self):
+    def test_never_calls_a_drive_healthy_by_itself(self):
+        # Without the grade of the engine, "no alerts" is at most "Good"
         all_text = "\n".join(texts(self.win)).lower()
         self.assertNotIn("healthy", all_text)
         self.assertNotIn("saudável", all_text)
+        self.see("Good")
 
     def test_critical_drive_comes_with_the_rescue_action(self):
         self.see("reported serious problems")
@@ -313,6 +316,199 @@ class Home(Base):
         self.win.refresh()
         for name in ("Hard disk", "SATA SSD", "NVMe", "Card", "image.img", "Cifrado"):
             self.see(name)
+
+
+class HomeViews(Base):
+    def rows(self):
+        from gui.pages.overview import DriveCard, DriveRow
+        return [x for x in widgets(self.win.overview) if isinstance(x, (DriveRow, DriveCard)) and x.get_mapped()]
+
+    def test_a_list_by_default_and_the_grid_is_remembered(self):
+        from gui.pages.overview import DriveCard, DriveRow, load_view
+        self.assertEqual(self.win.overview.view, "list")
+        self.assertTrue(pump(lambda: len(self.rows()) == 3, 3))
+        self.assertTrue(all(isinstance(r, DriveRow) for r in self.rows()))
+        self.win.overview.view_buttons["grid"].set_active(True)
+        self.assertTrue(pump(lambda: self.rows() and all(isinstance(r, DriveCard) for r in self.rows()), 3))
+        self.assertEqual(load_view(), "grid")
+        self.win.overview.set_view("list")
+        self.assertEqual(load_view(), "list")
+
+    def test_grouped_by_where_the_drive_is(self):
+        self.see("On this computer · 1")
+        self.see("External devices · 2")
+
+    def test_search_by_name_label_or_health_without_accents(self):
+        ov = self.win.overview
+        ov.search.set_text("arquivos")
+        self.assertTrue(pump(lambda: [r.dev.name for r in self.rows()] == ["ST1000DM003-1CH162"], 3))
+        ov.search.set_text("critical")
+        self.assertTrue(pump(lambda: [r.dev.name for r in self.rows()] == ["ST1000DM003-1CH162"], 3))
+        ov.search.set_text("nothing-like-this")
+        self.see("No drive matches")
+        ov.search.set_text("")
+        self.assertTrue(pump(lambda: len(self.rows()) == 3, 3))
+
+    def test_search_folds_accents(self):
+        from gui.models import fold
+        self.assertEqual(fold("Crítico SAÚDE"), fold("critico saude"))
+
+    def test_the_grade_of_the_engine_is_shown_with_why(self):
+        sys_disk = system_disk()
+        sys_disk["health"].update(grade="healthy", grade_label="Healthy")
+        usb = backup(DEST)
+        usb["health"].update(grade="good", grade_label="Good", notes=[{"key": "smart-unread", "text": "Only the system log was consulted."}])
+        fix("list", {"partial": False, "devices": [sys_disk, seagate(), usb]})
+        self.win.refresh()
+        self.see("Healthy")
+        pill = next(x for x in widgets(self.win.overview) if "grade-good" in x.get_css_classes() and x.get_mapped())
+        self.assertIn("Only the system log was consulted.", pill.get_tooltip_text())
+        self.win.show_device("serial:SD1", "health")
+        self.see("Why it is not called healthy")
+        self.see("Only the system log was consulted.")
+
+    def test_each_drive_has_its_actions_and_the_system_none_that_unmounts(self):
+        def actions_of(name):
+            row = next(r for r in self.rows() if r.dev.name == name)
+            return set(row.drive_actions.list_actions())
+        self.assertTrue(pump(lambda: len(self.rows()) == 3, 3))
+        usb = actions_of("SanDisk Portable SSD")
+        self.assertTrue({"unmount", "force", "remove", "erase", "health", "rescue"} <= usb, usb)
+        system = actions_of("ADATA LEGEND 800")
+        self.assertFalse({"unmount", "force", "remove", "erase"} & system, system)
+        self.assertIn("health", system)
+
+    def test_safe_removal_is_one_click_on_an_external_drive(self):
+        self.assertTrue(pump(lambda: len(self.rows()) == 3, 3))
+        row = next(r for r in self.rows() if r.dev.name == "SanDisk Portable SSD")
+        fix("safe-remove", {"ok": True, "removable": True, "powered_off": True})
+        forget_calls()
+        button = next(b for b in widgets(row) if isinstance(b, Gtk.Button) and b.get_tooltip_text() == "Safely remove")
+        button.emit("clicked")
+        self.assertTrue(pump(lambda: any(c.startswith("--drive safe-remove /dev/sda") for c in calls()), 3))
+
+
+class DriveActions(Base):
+    BUSY = {"device": "/dev/sda1", "mountpoint": "/run/media/x/Backup", "summary": "Dolphin is showing files of this device.", "advice": "Close it.",
+            "programs": [{"app": "Dolphin", "comm": "dolphin", "activity": "Current folder is on the device", "why": "", "pid": 4242, "closable": True},
+                         {"app": "Terminal", "comm": "bash", "activity": "Current folder is on the device", "why": "a terminal: type 'cd' in it", "pid": 77, "closable": False}],
+            "others": [], "count": 2}
+
+    def setUp(self):
+        super().setUp()
+        from gui import actions
+        self.actions = actions
+
+    def test_busy_offers_to_close_the_programs_and_never_forces(self):
+        fix("unmount", {"ok": False, "busy_device": "/dev/sda1", "busy_summary": "Dolphin is showing files.", "reason": ""}, rc=3)
+        fix("busy", self.BUSY)
+        forget_calls()
+        self.actions.unmount(self.win, "/dev/sda1")
+        dialog = self.dialog()
+        self.assertTrue(pump(lambda: self.win.get_visible_dialog() and "Dolphin" in self.win.get_visible_dialog().get_body(), 3))
+        dialog = self.win.get_visible_dialog()
+        self.assertEqual(dialog.get_default_response(), "cancel")
+        self.assertEqual(dialog.get_close_response(), "cancel")
+        self.assertIn("Will not be closed", dialog.get_body())
+        self.assertTrue(dialog.has_response("close"))
+        fix("close-apps", {"device": "/dev/sda1", "asked": ["Dolphin"], "kept": [], "still_running": 0, "ok": True})
+        fix("unmount", {"ok": True}, rc=0)
+        forget_calls()
+        dialog.emit("response", "close")
+        self.assertTrue(pump(lambda: "--drive close-apps /dev/sda1 --json" in calls() and calls()[-1].startswith("--drive unmount /dev/sda1"), 4), calls())
+        self.assertFalse(any("-f" in c.split() or "--force" in c or "-l" in c.split() for c in calls()))
+
+    def test_nothing_closable_offers_no_closing(self):
+        busy = dict(self.BUSY, programs=[self.BUSY["programs"][1]])
+        fix("unmount", {"ok": False, "busy_device": "/dev/sda1", "reason": ""}, rc=3)
+        fix("busy", busy)
+        self.actions.unmount(self.win, "/dev/sda1")
+        self.assertTrue(pump(lambda: self.win.get_visible_dialog() and "Terminal" in self.win.get_visible_dialog().get_body(), 3))
+        self.assertFalse(self.win.get_visible_dialog().has_response("close"))
+
+    def test_programs_that_did_not_close_stop_everything(self):
+        fix("busy", self.BUSY)
+        fix("close-apps", {"device": "/dev/sda1", "asked": ["Dolphin"], "kept": [], "still_running": 1, "ok": False}, rc=1)
+        self.actions.force_unmount(self.win, "/dev/sda1")
+        self.assertTrue(pump(lambda: self.win.get_visible_dialog() is not None, 3))
+        forget_calls()
+        self.win.get_visible_dialog().emit("response", "close")
+        self.assertTrue(pump(lambda: self.win.get_visible_dialog() and "did not close" in self.win.get_visible_dialog().get_heading(), 3))
+        self.assertFalse(any(c.startswith("--drive unmount") for c in calls()))
+
+    def test_force_without_holders_simply_unmounts(self):
+        fix("busy", dict(self.BUSY, programs=[], count=0))
+        fix("unmount", {"ok": True})
+        forget_calls()
+        self.actions.force_unmount(self.win, "/dev/sda1")
+        self.assertTrue(pump(lambda: any(c.startswith("--drive unmount /dev/sda1") for c in calls()), 3))
+        self.assertFalse(any("close-apps" in c for c in calls()))
+
+    def test_services_are_asked_before_they_are_stopped(self):
+        fix("unmount", {"ok": False, "services": [{"unit": "jellyfin.service", "name": "Jellyfin"}], "services_back": "They start again by themselves."}, rc=9)
+        self.actions.unmount(self.win, "/dev/sda1")
+        self.assertTrue(pump(lambda: self.win.get_visible_dialog() and "Jellyfin" in self.win.get_visible_dialog().get_body(), 3))
+        dialog = self.win.get_visible_dialog()
+        self.assertEqual(dialog.get_default_response(), "cancel")
+        fix("unmount", {"ok": True})
+        forget_calls()
+        dialog.emit("response", "stop")
+        self.assertTrue(pump(lambda: "--drive unmount /dev/sda1 --allow-services --json" in calls(), 3), calls())
+
+    def test_erasing_warns_first_and_cancel_is_the_default(self):
+        dev = self.win.device_by_id("serial:SD1")
+        self.actions.erase(self.win, dev)
+        dialog = self.dialog()
+        self.assertIn("not recovery", dialog.get_body())
+        self.assertEqual(dialog.get_default_response(), "cancel")
+        self.assertEqual(dialog.get_close_response(), "cancel")
+        self.assertEqual(dialog.get_response_appearance("continue"), Adw.ResponseAppearance.DESTRUCTIVE)
+        dialog.emit("response", "cancel")
+        pump(timeout=0.1)
+        self.assertNotEqual(type(self.win.nav.get_visible_page()).__name__, "MaintenancePage")
+        self.actions.erase(self.win, dev)
+        fix("erase-check", {"device": "/dev/sda", "eligible": False, "why": "removable", "why_text": "Not through USB.", "partitions": []})
+        self.dialog().emit("response", "continue")
+        self.assertTrue(pump(lambda: type(self.win.nav.get_visible_page()).__name__ == "MaintenancePage", 3))
+
+
+class Sidebar(Base):
+    JOB = {"id": "20261031-1", "kind": "copy", "state": "running", "state_label": "Copying", "source": "/run/media/x/ARQUIVOS", "name": "ARQUIVOS",
+           "destination": "/run/media/x/Backup", "bytes_done": 25 * GB, "bytes_total": 100 * GB, "total_estimate": False, "pausable": True}
+
+    def side_rows(self, kind):
+        out, i = [], 0
+        while (row := self.win.side_list.get_row_at_index(i)) is not None:
+            if row.kind == kind:
+                out.append(row)
+            i += 1
+        return out
+
+    def test_count_and_running_jobs_with_their_progress(self):
+        done = dict(self.JOB, id="old", state="completed", state_label="Completed")
+        search = dict(self.JOB, id="20261031-2", kind="carve", state_label="Searching", name="disk.img", bytes_total=0)
+        fix("jobs", {"jobs": [self.JOB, search, done]})
+        fix("status", self.JOB)
+        self.win.refresh_jobs()
+        self.assertTrue(pump(lambda: len(self.side_rows("job")) == 2, 3))
+        jobs_row = self.side_rows("jobs")[0]
+        self.assertIn("3", text(jobs_row))
+        self.assertIn("2 running", text(jobs_row))
+        first = self.side_rows("job")[0]
+        self.assertIn("25%", text(first))
+        bar = next(x for x in widgets(first) if isinstance(x, Gtk.ProgressBar))
+        self.assertAlmostEqual(bar.get_fraction(), 0.25)
+        # Without a measured total: no percentage at all
+        self.assertNotIn("%", text(self.side_rows("job")[1]))
+        self.win.side_list.emit("row-activated", first)
+        self.assertTrue(pump(lambda: type(self.win.nav.get_visible_page()).__name__ == "JobPage", 3))
+        self.assertEqual(self.win.nav.get_visible_page().job_id, "20261031-1")
+        self.assertEqual(self.win.side_list.get_selected_row().value, "20261031-1")
+
+    def test_no_job_shows_zero_and_nothing_below(self):
+        self.assertTrue(pump(lambda: self.side_rows("jobs"), 3))
+        self.assertIn("0", text(self.side_rows("jobs")[0]))
+        self.assertEqual(self.side_rows("job"), [])
 
 
 class Routing(Base):
@@ -1318,7 +1514,7 @@ class Accessibility(Base):
             self.see("Your drives and devices")
 
     def test_status_is_not_colour_alone(self):
-        badge = next(x for x in widgets(self.win) if "level-badge" in x.get_css_classes() and x.get_mapped())
+        badge = next(x for x in widgets(self.win) if {"level-badge", "grade-pill"} & set(x.get_css_classes()) and x.get_mapped())
         self.assertTrue(any(isinstance(c, Gtk.Label) and c.get_text() for c in widgets(badge)))
         self.assertTrue(any(isinstance(c, Gtk.Image) for c in widgets(badge)))
 

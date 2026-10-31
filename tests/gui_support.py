@@ -112,12 +112,17 @@ def vol(device, **kw):
 
 
 def drive(device, name, level="normal", label="No alerts in the system log (SMART not read)", volumes=None, kind="usb",
-          kind_label="USB storage", reasons=(), serial="S1", size=1000 * GB, smart=None, seq=7, basis="log"):
+          kind_label="USB storage", reasons=(), serial="S1", size=1000 * GB, smart=None, seq=7, basis="log",
+          grade=None, notes=(), transport="usb", hotplug=True):
+    """grade: what a newer engine adds; without it the window falls back on the level."""
+    health = {"level": level, "label": label, "basis": basis, "reasons": list(reasons), "smart": smart or {"verdict": ""}}
+    if grade:
+        health.update(grade=grade, notes=list(notes))
     return {"device": device, "name": name, "kind": kind, "kind_label": kind_label, "icon": "drive-removable-media-usb",
-            "model": name, "vendor": "", "serial": serial, "transport": "usb", "transport_label": "USB", "stable_id": f"serial:{serial}",
-            "pttype": "gpt", "size": size, "diskseq": seq, "removable": False, "hotplug": True, "rotational": False, "trim": False,
+            "model": name, "vendor": "", "serial": serial, "transport": transport, "transport_label": transport.upper(), "stable_id": f"serial:{serial}",
+            "pttype": "gpt", "size": size, "diskseq": seq, "removable": False, "hotplug": hotplug, "rotational": False, "trim": False,
             "volumes": [vol(device, type="disk", fstype="", state="container", state_label="Holds other volumes"), *(volumes or [])],
-            "health": {"level": level, "label": label, "basis": basis, "reasons": list(reasons), "smart": smart or {"verdict": ""}}}
+            "health": health}
 
 
 def seagate():
@@ -133,7 +138,7 @@ def backup(mountpoint):
 
 
 def system_disk():
-    return drive("/dev/nvme0n1", "ADATA LEGEND 800", kind="nvme", kind_label="NVMe SSD", serial="ADATA1", volumes=[
+    return drive("/dev/nvme0n1", "ADATA LEGEND 800", kind="nvme", kind_label="NVMe SSD", serial="ADATA1", transport="nvme", hotplug=False, volumes=[
         vol("/dev/nvme0n1p1", fstype="vfat", size=300 * 1000 * 1000, state="system", state_label="In use by the running system", mountpoint="/boot/efi", used=5 * 1000 * 1000, avail=295 * 1000 * 1000),
         vol("/dev/nvme0n1p2", fstype="btrfs", label="root", size=999 * GB, state="system", state_label="In use by the running system", mountpoint="/", used=420 * GB, avail=579 * GB)],
         label="No alerts (SMART and system log checked)", basis="smart+log", seq=2)

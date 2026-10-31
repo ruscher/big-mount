@@ -91,6 +91,8 @@ findmnt() { return 1; }
 FAKE_HEALTH_FIND=() FAKE_KLOG=1 FAKE_SMART=""
 bm_drive_health() {
    DH_FIND=("${FAKE_HEALTH_FIND[@]}") DH_COUNT=() DH_LINES=() DH_KLOG="$FAKE_KLOG" DH_SMART="$FAKE_SMART" DH_BAD="${FAKE_BAD:-0}"
+   DH_HOURS="${FAKE_HOURS:-}" DH_TEMP="${FAKE_TEMP:-}" DH_NVME_USED="${FAKE_USED:-}" DH_ATTR_PAST="${FAKE_PAST:-}"
+   DH_ATTR_FAIL="${FAKE_FAIL:-}" DH_NVME_WARN="${FAKE_WARN:-}" DH_NVME_MEDIA="" DH_NVME_HOT=""
    local f; for f in "${DH_FIND[@]}"; do DH_COUNT[$f]="${FAKE_COUNT:-5}"; done
 }
 bm_diskseq() { REPLY=7; }
@@ -162,6 +164,59 @@ check "replaced sectors on an SSD: normal use" level /dev/sdb normal
 FAKE_BAD=0
 check "a disk image has no health" level /dev/loop1 na
 
+begin "grade: one word, and healthy only on the drive's own report"
+grade() { bm_ds_level "$1"; eq "$DS_GRADE:${DS_NOTES[*]}" "$2"; }
+FAKE_HEALTH_FIND=() FAKE_KLOG=1 FAKE_SMART=""
+check "the system log alone: good, and it says why not healthy" grade /dev/sda "good:smart-unread"
+FAKE_SMART=ok
+check "SMART and log, nothing found: healthy" grade /dev/sdb "healthy:"
+FAKE_HOURS=36000
+check "a hard disk after about four years powered on: good" grade /dev/sda "good:old"
+check "  ... an SSD that long is still healthy" grade /dev/sdb "healthy:"
+bm_ds_level /dev/sda; bm_ds_note_text old; check "  ... in years a person reads" bash -c '[[ $1 == *36000*"4 years"* ]]' _ "$REPLY"
+FAKE_HOURS="" FAKE_TEMP=58
+check "a hard disk at 58 °C: good" grade /dev/sda "good:hot"
+check "  ... normal for an SSD" grade /dev/sdb "healthy:"
+FAKE_TEMP="" FAKE_USED=60
+check "an SSD past half of its rated life: good" grade /dev/nvme0n1 "good:wear"
+FAKE_USED=95
+check "  ... past 90 %: poor, without any alert" grade /dev/nvme0n1 "poor:worn-out"
+FAKE_USED="" FAKE_PAST=1
+check "SMART values below their limit in the past: good" grade /dev/sdb "good:attrs-past"
+FAKE_PAST="" FAKE_FAIL=2
+check "below their limit now: an alert, poor" grade /dev/sdb "poor:"
+check "  ... said in words" bash -c '[[ " $1 " == *" attrs-failing "* ]]' _ "${DS_WHY[*]}"
+FAKE_FAIL="" FAKE_WARN="spare"
+check "an NVMe critical warning read through UDisks2: critical" grade /dev/nvme0n1 "critical:"
+FAKE_WARN="" FAKE_SMART="" FAKE_HEALTH_FIND=(usb-resets) FAKE_COUNT=48
+check "an alert: poor" grade /dev/sdc "poor:"
+FAKE_HEALTH_FIND=() FAKE_KLOG=0
+check "nothing consulted: not assessed" grade /dev/sda "unknown:"
+check "a disk image: not applicable" grade /dev/loop1 "na:"
+FAKE_KLOG=1 FAKE_SMART=ok FAKE_HOURS=36000
+bm_ds_level /dev/sda
+out="{$(bm_ds_json)}"; printf '%s' "$out" | json_ok; check "health JSON with the grade: valid" eq "$?" 0
+check "  ... grade, its word and why" bash -c 'python3 -I -c "import json,sys; h=json.loads(sys.argv[1])[\"health\"]; assert h[\"grade\"] == \"good\" and h[\"grade_label\"] and h[\"notes\"][0][\"key\"] == \"old\" and h[\"smart\"][\"hours\"] == 36000" "$1"' _ "$out"
+FAKE_SMART="" FAKE_HOURS="" FAKE_KLOG=1
+
+begin "the session notifier: a drive with problems gets a window, once per boot"
+(
+   BM_NOTIFIED="$WORK/notified"; : > "$BM_NOTIFIED"; BM_SELF=/bin/true
+   bm_ui_confirm() { bm_doc_render_text; printf '%s|%s|%s\n%s\n' "$1" "$3" "$4" "$REPLY" >> "$WORK/window.txt"; return 1; }
+   F=([DISK]=/dev/sdc [DISK_TYPE]=disk)
+   FAKE_HEALTH_FIND=(usb-resets) FAKE_COUNT=48
+   bm_notifier_health /dev/sdc1; wait
+   bm_notifier_health /dev/sdc1; wait
+   F=([DISK]=/dev/sdb [DISK_TYPE]=disk) FAKE_HEALTH_FIND=()
+   bm_notifier_health /dev/sdb1; wait
+   F=([DISK]=/dev/loop1 [DISK_TYPE]=loop) FAKE_HEALTH_FIND=(io-errors) FAKE_COUNT=9
+   bm_notifier_health /dev/loop1; wait
+)
+check "one window, for the drive with problems only" eq "$(grep -c '^A drive needs attention|' "$WORK/window.txt")" 1
+check "  ... with the way to Big-Mount, or to close it" grep -q '^A drive needs attention|Open Big-Mount|Close$' "$WORK/window.txt"
+check "  ... naming the drive, its grade and what was found" bash -c 'grep -q "ST1000DM003-1CH162: Poor" "$1" && grep -q "USB connection was reset" "$1"' _ "$WORK/window.txt"
+check "  ... remembered once per boot and drive, not per volume" eq "$(wc -l < "$WORK/notified")" 1
+
 begin "SMART: the field case, PASSED with 1848 unreadable sectors"
 SMF="$WORK/smart.txt"
 cat > "$SMF" <<'SM'
@@ -184,6 +239,10 @@ check "reallocated" eq "$SM_REALLOC" 912
 check "uncorrectable" eq "$SM_UNCORR" 30161
 check "CRC" eq "$SM_CRC" 355
 check "hours" eq "$SM_HOURS" 1552
+check "temperature" eq "$SM_TEMP" 38
+printf '240 Head_Flying_Hours       0x0000   100   253   000    Old_age   Offline      -       29457h+31m+12.583s\n' >> "$SMF"
+bm_ds_smart_parse "$SMF"
+check "a wrapped power-on counter: the head flying hours are a floor" eq "$SM_HOURS" 29457
 bm_ds_smart_file /dev/sdc; mkdir -p "${REPLY%/*}"; cp "$SMF" "$REPLY"
 FAKE_HEALTH_FIND=() FAKE_KLOG=1
 check "PASSED does not hide it: critical" level /dev/sdc critical

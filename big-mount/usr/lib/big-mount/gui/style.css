@@ -113,3 +113,26 @@ togglebutton.choice-card, button.choice-card {
 .notice-attention > image { color: @warning_color; }
 
 togglebutton.chip { padding: 2px 12px; min-height: 26px; border-radius: 99px; font-weight: 500; }
+
+/* The grade of a drive: a word and an icon in a pill, coloured by the theme */
+.grade-pill {
+  padding: 2px 10px 2px 8px;
+  border-radius: 99px;
+  background: alpha(currentColor, 0.08);
+  font-size: 0.9em;
+  font-weight: 700;
+}
+.grade-pill.grade-critical { background: alpha(@error_color, 0.16); color: @error_color; }
+.grade-pill.grade-poor { background: alpha(@warning_color, 0.18); color: @warning_color; }
+.grade-pill.grade-good { background: alpha(@accent_color, 0.14); color: @accent_color; }
+.grade-pill.grade-healthy { background: alpha(@success_color, 0.16); color: @success_color; }
+.grade-pill.grade-unknown, .grade-pill.grade-na { font-weight: 500; }
+.grade-pill.grade-large { padding: 4px 14px 4px 10px; font-size: 1.05em; }
+
+.drive-row-icon {
+  border-radius: 10px;
+  background: alpha(currentColor, 0.07);
+  padding: 8px;
+}
+
+.count-badge.count-idle { background: alpha(currentColor, 0.12); color: inherit; }

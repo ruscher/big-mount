@@ -102,6 +102,8 @@ class MainWindow(Adw.ApplicationWindow):
             head.set_margin_top(10)
             head.set_margin_bottom(4)
             row.set_header(head)
+        elif row.kind == "job":
+            row.set_header(None)
         elif row.kind == "jobs":
             sep = Gtk.Separator()
             sep.set_margin_top(8)
@@ -112,6 +114,8 @@ class MainWindow(Adw.ApplicationWindow):
 
     def _side_row(self, kind, value, title, icon_name, subtitle=None, level=None):
         row = Route(kind, value)
+        if kind == "jobs" and value[1]:
+            subtitle = _("%d running") % value[1]
         inner = w.hbox(10)
         inner.set_margin_top(6)
         inner.set_margin_bottom(6)
@@ -126,11 +130,45 @@ class MainWindow(Adw.ApplicationWindow):
             badge = w.icon("dialog-error-symbolic" if level == "critical" else "dialog-warning-symbolic", css=("level-icon", f"level-{level}"))
             badge.set_valign(Gtk.Align.CENTER)
             inner.append(badge)
-        if kind == "jobs" and value:
-            inner.append(w.label(str(value), css=("count-badge",), wrap=False))
+        if kind == "jobs":
+            total, running = value
+            count = w.label(str(total), css=("count-badge",) if running else ("count-badge", "count-idle"), wrap=False)
+            count.set_valign(Gtk.Align.CENTER)
+            inner.append(count)
         row.set_child(inner)
         accessible = title if not subtitle else f"{title}, {subtitle}"
+        if kind == "jobs":
+            accessible = f"{title}, {value[0]}" + (f", {subtitle}" if subtitle else "")
         row.update_property([Gtk.AccessibleProperty.LABEL], [accessible])
+        return row
+
+    def _job_row(self, job):
+        """A running job under 'Copies and searches': its progress, a click away."""
+        row = Route("job", job.id)
+        inner = w.box(spacing=4)
+        inner.set_margin_top(4)
+        inner.set_margin_bottom(6)
+        inner.set_margin_start(28)
+        top = w.hbox(6)
+        name = w.label(job.title, css=("caption",), ellipsize=True)
+        name.set_hexpand(True)
+        top.append(name)
+        pct = w.label(job.percent_text, css=("caption", "numeric"), wrap=False)
+        top.append(pct)
+        inner.append(top)
+        bar = Gtk.ProgressBar()
+        if job.percent is not None:
+            bar.set_fraction(job.percent / 100)
+        else:
+            # No measured total: a bar that says it is working, never a made-up share
+            bar.pulse()
+        inner.append(bar)
+        inner.append(w.label(job.state_label, css=("caption", "dim-label"), ellipsize=True))
+        row.set_child(inner)
+        text = f"{job.state_label}: {job.title}" + (f", {job.percent_text}" if job.percent_text else "")
+        bar.update_property([Gtk.AccessibleProperty.LABEL], [text])
+        row.update_property([Gtk.AccessibleProperty.LABEL], [text])
+        row.set_tooltip_text(text)
         return row
 
     def _fill_sidebar(self):
@@ -138,8 +176,10 @@ class MainWindow(Adw.ApplicationWindow):
         self.side_list.append(self._side_row("home", None, _("Home"), "go-home-symbolic"))
         for dev in self.devices:
             self.side_list.append(self._side_row("device", dev.stable_id, dev.name, dev.symbolic_icon, dev.subtitle, dev.health.level))
-        running = sum(1 for j in self.jobs if j.running)
-        self.side_list.append(self._side_row("jobs", running, _("Copies and searches"), "folder-download-symbolic"))
+        running = [j for j in self.jobs if j.running]
+        self.side_list.append(self._side_row("jobs", (len(self.jobs), len(running)), _("Copies and searches"), "folder-download-symbolic"))
+        for job in running:
+            self.side_list.append(self._job_row(job))
         self._mark_sidebar()
 
     def _mark_sidebar(self):
@@ -147,11 +187,13 @@ class MainWindow(Adw.ApplicationWindow):
         want = ("home", None)
         if page is self.jobs_page:
             want = ("jobs", None)
+        elif isinstance(page, JobPage) and not self.selected_id:
+            want = ("job", page.job_id)
         elif self.selected_id and page is not self.overview:
             want = ("device", self.selected_id)
         index = 0
         while (row := self.side_list.get_row_at_index(index)) is not None:
-            if row.kind == want[0] and (want[0] != "device" or row.value == want[1]):
+            if row.kind == want[0] and (want[0] not in ("device", "job") or row.value == want[1]):
                 self.side_list.select_row(row)
                 return
             index += 1
@@ -162,6 +204,8 @@ class MainWindow(Adw.ApplicationWindow):
             self.show_overview()
         elif row.kind == "device":
             self.show_device(row.value)
+        elif row.kind == "job":
+            self.show_job(row.value)
         else:
             self.show_jobs()
         self.split.set_show_content(True)
@@ -282,6 +326,14 @@ class MainWindow(Adw.ApplicationWindow):
         self.wizard = None
         self.refresh_jobs()
         self._go(self.jobs_page)
+
+    def show_job(self, job_id):
+        """From the side: the page of that job, on top of Home."""
+        self.wizard = None
+        self.selected_id = None
+        self.nav.replace([self.overview, JobPage(self, job_id)])
+        self.split.set_show_content(True)
+        self._mark_sidebar()
 
     def open_wizard(self, device=None, volume=None, image=None):
         self.wizard = RescueWizard(self, device, volume, image)

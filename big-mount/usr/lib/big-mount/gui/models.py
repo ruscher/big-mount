@@ -1,6 +1,7 @@
 """What the engine says, as typed objects. Nothing here decides anything about a
 disk: every value comes from `bigmount --drive ... --json`."""
 
+import unicodedata
 from dataclasses import dataclass, field
 from enum import Enum
 
@@ -55,6 +56,30 @@ LEVEL_ICONS = {
 
 RISKY_LEVELS = {"critical", "attention"}
 
+# The grade the engine gives a drive, worst first. "healthy" needs the drive's own
+# report (SMART): without it the best is "good".
+GRADES = ("critical", "poor", "good", "healthy", "unknown", "na")
+GRADE_ICONS = {
+    "critical": "dialog-error-symbolic",
+    "poor": "dialog-warning-symbolic",
+    "good": "object-select-symbolic",
+    "healthy": "security-high-symbolic",
+    "unknown": "dialog-question-symbolic",
+    "na": "dialog-information-symbolic",
+}
+# An engine that says only the level: the grade that level allows at most
+LEVEL_GRADE = {"critical": "critical", "attention": "poor", "normal": "good", "na": "na"}
+
+
+def grade_label(grade):
+    return {
+        "critical": _("Critical"),
+        "poor": _("Poor"),
+        "good": _("Good"),
+        "healthy": _("Healthy"),
+        "na": _("Not applicable"),
+    }.get(grade, _("Not assessed"))
+
 
 @dataclass
 class Health:
@@ -63,12 +88,18 @@ class Health:
     basis: str = "none"
     reasons: list = field(default_factory=list)
     smart: dict = field(default_factory=dict)
+    grade: str = "unknown"
+    grade_label: str = ""
+    notes: list = field(default_factory=list)
 
     @classmethod
     def from_json(cls, d):
         d = d or {}
-        return cls(d.get("level", "unknown"), d.get("label", ""), d.get("basis", "none"),
-                   list(d.get("reasons") or []), dict(d.get("smart") or {}))
+        level = d.get("level", "unknown")
+        grade = d.get("grade") or LEVEL_GRADE.get(level, "unknown")
+        return cls(level, d.get("label", ""), d.get("basis", "none"),
+                   list(d.get("reasons") or []), dict(d.get("smart") or {}),
+                   grade, d.get("grade_label") or grade_label(grade), list(d.get("notes") or []))
 
     @property
     def risky(self):
@@ -171,6 +202,24 @@ class Device:
         return any(v.state == "system" for v in self.volumes)
 
     @property
+    def external(self):
+        """Plugged in from outside: USB, a card, a hot-plug bay."""
+        return self.removable or self.hotplug or self.transport in ("usb", "mmc") or self.kind in ("usb", "sd")
+
+    @property
+    def mounted_volumes(self):
+        """Mounted, and not the running system: what can be unmounted."""
+        return [v for v in self.content_volumes if v.state in ("mounted-rw", "mounted-ro")]
+
+    def matches(self, words):
+        """Whether every word of a search is somewhere in what is shown of it."""
+        hay = " ".join([self.name, self.model, self.vendor, self.kind_label, self.transport_label, self.device,
+                        self.health.grade_label, self.health.label] +
+                       [" ".join((v.label, v.fstype, v.mountpoint, v.device)) for v in self.volumes])
+        hay = fold(hay)
+        return all(fold(word) in hay for word in words)
+
+    @property
     def subtitle(self):
         from .common import human_size
         parts = [self.kind_label, human_size(self.size)]
@@ -230,6 +279,25 @@ class Job:
     @property
     def running(self):
         return self.state in RUNNING_STATES
+
+    @property
+    def percent(self):
+        """Measured progress, or None: no total, no percentage."""
+        if not self.bytes_total:
+            return None
+        return min(100, (self.bytes_done or 0) * 100 // self.bytes_total)
+
+    @property
+    def percent_text(self):
+        pct = self.percent
+        if pct is None:
+            return ""
+        return ("≈ " if self.total_estimate else "") + f"{pct}%"
+
+    @property
+    def title(self):
+        """What it works on, in a few words."""
+        return self.name or (self.source.rstrip("/").rsplit("/", 1)[-1] if self.source else "") or self.kind_label
 
     @property
     def can_resume(self):
@@ -337,3 +405,8 @@ def find_device(devices, stable_id=None, name=None):
         if name and d.device == name:
             return d
     return None
+
+
+def fold(text):
+    """For a search: no case, no accents (an accented word finds the plain one)."""
+    return "".join(c for c in unicodedata.normalize("NFD", text or "") if not unicodedata.combining(c)).casefold()

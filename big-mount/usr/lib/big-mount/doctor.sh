@@ -11,7 +11,7 @@
 # volume labels, serial numbers, UUIDs, the user name, the home folder or
 # the folders where devices are mounted (they usually carry the label).
 
-BM_VERSION=2.4.0
+BM_VERSION=2.5.0
 
 # ---------------------------------------------------------------------------
 # --version

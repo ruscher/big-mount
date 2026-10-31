@@ -153,11 +153,17 @@ class Engine:
             args += ["--expect-diskseq", str(diskseq)]
         self.run(args, cb, limit=None)
 
-    def unmount(self, device, cb):
-        self.run(["unmount", device], cb, limit=None)
+    def unmount(self, device, cb, allow_services=False):
+        self.run(["unmount", device, *(["--allow-services"] if allow_services else [])], cb, limit=None)
 
-    def safe_remove(self, device, cb):
-        self.run(["safe-remove", device], cb, limit=None)
+    def safe_remove(self, device, cb, allow_services=False):
+        self.run(["safe-remove", device, *(["--allow-services"] if allow_services else [])], cb, limit=None)
+
+    def busy(self, device, cb):
+        self.run(["busy", device], cb)
+
+    def close_apps(self, device, cb):
+        self.run(["close-apps", device], cb, limit=None)
 
     def protect(self, device, cb, on=True):
         self.run(["protect" if on else "unprotect", device], cb, json_output=False, limit=None)
