@@ -1,16 +1,16 @@
 [Desktop Entry]
 Type=Application
-Name=Storage Diagnostics
-GenericName=Storage device diagnostics
-Comment=Find out why a drive is read-only or busy, and remove it safely
-Exec=/usr/bin/bigmount --gui
+Name=Big-Mount
+GenericName=Drive manager and file rescue
+Comment=See how your drives are doing, rescue files from them and remove them safely
+Exec=/usr/bin/bigmount --gui-drive
 Icon=big-mount
 Terminal=false
 Categories=System;Filesystem;
-Keywords=disk;drive;usb;mount;unmount;read-only;busy;eject;ssd;erase;recover;rescue;backup;smart;
-Actions=checkDrive;
+Keywords=disk;drive;usb;mount;unmount;read-only;busy;eject;ssd;erase;recover;rescue;backup;smart;storage;diagnostics;
+Actions=storageDiagnostics;
 
-[Desktop Action checkDrive]
-Name=Drive manager and file rescue
+[Desktop Action storageDiagnostics]
+Name=Storage Diagnostics
 Icon=drive-harddisk
-Exec=/usr/bin/bigmount --gui-drive
+Exec=/usr/bin/bigmount --gui

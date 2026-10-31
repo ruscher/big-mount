@@ -238,8 +238,8 @@ a user, it only explains that (exit 5) instead of failing on each step.
 In Dolphin: right-click a folder → **Storage device** → **Why can't I
 write here?**, **Safely remove** or **Diagnose the drive and rescue files**.
 
-In the application menu: **Storage Diagnostics**, whose right-click menu
-has **Drive manager and file rescue**.
+In the application menu: **Big-Mount** (the drive manager), whose right-click
+menu has **Storage Diagnostics**.
 
 A disk is failing and you need the files? Go to
 [6a](#6a-drive-manager-and-file-rescue), and do not run repair tools on it first.
@@ -716,8 +716,8 @@ bigmount --drive                # the same in menus, in any terminal
 ```
 
 Also from the desktop: right-click a folder in Dolphin → **Storage device** →
-**Diagnose the drive and rescue files**, or right-click **Storage Diagnostics** in the
-application menu → **Drive manager and file rescue**.
+**Diagnose the drive and rescue files**, or open **Big-Mount** in the application
+menu.
 
 The pictures in this section are the real window, drawn by
 [`tests/readme-screenshots.py`](tests/readme-screenshots.py) with sample drives. The
@@ -1117,7 +1117,7 @@ Details: [architecture](docs/15-drive-architecture.md),
 | Integration | Where | Details |
 | --- | --- | --- |
 | Dolphin service menu | right-click a folder → **Storage device** | **Diagnose the drive and rescue files** (`bigmount --gui-drive %f`), **Why can't I write here?** (`bigmount --gui %f`) and **Safely remove (shows what keeps it busy)** (`bigmount --gui-remove %f`) |
-| Launcher | application menu → **Storage Diagnostics** | choose a device from a list; its action **Drive manager and file rescue** opens `bigmount --gui-drive` |
+| Launcher | application menu → **Big-Mount** | opens the drive manager (`bigmount --gui-drive`); its action **Storage Diagnostics** chooses a device from a list (`bigmount --gui`) |
 | Notifications | when a device you cannot write to is mounted, and when a removal ends | see below |
 | Dialogs | KDialog (Plasma) or Zenity (GNOME) | light/dark theme, HiDPI and screen readers come from the toolkit |
 
@@ -1321,7 +1321,7 @@ To mount a partition somewhere else or with other options, put it in
 | `/usr/share/libalpm/hooks/big-mount.hook` | enables the service on the first installation |
 | `/etc/big-mount.conf` | configuration ([9.1](#91-etcbig-mountconf)) |
 | `/etc/xdg/autostart/big-mount-notifier.desktop` | starts the notifier in the session |
-| `/usr/share/applications/big-mount.desktop` | "Storage Diagnostics" launcher |
+| `/usr/share/applications/big-mount.desktop` | "Big-Mount" launcher |
 | `/usr/share/kio/servicemenus/big-mount.desktop` | Dolphin service menu |
 | `/usr/share/polkit-1/actions/org.biglinux.big-mount.policy` | polkit actions of the two privileged helpers |
 | `/usr/share/icons/hicolor/scalable/apps/big-mount.svg` | icon |

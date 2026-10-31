@@ -3105,480 +3105,476 @@ msgstr ""
 msgid "%s is still mounted at %s after being unmounted"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/lib.sh:1222
+#: big-mount/usr/lib/big-mount/lib.sh:1224
 msgid "The drive was disconnected or replaced. Nothing was erased."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/lib.sh:1229
+#: big-mount/usr/lib/big-mount/lib.sh:1231
 msgid "%s is mounted at %s"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/lib.sh:1232
+#: big-mount/usr/lib/big-mount/lib.sh:1234
 msgid "%s is in use (encryption, LVM or RAID)"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/lib.sh:1238
+#: big-mount/usr/lib/big-mount/lib.sh:1240
 msgid "UDisks2 does not know this drive."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:387
+#: big-mount/usr/lib/big-mount/drive-gui.py:391
 msgid "Volumes"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:408
+#: big-mount/usr/lib/big-mount/drive-gui.py:412
 msgid "Power-on hours"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:428
+#: big-mount/usr/lib/big-mount/drive-gui.py:432
 #, python-format
 msgid "%(used)s used, %(free)s free"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:431
+#: big-mount/usr/lib/big-mount/drive-gui.py:435
 msgid "This volume spans more than one device. All of them must be connected."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:449
+#: big-mount/usr/lib/big-mount/drive-gui.py:453
 msgid "&Recover files…"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:450
-#: big-mount/usr/lib/big-mount/drive-gui.py:1223
+#: big-mount/usr/lib/big-mount/drive-gui.py:454
+#: big-mount/usr/lib/big-mount/drive-gui.py:1230
 msgid "&Mount read-only"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:454
+#: big-mount/usr/lib/big-mount/drive-gui.py:458
 msgid "&Copy files to another disk…"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:455
+#: big-mount/usr/lib/big-mount/drive-gui.py:459
 msgid "&Open folder"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:456
+#: big-mount/usr/lib/big-mount/drive-gui.py:460
 msgid "&Unmount"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:458
+#: big-mount/usr/lib/big-mount/drive-gui.py:462
 msgid "Un&lock…"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:460
+#: big-mount/usr/lib/big-mount/drive-gui.py:464
 msgid "Look for &lost partitions…"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:476
+#: big-mount/usr/lib/big-mount/drive-gui.py:483
 msgid "&Technical details"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:478
+#: big-mount/usr/lib/big-mount/drive-gui.py:485
 msgid "Read &SMART…"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:478
+#: big-mount/usr/lib/big-mount/drive-gui.py:485
 msgid "Asks for the administrator password. Through USB it can take a minute."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:479
+#: big-mount/usr/lib/big-mount/drive-gui.py:486
 msgid "&Advanced recovery…"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:480
+#: big-mount/usr/lib/big-mount/drive-gui.py:487
 msgid "Export &report…"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:482
+#: big-mount/usr/lib/big-mount/drive-gui.py:489
 msgid "Check and erase…"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:482
+#: big-mount/usr/lib/big-mount/drive-gui.py:489
 msgid "The drive check of Big-Mount, with Secure Erase"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:542
+#: big-mount/usr/lib/big-mount/drive-gui.py:549
 msgid "This item is inside a marked folder. Unmark the folder to choose its items one by one."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:597
+#: big-mount/usr/lib/big-mount/drive-gui.py:604
 msgid "What"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:597
+#: big-mount/usr/lib/big-mount/drive-gui.py:604
 msgid "Where to"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:597
+#: big-mount/usr/lib/big-mount/drive-gui.py:604
 msgid "Review"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:602
+#: big-mount/usr/lib/big-mount/drive-gui.py:609
 msgid "&Back"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:604
-#: big-mount/usr/lib/big-mount/drive-gui.py:887
-#: big-mount/usr/lib/big-mount/drive-gui.py:890
+#: big-mount/usr/lib/big-mount/drive-gui.py:611
+#: big-mount/usr/lib/big-mount/drive-gui.py:894
+#: big-mount/usr/lib/big-mount/drive-gui.py:897
 msgid "&Next"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:624
+#: big-mount/usr/lib/big-mount/drive-gui.py:631
 msgid "Copy &everything"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:625
+#: big-mount/usr/lib/big-mount/drive-gui.py:632
 msgid "C&hoose files and folders"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:666
+#: big-mount/usr/lib/big-mount/drive-gui.py:673
 #, python-format
 msgid "%d items marked. The total is measured in the next steps."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:681
+#: big-mount/usr/lib/big-mount/drive-gui.py:688
 msgid "Where to? Places on another physical disk, with room, come first."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:687
+#: big-mount/usr/lib/big-mount/drive-gui.py:694
 msgid "&Destination folder:"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:692
-#: big-mount/usr/lib/big-mount/drive-gui.py:1266
-#: big-mount/usr/lib/big-mount/drive-gui.py:1338
+#: big-mount/usr/lib/big-mount/drive-gui.py:699
+#: big-mount/usr/lib/big-mount/drive-gui.py:1273
+#: big-mount/usr/lib/big-mount/drive-gui.py:1345
 msgid "&Browse…"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:702
+#: big-mount/usr/lib/big-mount/drive-gui.py:709
 msgid "Basic: rsync confirms each file as it is copied"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:703
+#: big-mount/usr/lib/big-mount/drive-gui.py:710
 msgid "Names, sizes and dates compared at the end"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:704
+#: big-mount/usr/lib/big-mount/drive-gui.py:711
 msgid "Content compared at the end (reads the source again)"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:705
+#: big-mount/usr/lib/big-mount/drive-gui.py:712
 msgid "If a file already e&xists:"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:707
+#: big-mount/usr/lib/big-mount/drive-gui.py:714
 msgid "Chec&k the result:"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:717
+#: big-mount/usr/lib/big-mount/drive-gui.py:724
 msgid "A file that does not advance for this long is set aside, so that the others are saved first. 0: never."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:718
+#: big-mount/usr/lib/big-mount/drive-gui.py:725
 msgid "Set &aside a stuck file after:"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:725
+#: big-mount/usr/lib/big-mount/drive-gui.py:732
 msgid "no limit"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:727
+#: big-mount/usr/lib/big-mount/drive-gui.py:734
 msgid "Limit the reading &speed:"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:738
+#: big-mount/usr/lib/big-mount/drive-gui.py:745
 msgid "Recovered"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:740
+#: big-mount/usr/lib/big-mount/drive-gui.py:747
 msgid "Recovered files"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:753
+#: big-mount/usr/lib/big-mount/drive-gui.py:760
 msgid "Looking for places…"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:777
+#: big-mount/usr/lib/big-mount/drive-gui.py:784
 msgid "No other disk is mounted. Connect one, or choose a folder."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:806
+#: big-mount/usr/lib/big-mount/drive-gui.py:813
 msgid "Checking the source and the destination…"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:827
+#: big-mount/usr/lib/big-mount/drive-gui.py:834
 msgid "&Use the same physical disk anyway"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:828
+#: big-mount/usr/lib/big-mount/drive-gui.py:835
 msgid "&Copy from it while it is mounted with writing enabled"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:829
+#: big-mount/usr/lib/big-mount/drive-gui.py:836
 msgid "&Use that drive with critical alerts anyway"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:837
+#: big-mount/usr/lib/big-mount/drive-gui.py:844
 msgid "Ready to copy"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:841
-#: big-mount/usr/lib/big-mount/drive-gui.py:844
-#: big-mount/usr/lib/big-mount/drive-gui.py:846
+#: big-mount/usr/lib/big-mount/drive-gui.py:848
+#: big-mount/usr/lib/big-mount/drive-gui.py:851
+#: big-mount/usr/lib/big-mount/drive-gui.py:853
 msgid "To copy"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:841
+#: big-mount/usr/lib/big-mount/drive-gui.py:848
 #, python-format
 msgid "%(files)s files, %(size)s"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:846
+#: big-mount/usr/lib/big-mount/drive-gui.py:853
 msgid "not measured"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:848
+#: big-mount/usr/lib/big-mount/drive-gui.py:855
 msgid "Free at the destination"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:850
+#: big-mount/usr/lib/big-mount/drive-gui.py:857
 msgid "Already there, with different content"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:893
+#: big-mount/usr/lib/big-mount/drive-gui.py:900
 msgid "&Start copying"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:959
+#: big-mount/usr/lib/big-mount/drive-gui.py:966
 msgid "Progress"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:963
+#: big-mount/usr/lib/big-mount/drive-gui.py:970
 msgid "Files"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:963
+#: big-mount/usr/lib/big-mount/drive-gui.py:970
 msgid "Copied"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:964
+#: big-mount/usr/lib/big-mount/drive-gui.py:971
 msgid "Speed"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:964
+#: big-mount/usr/lib/big-mount/drive-gui.py:971
 msgid "Remaining"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:964
+#: big-mount/usr/lib/big-mount/drive-gui.py:971
 msgid "Current file"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:965
+#: big-mount/usr/lib/big-mount/drive-gui.py:972
 msgid "Set aside"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:976
+#: big-mount/usr/lib/big-mount/drive-gui.py:983
 msgid "Report"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:985
+#: big-mount/usr/lib/big-mount/drive-gui.py:992
 msgid "Show &log"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:987
+#: big-mount/usr/lib/big-mount/drive-gui.py:994
 msgid "&Open destination"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:989
+#: big-mount/usr/lib/big-mount/drive-gui.py:996
 msgid "&Try set-aside files again"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:990
+#: big-mount/usr/lib/big-mount/drive-gui.py:997
 msgid "Reads the damaged areas again, which puts more strain on the disk."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:992
+#: big-mount/usr/lib/big-mount/drive-gui.py:999
 msgid "&Pause"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:994
+#: big-mount/usr/lib/big-mount/drive-gui.py:1001
 msgid "&Resume"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:996
+#: big-mount/usr/lib/big-mount/drive-gui.py:1003
 msgid "&Cancel copy"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:1050
+#: big-mount/usr/lib/big-mount/drive-gui.py:1057
 msgid "working"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:1100
+#: big-mount/usr/lib/big-mount/drive-gui.py:1107
 msgid "Cancel copy"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:1101
+#: big-mount/usr/lib/big-mount/drive-gui.py:1108
 msgid "Stop the copy? Files already copied stay at the destination, and the copy can be resumed later."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:1103
+#: big-mount/usr/lib/big-mount/drive-gui.py:1110
 msgid "Stop the copy"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:1104
+#: big-mount/usr/lib/big-mount/drive-gui.py:1111
 msgid "Keep copying"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:1127
+#: big-mount/usr/lib/big-mount/drive-gui.py:1134
 msgid "Log"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:1209
-#: big-mount/usr/lib/big-mount/drive-gui.py:1587
+#: big-mount/usr/lib/big-mount/drive-gui.py:1216
+#: big-mount/usr/lib/big-mount/drive-gui.py:1594
 msgid "Mount read-only"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:1213
+#: big-mount/usr/lib/big-mount/drive-gui.py:1220
 msgid "The volume is opened without changing anything on it."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:1218
+#: big-mount/usr/lib/big-mount/drive-gui.py:1225
 msgid "Also block &writing on the device itself (asks for the password)"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:1220
+#: big-mount/usr/lib/big-mount/drive-gui.py:1227
 msgid "Whatever a driver or another program tries, the disk does not change. It lasts until the drive is disconnected."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:1246
-#: big-mount/usr/lib/big-mount/drive-gui.py:1308
+#: big-mount/usr/lib/big-mount/drive-gui.py:1253
+#: big-mount/usr/lib/big-mount/drive-gui.py:1315
 msgid "Lost partitions"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:1247
+#: big-mount/usr/lib/big-mount/drive-gui.py:1254
 msgid "Search by content"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:1258
+#: big-mount/usr/lib/big-mount/drive-gui.py:1265
 msgid "Copies the whole device to a file on another disk with GNU ddrescue, keeping a map so it can resume and never reads a good area twice. Then you work on the copy, and the disk rests. It asks for the administrator password."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:1272
+#: big-mount/usr/lib/big-mount/drive-gui.py:1279
 msgid "&Make the image"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:1281
-#: big-mount/usr/lib/big-mount/drive-gui.py:1283
+#: big-mount/usr/lib/big-mount/drive-gui.py:1288
+#: big-mount/usr/lib/big-mount/drive-gui.py:1290
 msgid "Image file"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:1303
+#: big-mount/usr/lib/big-mount/drive-gui.py:1310
 msgid "Looks for partitions with TestDisk and only lists what it finds. Nothing is written to the partition table. It asks for the administrator password."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:1309
+#: big-mount/usr/lib/big-mount/drive-gui.py:1316
 msgid "&Look for partitions"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:1314
+#: big-mount/usr/lib/big-mount/drive-gui.py:1321
 msgid "Looking for partitions…"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:1328
+#: big-mount/usr/lib/big-mount/drive-gui.py:1335
 msgid "Searches an image for files by their content with PhotoRec. It finds files even without a filesystem, but their original names and folders cannot be kept."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:1345
+#: big-mount/usr/lib/big-mount/drive-gui.py:1352
 msgid "B&rowse…"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:1355
+#: big-mount/usr/lib/big-mount/drive-gui.py:1362
 msgid "&Search for files"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:1362
+#: big-mount/usr/lib/big-mount/drive-gui.py:1369
 msgid "Searching. This reads the whole image and can take a long time."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:1367
+#: big-mount/usr/lib/big-mount/drive-gui.py:1374
 #, python-format
 msgid "%(n)s files found by content in %(dir)s. Their original names and folders could not be kept."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:1370
+#: big-mount/usr/lib/big-mount/drive-gui.py:1377
 msgid "The search failed."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:1428
+#: big-mount/usr/lib/big-mount/drive-gui.py:1435
 msgid "Big-Mount — Storage manager"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:1459
+#: big-mount/usr/lib/big-mount/drive-gui.py:1466
 msgid "Copies and &images"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:1505
+#: big-mount/usr/lib/big-mount/drive-gui.py:1512
 msgid "The copy continues in the background."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:1576
+#: big-mount/usr/lib/big-mount/drive-gui.py:1583
 msgid "Mounting…"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:1588
+#: big-mount/usr/lib/big-mount/drive-gui.py:1595
 msgid "Unmount and mount read-only"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:1594
+#: big-mount/usr/lib/big-mount/drive-gui.py:1601
 msgid "Could not mount"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:1615
+#: big-mount/usr/lib/big-mount/drive-gui.py:1622
 msgid "Unmounting…"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:1626
+#: big-mount/usr/lib/big-mount/drive-gui.py:1633
 msgid "Could not unmount"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:1649
+#: big-mount/usr/lib/big-mount/drive-gui.py:1656
 msgid "Reading SMART. Through USB it can take a minute."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:1669
+#: big-mount/usr/lib/big-mount/drive-gui.py:1676
 msgid "Hide them"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:1670
+#: big-mount/usr/lib/big-mount/drive-gui.py:1677
 msgid "Keep them"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:1688
-#: big-mount/usr/lib/big-mount/drive-gui.py:1703
+#: big-mount/usr/lib/big-mount/drive-gui.py:1695
+#: big-mount/usr/lib/big-mount/drive-gui.py:1710
 msgid "Unlock"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:1688
+#: big-mount/usr/lib/big-mount/drive-gui.py:1695
 #, python-format
 msgid "Passphrase of %s:"
 msgstr ""
 
-#: locale/templates/big-mount.desktop.in:3
-msgid "Storage Diagnostics"
-msgstr ""
-
 #: locale/templates/big-mount.desktop.in:4
-msgid "Storage device diagnostics"
+msgid "Drive manager and file rescue"
 msgstr ""
 
 #: locale/templates/big-mount.desktop.in:5
-msgid "Find out why a drive is read-only or busy, and remove it safely"
+msgid "See how your drives are doing, rescue files from them and remove them safely"
 msgstr ""
 
 #: locale/templates/big-mount.desktop.in:10
-msgid "disk;drive;usb;mount;unmount;read-only;busy;eject;ssd;erase;recover;rescue;backup;smart;"
+msgid "disk;drive;usb;mount;unmount;read-only;busy;eject;ssd;erase;recover;rescue;backup;smart;storage;diagnostics;"
 msgstr ""
 
 #: locale/templates/big-mount.desktop.in:14
-msgid "Drive manager and file rescue"
+msgid "Storage Diagnostics"
 msgstr ""
 
 #: locale/templates/big-mount-notifier.desktop.in:3

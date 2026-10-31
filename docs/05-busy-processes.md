@@ -82,6 +82,6 @@ kind of fragile interception the project forbids. So Big-Mount provides:
 
 - a Dolphin service menu (submenu "Storage device"): "Why can't I write
   here?" and "Safely remove (shows what keeps it busy)";
-- the "Storage Diagnostics" launcher;
+- the "Storage Diagnostics" action of the launcher;
 - `cd /` before anything else, so that the tool never keeps the device busy
   itself.

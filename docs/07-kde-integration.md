@@ -110,7 +110,7 @@ right-click in Dolphin. That click uses the same code path as above.
 
 | File | Role |
 | --- | --- |
-| `usr/share/applications/big-mount.desktop` | "Storage Diagnostics" launcher, and the `desktop-entry` of the notifications |
+| `usr/share/applications/big-mount.desktop` | "Big-Mount" launcher (action "Storage Diagnostics"), and the `desktop-entry` of the notifications |
 | `etc/xdg/autostart/big-mount-notifier.desktop` | starts the notifier in the session |
 | `usr/share/kio/servicemenus/big-mount.desktop` | Dolphin submenu "Storage device" |
 | `usr/share/polkit-1/actions/org.biglinux.big-mount.policy` | the administrator view |
