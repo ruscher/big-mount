@@ -14,7 +14,7 @@ set -u
 export LC_ALL=C.UTF-8 LANGUAGE=C
 HERE="$(cd "$(dirname "$0")" && pwd)"
 REPO="$(dirname "$HERE")"
-B="$REPO/big-mount/usr/bin/bigmount"
+B="${BM:-$REPO/big-mount/usr/bin/bigmount}"
 WORK="$(mktemp -d "${TMPDIR:-/var/tmp}/bm-drive-XXXXXX")"
 export XDG_STATE_HOME="$WORK/state" XDG_RUNTIME_DIR_REAL="${XDG_RUNTIME_DIR:-}"
 PASS=0 FAIL=0 FAILED=()

@@ -1777,8 +1777,8 @@ failing disk took 0.15 s on the development machine, because it reads nothing fr
     more cannot go to FAT32, and is warned about and listed as failed.
   - The window cannot select names that are not valid UTF-8 one by one: use **Copy
     everything** or the terminal.
-  - Not validated yet ([`docs/18`](docs/18-drive-final-report.md)): real `ddrescue` (the
-    job around it was tested with a stand-in), a real unplug and plug events in the
+  - Not validated yet ([`docs/18`](docs/18-drive-final-report.md)): the password dialog
+    of its helper, real `ddrescue` (the job around it was tested with a stand-in), a real unplug and plug events in the
     window, real LVM, RAID, multi-device Btrfs, SD and eMMC (detected from fixtures), a
     screen reader.
 - Users of the `biglinux-stable` repository get these fixes only after

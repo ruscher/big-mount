@@ -9,7 +9,7 @@ and security in [17](17-drive-security.md).
 | Suite | What it uses | Result |
 | --- | --- | --- |
 | `tests/drive-tests.sh` (new) | fixtures instead of the machine, runs in CI | **180 passed, 0 failed** |
-| `tests/gui-tests.py` (new) | the window off screen, a stand-in for `bigmount`, runs in CI | **36 passed, 0 failed** |
+| `tests/gui-tests.py` (new) | the window off screen, a stand-in for `bigmount`, runs in CI | **37 passed, 0 failed** |
 | `tests/drive-integration.sh` (new) | real filesystems on loop devices, real UDisks2, real LUKS, device-mapper, by hand | **173 passed, 0 failed** |
 | `tests/run-tests.sh new` | boot path | 114 passed, 0 failed (unchanged) |
 | `tests/lib-tests.sh` | library | 236 passed, 0 failed (one new) |
@@ -74,6 +74,10 @@ Found later, by making the screenshots and a real transcript for the README:
 - A window closed while a command ran raised an exception from the signal.
 - A line of raw state (`running 61000000`) in the output of a copy without a terminal.
 
+Found by opening the installed window on a real screen: with Plasma fonts in Portuguese
+the five tools of a drive did not fit in one row, the last was cut, and a horizontal
+scroll bar appeared. Off screen, with other fonts, they fit.
+
 One crash remains unexplained: `malloc(): unaligned tcache chunk detected`, once, in
 the screenshot script, when it changed the palette of the application with a second
 window still around. The manager never does that. It did not happen again in 6 more
@@ -84,7 +88,7 @@ with devices coming and going. The dark picture now runs in a process of its own
 
 | # | Item | Status |
 | --- | --- | --- |
-| 1 | `--gui-drive` opens a working window | **Partly tested**: off screen with real data and the real engine, light and dark themes. Not yet used on a real screen |
+| 1 | `--gui-drive` opens a working window | **Tested**: the installed package on a real Plasma 6.7 screen (Wayland, Portuguese, real drives), and off screen with the real engine. Opened and read on screen; a copy through the window ran off screen only |
 | 2 | `--drive` terminal manager | **Tested**, in a real pty |
 | 3 | Consistent identification | **Tested** on SATA, NVMe, USB (real) and fixtures; **SD and eMMC by fixture only** |
 | 4 | Diagnosis explains problems | **Tested**, including a real failing disk |
@@ -98,14 +102,14 @@ with devices coming and going. The dark picture now runs in a process of its own
 | 12 | Automated tests pass | **Tested** |
 | 13 | Does not weigh on the system | **Tested** for boot (nothing loaded); no long measurement of the window |
 | 14 | KDE and UDisks2 integration | **UDisks2 tested. Dolphin and launcher entries are generated and validated, but not clicked** |
-| 15 | Package stays installable | **Partly tested**: `package()` checked; not installed on this machine |
+| 15 | Package stays installable | **Tested**: built from `master` with `makepkg`, installed with `pacman -U` over the December 2025 script, `pacman -Qkk` clean, polkit action registered. Both integration suites pass against `/usr/bin/bigmount` |
 | 16 | Old functions still work | **Tested**: the old suites, unchanged, and `--gui-drive-check` |
 | 17 | Documentation | Done |
 
 ## 5. Not validated
 
-- **pkexec and polkit**: the helper ran through `sudo`, because the policy is only
-  in place when the package is installed. The password dialog was not seen.
+- **pkexec and polkit**: the policy is installed and known to polkit, but the helper
+  only ran through `sudo` in the tests. The password dialog was not seen.
 - **Real ddrescue**: it is not installed here, and nothing is installed without
   asking. The job around it was tested with a stand-in, so its options
   (`--idirect`, `--no-scrape`, `--retry-passes`) and resuming from a real map are
