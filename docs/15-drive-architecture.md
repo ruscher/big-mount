@@ -16,7 +16,7 @@ usr/lib/big-mount/
   drive-copy.sh                     preflight checks, jobs, supervisor, reports
   drive-recovery.sh                 ddrescue, TestDisk, PhotoRec
   drive-tui.sh                      the interactive terminal menus
-  drive-gui.py                      the window (PySide6), calls --drive ... --json
+  drive-gui.py, gui/                the application (GTK 4, libadwaita), calls --drive ... --json
   bigmount-drive-helper             the only new privileged code (polkit)
 ```
 
@@ -45,11 +45,10 @@ its policy (removable devices belong to UDisks2 and the desktop) did not change.
 
 It used to open the drive check with Secure Erase. Now:
 
-- `--gui-drive [DISK|FOLDER]` opens the manager when a display, Python and
-  PySide6 are available, and otherwise falls back to that same check in dialogs
-  (`BM_NO_QT=1` forces the fallback).
-- `--gui-drive-check [DISK]` always opens the old dialog. The manager reaches it
-  through **Check and erase…**, and Secure Erase is still only in `bm_erase_run`.
+Superseded by [gtk-unification](gtk-unification/03-architecture.md): both flags
+now open one GTK 4 and libadwaita application, `--gui-drive-check` on the health
+of the drive. The PySide6 window and the dialog check are gone; Secure Erase is
+still only in `bm_erase_run`.
 
 ## 5. Commands
 
@@ -96,4 +95,4 @@ that USB bridge.
 
 Required, as before: `bash`, `udisks2`, `util-linux`, `ntfs-3g`, `lsof`. Optional,
 each detected at run time and explained when missing: `rsync` (copying),
-`pyside6` (the window), `smartmontools`, `ddrescue`, `testdisk`.
+`smartmontools`, `ddrescue`, `testdisk`.

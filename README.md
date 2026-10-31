@@ -13,7 +13,7 @@
 </p>
 
 <p align="center">
-  <img src="docs/images/drive-manager.png" width="720" alt="The Big-Mount drive manager">
+  <img src="docs/images/app-overview.png" width="720" alt="Big-Mount: your drives and devices, with their health and what can be done">
 </p>
 
 ---
@@ -185,7 +185,7 @@ cannot be traced to a commit.
 | `libnotify` | optional | notifications (`notify-send`); without it `kdialog --passivepopup` is used |
 | `polkit` | comes with `udisks2` | authorization; `pkexec` for the administrator view and the helper of the drive manager |
 | `rsync` | optional | copying files off a drive (`--drive copy`) |
-| `pyside6` | optional | the window of the drive manager (`--gui-drive`); without it, dialogs |
+| `gtk4`, `libadwaita`, `python-gobject` | required | the application (`--gui-drive`). Never loaded at boot |
 | `smartmontools` | optional | SMART details of a drive |
 | `ddrescue` | optional | disk images of a failing drive |
 | `testdisk` | optional | finding lost partitions, searching files by content (PhotoRec) |
@@ -195,7 +195,7 @@ are detected when they are needed, and what is missing is explained. Big-Mount
 never installs anything by itself. To have the whole drive manager:
 
 ```bash
-sudo pacman -S --needed rsync pyside6 smartmontools ddrescue testdisk
+sudo pacman -S --needed rsync smartmontools ddrescue testdisk
 ```
 
 ### 2.6 Disable or uninstall
@@ -522,7 +522,7 @@ partition`, and a partition table you erased comes back.
 
 ```bash
 bigmount --diagnose /dev/sda        # the drive, then each of its filesystems
-bigmount --gui-drive-check          # in a dialog (or Check and erase… in bigmount --gui-drive)
+bigmount --gui-drive-check          # the application, on the health of the drive
 sudo bigmount --secure-erase /dev/sda
 ```
 
@@ -535,8 +535,9 @@ own failure. A few damaged sectors replaced by spare ones are shown but are
 not an alarm. When a filesystem is diagnosed, the errors of its drive are
 mentioned, and the dialog offers **Check the drive…**.
 
-For an internal SATA drive that supports it, **Erase the whole drive…**
-(or `--secure-erase`) runs the drive's own ATA Secure Erase through UDisks2:
+For an internal SATA drive that supports it, **Advanced maintenance** →
+**Erase data permanently** in the application (or `--secure-erase`) runs the drive's
+own ATA Secure Erase through UDisks2:
 
 1. shows what will be lost (every partition), with Cancel as the default;
 2. asks you to type the name of the drive (`sda`);
@@ -707,12 +708,13 @@ must come off a disk and you want to know that they really did. This is new in
 commands for scripts. All three use the same engine, so they say the same things.
 
 <p align="center">
-  <img src="docs/images/drive-manager.png" width="820" alt="The drive manager showing a failing disk: critical health, what was found, and what to do">
+  <img src="docs/images/app-health.png" width="820" alt="The health of a failing disk: critical, what was found, and what to do">
 </p>
 
 ```bash
-bigmount --gui-drive            # the window
-bigmount --drive                # the same in menus, in any terminal
+bigmount --gui-drive [DISK]        # the application
+bigmount --gui-drive-check [DISK]  # the same application, opened on the health of the drive
+bigmount --drive                   # the same in menus, in any terminal
 ```
 
 Also from the desktop: right-click a folder in Dolphin → **Storage device** →
@@ -723,7 +725,7 @@ The pictures in this section are the real window, drawn by
 [`tests/readme-screenshots.py`](tests/readme-screenshots.py) with sample drives. The
 terminal transcripts are real output, with a real copy between two disposable disk
 images; only the names of the user, the volumes and one model were changed. The window
-follows the Plasma theme and the system language.
+follows the light or dark style of the system and its language.
 
 ### 6a.1 What it does differently from a file manager
 
@@ -748,9 +750,19 @@ from what.
 
 ### 6a.2 Rescue files, step by step, in the window
 
-**1. Look at the drive.** The list on the left shows every drive and what is known
-about its health, in words and an icon, never in colour alone. Reading this touches
-nothing on the disk: it comes from the kernel log, udev and UDisks2.
+One application, one window. `bigmount --gui-drive` opens it on your drives;
+`bigmount --gui-drive-check` opens the same window on the health of a drive. It is
+GTK 4 and libadwaita, follows the light and dark styles of the system, and reflows
+down to a phone-sized window.
+
+<p align="center">
+  <img src="docs/images/app-overview-dark.png" width="620" alt="Home in the dark style: every drive, its health in words and an icon, and what can be done">
+</p>
+
+**1. Look at the drive.** The side lists every drive, and the page beside it what is
+known about its health, in words and an icon, never in colour alone. Reading this
+touches nothing on the disk: it comes from the kernel log, udev and UDisks2. The page
+says where the verdict comes from, and *not examined* is never shown as *no alerts*.
 
 | Level | Meaning |
 | --- | --- |
@@ -759,67 +771,82 @@ nothing on the disk: it comes from the kernel log, udev and UDisks2.
 | **No alerts** | nothing was found, and it says where it looked: SMART and log, log only, SMART only. It never says "healthy" |
 | **Unknown** | neither the log nor SMART could be read |
 
-**Read SMART…** asks for the password and adds the counters of the drive. The raw
-counters decide, not the verdict: that disk with 1,848 pending sectors said `PASSED`.
+**Read SMART…** asks for the password, starts no test, and adds the counters of the
+drive with the time they were read. The raw counters decide, not the verdict: that
+disk with 1,848 pending sectors said `PASSED`. The serial number stays hidden until
+you ask for it.
 
 <p align="center">
-  <img src="docs/images/drive-healthy.png" width="620" alt="A drive with no alerts, its volume mounted, with free space and the available actions">
-  <img src="docs/images/drive-manager-dark.png" width="620" alt="The same window with the Breeze Dark theme">
+  <img src="docs/images/app-drive.png" width="620" alt="A failing drive: its volume, not mounted, and the actions">
+  <img src="docs/images/app-health.png" width="620" alt="Health: what was found, what to do, and SMART not read yet">
 </p>
 
-**2. Mount it without changing it.** **Mount read-only** opens the volume. On a drive
-at risk, the option to also block writing on the device itself comes checked.
+**2. Recover files** opens an assistant in the same window: five steps, with Back
+that loses nothing.
+
+| Step | What you choose | What the engine checks |
+| --- | --- | --- |
+| From where | a volume, the whole drive, or a disk image | it is still the same drive (serial, not `/dev/sdX`) |
+| What | all types, or photos, videos, documents, audio, compressed files | what each type can and cannot find, said before |
+| How | the way it advises first, then the others | which tools exist, and why a way cannot be used |
+| Where | a place on another physical disk | not the same disk, not inside the source, room, permission |
+| Confirm | nothing: a summary, and **Start** | every check again, writing nothing |
+
+The ways of looking for files:
+
+- **Copy files directly**: everything, or the folders you mark, with names and dates.
+  Advised for a drive at risk: what matters first, nothing walked for nothing.
+- **Quick analysis**: a list of the files that exist on the volume, by type; then you
+  pick what to copy. It reads folders, never file contents, and it says plainly that
+  deleted files are not on that list.
+- **Deep analysis**: a search by content with PhotoRec, which can find what no longer
+  appears, without names or folders. On a physical disk it first makes an image with
+  GNU ddrescue, and the search runs on the image only after you confirm.
+- **Advanced**: a disk image only, or lost partitions with TestDisk, which only reads.
+
+On an SSD that discards deleted blocks (TRIM) the assistant says, before anything
+starts, that files deleted long ago may be gone for good.
 
 <p align="center">
-  <img src="docs/images/drive-mount-dialog.png" width="380" alt="The dialog to mount read-only, with the option to block writing on the device">
+  <img src="docs/images/app-rescue-source.png" width="620" alt="Step 1: where to recover from">
+  <img src="docs/images/app-rescue-what.png" width="620" alt="Step 2: types of file">
+  <img src="docs/images/app-rescue-how.png" width="620" alt="Step 3: the advised way first, with why">
+  <img src="docs/images/app-rescue-where.png" width="620" alt="Step 4: places on another disk; the same physical disk cannot be chosen">
+  <img src="docs/images/app-rescue-confirm.png" width="620" alt="Step 5: source, destination, method, sizes and warnings before Start">
 </p>
 
-**3. Choose what to copy.** **Copy files to another disk…** copies everything, or what
-you mark. Start with what matters most.
+The same physical disk has no button that allows it in the assistant. The terminal
+keeps `--allow-same-disk` for whoever really means it.
+
+**3. Follow it, or close the window.** Work runs in the background and goes on
+without the window; closing it only says so. Numbers are real: files, bytes, current
+speed, time left only when it can be known, and a moving bar with the reason when
+there is no total. A copy can be paused; a search can be cancelled, and what it found
+stays.
 
 <p align="center">
-  <img src="docs/images/drive-wizard-what.png" width="820" alt="Assistant, step 1: choosing folders to copy">
+  <img src="docs/images/app-job-running.png" width="620" alt="A copy in progress: estimated percentage, files, data, speed, time left, set aside">
 </p>
 
-**4. Choose where.** Places on another physical disk, with room, come first, and each
-of the others says what is wrong with it. Here you also decide what happens to files
-that already exist, how to check the result, how long a stuck file may hold the copy,
-and an optional limit on the reading speed.
+**4. See what was found.** A list that stays light with a million entries: filters by
+type, search by name, order, selection with its size, and a preview of pictures on
+request (never of a drive at risk, never by opening the file). Words match the list:
+files that **exist**, or **candidates** found by content, which have no names and may
+be incomplete. **Recover selected** copies them, through the same checks.
 
 <p align="center">
-  <img src="docs/images/drive-wizard-where.png" width="820" alt="Assistant, step 2: destinations with the reasons, and the options of the copy">
+  <img src="docs/images/app-results.png" width="620" alt="Candidates found by content, filtered by type, with a notice of what they are">
 </p>
 
-**5. Review.** Every check runs here, writing nothing. On a healthy drive this step
-measures the total. On a drive at risk it does not, and tells you why.
+**Copies and searches** lists all of them, running or past, including one interrupted
+by a power cut, ready to resume.
+
+**Erase data permanently** lives under **Advanced maintenance**, apart from
+recovery. See [5.4](#54-drive-errors-and-secure-erase).
 
 <p align="center">
-  <img src="docs/images/drive-wizard-review.png" width="820" alt="Assistant, step 3: review before starting">
-</p>
-
-**6. Follow it, or close the window.** The copy runs in the background and goes on
-without the window. Numbers are real: files, bytes, current speed, average, time left
-only when it can be known. **Pause** and **Cancel copy** stop it safely, and it can be
-resumed either way.
-
-<p align="center">
-  <img src="docs/images/drive-copy-progress.png" width="620" alt="A copy with a measured total: percentage, files, speed and time left">
-  <img src="docs/images/drive-copy-at-risk.png" width="620" alt="A copy on a drive at risk: a busy bar, with what was really copied and no percentage">
-</p>
-
-**7. Read the result.** When anything was left behind, it never looks complete: you
-get the list, the reason, and **Try set-aside files again**, which reads the damaged
-areas once more and so happens only when you ask.
-
-<p align="center">
-  <img src="docs/images/drive-copy-attention.png" width="820" alt="A copy that finished with files left behind: the report lists them">
-</p>
-
-**Copies and images** lists every copy, running or past, including one interrupted by
-a power cut, ready to resume.
-
-<p align="center">
-  <img src="docs/images/drive-jobs.png" width="620" alt="The list of copies: one needing attention, one completed, one interrupted">
+  <img src="docs/images/app-erase.png" width="620" alt="Advanced maintenance: a red notice that this erases everything and is not recovery">
+  <img src="docs/images/app-narrow.png" width="240" alt="The same window, narrow: one pane, sections at the bottom">
 </p>
 
 ### 6a.3 The same in the terminal
@@ -1058,12 +1085,9 @@ report.txt, report.json
 
 ### 6a.7 When the files cannot be reached
 
-**Advanced recovery…** in the window, or these commands. They read the disk and write
-elsewhere. Repairing a filesystem or a partition table is not done here, on purpose.
-
-<p align="center">
-  <img src="docs/images/drive-advanced.png" width="560" alt="Advanced recovery: disk image, lost partitions, search by content">
-</p>
+**Deep analysis** and **Advanced** in the assistant, or these commands. They read the
+disk and write elsewhere. Repairing a filesystem or a partition table is not done
+here, on purpose.
 
 ```bash
 # A copy of the whole device, to a file on ANOTHER disk. It resumes from its map and
@@ -1083,7 +1107,7 @@ bigmount --drive carve --source /mnt/backup/disk.img --destination /mnt/backup/f
 | TestDisk, PhotoRec | `testdisk` | `partitions` and `carve` explain the same |
 | smartctl | `smartmontools` | `diagnose --smart` explains the same; the log still works |
 | rsync | `rsync` | `copy` explains the same |
-| PySide6 | `pyside6` | `--gui-drive` falls back to the dialogs of `--gui-drive-check` |
+| GTK 4, libadwaita | `gtk4`, `libadwaita`, `python-gobject` | the application says what is missing and points to `bigmount --drive`, which does the same |
 
 ### 6a.8 Encrypted volumes, and the running system
 
@@ -1193,8 +1217,8 @@ empty target is refused.
 | `bigmount --gui [TARGET]` | no | diagnosis in a dialog; without a target, a list |
 | `bigmount --gui-remove TARGET` | no | safe removal in dialogs |
 | `bigmount --drive [COMMAND]` | no | drive manager and file rescue in the terminal, see [6a](#6a-drive-manager-and-file-rescue) and `bigmount --drive --help` |
-| `bigmount --gui-drive [DISK\|FOLDER]` | no | the drive manager window; dialogs when PySide6 or a display is missing |
-| `bigmount --gui-drive-check [DISK]` | no | drive check in a dialog, with **Erase the whole drive…** when it is possible |
+| `bigmount --gui-drive [DISK\|FOLDER\|UUID]` | no | the application: drives, health, file rescue; without a session it points to `--drive` |
+| `bigmount --gui-drive-check [DISK]` | no | the same application, opened on the health of the drive |
 | `bigmount --secure-erase DISK` | no (UDisks2 asks for the administrator password; `sudo` when there is no graphical session) | erases a whole internal SATA drive with its own Secure Erase, after confirmation, then checks it ([5.4](#54-drive-errors-and-secure-erase)) |
 | `bigmount --notifier` | no | session notifier (started by autostart) |
 | `bigmount --doctor` | no | read-only self-check of the installation, the service, the session and the storage stack; anonymized, for bug reports ([12.2](#122-bigmount---doctor)) |
@@ -1313,7 +1337,8 @@ To mount a partition somewhere else or with other options, put it in
 | `/usr/lib/big-mount/drive-copy.sh` | checks before copying, jobs, supervisor, reports |
 | `/usr/lib/big-mount/drive-recovery.sh` | ddrescue, TestDisk, PhotoRec |
 | `/usr/lib/big-mount/drive-tui.sh` | the menus of `--drive` |
-| `/usr/lib/big-mount/drive-gui.py` | the window of `--gui-drive` (PySide6) |
+| `/usr/lib/big-mount/drive-gui.py`, `gui/` | the application of `--gui-drive` (GTK 4, libadwaita) |
+| `/usr/lib/big-mount/drive-erase.sh` | Secure Erase for the application: the check, a ticket, the erase |
 | `/usr/lib/big-mount/bigmount-drive-helper` | privileged helper of the drive manager (through `pkexec`) |
 | `/usr/lib/big-mount/version` | the git revision the package was built from |
 | `/usr/lib/big-mount/bigmount-holders` | privileged, read-only helper (through `pkexec`) |
@@ -1375,8 +1400,8 @@ user actions ── udisksctl/D-Bus ──▶ UDisks2 ── polkit decides (pas
 - **Secure Erase** also goes through UDisks2
   (`org.freedesktop.udisks2.ata-secure-erase`: the administrator password,
   always). Big-Mount adds no privileged code for it. It is reachable only
-  from `--secure-erase` and the **Erase the whole drive…** dialog, after the
-  name of the drive is typed, and a test checks that nothing else calls it.
+  from `--secure-erase` and from **Erase data permanently** in the application,
+  after the name of the drive is typed, and a test checks that nothing else calls it.
 - **Other users' data:** as a user, `lsof` sees only your processes. Other
   accounts appear only with the administrator password.
 - **Untrusted data** (labels, file and process names) never goes through
@@ -1488,8 +1513,9 @@ journal (on Arch that needs the `wheel`, `adm` or `systemd-journal` groups).
 The diagnosis still works with fewer details about errors, and the remount
 fix is withheld for lack of evidence.
 
-**The window of the drive manager does not open, only a dialog.** It needs
-`pyside6` and a graphical session. `bigmount --doctor` lists the optional tools.
+**The application does not open.** It needs `gtk4`, `libadwaita` 1.5 or later,
+`python-gobject` and a graphical session; it says which is missing.
+`bigmount --doctor` checks them. `bigmount --drive` does the same in a terminal.
 
 **"The total is not measured", and there is no percentage.** That is on purpose: the
 drive has alerts, and walking the whole disk to draw a bar would wear it. The window
@@ -1573,7 +1599,7 @@ never put a variable inside `$"..."`.
 big-mount/                  tree the PKGBUILD copies to /
   usr/bin/bigmount          boot path + entry point of the commands
   usr/lib/big-mount/        lib.sh, ui.sh, cli.sh, doctor.sh, bigmount-holders,
-                            drive*.sh, drive-gui.py, bigmount-drive-helper
+                            drive*.sh, drive-gui.py, gui/, bigmount-drive-helper
   usr/lib/systemd/system/   big-mount.service
   usr/share/...             hook, desktop files, service menu, polkit, icon, locale
   etc/                      big-mount.conf, autostart
@@ -1598,7 +1624,9 @@ bash tests/lib-tests.sh            # library: decisions, process policy, removal
 bash tests/i18n-tests.sh           # catalog, generated resources, runtime languages
 bash tests/package-check.sh        # package() on the checkout, installed files, metadata
 bash tests/drive-tests.sh          # drive manager, with fixtures instead of the machine
-python3 tests/gui-tests.py         # the window, off screen, with a stand-in for the engine
+python3 tests/gui-tests.py         # the application, on a private display, with a stand-in for the engine
+python3 tests/gui-e2e.py           # the application with the real engine, on scratch files only
+python3 tests/measure-app.py       # what the application costs: start, memory, idle CPU, long lists
 python3 tests/readme-screenshots.py  # the pictures of this README, with sample drives
 bash tests/drive-integration.sh    # REAL filesystems and failures on disposable devices (needs sudo)
 bash tests/integration.sh          # REAL mounts of disposable images through UDisks2
@@ -1691,6 +1719,7 @@ docs or tests do not trigger it either.
 | [`docs/16-drive-copy-engine.md`](docs/16-drive-copy-engine.md) | what a real failing disk taught, jobs, what counts as copied, stopping and resuming |
 | [`docs/17-drive-security.md`](docs/17-drive-security.md) | the privileged helper, untrusted data, passwords, races |
 | [`docs/18-drive-final-report.md`](docs/18-drive-final-report.md) | tests, bugs they found, and what is not validated yet |
+| [`docs/gtk-unification/`](docs/gtk-unification/08-final-report.md) | one GTK 4 application for both flags: inventory, UX, design, architecture, CLI, tests, security, performance (in Portuguese) |
 
 ---
 
