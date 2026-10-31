@@ -201,7 +201,8 @@ bm_ui_text() {
 
 # ----- notifications -----------------------------------------------------------
 # One path only, so a message is never shown twice: notify-send (libnotify)
-# when there is a session bus, otherwise (or when it fails) stderr. Durations are set here and nowhere else. Plasma honours them, and
+# when there is a session bus; otherwise, or when it fails, a warning in a
+# dialog and anything else on stderr. Durations are set here and nowhere else. Plasma honours them, and
 # without one it keeps notifications that have buttons open indefinitely.
 BM_POPUP_SECONDS=5      # information: disappears and is not kept in the history
 BM_WARNING_SECONDS=15   # problems, possibly with buttons: time to click, kept in the history
@@ -224,6 +225,20 @@ bm_notify() {
       && notify-send --app-name "$BM_APP_NAME" --icon "$icon" --expire-time "$((secs * 1000))" \
          --hint string:desktop-entry:big-mount "${opts[@]}" -- "$title" "$REPLY" 2>/dev/null; then
       return 0
+   fi
+   # A warning stays in sight without a notification server (the notifier
+   # started with the session has no terminal): a window, with the actions as
+   # buttons; the key chosen is printed, as notify-send does. Its document is
+   # its own, the caller's is left as it was.
+   if [ "$kind" = warning ] && [ "${BM_UI:-}" = gtk ]; then
+      local DOC_KIND=() DOC_TEXT=() buttons=("--button=close="$"Close")
+      for a in "$@"; do buttons+=("--button=$a"); done
+      bm_doc_p "$body"
+      bm_ui_gtk question --title="$title" "${buttons[@]}" --default=close --cancel=close
+      if [ "$?" -ne 25 ]; then
+         [ -n "$REPLY" ] && [ "$REPLY" != close ] && printf '%s\n' "$REPLY"
+         return 0
+      fi
    fi
    # No notification server, or it refused: the message is not lost. One line,
    # and device data brings no escape sequence to the terminal

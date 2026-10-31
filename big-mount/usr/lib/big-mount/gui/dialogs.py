@@ -7,6 +7,8 @@ from . import widgets as w
 from .common import _
 
 GROUPED = ("kv", "li", "th", "tr", "pre")
+# Closing a question whose buttons have no cancel: no answer at all
+CLOSED = "__closed__"
 
 
 def blocks(doc):
@@ -123,8 +125,8 @@ class Dialog:
 
     def _question(self, doc):
         keys = [k for k, _l in self.args.buttons]
-        cancel = self.args.cancel if self.args.cancel in keys else keys[0]
-        default = self.args.default if self.args.default in keys else cancel
+        cancel = self.args.cancel if self.args.cancel in keys else CLOSED
+        default = self.args.default if self.args.default in keys else (cancel if cancel in keys else keys[0])
         self._respond(self.args.buttons, default, cancel)
         return render(doc) if doc else None
 
@@ -178,7 +180,7 @@ class Dialog:
         if self.args.mode == "input":
             if rid == "ok":
                 self.answer = self.entry.get_text()
-        elif self.args.mode == "question":
+        elif self.args.mode == "question" and rid != CLOSED:
             self.answer = rid
         elif self.args.mode in ("message", "text"):
             self.answer = ""

@@ -1713,6 +1713,13 @@ class ShellDialogs(unittest.TestCase):
         d.dialog.emit("response", "2")
         self.assertEqual(d.answer, "2")
 
+    def test_closing_a_question_without_cancel_is_no_answer(self):
+        d = self.make(["question", "--button=yes=Open", "--button=other=Other"])
+        self.assertNotIn(d.dialog.get_close_response(), ("yes", "other"))
+        self.assertEqual(d.dialog.get_default_response(), "yes")
+        d.dialog.emit("response", d.dialog.get_close_response())
+        self.assertIsNone(d.answer)
+
     def test_a_menu_answers_with_the_key_of_the_item(self):
         d = self.make(["menu", "--title=Device is busy", "--text=What do you want to do?", "--item=refresh=Refresh the list", "--item=admin=All users"])
         self.assertEqual(d.dialog.get_heading(), "Device is busy")

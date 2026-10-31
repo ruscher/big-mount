@@ -441,6 +441,19 @@ check "no window after all: never a yes" eq "$rc" 1
 check "  ... the text is still shown" grep -q "fallback text" <<< "$out"
 dlg "25"; bm_ui_confirm "T" "" "Yes" "No" < /dev/null > /dev/null
 check "  ... and the terminal is used from then on" eq "$BM_UI" tty
+BM_UI=gtk BM_DIALOG_PROGRAM="$EXE/fake-dialog"
+notify-send() { return 1; }
+bm_doc_new; bm_doc_p "the caller's own document"
+dlg "0 details"; out="$(DBUS_SESSION_BUS_ADDRESS=fake bm_notify warning dialog-warning "Read-only device" "Pen" "details=View details" 2>/dev/null)"
+check "no notification server: a warning becomes a window" grep -qF -- "question --title=Read-only device --button=close=Close --button=details=View details --default=close --cancel=close" "$WORK/dlg.log"
+check "  ... with its text" grep -qF "p|Pen|" "$WORK/dlg.log"
+check "  ... and the action chosen is the answer, as with notify-send" eq "$out" details
+check "  ... the caller's document is untouched" eq "${DOC_TEXT[*]}" "the caller's own document"
+dlg "0 close"; out="$(DBUS_SESSION_BUS_ADDRESS="" bm_notify warning dialog-warning "Read-only device" "Pen" 2>/dev/null)"
+check "  ... Close is no action" eq "$out" ""
+dlg "0"; out="$(DBUS_SESSION_BUS_ADDRESS="" bm_notify info x "Safe to disconnect" "Pen" 2>&1)"
+check "information is never a window to close" bash -c '[ "$1" = "Safe to disconnect: Pen" ] && [ ! -s "$2" ]' _ "$out" "$WORK/dlg.log"
+unset -f notify-send
 unset BM_DIALOG_PROGRAM
 BM_UI="tty"
 
