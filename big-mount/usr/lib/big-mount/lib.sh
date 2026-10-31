@@ -1214,11 +1214,13 @@ bm_erase_unfreeze() {
 # Returns 0 erased and verified, 1 error (ER_REASON), 3 still mounted or in
 # use, 5 not authorized, 11 frozen, 12 the drive did not do what it was told
 # (ER_STAGE: erase-ignored | table-lost | unverified).
+bm_is_block() { [ -b "$1" ]; }
+
 bm_erase_run() {
    local disk="$1" seq="$2" ptable="$3" d dobj blk old t u min
    ER_REASON="" ER_STAGE=""
    bm_diskseq "$disk"
-   if [ "$REPLY" != "$seq" ] || [ ! -b "$disk" ]; then
+   if [ "$REPLY" != "$seq" ] || ! bm_is_block "$disk"; then
       ER_REASON=$"The drive was disconnected or replaced. Nothing was erased."
       return 1
    fi

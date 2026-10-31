@@ -12,7 +12,7 @@ and security in [17](17-drive-security.md).
 | `tests/gui-tests.py` (new) | the window off screen, a stand-in for `bigmount`, runs in CI | **36 passed, 0 failed** |
 | `tests/drive-integration.sh` (new) | real filesystems on loop devices, real UDisks2, real LUKS, device-mapper, by hand | **173 passed, 0 failed** |
 | `tests/run-tests.sh new` | boot path | 114 passed, 0 failed (unchanged) |
-| `tests/lib-tests.sh` | library | 235 passed, 0 failed (unchanged) |
+| `tests/lib-tests.sh` | library | 236 passed, 0 failed (one new) |
 | `tests/i18n-tests.sh` | translations | 38 passed, 0 failed |
 | `tests/package-check.sh` | PKGBUILD | 69 passed, 0 failed (was 52: the new files) |
 | `tests/integration.sh` | existing real scenarios | 134 passed, 0 failed, 1 skipped (needs root) |

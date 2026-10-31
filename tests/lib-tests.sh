@@ -715,6 +715,11 @@ bm_gdbus() {
     return 0
 }
 erase_case() { ER_CALLS=() LS_PT="gpt OLDID"; sata_up; FAKE_UP[ID_ATA_FEATURE_SET_SECURITY_FROZEN]=0; }
+# Not a block device: the name is gone, even with the same sequence number
+erase_case; bm_erase_run /dev/null 7 dos; rc=$?
+check "what is no longer a block device -> 1, nothing sent to it" eq "$rc:${#ER_CALLS[@]}" "1:0"
+# The drive of these tests does not exist. Whether the machine has a /dev/sda must not matter
+bm_is_block() { :; }
 erase_case; bm_erase_run /dev/sda 7 dos; rc=$?
 check "erased, a new empty table written and read back -> 0" eq "$rc" 0
 check "  ... erase (never enhanced), then table, then a fresh read" eq "${ER_CALLS[*]}" \
