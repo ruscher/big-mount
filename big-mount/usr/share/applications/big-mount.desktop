@@ -7,6 +7,7 @@ GenericName=Drive manager and file rescue
 Comment[pt_BR]=Veja como estão suas unidades, resgate arquivos delas e remova-as com segurança
 Comment=See how your drives are doing, rescue files from them and remove them safely
 Exec=/usr/bin/bigmount --gui-drive
+StartupWMClass=org.biglinux.big-mount
 Icon=big-mount
 Terminal=false
 Categories=System;Filesystem;

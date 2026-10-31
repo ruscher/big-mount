@@ -113,14 +113,31 @@ bm_cp_err_text() {
       dest-risky) REPLY=$"The destination is on a drive with critical alerts. To accept that, allow it explicitly." ;;
       rw-source) REPLY=$"This drive is at risk and is mounted with writing enabled. Mount it read-only first, so that nothing changes it during the copy. To accept the risk, allow it explicitly." ;;
       no-space) REPLY=$"There is not enough free space at the destination." ;;
+      no-ddrescue) REPLY=$"GNU ddrescue is not installed (package ddrescue). It makes the disk image." ;;
+      no-photorec) REPLY=$"PhotoRec is not installed (package testdisk)." ;;
+      no-testdisk) REPLY=$"TestDisk is not installed (package testdisk)." ;;
+      not-authorized) REPLY=$"Permission was not granted." ;;
+      not-readable) REPLY=$"This device cannot be read by your user. Make a disk image first (bigmount --drive image), and search in the image: it also spares the disk." ;;
+      image-same-disk) REPLY=$"The image cannot be stored on the disk being read." ;;
+      image-other-disk) REPLY=$"An image of another disk already exists in that place. Continuing it would mix the two: choose another name." ;;
+      source-replaced) REPLY=$"The device was disconnected or replaced. Nothing was done." ;;
+      no-driver) REPLY=$"This computer has no driver for this filesystem. Installing the right package may solve it." ;;
+      locked) REPLY=$"This volume is encrypted. Unlock it first." ;;
+      member) REPLY=$"This is a part of a larger volume (RAID, LVM or similar), not a filesystem of its own. Its volume must be assembled first." ;;
+      swap) REPLY=$"This is swap space, not a place for files." ;;
+      no-filesystem) REPLY=$"No filesystem was recognized on it, so its files cannot be listed." ;;
+      pick-volume) REPLY=$"Choose one of the volumes of this drive to see its files." ;;
+      image-file) REPLY=$"This is already a disk image." ;;
       *) REPLY=$"The copy was refused." ;;
    esac
 }
 
 bm_cp_err_rc() {
    case "$1" in
-      no-rsync) REPLY=25 ;;
+      no-rsync | no-ddrescue | no-photorec | no-testdisk) REPLY=25 ;;
       no-space) REPLY=21 ;;
+      not-authorized) REPLY=5 ;;
+      source-replaced) REPLY=24 ;;
       source-stuck | dest-stuck) REPLY=24 ;;
       *) REPLY=20 ;;
    esac
@@ -181,11 +198,15 @@ bm_cp_check() {
          *$'\n'*) CK_ERR="bad-path"; return 1 ;;
          //* | */../*) CK_ERR="item-bad"; return 1 ;;
       esac
-      timeout 10 test -e "$s/$i" || timeout 10 test -L "$s/$i" || {
-         [ "$?" -eq 124 ] && CK_ERR="source-stuck" || CK_ERR="item-missing"
-         return 1
-      }
    done
+   # One process with one limit: a long selection must not start one per item
+   if [ "${#CP_ITEMS[@]}" -gt 0 ]; then
+      # shellcheck disable=SC2016  # the code of the other bash
+      printf '%s\0' "${CP_ITEMS[@]}" | timeout 60 bash -c 'while IFS= read -r -d "" i; do [ -e "$0/$i" ] || [ -L "$0/$i" ] || exit 3; done' "$s"
+      rc=$?
+      if [ "$rc" -eq 124 ]; then CK_ERR="source-stuck"; return 1; fi
+      if [ "$rc" -ne 0 ]; then CK_ERR="item-missing"; return 1; fi
+   fi
 
    # The folder may not exist yet: the real path of what does
    d="$(timeout 10 readlink -m -- "$CP_DEST")"; rc=$?
@@ -206,11 +227,13 @@ bm_cp_check() {
 
    # A real topology comparison, not one of names: a partition on LVM on the
    # same disk counts as the same disk
-   if [ "$CK_SRC_DEV" = "$CK_DST_DEV" ]; then CK_ERR="same-fs"; return 1; fi
-   if [ -n "$CK_SRC_UUID" ] && [ "$CK_SRC_UUID" = "$CK_DST_UUID" ]; then CK_ERR="same-fs"; return 1; fi
-   if [[ $CK_SRC_DEV == /dev/* && $CK_DST_DEV == /dev/* ]] && bm_cp_disks_share "$CK_SRC_DEV" "$CK_DST_DEV"; then
-      CK_SAME_DISK=1
-      [ "$CP_ALLOW_SAME" = 1 ] || { CK_ERR="same-disk"; return 1; }
+   if [ "${CP_ALLOW_SAMEFS:-0}" != 1 ]; then
+      if [ "$CK_SRC_DEV" = "$CK_DST_DEV" ]; then CK_ERR="same-fs"; return 1; fi
+      if [ -n "$CK_SRC_UUID" ] && [ "$CK_SRC_UUID" = "$CK_DST_UUID" ]; then CK_ERR="same-fs"; return 1; fi
+      if [[ $CK_SRC_DEV == /dev/* && $CK_DST_DEV == /dev/* ]] && bm_cp_disks_share "$CK_SRC_DEV" "$CK_DST_DEV"; then
+         CK_SAME_DISK=1
+         [ "$CP_ALLOW_SAME" = 1 ] || { CK_ERR="same-disk"; return 1; }
+      fi
    fi
 
    # Health of both ends: only from what is already known, never from the disk
@@ -357,7 +380,16 @@ bm_job_state_load() {
    return 0
 }
 
+# bm_job_state_label STATE [KIND]: the same state reads differently for each kind
 bm_job_state_label() {
+   case "${2:-copy}:$1" in
+      image:running) REPLY=$"Making the disk image"; return ;;
+      image:completed) REPLY=$"Disk image complete"; return ;;
+      scan:analyzing | scan:running) REPLY=$"Listing the files"; return ;;
+      scan:completed) REPLY=$"List of files complete"; return ;;
+      carve:analyzing | carve:running) REPLY=$"Searching by content"; return ;;
+      carve:completed) REPLY=$"Search complete"; return ;;
+   esac
    case "$1" in
       pending) REPLY=$"Waiting to start" ;;
       analyzing) REPLY=$"Measuring what will be copied" ;;
@@ -383,6 +415,12 @@ bm_job_reason_text() {
       files-left) REPLY=$"Some files were not copied. See the list below." ;;
       differences) REPLY=$"The check found differences between source and destination." ;;
       rsync-error) REPLY=$"rsync stopped with an error. See the log." ;;
+      not-authorized) REPLY=$"Permission was not granted." ;;
+      no-ddrescue) REPLY=$"GNU ddrescue is not installed (package ddrescue). It makes the disk image." ;;
+      image-incomplete) REPLY=$"Some areas of the disk could not be read. The image holds everything that could be." ;;
+      read-errors) REPLY=$"Some folders could not be read, so the list may be incomplete. See the log." ;;
+      search-error) REPLY=$"PhotoRec stopped with an error. See the log." ;;
+      nothing-found) REPLY=$"No file was recognized by its content. That does not prove there is nothing to recover: another method, or a professional, may find more." ;;
       "") REPLY="" ;;
       *) REPLY="$1" ;;
    esac
@@ -869,17 +907,27 @@ bm_job_json_of() {
    local dir="$1" id="${1##*/}" label reason
    bm_job_conf_load "$dir"
    bm_job_state_load "$dir" || JS[STATE]=pending
-   bm_job_state_label "${JS[STATE]}"; label="$REPLY"
+   local kind="${JC[KIND]:-copy}" pausable=0 result
+   bm_job_state_label "${JS[STATE]}" "$kind"; label="$REPLY"
    bm_job_reason_text "${JS[REASON]:-}"; reason="$REPLY"
+   # What the numbers count: a list of what exists, candidates found by content
+   # and files copied are not the same thing and must never read the same
+   case "$kind" in
+      copy) result=copied-files pausable=1 ;;
+      image) result=disk-image pausable=1 ;;
+      scan) result=existing-files ;;
+      carve) result=carved-candidates ;;
+      *) result="" ;;
+   esac
    printf '{%s,%s,%s}' \
-      "$(bm_jo_inner id "$id" kind "${JC[KIND]:-copy}" state "${JS[STATE]}" state_label "$label" reason "${JS[REASON]:-}" reason_text "$reason" \
+      "$(bm_jo_inner id "$id" kind "$kind" result_kind "$result" state "${JS[STATE]}" state_label "$label" reason "${JS[REASON]:-}" reason_text "$reason" \
          source "${JC[SOURCE]:-}" destination "${JC[DEST]:-}" name "${JC[NAME]:-}" current "${JS[CURRENT]:-}" verify "${JC[VERIFY]:-}" \
-         verify_result "${JS[VERIFY_RESULT]:-}" dir "$dir")" \
+         verify_result "${JS[VERIFY_RESULT]:-}" dir "$dir" categories "${JC[CATEGORIES]:-}" then_carve "${JC[THEN_CARVE]:-}" copy_to "${JC[COPY_TO]:-}" map "${JC[MAP]:-}" level "${JC[LEVEL]:-}")" \
       "$(bm_jn files_done "${JS[FILES_DONE]:-0}" files_total "${JS[FILES_TOTAL]:-0}" bytes_done "${JS[BYTES_NOW]:-0}" bytes_total "${JS[BYTES_TOTAL]:-0}" \
          rate_now "${JS[RATE_NOW]:-0}" rate_avg "${JS[RATE_AVG]:-0}" elapsed "${JS[ELAPSED]:-0}" eta "${JS[ETA]:-}" deferred "${JS[DEFERRED]:-0}" \
          failed "${JS[FAILED]:-0}" differ "${JS[DIFFER]:-0}" conflicts "${JS[CONFLICTS]:-0}" read_errors "${JS[READ_FAILS]:-0}" stuck "${JS[STUCK_SECONDS]:-0}" \
-         created "${JC[CREATED]:-0}" finished "${JS[FINISHED]:-}")" \
-      "$(bm_jb total_estimate "${JS[TOTAL_ESTIMATE]:-0}")"
+         created "${JC[CREATED]:-0}" finished "${JS[FINISHED]:-}" scanned "${JS[SCANNED]:-0}" pass "${JS[PASS]:-0}" bad_bytes "${JS[BAD_BYTES]:-0}")" \
+      "$(bm_jb total_estimate "${JS[TOTAL_ESTIMATE]:-0}" pausable "$pausable")"
 }
 
 bm_fmt_time() {
@@ -902,8 +950,12 @@ bm_job_bar() {
 # bm_job_status_text DIR (state already loaded). Prints the progress block.
 bm_job_status_text() {
    local dir="$1" kind="${JC[KIND]:-copy}" pct total="${JS[BYTES_TOTAL]:-0}" done_="${JS[BYTES_NOW]:-0}"
-   bm_job_state_label "${JS[STATE]}"
+   bm_job_state_label "${JS[STATE]}" "$kind"
    printf '%s\n' "$REPLY"
+   if [ "$kind" = scan ] || [ "$kind" = carve ]; then
+      bm_rec_status_text
+      return 0
+   fi
    printf '%-22s %s\n' $"Source:" "${JC[SOURCE]//[[:cntrl:]]/?}" $"Destination:" "${JC[DEST]//[[:cntrl:]]/?}"
    if [ "${JS[FILES_TOTAL]:-0}" -gt 0 ]; then
       printf '%-22s %s / %s\n' $"Files:" "${JS[FILES_DONE]:-0}" "${JS[FILES_TOTAL]}"
@@ -981,11 +1033,15 @@ bm_job_report_text() {
    bm_job_conf_load "$dir"
    bm_job_state_load "$dir"
    bm_doc_new
-   bm_job_state_label "${JS[STATE]}"
+   bm_job_state_label "${JS[STATE]}" "${JC[KIND]:-copy}"
    bm_doc_h "$REPLY"
    bm_job_reason_text "${JS[REASON]:-}"
    [ -n "$REPLY" ] && bm_doc_p "$REPLY"
    bm_doc_kv $"Source" "${JC[SOURCE]}"
+   if [ "${JC[KIND]:-copy}" = scan ] || [ "${JC[KIND]:-copy}" = carve ]; then
+      bm_rec_report_text "$dir"
+      return 0
+   fi
    bm_doc_kv $"Destination" "${JC[DEST]}"
    bm_doc_kv $"Files copied" "${JS[FILES_DONE]:-0}"
    bm_human_size "${JS[BYTES_DONE]:-0}"; bm_doc_kv $"Data copied" "$REPLY"
@@ -1105,11 +1161,12 @@ bm_job_cmd_report() {
 # Commands
 
 bm_cp_destinations() {
-   local source="" json=0 need=0 a
+   local source="" device="" json=0 need=0 a
    while [ "$#" -gt 0 ]; do
       case "$1" in
          --json) json=1 ;;
          --source) source="${2:-}"; shift ;;
+         --device) device="${2:-}"; shift ;;
          --need) need="${2:-0}"; shift ;;
          *) bm_drive_badarg "$1"; return 2 ;;
       esac
@@ -1120,6 +1177,10 @@ bm_cp_destinations() {
    if [ -n "$source" ]; then
       bm_drive_abs "$source"
       bm_cp_fs "$REPLY" && src_dev="$FI_SOURCE"
+   fi
+   # A source that is not mounted has no folder: named by its device
+   if [ -n "$device" ]; then
+      bm_resolve "$device" && src_dev="$R_DEV"
    fi
    local rows="" first=1 d p level name
    _bm_dest_row() {
@@ -1138,7 +1199,7 @@ bm_cp_destinations() {
       fi
       if [ "$json" = 1 ]; then
          [ "$first" = 1 ] && first=0 || rows+=","
-         rows+="{$(bm_jo_inner path "$path" device "$dev" level "$level" why "$why" name "$3"),$(bm_jn avail "$avail"),$(bm_jb independent "$indep" recommended "$ok")}"
+         rows+="{$(bm_jo_inner path "$path" device "$dev" level "$level" why "$why" name "$3" fstype "${DV[$dev|FSTYPE]:-}"),$(bm_jn avail "$avail"),$(bm_jb independent "$indep" recommended "$ok")}"
       else
          bm_human_size "$avail"; rec="$REPLY"
          if [ "$ok" = 1 ]; then printf '* %s  (%s %s)\n' "${path//[[:cntrl:]]/?}" "$rec" $"free"
@@ -1170,14 +1231,20 @@ bm_cp_destinations() {
 
 # bigmount --drive copy
 bm_cp_cmd() {
-   local json=0 dry=0 nowait=0 a
-   CP_SOURCE="" CP_DEST="" CP_ITEMS=() CP_ALLOW_SAME=0 CP_ALLOW_RW=0 CP_ALLOW_RISKY=0
+   local json=0 dry=0 nowait=0 a results_of=""
+   CP_SOURCE="" CP_DEST="" CP_ITEMS=() CP_ALLOW_SAME=0 CP_ALLOW_RW=0 CP_ALLOW_RISKY=0 CP_ALLOW_SAMEFS=0
    local conflict=skip verify=basic stall=90 bw="" scan=auto
    while [ "$#" -gt 0 ]; do
       case "$1" in
          --source) CP_SOURCE="${2:-}"; shift ;;
          --destination) CP_DEST="${2:-}"; shift ;;
          --item) CP_ITEMS+=("${2:-}"); shift ;;
+         --items-from)
+            [ -r "${2:-}" ] || { bm_drive_badarg "--items-from ${2:-}"; return 2; }
+            mapfile -d '' -t -O "${#CP_ITEMS[@]}" CP_ITEMS < "$2"
+            shift
+            ;;
+         --results-of) results_of="${2:-}"; shift ;;
          --on-conflict) conflict="${2:-}"; shift ;;
          --verify) verify="${2:-}"; shift ;;
          --stall-seconds) stall="${2:-}"; shift ;;
@@ -1198,6 +1265,19 @@ bm_cp_cmd() {
    case "$scan" in auto | yes | no) ;; *) bm_drive_badarg "--scan $scan"; return 2 ;; esac
    [[ $stall =~ ^[0-9]+$ ]] || { bm_drive_badarg "--stall-seconds $stall"; return 2; }
    [ -z "$bw" ] || [[ $bw =~ ^[0-9]+$ ]] || { bm_drive_badarg "--bwlimit $bw"; return 2; }
+   # Found files are already safe on another disk. Keeping the good ones in a
+   # folder beside them protects nothing and risks nothing, so that one case may
+   # share a filesystem. Only the folder of a search of ours, never a path given.
+   if [ -n "$results_of" ]; then
+      bm_job_dir "$results_of" || { printf $"There is no job '%s'."'\n' "$results_of" >&2; return 1; }
+      bm_job_conf_load "$REPLY"
+      if [ "${JC[KIND]:-}" != carve ]; then
+         printf '%s\n' $"Only the results of a search by content can be copied this way." >&2
+         return 2
+      fi
+      CP_SOURCE="${JC[DEST]}"
+      CP_ALLOW_SAMEFS=1
+   fi
    if [ -z "$CP_SOURCE" ] || [ -z "$CP_DEST" ]; then
       printf '%s\n' $"Both --source and --destination are needed." >&2
       return 2
@@ -1322,7 +1402,7 @@ bm_job_list() {
       else
          bm_job_conf_load "$d"
          bm_job_state_load "$d" || JS[STATE]=pending
-         bm_job_state_label "${JS[STATE]}"
+         bm_job_state_label "${JS[STATE]}" "${JC[KIND]:-copy}"
          printf '%s  %s\n    %s → %s\n' "${d##*/}" "$REPLY" "${JC[SOURCE]//[[:cntrl:]]/?}" "${JC[DEST]//[[:cntrl:]]/?}"
          first=0
       fi
@@ -1358,6 +1438,14 @@ bm_job_cmd_stop() {
    dir="$REPLY"
    bm_job_conf_load "$dir"
    bm_job_state_load "$dir"
+   # A search cannot continue where it stopped: PhotoRec keeps no state it can
+   # resume from the command line, and a list is quicker to make again
+   case "${JC[KIND]:-copy}:$verb" in
+      scan:pause | carve:pause)
+         printf '%s\n' $"A search cannot be paused, only cancelled. What was found stays." >&2
+         return 2
+         ;;
+   esac
    case "${JS[STATE]}" in
       pending | analyzing | running | verifying | stopping)
          printf '%s\n' "$verb" > "$dir/control"
@@ -1413,11 +1501,10 @@ bm_job_cmd_resume() {
       bm_job_conf_save "$dir"
    fi
    rm -f -- "$dir/stop"
-   if [ "${JC[KIND]:-copy}" = image ]; then
-      bm_rec_image_start "$id" || return 1
-   else
-      bm_job_start "$id" || return 1
-   fi
+   case "${JC[KIND]:-copy}" in
+      image | scan | carve) bm_rec_image_start "$id" || return 1 ;;
+      *) bm_job_start "$id" || return 1 ;;
+   esac
    if [ "$json" = 1 ]; then bm_jo id "$id" dir "$dir"; printf '\n'; return 0; fi
    printf $"Copy started: %s"'\n' "$id"
    [ "$wait" = 1 ] || return 0
@@ -1432,7 +1519,12 @@ bm_job_cmd() {
          local id="${1:-}"
          bm_job_dir "$id" || return 1
          bm_job_conf_load "$REPLY"
-         if [ "${JC[KIND]:-copy}" = image ]; then bm_rec_image_supervise "$id"; else bm_job_supervise "$id"; fi
+         case "${JC[KIND]:-copy}" in
+            image) bm_rec_image_supervise "$id" ;;
+            scan) bm_rec_scan_supervise "$id" ;;
+            carve) bm_rec_carve_supervise "$id" ;;
+            *) bm_job_supervise "$id" ;;
+         esac
          ;;
       destinations) bm_cp_destinations "$@" ;;
       copy) bm_cp_cmd "$@" ;;

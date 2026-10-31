@@ -17,7 +17,7 @@ jobs:
       - name: Install tools
         run: |
           pacman -Syu --noconfirm --needed git bash shellcheck gettext desktop-file-utils \
-            libxml2 python glibc-locales util-linux systemd diffutils rsync pyside6
+            libxml2 python glibc-locales util-linux systemd diffutils rsync gtk4 libadwaita python-gobject testdisk adwaita-icon-theme
           # The suites must not run as root: permission checks would be meaningless
           useradd --create-home ci
 
@@ -55,8 +55,11 @@ jobs:
       - name: Drive manager (stubbed devices)
         run: runuser -u ci -- bash tests/drive-tests.sh
 
-      - name: Drive manager window (off screen)
+      - name: The application (GTK 4, on a private Broadway display)
         run: runuser -u ci -- python3 tests/gui-tests.py
+
+      - name: The application with the real engine, on scratch files
+        run: runuser -u ci -- python3 tests/gui-e2e.py
 
       - name: Translations
         run: runuser -u ci -- bash tests/i18n-tests.sh

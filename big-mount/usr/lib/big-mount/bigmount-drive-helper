@@ -10,7 +10,9 @@
 #   protect DEV     block writing on a device and everything it sits on
 #   unprotect DEV   allow writing again
 #   smart DEV       print `smartctl -H -A -i` (read-only, never starts a test)
-#   partitions DEV  print what `testdisk /list` finds (read-only)
+#   partitions DEV [search i386|gpt]
+#                   print what `testdisk /list` finds, or what its analysis of
+#                   the disk finds. Fixed commands: never one that writes
 #   image DEV FILE MAP RETRIES STOPFILE
 #                   read DEV into FILE with GNU ddrescue
 #
@@ -85,10 +87,12 @@ case "$verb" in
       exit
       ;;
    partitions)
-      [ "$#" -eq 2 ] || die "partitions DEV"
       command -v testdisk >/dev/null || exit 25
       cd /tmp || exit 1
-      exec testdisk /nolog /list "$dev"
+      if [ "$#" -eq 2 ]; then exec testdisk /nolog /list "$dev"; fi
+      [ "$#" -eq 4 ] && [ "$3" = search ] || die "partitions DEV [search i386|gpt]"
+      case "$4" in i386 | gpt) ;; *) die "partitions DEV [search i386|gpt]" ;; esac
+      TERM=xterm exec testdisk /nolog /cmd "$dev" "partition_$4,analyze"
       ;;
    image)
       [ "$#" -eq 6 ] || die "image DEV FILE MAP RETRIES STOPFILE"

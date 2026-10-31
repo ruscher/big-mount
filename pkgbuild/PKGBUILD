@@ -8,18 +8,21 @@ pkgname=big-mount
 # /usr/lib/big-mount/version, shown by "bigmount --version".
 # makepkg writes the result of pkgver() on the next line with
 # ${line/#pkgver=*([^ ])/...}: it must stay a single word, never $(date ...)
-pkgver=26.10.26.0137
+pkgver=26.10.31.0128
 pkgrel=1
 arch=('any')
 license=('GPL')
-depends=('bash' 'udisks2' 'util-linux' 'ntfs-3g' 'lsof')
+# The boot path needs only bash, util-linux, udisks2 and ntfs-3g. The rest is the
+# drive manager: python, python-gobject, gtk4 and libadwaita (>= 1.5) are the
+# application of --gui-drive and are loaded only by it; pkexec (polkit) starts the
+# helper; rsync does every copy and smartctl reads the health of a drive.
+# Commands of the base system (coreutils, findutils, gawk, systemd) are not listed.
+depends=('bash' 'util-linux' 'udisks2' 'polkit' 'ntfs-3g' 'lsof' 'rsync' 'smartmontools'
+         'python' 'python-gobject' 'gtk4' 'libadwaita>=1.5')
 optdepends=('kdialog: dialogs on KDE Plasma'
             'zenity: dialogs on GNOME and other desktops'
             'libnotify: desktop notifications (otherwise kdialog --passivepopup is used)'
-            'rsync: copy files off a drive (bigmount --drive copy)'
-            'pyside6: graphical drive manager (bigmount --gui-drive; otherwise dialogs)'
-            'smartmontools: SMART details of a drive'
-            'ddrescue: disk images of a failing drive'
+            'ddrescue: disk images of a failing drive, before a deep analysis'
             'testdisk: find lost partitions, search files by content (PhotoRec)')
 provides=('big-mount-git')
 conflicts=('big-mount-git')

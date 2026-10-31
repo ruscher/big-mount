@@ -1,5 +1,5 @@
 #!/bin/bash
-# shellcheck disable=SC2016,SC2317,SC2329,SC2218  # bash -c '...$1' snippets, helpers called through check(), library functions replaced by stubs later on
+# shellcheck disable=SC2016,SC2317,SC2329,SC2218,SC2030,SC2031,SC2178,SC2319  # bash -c '...$1' snippets, helpers called through check(), library functions replaced by stubs later on
 # Unit tests for /usr/lib/big-mount (diagnosis decisions, process policy,
 # escaping, parsing). System facts are replaced by shell functions that
 # shadow the real helpers, so nothing on the machine is read or changed,
@@ -770,21 +770,90 @@ se_case; FAKE_RUN=12 ER_STAGE=erase-ignored; bm_secure_erase_tty /dev/sda > "$WO
 check "  ... a drive that ignored the erase is called failing" eq "$rc:$(grep -c 'Replace it' "$WORK/se.out")" "12:1"
 se_case; FAKE_RELEASE=4 RM_REASON="/dev/sda2 → /"; bm_secure_erase_tty /dev/sda > /dev/null 2>&1; rc=$?
 check "  ... the system appeared on it meanwhile -> 4, no erase" eq "$rc:${#SE_CALLS[@]}" "4:1"
-CONFIRMS=()
-bm_ui_confirm_risky() { CONFIRMS+=("$1"); [ "${RISKY:-1}" = 0 ]; }
-bm_notify() { :; }
-bm_ui_show() { SHOWN="$1|$2"; }
-se_case; RISKY=1; XDG_RUNTIME_DIR="$WORK" bm_gui_secure_erase /dev/sda; rc=$?
-check "dialogs: Cancel (the default button) -> nothing done" eq "$rc:${#SE_CALLS[@]}:${CONFIRMS[0]}" "5:0:Erase the whole drive"
-se_case; RISKY=0 TYPED=SDA; XDG_RUNTIME_DIR="$WORK" bm_gui_secure_erase /dev/sda; rc=$?
-check "  ... a name that is almost right is not right" eq "$rc:${#SE_CALLS[@]}" "5:0"
-se_case; RISKY=0; FAKE_UP[ID_ATA_FEATURE_SET_SECURITY_FROZEN]=0; XDG_RUNTIME_DIR="$WORK" bm_gui_secure_erase /dev/sda; rc=$?
-check "  ... confirmed and typed: erased, the result is shown in a dialog" eq "$rc:${SE_CALLS[*]}:$SHOWN" "0:release:/dev/sda:0 erase:dos:info|Drive erased"
-( XDG_RUNTIME_DIR="$WORK" bm_drive_lock /dev/sda ); check "  ... and the drive lock is released" eq "$?" 0
-exec {held}>"$WORK/big-mount-drive-sda.lock"; flock -n "$held"
-se_case; RISKY=0; XDG_RUNTIME_DIR="$WORK" bm_gui_secure_erase /dev/sda; rc=$?
-check "  ... another operation on the drive -> 10, nothing done" eq "$rc:${#SE_CALLS[@]}" "10:0"
-exec {held}>&-
+
+begin "Secure Erase from the application: a ticket, the typed name, and nothing else"
+(
+   . "$BIGMOUNT_LIB/drive.sh"
+   . "$BIGMOUNT_LIB/drive-erase.sh"
+   export XDG_RUNTIME_DIR="$WORK/run-er"
+   mkdir -p "$XDG_RUNTIME_DIR"
+   bm_drive_health() { :; }
+   bm_facts() { F=([NAME]="$1" [DISK]=/dev/sda [TYPE]="${FAKE_TYPE:-disk}" [DISK_TYPE]=disk [TRAN]="${FAKE_TRAN:-sata}" [HOTPLUG]=0 [RM]=0 [SIZE]=1000); }
+   bm_system_use() { [ -n "${FAKE_SYSTEM:-}" ] && { REPLY="/dev/sda2 → /"; return 0; }; return 1; }
+   bm_is_block() { return 0; }
+   DH_ATA=1 DH_SEC=disabled DH_ERASE_MIN=4
+   bm_diskseq() { REPLY="${FAKE_SEQ:-7}"; }
+   lsblk() { case " $* " in *" SERIAL "*) printf '%s\n' "${FAKE_SERIAL:-SN1}" ;; esac; }
+   FAKE_TRAN=sata FAKE_TYPE=disk
+   bm_drive_lock() { [ -z "${FAKE_HELD:-}" ]; }
+   bm_drive_unlock() { SE_CALLS+=(unlock); }
+   bm_display_name() { REPLY="sda (Samsung)"; }
+   bm_remove_core() { SE_CALLS+=("release:$RM_ALLOW_SERVICES"); RM_BUSY_DEV=/dev/sda1; RM_REASON=""; RM_DEP_UNITS=(plex.service) RM_DEP_NAMES=(Plex); return "${FAKE_RELEASE:-0}"; }
+   bm_busy_doc() { bm_doc_new; }
+   bm_busy_summary() { BUSY_SUMMARY="Dolphin is reading it." BUSY_ADVICE="Close it."; }
+   bm_erase_unfreeze() { SE_CALLS+=(unfreeze); FAKE_FROZEN=0; return "${FAKE_UNFREEZE:-0}"; }
+   bm_udev_props() { UP=([ID_ATA_FEATURE_SET_SECURITY_FROZEN]="${FAKE_FROZEN:-0}"); }
+   bm_erase_run() { SE_CALLS+=("erase:$1:$2:$3"); return "${FAKE_RUN:-0}"; }
+   bm_erase_table() { REPLY=gpt; }
+   SE_CALLS=() FAIL=0
+   bm_drive_disk() { R_DEV="$1" DD_DISK=/dev/sda R_PATH=""; bm_facts "$1"; return 0; }
+   token_of() { python3 -I -c 'import json,sys; print(json.load(sys.stdin).get("token",""))'; }
+   new_ticket() { bm_er_cmd_prepare /dev/sda --json | token_of; }
+
+   T="$(new_ticket)"
+   check "a ticket for an eligible drive" bash -c '[[ $1 =~ ^[0-9a-f]{32}$ ]]' _ "$T"
+   f="$XDG_RUNTIME_DIR/big-mount/erase-$T"
+   check "  ... kept private" eq "$(stat -c %a "$f")" 600
+   FAKE_SYSTEM=1; out="$(bm_er_cmd_prepare /dev/sda --json)"; rc=$?; FAKE_SYSTEM=""
+   check "no ticket for the drive of the running system" eq "$rc:$(token_of <<< "$out")" "20:"
+   FAKE_TRAN=usb; out="$(bm_er_cmd_prepare /dev/sda --json)"; rc=$?; FAKE_TRAN=sata
+   check "  ... nor through USB" eq "$rc:$(token_of <<< "$out")" "20:"
+   FAKE_TYPE=part; out="$(bm_er_cmd_prepare /dev/sda --json)"; rc=$?; FAKE_TYPE=disk
+   check "  ... nor for a partition" eq "$rc:$(token_of <<< "$out")" "20:"
+   DH_ATA=0; out="$(bm_er_cmd_prepare /dev/sda --json)"; rc=$?; DH_ATA=1
+   check "  ... nor for NVMe or anything that is not ATA" eq "$rc:$(token_of <<< "$out")" "20:"
+   DH_SEC=""; out="$(bm_er_cmd_prepare /dev/sda --json)"; rc=$?; DH_SEC=disabled
+   check "  ... nor without the security feature" eq "$rc:$(token_of <<< "$out")" "20:"
+
+   SE_CALLS=(); bm_er_cmd_run "" --typed sda >/dev/null; check "without a ticket: refused, nothing done" eq "$?:${#SE_CALLS[@]}" "20:0"
+   SE_CALLS=(); bm_er_cmd_run "../../etc/x" --typed sda >/dev/null; check "  ... a ticket that is a path: refused" eq "$?:${#SE_CALLS[@]}" "20:0"
+   SE_CALLS=(); bm_er_cmd_run "$(printf '%032d' 0)" --typed sda >/dev/null; check "  ... a ticket nobody issued: refused" eq "$?:${#SE_CALLS[@]}" "20:0"
+   T="$(new_ticket)"; SE_CALLS=(); out="$(bm_er_cmd_run "$T" --typed SDA)"; rc=$?
+   check "a name that is almost right: nothing done" eq "$rc:${#SE_CALLS[@]}" "5:0"
+   [ ! -e "$XDG_RUNTIME_DIR/big-mount/erase-$T" ]; check "  ... and the ticket is gone" eq "$?" 0
+   T="$(new_ticket)"; SE_CALLS=(); out="$(bm_er_cmd_run "$T")"; rc=$?
+   check "no name at all: nothing done" eq "$rc:${#SE_CALLS[@]}" "5:0"
+   T="$(new_ticket)"; FAKE_SEQ=8; SE_CALLS=(); bm_er_cmd_run "$T" --typed sda >/dev/null; rc=$?; FAKE_SEQ=7
+   check "another drive took the name: refused" eq "$rc:${#SE_CALLS[@]}" "24:0"
+   T="$(new_ticket)"; FAKE_SERIAL=SN2; SE_CALLS=(); bm_er_cmd_run "$T" --typed sda >/dev/null; rc=$?; FAKE_SERIAL=""
+   check "  ... another serial: refused" eq "$rc:${#SE_CALLS[@]}" "24:0"
+   T="$(new_ticket)"; printf '/dev/sda\n7|SN1\n1000\n' > "$XDG_RUNTIME_DIR/big-mount/erase-$T"; SE_CALLS=(); bm_er_cmd_run "$T" --typed sda >/dev/null; rc=$?
+   check "an expired ticket: refused" eq "$rc:${#SE_CALLS[@]}" "20:0"
+   T="$(new_ticket)"; FAKE_SYSTEM=1; SE_CALLS=(); bm_er_cmd_run "$T" --typed sda >/dev/null; rc=$?; FAKE_SYSTEM=""
+   check "the system appeared on it meanwhile: refused, checked again" eq "$rc:${#SE_CALLS[@]}" "20:0"
+   T="$(new_ticket)"; FAKE_HELD=1; SE_CALLS=(); bm_er_cmd_run "$T" --typed sda >/dev/null; rc=$?; FAKE_HELD=""
+   check "another operation on the drive: 10, nothing done" eq "$rc:${#SE_CALLS[@]}" "10:0"
+   T="$(new_ticket)"; FAKE_RELEASE=3; SE_CALLS=(); out="$(bm_er_cmd_run "$T" --typed sda)"; rc=$?; FAKE_RELEASE=0
+   check "busy: says who, nothing erased" eq "$rc:$(grep -c 'Dolphin' <<< "$out")" "3:1"
+   SE_CALLS=(); bm_er_cmd_run "$T" --typed sda >/dev/null; rc=$?; check "  ... the ticket survives to try again" eq "$rc" 0
+   T="$(new_ticket)"; FAKE_RELEASE=9; SE_CALLS=(); out="$(bm_er_cmd_run "$T" --typed sda)"; rc=$?
+   check "services use it: never stopped without asking" eq "$rc:$(grep -c 'plex.service' <<< "$out")" "9:1"
+   bm_er_cmd_run "$T" --typed sda --allow-services > "$WORK/er.out"; FAKE_RELEASE=0
+   T="$(new_ticket)"; FAKE_FROZEN=1; SE_CALLS=(); out="$(bm_er_cmd_run "$T" --typed sda)"; rc=$?
+   check "frozen: the computer does not sleep without a decision" eq "$rc:$(grep -c '"stage":"frozen"' <<< "$out")" "11:1"
+   FAKE_FROZEN=1; SE_CALLS=(); bm_er_cmd_run "$T" --typed sda --unfreeze >"$WORK/er.out"; rc=$?
+   check "  ... with it, it sleeps and then erases" eq "$rc" 0
+   T="$(new_ticket)"; FAKE_RUN=12; ER_STAGE=erase-ignored; SE_CALLS=(); bm_er_cmd_run "$T" --typed sda > "$WORK/er.json"; rc=$?; FAKE_RUN=0
+   check "a drive that ignored the erase is not called erased" eq "$rc:$(grep -c '"ok":false' "$WORK/er.json")" "12:1"
+   python3 -I -m json.tool "$WORK/er.json" >/dev/null; check "  ... the answer is valid JSON" eq "$?" 0
+   T="$(new_ticket)"; bm_er_cmd_run "$T" --typed sda > "$WORK/er.json"; rc=$?
+   check "typed and confirmed: erased with the table of this computer" eq "$rc:$(grep -c '"ok":true' "$WORK/er.json")" "0:1"
+   bm_er_cmd_run "$T" --typed sda >/dev/null; check "  ... a ticket works once" eq "$?" 20
+   bm_er_cmd_check /dev/sda --json | python3 -I -m json.tool >/dev/null; check "the check is valid JSON, and it changes nothing" eq "$?" 0
+   exit "$FAIL"
+) 2>&1 | sed 's/^/ /'
+er_rc="${PIPESTATUS[0]}"
+check "Secure Erase from the application: all of the above" eq "$er_rc" 0
 unset -f bm_remove_core bm_erase_run bm_erase_unfreeze bm_ui_input bm_diskseq lsblk bm_erase_table se_case bm_ui_confirm \
     bm_ui_confirm_risky bm_notify bm_ui_show bm_udev_props sata_up
 . "$BIGMOUNT_LIB/lib.sh"; . "$BIGMOUNT_LIB/ui.sh"; . "$BIGMOUNT_LIB/cli.sh"; BM_UI="tty"; bm_ui_init

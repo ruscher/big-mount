@@ -4,6 +4,7 @@ Name=Big-Mount
 GenericName=Drive manager and file rescue
 Comment=See how your drives are doing, rescue files from them and remove them safely
 Exec=/usr/bin/bigmount --gui-drive
+StartupWMClass=org.biglinux.big-mount
 Icon=big-mount
 Terminal=false
 Categories=System;Filesystem;

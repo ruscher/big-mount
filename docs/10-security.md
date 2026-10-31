@@ -61,8 +61,10 @@ filesystem. It exists to bring back a failing SSD that keeps nothing it is
 given. The guards:
 
 - reachable only from `bigmount --secure-erase DISK` (a terminal is
-  required) and from **Erase the whole drive…** in `bigmount --gui-drive-check`;
-  a test fails if any other function calls it;
+  required) and from **Advanced maintenance → Erase data permanently** in the
+  application, through `bigmount --drive __erase-run` and a ticket
+  ([gtk-unification/06](gtk-unification/06-security-review.md)); a test fails if any
+  other function calls it;
 - never the drive of the running system, a partition, a USB or hot-plug
   drive, or a drive with a security password;
 - every partition that will be lost is listed, Cancel is the default, and

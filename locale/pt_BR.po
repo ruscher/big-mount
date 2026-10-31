@@ -158,12 +158,12 @@ msgid "drive manager and file rescue in the terminal (bigmount --drive --help)"
 msgstr "gerenciador de unidades e resgate de arquivos no terminal (bigmount --drive --help)"
 
 #: big-mount/usr/lib/big-mount/cli.sh:40
-msgid "graphical drive manager and file rescue"
-msgstr "gerenciador gráfico de unidades e resgate de arquivos"
+msgid "the application: drives, health and file rescue"
+msgstr "o aplicativo: discos, saúde e resgate de arquivos"
 
 #: big-mount/usr/lib/big-mount/cli.sh:41
-msgid "graphical drive check, with Secure Erase"
-msgstr "verificação gráfica de uma unidade, com Secure Erase"
+msgid "the same application, opened on the health of the drive"
+msgstr "o mesmo aplicativo, aberto na saúde do disco"
 
 #: big-mount/usr/lib/big-mount/cli.sh:42
 msgid "session service: warn about read-only devices"
@@ -185,1225 +185,1172 @@ msgstr "mostra esta ajuda"
 msgid "TARGET is a device (/dev/sdb1) or any folder inside a mounted device."
 msgstr "ALVO é um dispositivo (/dev/sdb1) ou qualquer pasta dentro de um dispositivo montado."
 
-#: big-mount/usr/lib/big-mount/cli.sh:93 big-mount/usr/lib/big-mount/cli.sh:786
-#: big-mount/usr/lib/big-mount/cli.sh:1056
+#: big-mount/usr/lib/big-mount/cli.sh:106
+#: big-mount/usr/lib/big-mount/cli.sh:799
+#: big-mount/usr/lib/big-mount/cli.sh:1069
 #: big-mount/usr/lib/big-mount/doctor.sh:448
-#: big-mount/usr/lib/big-mount/drive.sh:184
+#: big-mount/usr/lib/big-mount/drive.sh:224
 msgid "bigmount: unknown option '%s' (see bigmount --help)"
 msgstr "bigmount: opção desconhecida '%s' (veja bigmount --help)"
 
-#: big-mount/usr/lib/big-mount/cli.sh:107
-#: big-mount/usr/lib/big-mount/cli.sh:1411
+#: big-mount/usr/lib/big-mount/cli.sh:120
+#: big-mount/usr/lib/big-mount/cli.sh:1311
 msgid "Device ready"
 msgstr "Dispositivo pronto"
 
-#: big-mount/usr/lib/big-mount/cli.sh:108
+#: big-mount/usr/lib/big-mount/cli.sh:121
 msgid "You can read and write files on this device."
 msgstr "Você pode ler e gravar arquivos neste dispositivo."
 
-#: big-mount/usr/lib/big-mount/cli.sh:111
+#: big-mount/usr/lib/big-mount/cli.sh:124
 msgid "Device not mounted"
 msgstr "Dispositivo não montado"
 
-#: big-mount/usr/lib/big-mount/cli.sh:112
+#: big-mount/usr/lib/big-mount/cli.sh:125
 msgid "The filesystem is not mounted at the moment."
 msgstr "O sistema de arquivos não está montado no momento."
 
-#: big-mount/usr/lib/big-mount/cli.sh:113
+#: big-mount/usr/lib/big-mount/cli.sh:126
 msgid "Open the device in the file manager (Dolphin) to mount it."
 msgstr "Abra o dispositivo no gerenciador de arquivos (Dolphin) para montá-lo."
 
-#: big-mount/usr/lib/big-mount/cli.sh:116
-#: big-mount/usr/lib/big-mount/cli.sh:122
 #: big-mount/usr/lib/big-mount/cli.sh:129
-#: big-mount/usr/lib/big-mount/cli.sh:151
+#: big-mount/usr/lib/big-mount/cli.sh:135
+#: big-mount/usr/lib/big-mount/cli.sh:142
+#: big-mount/usr/lib/big-mount/cli.sh:164
 msgid "Read-only device"
 msgstr "Dispositivo somente leitura"
 
-#: big-mount/usr/lib/big-mount/cli.sh:117
+#: big-mount/usr/lib/big-mount/cli.sh:130
 msgid "The device itself is write-protected, so no system can write to it."
 msgstr "O próprio dispositivo está protegido contra gravação, então nenhum sistema consegue gravar nele."
 
-#: big-mount/usr/lib/big-mount/cli.sh:118
+#: big-mount/usr/lib/big-mount/cli.sh:131
 msgid "SD cards and some USB drives have a small lock switch on the side. Remove the device, move the switch to the unlocked position and connect it again."
 msgstr "Cartões SD e alguns pendrives têm uma pequena trava na lateral. Retire o dispositivo, mova a trava para a posição destravada e conecte-o novamente."
 
-#: big-mount/usr/lib/big-mount/cli.sh:119
+#: big-mount/usr/lib/big-mount/cli.sh:132
 msgid "If there is no switch, the device may have locked itself because of wear. Copy your files to another place as soon as possible."
 msgstr "Se não houver trava, o dispositivo pode ter se bloqueado sozinho por desgaste. Copie seus arquivos para outro lugar o quanto antes."
 
-#: big-mount/usr/lib/big-mount/cli.sh:123
+#: big-mount/usr/lib/big-mount/cli.sh:136
 msgid "This kind of filesystem cannot be written on Linux with the driver in use."
 msgstr "Este tipo de sistema de arquivos não pode ser gravado no Linux com o driver em uso."
 
-#: big-mount/usr/lib/big-mount/cli.sh:124
+#: big-mount/usr/lib/big-mount/cli.sh:137
 msgid "CDs, DVDs and disk images (ISO, SquashFS) are read-only by nature."
 msgstr "CDs, DVDs e imagens de disco (ISO, SquashFS) são somente leitura por natureza."
 
-#: big-mount/usr/lib/big-mount/cli.sh:125
+#: big-mount/usr/lib/big-mount/cli.sh:138
 msgid "Drives formatted on a Mac (HFS+ with journaling, APFS) can only be read on Linux."
 msgstr "Unidades formatadas em um Mac (HFS+ com journaling, APFS) só podem ser lidas no Linux."
 
-#: big-mount/usr/lib/big-mount/cli.sh:126
+#: big-mount/usr/lib/big-mount/cli.sh:139
 msgid "To write to it, copy the files elsewhere and format the device with a filesystem such as exFAT. Formatting erases everything on it."
 msgstr "Para gravar, copie os arquivos para outro lugar e formate o dispositivo com um sistema de arquivos como o exFAT. A formatação apaga tudo o que estiver nele."
 
-#: big-mount/usr/lib/big-mount/cli.sh:130
+#: big-mount/usr/lib/big-mount/cli.sh:143
 msgid "Windows did not close this NTFS partition properly (hibernation, Fast Startup or an interrupted shutdown). Writing to it now could damage files."
 msgstr "O Windows não fechou esta partição NTFS corretamente (hibernação, Inicialização Rápida ou um desligamento interrompido). Gravar nela agora poderia danificar arquivos."
 
-#: big-mount/usr/lib/big-mount/cli.sh:131
+#: big-mount/usr/lib/big-mount/cli.sh:144
 msgid "Start Windows and shut it down completely: hold the Shift key while you click Shut down."
 msgstr "Inicie o Windows e desligue-o completamente: segure a tecla Shift enquanto clica em Desligar."
 
-#: big-mount/usr/lib/big-mount/cli.sh:132
+#: big-mount/usr/lib/big-mount/cli.sh:145
 msgid "To avoid this in the future, disable Fast Startup in Windows: Control Panel > Power Options > Choose what the power buttons do."
 msgstr "Para evitar isso no futuro, desative a Inicialização Rápida no Windows: Painel de Controle > Opções de Energia > Escolher a função dos botões de energia."
 
-#: big-mount/usr/lib/big-mount/cli.sh:133
+#: big-mount/usr/lib/big-mount/cli.sh:146
 msgid "If it still happens, check the partition in Windows: open the Command Prompt as administrator and run chkdsk with the /f option for that drive letter."
 msgstr "Se continuar acontecendo, verifique a partição no Windows: abra o Prompt de Comando como administrador e execute o chkdsk com a opção /f para a letra dessa unidade."
 
-#: big-mount/usr/lib/big-mount/cli.sh:134
+#: big-mount/usr/lib/big-mount/cli.sh:147
 msgid "Big-Mount never repairs NTFS by itself, because the repair tools available on Linux may discard data that Windows still needs."
 msgstr "O Big-Mount nunca repara NTFS por conta própria, porque as ferramentas de reparo disponíveis no Linux podem descartar dados de que o Windows ainda precisa."
 
-#: big-mount/usr/lib/big-mount/cli.sh:137
+#: big-mount/usr/lib/big-mount/cli.sh:150
 msgid "The filesystem needs attention"
 msgstr "O sistema de arquivos precisa de atenção"
 
-#: big-mount/usr/lib/big-mount/cli.sh:138
+#: big-mount/usr/lib/big-mount/cli.sh:151
 msgid "The system found errors in the filesystem and stopped writing to it to protect your files."
 msgstr "O sistema encontrou erros no sistema de arquivos e parou de gravar nele para proteger seus arquivos."
 
-#: big-mount/usr/lib/big-mount/cli.sh:139
+#: big-mount/usr/lib/big-mount/cli.sh:152
 msgid "First copy your important files to another place."
 msgstr "Primeiro copie seus arquivos importantes para outro lugar."
 
-#: big-mount/usr/lib/big-mount/cli.sh:140
+#: big-mount/usr/lib/big-mount/cli.sh:153
 msgid "Then check the filesystem with the device unmounted, for example with KDE Partition Manager (Check)."
 msgstr "Depois verifique o sistema de arquivos com o dispositivo desmontado, por exemplo no Gerenciador de Partições do KDE (Verificar)."
 
-#: big-mount/usr/lib/big-mount/cli.sh:141
+#: big-mount/usr/lib/big-mount/cli.sh:154
 msgid "Do not write to the device until it has been checked."
 msgstr "Não grave no dispositivo até que ele seja verificado."
 
-#: big-mount/usr/lib/big-mount/cli.sh:144
+#: big-mount/usr/lib/big-mount/cli.sh:157
 msgid "The device has read or write errors"
 msgstr "O dispositivo tem erros de leitura ou gravação"
 
-#: big-mount/usr/lib/big-mount/cli.sh:145
+#: big-mount/usr/lib/big-mount/cli.sh:158
 msgid "The device reported read or write errors. This is usually a bad cable, a weak USB port or a failing drive."
 msgstr "O dispositivo relatou erros de leitura ou gravação. Normalmente a causa é um cabo ruim, uma porta USB fraca ou uma unidade com defeito."
 
-#: big-mount/usr/lib/big-mount/cli.sh:146
-#: big-mount/usr/lib/big-mount/cli.sh:907
+#: big-mount/usr/lib/big-mount/cli.sh:159
+#: big-mount/usr/lib/big-mount/cli.sh:920
 msgid "Copy your important files to another place as soon as possible."
 msgstr "Copie seus arquivos importantes para outro lugar o quanto antes."
 
-#: big-mount/usr/lib/big-mount/cli.sh:147
+#: big-mount/usr/lib/big-mount/cli.sh:160
 msgid "Try another cable and connect the device directly to the computer, without a hub."
 msgstr "Experimente outro cabo e conecte o dispositivo direto no computador, sem hub."
 
-#: big-mount/usr/lib/big-mount/cli.sh:148
+#: big-mount/usr/lib/big-mount/cli.sh:161
 msgid "Check the health of the drive in KDE Partition Manager (SMART status)."
 msgstr "Verifique a saúde da unidade no Gerenciador de Partições do KDE (estado SMART)."
 
-#: big-mount/usr/lib/big-mount/cli.sh:152
+#: big-mount/usr/lib/big-mount/cli.sh:165
 msgid "The filesystem was mounted read-only, but no problem was found with it."
 msgstr "O sistema de arquivos foi montado somente para leitura, mas nenhum problema foi encontrado nele."
 
-#: big-mount/usr/lib/big-mount/cli.sh:153
+#: big-mount/usr/lib/big-mount/cli.sh:166
 msgid "Mount it again with writing enabled."
 msgstr "Monte-o novamente com a gravação ativada."
 
-#: big-mount/usr/lib/big-mount/cli.sh:154
+#: big-mount/usr/lib/big-mount/cli.sh:167
 msgid "Mount again with writing"
 msgstr "Montar novamente com gravação"
 
-#: big-mount/usr/lib/big-mount/cli.sh:155
+#: big-mount/usr/lib/big-mount/cli.sh:168
 msgid "The device will be unmounted and mounted again with writing enabled. Nothing on it is changed. Programs using it must be closed first."
 msgstr "O dispositivo será desmontado e montado novamente com a gravação ativada. Nada nele é alterado. Os programas que o estiverem usando precisam ser fechados antes."
 
-#: big-mount/usr/lib/big-mount/cli.sh:158
-#: big-mount/usr/lib/big-mount/cli.sh:166
 #: big-mount/usr/lib/big-mount/cli.sh:171
-#: big-mount/usr/lib/big-mount/cli.sh:185
+#: big-mount/usr/lib/big-mount/cli.sh:179
+#: big-mount/usr/lib/big-mount/cli.sh:184
+#: big-mount/usr/lib/big-mount/cli.sh:198
 msgid "No permission to write"
 msgstr "Sem permissão para gravar"
 
-#: big-mount/usr/lib/big-mount/cli.sh:159
+#: big-mount/usr/lib/big-mount/cli.sh:172
 msgid "The device accepts writing, but its main folder belongs to another user and you are not allowed to change it."
 msgstr "O dispositivo aceita gravação, mas a pasta principal pertence a outro usuário e você não tem permissão para alterá-la."
 
-#: big-mount/usr/lib/big-mount/cli.sh:160
+#: big-mount/usr/lib/big-mount/cli.sh:173
 msgid "You can become the owner of the main folder. Only that folder changes: the files and folders inside it keep their owners."
 msgstr "Você pode se tornar o proprietário da pasta principal. Somente essa pasta muda: os arquivos e pastas dentro dela continuam com os seus proprietários."
 
-#: big-mount/usr/lib/big-mount/cli.sh:161
+#: big-mount/usr/lib/big-mount/cli.sh:174
 msgid "This is the usual fix for drives formatted with a Linux filesystem (ext4, Btrfs, XFS)."
 msgstr "Essa é a solução comum para unidades formatadas com um sistema de arquivos do Linux (ext4, Btrfs, XFS)."
 
-#: big-mount/usr/lib/big-mount/cli.sh:162
+#: big-mount/usr/lib/big-mount/cli.sh:175
 msgid "Become owner of the main folder"
 msgstr "Tornar-me proprietário da pasta principal"
 
-#: big-mount/usr/lib/big-mount/cli.sh:163
+#: big-mount/usr/lib/big-mount/cli.sh:176
 msgid "The main folder of the device will belong to you (not recursive: the files and folders inside keep their owners). The administrator password may be requested."
 msgstr "A pasta principal do dispositivo passará a pertencer a você (sem recursão: os arquivos e pastas dentro dela continuam com os seus proprietários). A senha de administrador pode ser solicitada."
 
-#: big-mount/usr/lib/big-mount/cli.sh:167
+#: big-mount/usr/lib/big-mount/cli.sh:180
 msgid "This partition contains an operating system. Its folders belong to that system and must keep their owners."
 msgstr "Esta partição contém um sistema operacional. As pastas dela pertencem a esse sistema e precisam manter os seus proprietários."
 
-#: big-mount/usr/lib/big-mount/cli.sh:168
+#: big-mount/usr/lib/big-mount/cli.sh:181
 msgid "Save your files in a folder that belongs to you, for example your home folder on that system."
 msgstr "Salve seus arquivos em uma pasta que pertença a você, por exemplo a sua pasta pessoal nesse sistema."
 
-#: big-mount/usr/lib/big-mount/cli.sh:172
+#: big-mount/usr/lib/big-mount/cli.sh:185
 msgid "This folder belongs to %s, and only its owner can create or change files in it."
 msgstr "Esta pasta pertence a %s, e só o dono dela pode criar ou alterar arquivos nela."
 
-#: big-mount/usr/lib/big-mount/cli.sh:173
+#: big-mount/usr/lib/big-mount/cli.sh:186
 msgid "Save your files in a folder of your own, for example in your home folder."
 msgstr "Salve seus arquivos em uma pasta sua, por exemplo na sua pasta pessoal."
 
-#: big-mount/usr/lib/big-mount/cli.sh:176
+#: big-mount/usr/lib/big-mount/cli.sh:189
 msgid "System partition"
 msgstr "Partição do sistema"
 
-#: big-mount/usr/lib/big-mount/cli.sh:177
+#: big-mount/usr/lib/big-mount/cli.sh:190
 msgid "This partition holds the operating system that is running now. Only the system and administrators write here."
 msgstr "Esta partição contém o sistema operacional em uso agora. Só o sistema e os administradores gravam nela."
 
-#: big-mount/usr/lib/big-mount/cli.sh:178
+#: big-mount/usr/lib/big-mount/cli.sh:191
 msgid "Save your files in your home folder."
 msgstr "Salve seus arquivos na sua pasta pessoal."
 
-#: big-mount/usr/lib/big-mount/cli.sh:181
+#: big-mount/usr/lib/big-mount/cli.sh:194
 msgid "Swap space"
 msgstr "Espaço de troca (swap)"
 
-#: big-mount/usr/lib/big-mount/cli.sh:182
+#: big-mount/usr/lib/big-mount/cli.sh:195
 msgid "This partition is used as swap space (virtual memory), not to store files."
 msgstr "Esta partição é usada como espaço de troca (memória virtual), não para guardar arquivos."
 
-#: big-mount/usr/lib/big-mount/cli.sh:186
+#: big-mount/usr/lib/big-mount/cli.sh:199
 msgid "The device was mounted for another user, so only that user can write to it."
 msgstr "O dispositivo foi montado para outro usuário, então somente esse usuário pode gravar nele."
 
-#: big-mount/usr/lib/big-mount/cli.sh:187
+#: big-mount/usr/lib/big-mount/cli.sh:200
 msgid "Unmount it and open it again from the file manager while you are logged in."
 msgstr "Desmonte-o e abra-o novamente pelo gerenciador de arquivos com a sua sessão."
 
-#: big-mount/usr/lib/big-mount/cli.sh:189
+#: big-mount/usr/lib/big-mount/cli.sh:202
 msgid "This internal partition is mounted by Big-Mount at boot. An administrator can choose who may write to it with PERMISSIONS in /etc/big-mount.conf."
 msgstr "Esta partição interna é montada pelo Big-Mount no boot. Um administrador pode escolher quem pode gravar nela com a opção PERMISSIONS em /etc/big-mount.conf."
 
-#: big-mount/usr/lib/big-mount/cli.sh:191
+#: big-mount/usr/lib/big-mount/cli.sh:204
 msgid "Mount again for my user"
 msgstr "Montar novamente para o meu usuário"
 
-#: big-mount/usr/lib/big-mount/cli.sh:192
+#: big-mount/usr/lib/big-mount/cli.sh:205
 msgid "The device will be unmounted and mounted again for your user. Nothing on it is changed. Programs using it must be closed first."
 msgstr "O dispositivo será desmontado e montado novamente para o seu usuário. Nada nele é alterado. Os programas que o estiverem usando precisam ser fechados antes."
 
-#: big-mount/usr/lib/big-mount/cli.sh:195
+#: big-mount/usr/lib/big-mount/cli.sh:208
 msgid "Unknown state"
 msgstr "Estado desconhecido"
 
-#: big-mount/usr/lib/big-mount/cli.sh:196
+#: big-mount/usr/lib/big-mount/cli.sh:209
 msgid "The state of this device could not be determined."
 msgstr "Não foi possível determinar o estado deste dispositivo."
 
-#: big-mount/usr/lib/big-mount/cli.sh:205
-#: big-mount/usr/lib/big-mount/cli.sh:867
+#: big-mount/usr/lib/big-mount/cli.sh:218
+#: big-mount/usr/lib/big-mount/cli.sh:880
 #: big-mount/usr/lib/big-mount/doctor.sh:57
 msgid "unknown"
 msgstr "desconhecido"
 
-#: big-mount/usr/lib/big-mount/cli.sh:236
+#: big-mount/usr/lib/big-mount/cli.sh:249
 msgid "system"
 msgstr "sistema"
 
-#: big-mount/usr/lib/big-mount/cli.sh:241
+#: big-mount/usr/lib/big-mount/cli.sh:254
 msgid "other"
 msgstr "outro"
 
-#: big-mount/usr/lib/big-mount/cli.sh:254
-#: big-mount/usr/lib/big-mount/cli.sh:538
-#: big-mount/usr/lib/big-mount/drive-diag.sh:200
-#: big-mount/usr/lib/big-mount/drive.sh:199
+#: big-mount/usr/lib/big-mount/cli.sh:267
+#: big-mount/usr/lib/big-mount/cli.sh:551
+#: big-mount/usr/lib/big-mount/drive-diag.sh:204
+#: big-mount/usr/lib/big-mount/drive.sh:239
 msgid "Device"
 msgstr "Dispositivo"
 
-#: big-mount/usr/lib/big-mount/cli.sh:255
-#: big-mount/usr/lib/big-mount/cli.sh:539
-#: big-mount/usr/lib/big-mount/drive.sh:213
+#: big-mount/usr/lib/big-mount/cli.sh:268
+#: big-mount/usr/lib/big-mount/cli.sh:552
+#: big-mount/usr/lib/big-mount/drive.sh:253
 msgid "Filesystem"
 msgstr "Sistema de arquivos"
 
-#: big-mount/usr/lib/big-mount/cli.sh:257
-#: big-mount/usr/lib/big-mount/cli.sh:540
-#: big-mount/usr/lib/big-mount/drive.sh:217
+#: big-mount/usr/lib/big-mount/cli.sh:270
+#: big-mount/usr/lib/big-mount/cli.sh:553
+#: big-mount/usr/lib/big-mount/drive.sh:257
 msgid "Mounted at"
 msgstr "Montado em"
 
-#: big-mount/usr/lib/big-mount/cli.sh:258
+#: big-mount/usr/lib/big-mount/cli.sh:271
 msgid "Folder"
 msgstr "Pasta"
 
-#: big-mount/usr/lib/big-mount/cli.sh:260
+#: big-mount/usr/lib/big-mount/cli.sh:273
 msgid "Writable, but not by your user"
 msgstr "Gravável, mas não pelo seu usuário"
 
-#: big-mount/usr/lib/big-mount/cli.sh:260
-#: big-mount/usr/lib/big-mount/drive.sh:216
+#: big-mount/usr/lib/big-mount/cli.sh:273
+#: big-mount/usr/lib/big-mount/drive.sh:256
 msgid "Status"
 msgstr "Estado"
 
-#: big-mount/usr/lib/big-mount/cli.sh:264
-#: big-mount/usr/lib/big-mount/cli.sh:906
+#: big-mount/usr/lib/big-mount/cli.sh:277
+#: big-mount/usr/lib/big-mount/cli.sh:919
 msgid "How to solve:"
 msgstr "Como resolver:"
 
-#: big-mount/usr/lib/big-mount/cli.sh:268
+#: big-mount/usr/lib/big-mount/cli.sh:281
 msgid "Attention: the filesystem has recorded errors. Copy important files elsewhere and check it soon."
 msgstr "Atenção: o sistema de arquivos registrou erros. Copie os arquivos importantes para outro lugar e verifique-o em breve."
 
-#: big-mount/usr/lib/big-mount/cli.sh:271
+#: big-mount/usr/lib/big-mount/cli.sh:284
 msgid "Attention: the drive that holds this device reported errors since the computer was started. Copy important files elsewhere and check the drive."
 msgstr "Atenção: a unidade que contém este dispositivo relatou erros desde que o computador foi ligado. Copie os arquivos importantes para outro lugar e verifique a unidade."
 
-#: big-mount/usr/lib/big-mount/cli.sh:343
+#: big-mount/usr/lib/big-mount/cli.sh:356
 msgid "To see the errors of the drive: bigmount --diagnose %s"
 msgstr "Para ver os erros da unidade: bigmount --diagnose %s"
 
-#: big-mount/usr/lib/big-mount/cli.sh:345
-#: big-mount/usr/lib/big-mount/cli.sh:934
+#: big-mount/usr/lib/big-mount/cli.sh:358
+#: big-mount/usr/lib/big-mount/cli.sh:947
 msgid "Technical details:"
 msgstr "Detalhes técnicos:"
 
-#: big-mount/usr/lib/big-mount/cli.sh:361
+#: big-mount/usr/lib/big-mount/cli.sh:374
 #: big-mount/usr/lib/big-mount/drive-tui.sh:87
 msgid "DEVICE"
 msgstr "DISPOSITIVO"
 
-#: big-mount/usr/lib/big-mount/cli.sh:361
+#: big-mount/usr/lib/big-mount/cli.sh:374
 msgid "LABEL"
 msgstr "RÓTULO"
 
-#: big-mount/usr/lib/big-mount/cli.sh:361
+#: big-mount/usr/lib/big-mount/cli.sh:374
 msgid "SIZE"
 msgstr "TAMANHO"
 
-#: big-mount/usr/lib/big-mount/cli.sh:361
+#: big-mount/usr/lib/big-mount/cli.sh:374
 msgid "FS"
 msgstr "SA"
 
-#: big-mount/usr/lib/big-mount/cli.sh:361
+#: big-mount/usr/lib/big-mount/cli.sh:374
 msgid "MANAGED BY"
 msgstr "GERENCIADO POR"
 
-#: big-mount/usr/lib/big-mount/cli.sh:361
+#: big-mount/usr/lib/big-mount/cli.sh:374
 msgid "MOUNTED AT"
 msgstr "MONTADO EM"
 
-#: big-mount/usr/lib/big-mount/cli.sh:361
+#: big-mount/usr/lib/big-mount/cli.sh:374
 msgid "STATE"
 msgstr "ESTADO"
 
-#: big-mount/usr/lib/big-mount/cli.sh:371
+#: big-mount/usr/lib/big-mount/cli.sh:384
 msgid "not mounted"
 msgstr "não montado"
 
-#: big-mount/usr/lib/big-mount/cli.sh:373
+#: big-mount/usr/lib/big-mount/cli.sh:386
 msgid "in use by the system"
 msgstr "em uso pelo sistema"
 
-#: big-mount/usr/lib/big-mount/cli.sh:375
+#: big-mount/usr/lib/big-mount/cli.sh:388
 msgid "READ-ONLY"
 msgstr "SOMENTE LEITURA"
 
-#: big-mount/usr/lib/big-mount/cli.sh:377
+#: big-mount/usr/lib/big-mount/cli.sh:390
 msgid "read and write"
 msgstr "leitura e gravação"
 
-#: big-mount/usr/lib/big-mount/cli.sh:379
+#: big-mount/usr/lib/big-mount/cli.sh:392
 msgid "no write permission"
 msgstr "sem permissão de gravação"
 
-#: big-mount/usr/lib/big-mount/cli.sh:393
+#: big-mount/usr/lib/big-mount/cli.sh:406
 msgid "Storage devices"
 msgstr "Dispositivos de armazenamento"
 
-#: big-mount/usr/lib/big-mount/cli.sh:407
+#: big-mount/usr/lib/big-mount/cli.sh:420
 msgid "To find out why a device cannot be written to, run: bigmount --diagnose DEVICE"
 msgstr "Para saber por que um dispositivo não aceita gravação, execute: bigmount --diagnose DISPOSITIVO"
 
-#: big-mount/usr/lib/big-mount/cli.sh:409
+#: big-mount/usr/lib/big-mount/cli.sh:422
 msgid "Environment"
 msgstr "Ambiente"
 
-#: big-mount/usr/lib/big-mount/cli.sh:412
+#: big-mount/usr/lib/big-mount/cli.sh:425
 msgid "present: automount disabled"
 msgstr "presente: montagem automática desativada"
 
-#: big-mount/usr/lib/big-mount/cli.sh:413
+#: big-mount/usr/lib/big-mount/cli.sh:426
 msgid "available"
 msgstr "disponível"
 
-#: big-mount/usr/lib/big-mount/cli.sh:413
-#: big-mount/usr/lib/big-mount/cli.sh:882
+#: big-mount/usr/lib/big-mount/cli.sh:426
+#: big-mount/usr/lib/big-mount/cli.sh:895
 msgid "not available"
 msgstr "indisponível"
 
-#: big-mount/usr/lib/big-mount/cli.sh:416
+#: big-mount/usr/lib/big-mount/cli.sh:429
 msgid "installed"
 msgstr "instalado"
 
-#: big-mount/usr/lib/big-mount/cli.sh:416
+#: big-mount/usr/lib/big-mount/cli.sh:429
 msgid "missing"
 msgstr "ausente"
 
-#: big-mount/usr/lib/big-mount/cli.sh:418
+#: big-mount/usr/lib/big-mount/cli.sh:431
 msgid "readable"
 msgstr "acessível"
 
-#: big-mount/usr/lib/big-mount/cli.sh:418
+#: big-mount/usr/lib/big-mount/cli.sh:431
 msgid "not readable (fewer details for errors)"
 msgstr "inacessível (menos detalhes sobre erros)"
 
-#: big-mount/usr/lib/big-mount/cli.sh:419
+#: big-mount/usr/lib/big-mount/cli.sh:432
 msgid "kernel log"
 msgstr "log do kernel"
 
-#: big-mount/usr/lib/big-mount/cli.sh:455
+#: big-mount/usr/lib/big-mount/cli.sh:468
 msgid "Also mounted at %s"
 msgstr "Também está montado em %s"
 
-#: big-mount/usr/lib/big-mount/cli.sh:456
+#: big-mount/usr/lib/big-mount/cli.sh:469
 msgid "Another device is mounted inside it: %s"
 msgstr "Outro dispositivo está montado dentro dele: %s"
 
-#: big-mount/usr/lib/big-mount/cli.sh:457
+#: big-mount/usr/lib/big-mount/cli.sh:470
 msgid "A swap file on it is in use: %s"
 msgstr "Um arquivo de swap nele está em uso: %s"
 
-#: big-mount/usr/lib/big-mount/cli.sh:458
+#: big-mount/usr/lib/big-mount/cli.sh:471
 msgid "It is in use as swap space"
 msgstr "Está em uso como área de swap"
 
-#: big-mount/usr/lib/big-mount/cli.sh:459
+#: big-mount/usr/lib/big-mount/cli.sh:472
 msgid "A disk image stored on it is attached: %s"
 msgstr "Uma imagem de disco guardada nele está conectada: %s"
 
-#: big-mount/usr/lib/big-mount/cli.sh:460
+#: big-mount/usr/lib/big-mount/cli.sh:473
 msgid "It is used by %s (encryption, LVM or RAID)"
 msgstr "Está sendo usado por %s (criptografia, LVM ou RAID)"
 
-#: big-mount/usr/lib/big-mount/cli.sh:461
+#: big-mount/usr/lib/big-mount/cli.sh:474
 msgid "Also mounted inside an isolated environment (a container or a sandboxed service): %s"
 msgstr "Também montado dentro de um ambiente isolado (um contêiner ou um serviço em sandbox): %s"
 
-#: big-mount/usr/lib/big-mount/cli.sh:490
+#: big-mount/usr/lib/big-mount/cli.sh:503
 msgid "A container or a sandboxed service has its own mount of this device (see below). Unmounting it here does not release the device while that mount exists."
 msgstr "Um contêiner ou um serviço em sandbox tem a sua própria montagem deste dispositivo (veja abaixo). Desmontá-lo aqui não libera o dispositivo enquanto essa montagem existir."
 
-#: big-mount/usr/lib/big-mount/cli.sh:491
+#: big-mount/usr/lib/big-mount/cli.sh:504
 msgid "Stop that container or service first. Big-Mount waits for it before saying the device can be disconnected."
 msgstr "Pare esse contêiner ou serviço primeiro. O Big-Mount espera por isso antes de dizer que o dispositivo pode ser desconectado."
 
-#: big-mount/usr/lib/big-mount/cli.sh:493
+#: big-mount/usr/lib/big-mount/cli.sh:506
 msgid "No program is using it, but the system still is (see below)."
 msgstr "Nenhum programa o está usando, mas o sistema ainda está (veja abaixo)."
 
-#: big-mount/usr/lib/big-mount/cli.sh:494
+#: big-mount/usr/lib/big-mount/cli.sh:507
 msgid "Resolve the item listed below, then try again."
 msgstr "Resolva o item listado abaixo e tente novamente."
 
-#: big-mount/usr/lib/big-mount/cli.sh:496
+#: big-mount/usr/lib/big-mount/cli.sh:509
 msgid "None of your programs is using it. A system service or a program of another user may be holding it, or it was released a moment ago."
 msgstr "Nenhum programa seu está usando o dispositivo. Um serviço do sistema ou um programa de outro usuário pode estar ocupando-o, ou ele acabou de ser liberado."
 
-#: big-mount/usr/lib/big-mount/cli.sh:497
+#: big-mount/usr/lib/big-mount/cli.sh:510
 msgid "Try again. If it is still busy, show the programs of all users."
 msgstr "Tente novamente. Se continuar ocupado, mostre os programas de todos os usuários."
 
-#: big-mount/usr/lib/big-mount/cli.sh:503
+#: big-mount/usr/lib/big-mount/cli.sh:516
 msgid "%s has a file open for writing on this device."
 msgstr "%s está com um arquivo aberto para gravação neste dispositivo."
 
-#: big-mount/usr/lib/big-mount/cli.sh:504
+#: big-mount/usr/lib/big-mount/cli.sh:517
 msgid "Let it finish, or cancel the operation in that program, then try again."
 msgstr "Aguarde terminar, ou cancele a operação nesse programa, e tente novamente."
 
-#: big-mount/usr/lib/big-mount/cli.sh:505
+#: big-mount/usr/lib/big-mount/cli.sh:518
 msgid "A terminal is open in a folder of this device."
 msgstr "Um terminal está aberto numa pasta deste dispositivo."
 
-#: big-mount/usr/lib/big-mount/cli.sh:506
+#: big-mount/usr/lib/big-mount/cli.sh:519
 msgid "Type cd in that terminal, or close it, then try again."
 msgstr "Digite cd nesse terminal, ou feche-o, e tente novamente."
 
-#: big-mount/usr/lib/big-mount/cli.sh:507
+#: big-mount/usr/lib/big-mount/cli.sh:520
 msgid "%s is showing or reading files of this device."
 msgstr "%s está mostrando ou lendo arquivos deste dispositivo."
 
-#: big-mount/usr/lib/big-mount/cli.sh:508
+#: big-mount/usr/lib/big-mount/cli.sh:521
 msgid "Close the window or tab that shows the device, then try again."
 msgstr "Feche a janela ou aba que mostra o dispositivo e tente novamente."
 
-#: big-mount/usr/lib/big-mount/cli.sh:509
+#: big-mount/usr/lib/big-mount/cli.sh:522
 msgid "The file indexer is reading this device."
 msgstr "O indexador de arquivos está lendo este dispositivo."
 
-#: big-mount/usr/lib/big-mount/cli.sh:510
+#: big-mount/usr/lib/big-mount/cli.sh:523
 msgid "It usually finishes in a moment: try again shortly."
 msgstr "Normalmente termina em instantes: tente novamente daqui a pouco."
 
-#: big-mount/usr/lib/big-mount/cli.sh:511
+#: big-mount/usr/lib/big-mount/cli.sh:524
 msgid "%s is running inside a folder of this device."
 msgstr "%s está em execução dentro de uma pasta deste dispositivo."
 
-#: big-mount/usr/lib/big-mount/cli.sh:512
-#: big-mount/usr/lib/big-mount/cli.sh:514
+#: big-mount/usr/lib/big-mount/cli.sh:525
+#: big-mount/usr/lib/big-mount/cli.sh:527
 msgid "Close that program, then try again."
 msgstr "Feche esse programa e tente novamente."
 
-#: big-mount/usr/lib/big-mount/cli.sh:513
+#: big-mount/usr/lib/big-mount/cli.sh:526
 msgid "%s is using files on this device."
 msgstr "%s está usando arquivos deste dispositivo."
 
-#: big-mount/usr/lib/big-mount/cli.sh:517
+#: big-mount/usr/lib/big-mount/cli.sh:530
 msgid "In total, %d programs are using it."
 msgstr "No total, %d programas estão usando o dispositivo."
 
-#: big-mount/usr/lib/big-mount/cli.sh:530
+#: big-mount/usr/lib/big-mount/cli.sh:543
 msgid "In use"
 msgstr "Em uso"
 
-#: big-mount/usr/lib/big-mount/cli.sh:534
+#: big-mount/usr/lib/big-mount/cli.sh:547
 msgid "%s is still in use"
 msgstr "%s ainda está em uso"
 
-#: big-mount/usr/lib/big-mount/cli.sh:544
+#: big-mount/usr/lib/big-mount/cli.sh:557
 msgid "Programs using it:"
 msgstr "Programas usando o dispositivo:"
 
-#: big-mount/usr/lib/big-mount/cli.sh:546
-#: big-mount/usr/lib/big-mount/cli.sh:548
+#: big-mount/usr/lib/big-mount/cli.sh:559
+#: big-mount/usr/lib/big-mount/cli.sh:561
 msgid "Application"
 msgstr "Aplicativo"
 
-#: big-mount/usr/lib/big-mount/cli.sh:546
-#: big-mount/usr/lib/big-mount/cli.sh:548
+#: big-mount/usr/lib/big-mount/cli.sh:559
+#: big-mount/usr/lib/big-mount/cli.sh:561
 msgid "process"
 msgstr "processo"
 
-#: big-mount/usr/lib/big-mount/cli.sh:546
+#: big-mount/usr/lib/big-mount/cli.sh:559
 msgid "User"
 msgstr "Usuário"
 
-#: big-mount/usr/lib/big-mount/cli.sh:546
-#: big-mount/usr/lib/big-mount/cli.sh:548
+#: big-mount/usr/lib/big-mount/cli.sh:559
+#: big-mount/usr/lib/big-mount/cli.sh:561
 msgid "Activity"
 msgstr "Atividade"
 
-#: big-mount/usr/lib/big-mount/cli.sh:564
+#: big-mount/usr/lib/big-mount/cli.sh:577
 msgid "Also keeping it busy:"
 msgstr "Também o mantém ocupado:"
 
-#: big-mount/usr/lib/big-mount/cli.sh:568
+#: big-mount/usr/lib/big-mount/cli.sh:581
 msgid "An open file does not necessarily mean that something is being copied."
 msgstr "Um arquivo aberto não significa necessariamente que algo está sendo copiado."
 
-#: big-mount/usr/lib/big-mount/cli.sh:595
+#: big-mount/usr/lib/big-mount/cli.sh:608
 msgid "%s is not in use"
 msgstr "%s não está em uso"
 
-#: big-mount/usr/lib/big-mount/cli.sh:597
+#: big-mount/usr/lib/big-mount/cli.sh:610
 msgid "No program and nothing in the system is using it. It can be unmounted."
 msgstr "Nenhum programa e nada no sistema está usando o dispositivo. Ele pode ser desmontado."
 
-#: big-mount/usr/lib/big-mount/cli.sh:599
+#: big-mount/usr/lib/big-mount/cli.sh:612
 msgid "None of your programs is using %s"
 msgstr "Nenhum programa seu está usando %s"
 
-#: big-mount/usr/lib/big-mount/cli.sh:601
+#: big-mount/usr/lib/big-mount/cli.sh:614
 msgid "No program of yours, no other mount and no other device is using it. It can probably be unmounted. Programs of other users and of the system are only visible to an administrator."
 msgstr "Nenhum programa seu, nenhuma outra montagem e nenhum outro dispositivo está usando o dispositivo. Provavelmente ele pode ser desmontado. Programas de outros usuários e do sistema só ficam visíveis para um administrador."
 
-#: big-mount/usr/lib/big-mount/cli.sh:630
+#: big-mount/usr/lib/big-mount/cli.sh:643
 msgid "The device was disconnected or replaced during the operation. Nothing else was done."
 msgstr "O dispositivo foi desconectado ou substituído durante a operação. Nada mais foi feito."
 
-#: big-mount/usr/lib/big-mount/cli.sh:689
+#: big-mount/usr/lib/big-mount/cli.sh:702
 msgid "%s was mounted again at %s"
 msgstr "%s foi montado novamente em %s"
 
-#: big-mount/usr/lib/big-mount/cli.sh:705
+#: big-mount/usr/lib/big-mount/cli.sh:718
 msgid "%s: the encrypted volume could not be locked"
 msgstr "%s: não foi possível bloquear o volume criptografado"
 
-#: big-mount/usr/lib/big-mount/cli.sh:747
+#: big-mount/usr/lib/big-mount/cli.sh:760
 msgid "They do not start again by themselves when the device comes back."
 msgstr "Eles não voltam a funcionar sozinhos quando o dispositivo for conectado de novo."
 
-#: big-mount/usr/lib/big-mount/cli.sh:749
+#: big-mount/usr/lib/big-mount/cli.sh:762
 msgid "They start again by themselves when the device is mounted again."
 msgstr "Eles voltam a funcionar sozinhos quando o dispositivo for montado de novo."
 
-#: big-mount/usr/lib/big-mount/cli.sh:792
-#: big-mount/usr/lib/big-mount/drive.sh:392
+#: big-mount/usr/lib/big-mount/cli.sh:805
+#: big-mount/usr/lib/big-mount/drive.sh:468
 msgid "Another removal of this drive is in progress. Nothing was done."
 msgstr "Outra remoção desta unidade está em andamento. Nada foi feito."
 
-#: big-mount/usr/lib/big-mount/cli.sh:808
+#: big-mount/usr/lib/big-mount/cli.sh:821
 msgid "Device removed safely. It can be disconnected now."
 msgstr "Dispositivo removido com segurança. Ele já pode ser desconectado."
 
-#: big-mount/usr/lib/big-mount/cli.sh:810
-#: big-mount/usr/lib/big-mount/drive.sh:404
+#: big-mount/usr/lib/big-mount/cli.sh:823
+#: big-mount/usr/lib/big-mount/drive.sh:480
 msgid "Unmounted. Everything was written to the device."
 msgstr "Desmontado. Tudo foi gravado no dispositivo."
 
-#: big-mount/usr/lib/big-mount/cli.sh:822
+#: big-mount/usr/lib/big-mount/cli.sh:835
 msgid "These programs can be asked to close (unsaved changes in them may be lost):"
 msgstr "Estes programas podem ser solicitados a fechar (alterações não salvas neles podem ser perdidas):"
 
-#: big-mount/usr/lib/big-mount/cli.sh:826
-#: big-mount/usr/lib/big-mount/cli.sh:1461
+#: big-mount/usr/lib/big-mount/cli.sh:839
+#: big-mount/usr/lib/big-mount/cli.sh:1361
 msgid "Close them"
 msgstr "Fechar programas"
 
-#: big-mount/usr/lib/big-mount/cli.sh:826
 #: big-mount/usr/lib/big-mount/cli.sh:839
-#: big-mount/usr/lib/big-mount/cli.sh:1108
+#: big-mount/usr/lib/big-mount/cli.sh:852
 #: big-mount/usr/lib/big-mount/cli.sh:1121
-#: big-mount/usr/lib/big-mount/cli.sh:1197
-#: big-mount/usr/lib/big-mount/cli.sh:1220
-#: big-mount/usr/lib/big-mount/cli.sh:1230
-#: big-mount/usr/lib/big-mount/cli.sh:1385
-#: big-mount/usr/lib/big-mount/cli.sh:1437
-#: big-mount/usr/lib/big-mount/cli.sh:1461
-#: big-mount/usr/lib/big-mount/cli.sh:1534
+#: big-mount/usr/lib/big-mount/cli.sh:1134
+#: big-mount/usr/lib/big-mount/cli.sh:1285
+#: big-mount/usr/lib/big-mount/cli.sh:1337
+#: big-mount/usr/lib/big-mount/cli.sh:1361
+#: big-mount/usr/lib/big-mount/cli.sh:1434
 msgid "Cancel"
 msgstr "Cancelar"
 
-#: big-mount/usr/lib/big-mount/cli.sh:829
+#: big-mount/usr/lib/big-mount/cli.sh:842
 msgid "Still running: %s"
 msgstr "Ainda em execução: %s"
 
-#: big-mount/usr/lib/big-mount/cli.sh:832
-#: big-mount/usr/lib/big-mount/drive.sh:409
+#: big-mount/usr/lib/big-mount/cli.sh:845
+#: big-mount/usr/lib/big-mount/drive.sh:485
 msgid "These services use the device and will be stopped when it is unmounted:"
 msgstr "Estes serviços usam o dispositivo e serão parados quando ele for desmontado:"
 
-#: big-mount/usr/lib/big-mount/cli.sh:839
-#: big-mount/usr/lib/big-mount/cli.sh:1108
-#: big-mount/usr/lib/big-mount/cli.sh:1220
+#: big-mount/usr/lib/big-mount/cli.sh:852
+#: big-mount/usr/lib/big-mount/cli.sh:1121
 msgid "Stop them and continue"
 msgstr "Parar e continuar"
 
-#: big-mount/usr/lib/big-mount/cli.sh:842
+#: big-mount/usr/lib/big-mount/cli.sh:855
 msgid "Nothing was done. Run again with --assume-yes to stop them."
 msgstr "Nada foi feito. Execute de novo com --assume-yes para pará-los."
 
-#: big-mount/usr/lib/big-mount/cli.sh:846
+#: big-mount/usr/lib/big-mount/cli.sh:859
 msgid "Unmounted, but powering the drive off failed (%s). Wait a moment before disconnecting it."
 msgstr "Desmontado, mas não foi possível desligar a unidade (%s). Aguarde um momento antes de desconectá-la."
 
-#: big-mount/usr/lib/big-mount/cli.sh:847
-#: big-mount/usr/lib/big-mount/drive.sh:406
+#: big-mount/usr/lib/big-mount/cli.sh:860
+#: big-mount/usr/lib/big-mount/drive.sh:482
 msgid "Refused: this drive holds the running system (%s)."
 msgstr "Recusado: esta unidade contém o sistema em execução (%s)."
 
-#: big-mount/usr/lib/big-mount/cli.sh:848
-#: big-mount/usr/lib/big-mount/drive.sh:407
+#: big-mount/usr/lib/big-mount/cli.sh:861
+#: big-mount/usr/lib/big-mount/drive.sh:483
 msgid "Permission to unmount was not granted."
 msgstr "A permissão para desmontar não foi concedida."
 
-#: big-mount/usr/lib/big-mount/cli.sh:849
+#: big-mount/usr/lib/big-mount/cli.sh:862
 msgid "Unmounted, but the drive is still in use (%s), so it was not powered off."
 msgstr "Desmontado, mas a unidade ainda está em uso (%s), por isso não foi desligada."
 
-#: big-mount/usr/lib/big-mount/cli.sh:850
+#: big-mount/usr/lib/big-mount/cli.sh:863
 msgid "Unmounted. This drive cannot be powered off by the computer; it can be disconnected now."
 msgstr "Desmontado. Esta unidade não pode ser desligada pelo computador; ela já pode ser desconectada."
 
-#: big-mount/usr/lib/big-mount/cli.sh:853
-#: big-mount/usr/lib/big-mount/drive.sh:413
+#: big-mount/usr/lib/big-mount/cli.sh:866
+#: big-mount/usr/lib/big-mount/drive.sh:489
 msgid "Could not unmount: %s"
 msgstr "Não foi possível desmontar: %s"
 
-#: big-mount/usr/lib/big-mount/cli.sh:874
+#: big-mount/usr/lib/big-mount/cli.sh:887
 msgid "The drive reports errors"
 msgstr "A unidade relata erros"
 
-#: big-mount/usr/lib/big-mount/cli.sh:874
+#: big-mount/usr/lib/big-mount/cli.sh:887
 msgid "No drive errors found"
 msgstr "Nenhum erro da unidade encontrado"
 
-#: big-mount/usr/lib/big-mount/cli.sh:877
-#: big-mount/usr/lib/big-mount/cli.sh:959
+#: big-mount/usr/lib/big-mount/cli.sh:890
+#: big-mount/usr/lib/big-mount/cli.sh:972
 msgid "Drive"
 msgstr "Unidade"
 
-#: big-mount/usr/lib/big-mount/cli.sh:878
-#: big-mount/usr/lib/big-mount/drive-diag.sh:199
-#: big-mount/usr/lib/big-mount/drive.sh:198
+#: big-mount/usr/lib/big-mount/cli.sh:891
+#: big-mount/usr/lib/big-mount/drive-diag.sh:203
+#: big-mount/usr/lib/big-mount/drive.sh:238
 msgid "Connection"
 msgstr "Conexão"
 
-#: big-mount/usr/lib/big-mount/cli.sh:880
+#: big-mount/usr/lib/big-mount/cli.sh:893
 msgid "no problem reported"
 msgstr "nenhum problema relatado"
 
-#: big-mount/usr/lib/big-mount/cli.sh:881
+#: big-mount/usr/lib/big-mount/cli.sh:894
 msgid "the drive predicts its own failure"
 msgstr "a unidade prevê a própria falha"
 
-#: big-mount/usr/lib/big-mount/cli.sh:885
+#: big-mount/usr/lib/big-mount/cli.sh:898
 msgid "no failure predicted (%s damaged sectors were replaced by spare ones)"
 msgstr "nenhuma falha prevista (%s setores danificados foram substituídos por setores reserva)"
 
-#: big-mount/usr/lib/big-mount/cli.sh:887
+#: big-mount/usr/lib/big-mount/cli.sh:900
 msgid "SMART status"
 msgstr "Estado SMART"
 
-#: big-mount/usr/lib/big-mount/cli.sh:890
+#: big-mount/usr/lib/big-mount/cli.sh:903
 msgid "Since the computer was started, the system recorded no read, write or connection errors for this drive."
 msgstr "Desde que o computador foi ligado, o sistema não registrou erros de leitura, gravação ou conexão desta unidade."
 
-#: big-mount/usr/lib/big-mount/cli.sh:892
+#: big-mount/usr/lib/big-mount/cli.sh:905
 msgid "The kernel log cannot be read by your user, so recent errors of this drive cannot be checked."
 msgstr "O seu usuário não pode ler o log do kernel, então os erros recentes desta unidade não podem ser verificados."
 
-#: big-mount/usr/lib/big-mount/cli.sh:896
+#: big-mount/usr/lib/big-mount/cli.sh:909
 msgid "Problems found:"
 msgstr "Problemas encontrados:"
 
-#: big-mount/usr/lib/big-mount/cli.sh:899
-#: big-mount/usr/lib/big-mount/drive-diag.sh:148
+#: big-mount/usr/lib/big-mount/cli.sh:912
+#: big-mount/usr/lib/big-mount/drive-diag.sh:152
 msgid "The drive itself reports that it is failing (SMART)."
 msgstr "A própria unidade informa que está falhando (SMART)."
 
-#: big-mount/usr/lib/big-mount/cli.sh:900
-#: big-mount/usr/lib/big-mount/drive-diag.sh:153
+#: big-mount/usr/lib/big-mount/cli.sh:913
+#: big-mount/usr/lib/big-mount/drive-diag.sh:157
 msgid "Since the computer was started, it stopped answering and the connection had to be reset (%s kernel messages)."
 msgstr "Desde que o computador foi ligado, ela parou de responder e a conexão precisou ser reiniciada (%s mensagens do kernel)."
 
-#: big-mount/usr/lib/big-mount/cli.sh:901
-#: big-mount/usr/lib/big-mount/drive-diag.sh:152
+#: big-mount/usr/lib/big-mount/cli.sh:914
+#: big-mount/usr/lib/big-mount/drive-diag.sh:156
 msgid "Since the computer was started, reading or writing failed (%s kernel messages)."
 msgstr "Desde que o computador foi ligado, a leitura ou a gravação falhou (%s mensagens do kernel)."
 
-#: big-mount/usr/lib/big-mount/cli.sh:902
-#: big-mount/usr/lib/big-mount/drive-diag.sh:155
+#: big-mount/usr/lib/big-mount/cli.sh:915
+#: big-mount/usr/lib/big-mount/drive-diag.sh:159
 msgid "Since the computer was started, the connection was slowed down after errors."
 msgstr "Desde que o computador foi ligado, a conexão foi reduzida a uma velocidade menor depois de erros."
 
-#: big-mount/usr/lib/big-mount/cli.sh:903
-#: big-mount/usr/lib/big-mount/drive-diag.sh:154
+#: big-mount/usr/lib/big-mount/cli.sh:916
+#: big-mount/usr/lib/big-mount/drive-diag.sh:158
 msgid "Since the computer was started, the USB connection was reset or lost %s times."
 msgstr "Desde que o computador foi ligado, a conexão USB foi reiniciada ou perdida %s vezes."
 
-#: big-mount/usr/lib/big-mount/cli.sh:908
+#: big-mount/usr/lib/big-mount/cli.sh:921
 msgid "Check the data and power cables of the drive, or try another SATA port."
 msgstr "Verifique os cabos de dados e de energia da unidade, ou experimente outra porta SATA."
 
-#: big-mount/usr/lib/big-mount/cli.sh:909
+#: big-mount/usr/lib/big-mount/cli.sh:922
 msgid "An SSD that fails like this may lock itself in a protection mode: it seems to accept writing, but keeps nothing. Installers then cannot create partitions, and erased partitions come back. The drive's own Secure Erase can bring it back to work, but it erases everything on it."
 msgstr "Um SSD que falha assim pode se travar num modo de proteção: parece aceitar gravações, mas não guarda nada. Os instaladores então não conseguem criar partições, e partições apagadas reaparecem. O Secure Erase da própria unidade pode fazê-la voltar a funcionar, mas apaga tudo o que há nela."
 
-#: big-mount/usr/lib/big-mount/cli.sh:910
+#: big-mount/usr/lib/big-mount/cli.sh:923
 msgid "If the errors come back, replace the drive."
 msgstr "Se os erros voltarem, troque a unidade."
 
-#: big-mount/usr/lib/big-mount/cli.sh:937
+#: big-mount/usr/lib/big-mount/cli.sh:950
 msgid "Secure Erase is available for this drive: bigmount --secure-erase %s"
 msgstr "O Secure Erase está disponível para esta unidade: bigmount --secure-erase %s"
 
-#: big-mount/usr/lib/big-mount/cli.sh:944
+#: big-mount/usr/lib/big-mount/cli.sh:957
 msgid "Secure Erase works on a whole drive, not on a partition."
 msgstr "O Secure Erase atua sobre uma unidade inteira, não sobre uma partição."
 
-#: big-mount/usr/lib/big-mount/cli.sh:945
+#: big-mount/usr/lib/big-mount/cli.sh:958
 msgid "It holds the operating system that is running now. Start the computer from a live USB drive to erase it."
 msgstr "Ela contém o sistema operacional em uso agora. Inicie o computador por um pendrive live para apagá-la."
 
-#: big-mount/usr/lib/big-mount/cli.sh:946
+#: big-mount/usr/lib/big-mount/cli.sh:959
 msgid "Secure Erase is only offered for drives connected inside the computer, not through USB."
 msgstr "O Secure Erase só é oferecido para unidades conectadas dentro do computador, não por USB."
 
-#: big-mount/usr/lib/big-mount/cli.sh:947
+#: big-mount/usr/lib/big-mount/cli.sh:960
 msgid "Secure Erase is only available for SATA drives."
 msgstr "O Secure Erase só está disponível para unidades SATA."
 
-#: big-mount/usr/lib/big-mount/cli.sh:948
+#: big-mount/usr/lib/big-mount/cli.sh:961
 msgid "This drive does not support Secure Erase."
 msgstr "Esta unidade não tem suporte a Secure Erase."
 
-#: big-mount/usr/lib/big-mount/cli.sh:949
+#: big-mount/usr/lib/big-mount/cli.sh:962
 msgid "A security password is set on this drive. Remove it first, in the firmware setup (BIOS) or with the tool of the manufacturer."
 msgstr "Esta unidade tem uma senha de segurança definida. Remova-a antes, na configuração do firmware (BIOS) ou com a ferramenta do fabricante."
 
-#: big-mount/usr/lib/big-mount/cli.sh:950
+#: big-mount/usr/lib/big-mount/cli.sh:963
 msgid "This drive cannot be erased."
 msgstr "Esta unidade não pode ser apagada."
 
-#: big-mount/usr/lib/big-mount/cli.sh:958
-#: big-mount/usr/lib/big-mount/cli.sh:1197
-#: big-mount/usr/lib/big-mount/cli.sh:1199
-#: big-mount/usr/lib/big-mount/cli.sh:1201
-#: big-mount/usr/lib/big-mount/cli.sh:1205
+#: big-mount/usr/lib/big-mount/cli.sh:971
 msgid "Erase the whole drive"
 msgstr "Apagar a unidade inteira"
 
-#: big-mount/usr/lib/big-mount/cli.sh:960
+#: big-mount/usr/lib/big-mount/cli.sh:973
 msgid "The drive will erase itself completely, with its own Secure Erase command. Every partition and every file on it will be lost for good. This cannot be undone."
 msgstr "A unidade vai se apagar por completo, com o próprio comando Secure Erase. Todas as partições e todos os arquivos nela serão perdidos para sempre. Isso não pode ser desfeito."
 
-#: big-mount/usr/lib/big-mount/cli.sh:968
+#: big-mount/usr/lib/big-mount/cli.sh:981
 msgid "These partitions will be lost:"
 msgstr "Estas partições serão perdidas:"
 
-#: big-mount/usr/lib/big-mount/cli.sh:972
+#: big-mount/usr/lib/big-mount/cli.sh:985
 msgid "The drive announces that erasing takes more than 8 hours."
 msgstr "A unidade informa que o apagamento leva mais de 8 horas."
 
-#: big-mount/usr/lib/big-mount/cli.sh:974
+#: big-mount/usr/lib/big-mount/cli.sh:987
 msgid "The drive announces that erasing takes about %d minutes."
 msgstr "A unidade informa que o apagamento leva cerca de %d minutos."
 
-#: big-mount/usr/lib/big-mount/cli.sh:978
+#: big-mount/usr/lib/big-mount/cli.sh:991
 msgid "Afterwards an empty %s partition table is written and read back, to check that the drive keeps what is written again."
 msgstr "Depois, uma tabela de partições %s vazia é gravada e lida de volta, para conferir se a unidade voltou a guardar o que é gravado."
 
-#: big-mount/usr/lib/big-mount/cli.sh:980
+#: big-mount/usr/lib/big-mount/cli.sh:993
 msgid "Use it to bring back an SSD that no longer keeps what is written, or before giving a drive away. It is not a repair: if the drive fails again, replace it."
 msgstr "Use para recuperar um SSD que não guarda mais o que é gravado, ou antes de passar uma unidade adiante. Não é um conserto: se a unidade falhar de novo, troque-a."
 
-#: big-mount/usr/lib/big-mount/cli.sh:981
+#: big-mount/usr/lib/big-mount/cli.sh:994
 msgid "The computer may have to sleep for a moment first."
 msgstr "Talvez o computador precise entrar em suspensão por um instante antes."
 
-#: big-mount/usr/lib/big-mount/cli.sh:982
+#: big-mount/usr/lib/big-mount/cli.sh:995
 msgid "The administrator password will be requested."
 msgstr "A senha de administrador será solicitada."
 
-#: big-mount/usr/lib/big-mount/cli.sh:987
+#: big-mount/usr/lib/big-mount/cli.sh:1000
 msgid "The drive is locked against erasing"
 msgstr "A unidade está travada contra apagamento"
 
-#: big-mount/usr/lib/big-mount/cli.sh:990
+#: big-mount/usr/lib/big-mount/cli.sh:1003
 msgid "When the computer starts, its firmware locks the security commands of the drives (they are frozen). Sleeping once usually unlocks them."
 msgstr "Quando o computador liga, o firmware trava os comandos de segurança das unidades (elas ficam congeladas, \"frozen\"). Entrar em suspensão uma vez normalmente as destrava."
 
-#: big-mount/usr/lib/big-mount/cli.sh:992
+#: big-mount/usr/lib/big-mount/cli.sh:1005
 msgid "The computer will sleep and wake up by itself after about 20 seconds."
 msgstr "O computador vai entrar em suspensão e acordar sozinho depois de cerca de 20 segundos."
 
-#: big-mount/usr/lib/big-mount/cli.sh:994
+#: big-mount/usr/lib/big-mount/cli.sh:1007
 msgid "The computer will go to sleep. Wake it up with the power button, and unlock the session if asked: the erase continues afterwards."
 msgstr "O computador vai entrar em suspensão. Acorde-o com o botão de energia e desbloqueie a sessão se for pedido: o apagamento continua em seguida."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1002
+#: big-mount/usr/lib/big-mount/cli.sh:1015
 msgid "Unable to erase the drive"
 msgstr "Não foi possível apagar a unidade"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1006
+#: big-mount/usr/lib/big-mount/cli.sh:1019
 msgid "Drive erased"
 msgstr "Unidade apagada"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1009
+#: big-mount/usr/lib/big-mount/cli.sh:1022
 msgid "The drive was erased and keeps what is written again. It now has an empty %s partition table: you can install a system or create partitions on it."
 msgstr "A unidade foi apagada e voltou a guardar o que é gravado. Agora ela tem uma tabela de partições %s vazia: você pode instalar um sistema ou criar partições nela."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1011
+#: big-mount/usr/lib/big-mount/cli.sh:1024
 msgid "It failed once: keep a copy of what you store on it, and replace it if the errors come back."
 msgstr "Ela já falhou uma vez: mantenha uma cópia do que guardar nela, e troque-a se os erros voltarem."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1014
+#: big-mount/usr/lib/big-mount/cli.sh:1027
 msgid "The drive is still locked"
 msgstr "A unidade continua travada"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1016
+#: big-mount/usr/lib/big-mount/cli.sh:1029
 msgid "The drive is still locked against erasing. Nothing was erased."
 msgstr "A unidade continua travada contra apagamento. Nada foi apagado."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1017
+#: big-mount/usr/lib/big-mount/cli.sh:1030
 msgid "Some computers lock the drives again when they wake up. Try once more, or erase the drive in another computer."
 msgstr "Alguns computadores travam as unidades de novo ao acordar. Tente mais uma vez, ou apague a unidade em outro computador."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1018
+#: big-mount/usr/lib/big-mount/cli.sh:1031
 msgid "If the computer supports hot-plugging SATA drives, disconnecting and connecting the drive while the computer is on also unlocks it."
 msgstr "Se o computador permitir conectar unidades SATA com ele ligado (hot-plug), desconectar e conectar a unidade com o computador ligado também a destrava."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1023
+#: big-mount/usr/lib/big-mount/cli.sh:1036
 msgid "Drive erased, not verified"
 msgstr "Unidade apagada, sem verificação"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1025
+#: big-mount/usr/lib/big-mount/cli.sh:1038
 msgid "The drive was erased, but writing a new partition table failed (%s), so it could not be checked."
 msgstr "A unidade foi apagada, mas a gravação de uma nova tabela de partições falhou (%s), então não foi possível conferi-la."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1027
+#: big-mount/usr/lib/big-mount/cli.sh:1040
 msgid "Create a partition table with KDE Partition Manager, and check that it is still there after a restart."
 msgstr "Crie uma tabela de partições com o Gerenciador de Partições do KDE e confira se ela continua lá depois de reiniciar."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1030
-#: big-mount/usr/lib/big-mount/cli.sh:1035
+#: big-mount/usr/lib/big-mount/cli.sh:1043
+#: big-mount/usr/lib/big-mount/cli.sh:1048
 msgid "The drive is failing"
 msgstr "A unidade está falhando"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1032
+#: big-mount/usr/lib/big-mount/cli.sh:1045
 msgid "The drive accepted the erase command, but its old contents are still there: it no longer does what it is told. Replace it."
 msgstr "A unidade aceitou o comando de apagamento, mas o conteúdo antigo continua lá: ela não faz mais o que é pedido. Troque-a."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1037
+#: big-mount/usr/lib/big-mount/cli.sh:1050
 msgid "The drive was erased, but it still does not keep what is written. Replace it."
 msgstr "A unidade foi apagada, mas continua sem guardar o que é gravado. Troque-a."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1041
+#: big-mount/usr/lib/big-mount/cli.sh:1054
 msgid "The drive is still in use. Nothing was erased."
 msgstr "A unidade continua em uso. Nada foi apagado."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1042
+#: big-mount/usr/lib/big-mount/cli.sh:1055
 msgid "It holds the operating system that is running now. Nothing was erased."
 msgstr "Ela contém o sistema operacional em uso agora. Nada foi apagado."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1043
+#: big-mount/usr/lib/big-mount/cli.sh:1056
 msgid "Permission was not granted. Nothing was erased."
 msgstr "A permissão não foi concedida. Nada foi apagado."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1046
+#: big-mount/usr/lib/big-mount/cli.sh:1059
 msgid "The drive could not be erased."
 msgstr "Não foi possível apagar a unidade."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1064
+#: big-mount/usr/lib/big-mount/cli.sh:1077
+#: big-mount/usr/lib/big-mount/drive-erase.sh:56
 msgid "bigmount: Secure Erase works on a whole drive: name the drive itself (%s)"
 msgstr "bigmount: o Secure Erase atua sobre uma unidade inteira: informe a própria unidade (%s)"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1074
+#: big-mount/usr/lib/big-mount/cli.sh:1087
 msgid "bigmount: --secure-erase asks for confirmation and needs a terminal"
 msgstr "bigmount: --secure-erase pede confirmação e precisa de um terminal"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1078
-#: big-mount/usr/lib/big-mount/cli.sh:1205
+#: big-mount/usr/lib/big-mount/cli.sh:1091
+#: big-mount/usr/lib/big-mount/drive-erase.sh:197
 msgid "Another operation on this drive is in progress. Nothing was done."
 msgstr "Outra operação nesta unidade está em andamento. Nada foi feito."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1092
-#: big-mount/usr/lib/big-mount/cli.sh:1198
+#: big-mount/usr/lib/big-mount/cli.sh:1105
 msgid "To confirm, type the name of the drive (%s):"
 msgstr "Para confirmar, digite o nome da unidade (%s):"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1094
-#: big-mount/usr/lib/big-mount/cli.sh:1103
+#: big-mount/usr/lib/big-mount/cli.sh:1107
+#: big-mount/usr/lib/big-mount/cli.sh:1116
+#: big-mount/usr/lib/big-mount/drive-erase.sh:143
 msgid "Nothing was erased."
 msgstr "Nada foi apagado."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1105
+#: big-mount/usr/lib/big-mount/cli.sh:1118
 msgid "These services use the drive and will be stopped:"
 msgstr "Estes serviços usam a unidade e serão parados:"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1121
-#: big-mount/usr/lib/big-mount/cli.sh:1230
+#: big-mount/usr/lib/big-mount/cli.sh:1134
 msgid "Sleep now"
 msgstr "Suspender agora"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1128
+#: big-mount/usr/lib/big-mount/cli.sh:1141
 msgid "Erasing %s. Do not turn off the computer or disconnect the drive."
 msgstr "Apagando %s. Não desligue o computador nem desconecte a unidade."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1134
+#: big-mount/usr/lib/big-mount/cli.sh:1147
 msgid "Without a graphical session, run it as administrator: sudo bigmount --secure-erase DISK"
 msgstr "Sem uma sessão gráfica, execute como administrador: sudo bigmount --secure-erase DISCO"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1151
-#: big-mount/usr/lib/big-mount/cli.sh:1154
-#: big-mount/usr/lib/big-mount/cli.sh:1164
 #: big-mount/usr/lib/big-mount/cli.sh:1168
-msgid "Check a drive"
-msgstr "Verificar uma unidade"
-
-#: big-mount/usr/lib/big-mount/cli.sh:1151
-msgid "No drive was found."
-msgstr "Nenhuma unidade foi encontrada."
-
-#: big-mount/usr/lib/big-mount/cli.sh:1154
-msgid "Choose a drive:"
-msgstr "Escolha uma unidade:"
-
-#: big-mount/usr/lib/big-mount/cli.sh:1164
-#: big-mount/usr/lib/big-mount/cli.sh:1315
-msgid "This folder is not on a local storage device."
-msgstr "Esta pasta não está em um dispositivo de armazenamento local."
-
-#: big-mount/usr/lib/big-mount/cli.sh:1175
-#: big-mount/usr/lib/big-mount/cli.sh:1176
-#: big-mount/usr/lib/big-mount/cli.sh:1185
-#: big-mount/usr/lib/big-mount/cli.sh:1295
-#: big-mount/usr/lib/big-mount/cli.sh:1302
-#: big-mount/usr/lib/big-mount/cli.sh:1341
-#: big-mount/usr/lib/big-mount/cli.sh:1343
-#: big-mount/usr/lib/big-mount/cli.sh:1346
-#: big-mount/usr/lib/big-mount/cli.sh:1348
-#: big-mount/usr/lib/big-mount/cli.sh:1357
-#: big-mount/usr/lib/big-mount/cli.sh:1450
-msgid "Technical details"
-msgstr "Detalhes técnicos"
-
-#: big-mount/usr/lib/big-mount/cli.sh:1175
-msgid "Erase the whole drive…"
-msgstr "Apagar a unidade inteira…"
-
-#: big-mount/usr/lib/big-mount/cli.sh:1175
-#: big-mount/usr/lib/big-mount/cli.sh:1176
-#: big-mount/usr/lib/big-mount/cli.sh:1295
-#: big-mount/usr/lib/big-mount/cli.sh:1341
-#: big-mount/usr/lib/big-mount/cli.sh:1343
-#: big-mount/usr/lib/big-mount/cli.sh:1346
-#: big-mount/usr/lib/big-mount/cli.sh:1348
-msgid "Close"
-msgstr "Fechar"
-
-#: big-mount/usr/lib/big-mount/cli.sh:1197
-msgid "Continue…"
-msgstr "Continuar…"
-
-#: big-mount/usr/lib/big-mount/cli.sh:1201
-msgid "The name did not match. Nothing was erased."
-msgstr "O nome não confere. Nada foi apagado."
-
-#: big-mount/usr/lib/big-mount/cli.sh:1217
-#: big-mount/usr/lib/big-mount/cli.sh:1220
-#: big-mount/usr/lib/big-mount/cli.sh:1530
-#: big-mount/usr/lib/big-mount/cli.sh:1534
-msgid "Services use this device"
-msgstr "Serviços usam este dispositivo"
-
-#: big-mount/usr/lib/big-mount/cli.sh:1218
-msgid "Erasing it will stop these services:"
-msgstr "Apagá-la vai parar estes serviços:"
-
-#: big-mount/usr/lib/big-mount/cli.sh:1240
-msgid "Erasing the drive"
-msgstr "Apagando a unidade"
-
-#: big-mount/usr/lib/big-mount/cli.sh:1241
-msgid "Do not turn off the computer or disconnect the drive."
-msgstr "Não desligue o computador nem desconecte a unidade."
-
-#: big-mount/usr/lib/big-mount/cli.sh:1268
-#: big-mount/usr/lib/big-mount/cli.sh:1271
-#: big-mount/usr/lib/big-mount/cli.sh:1315
-#: big-mount/usr/lib/big-mount/cli.sh:1325
-#: big-mount/usr/lib/big-mount/cli.sh:1333
+#: big-mount/usr/lib/big-mount/cli.sh:1171
+#: big-mount/usr/lib/big-mount/cli.sh:1215
+#: big-mount/usr/lib/big-mount/cli.sh:1225
+#: big-mount/usr/lib/big-mount/cli.sh:1233
 msgid "Storage diagnostics"
 msgstr "Diagnóstico de armazenamento"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1268
+#: big-mount/usr/lib/big-mount/cli.sh:1168
 msgid "No storage device to diagnose was found."
 msgstr "Nenhum dispositivo de armazenamento para diagnosticar foi encontrado."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1271
-#: big-mount/usr/lib/big-mount/cli.sh:1325
+#: big-mount/usr/lib/big-mount/cli.sh:1171
+#: big-mount/usr/lib/big-mount/cli.sh:1225
 msgid "Choose a device:"
 msgstr "Escolha um dispositivo:"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1292
-#: big-mount/usr/lib/big-mount/cli.sh:1295
+#: big-mount/usr/lib/big-mount/cli.sh:1192
+#: big-mount/usr/lib/big-mount/cli.sh:1195
 msgid "Unable to access storage device"
 msgstr "Não foi possível acessar o dispositivo de armazenamento"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1293
+#: big-mount/usr/lib/big-mount/cli.sh:1193
 msgid "Big-Mount could not identify this storage device. It may have been disconnected or become temporarily unavailable."
 msgstr "O Big-Mount não conseguiu identificar este dispositivo de armazenamento. Ele pode ter sido desconectado ou estar temporariamente indisponível."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1294
+#: big-mount/usr/lib/big-mount/cli.sh:1194
 msgid "If you disconnected it, connect it again and choose Try again."
 msgstr "Se você o desconectou, conecte-o novamente e escolha Tentar novamente."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1295
-#: big-mount/usr/lib/big-mount/cli.sh:1437
+#: big-mount/usr/lib/big-mount/cli.sh:1195
+#: big-mount/usr/lib/big-mount/cli.sh:1337
 msgid "Try again"
 msgstr "Tentar novamente"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1343
+#: big-mount/usr/lib/big-mount/cli.sh:1195
+#: big-mount/usr/lib/big-mount/cli.sh:1202
+#: big-mount/usr/lib/big-mount/cli.sh:1241
+#: big-mount/usr/lib/big-mount/cli.sh:1243
+#: big-mount/usr/lib/big-mount/cli.sh:1246
+#: big-mount/usr/lib/big-mount/cli.sh:1248
+#: big-mount/usr/lib/big-mount/cli.sh:1257
+#: big-mount/usr/lib/big-mount/cli.sh:1350
+msgid "Technical details"
+msgstr "Detalhes técnicos"
+
+#: big-mount/usr/lib/big-mount/cli.sh:1195
+#: big-mount/usr/lib/big-mount/cli.sh:1241
+#: big-mount/usr/lib/big-mount/cli.sh:1243
+#: big-mount/usr/lib/big-mount/cli.sh:1246
+#: big-mount/usr/lib/big-mount/cli.sh:1248
+msgid "Close"
+msgstr "Fechar"
+
+#: big-mount/usr/lib/big-mount/cli.sh:1215
+msgid "This folder is not on a local storage device."
+msgstr "Esta pasta não está em um dispositivo de armazenamento local."
+
+#: big-mount/usr/lib/big-mount/cli.sh:1243
 msgid "Check the drive…"
 msgstr "Verificar a unidade…"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1346
+#: big-mount/usr/lib/big-mount/cli.sh:1246
 msgid "Safely remove…"
 msgstr "Remover com segurança…"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1372
-#: big-mount/usr/lib/big-mount/cli.sh:1619
+#: big-mount/usr/lib/big-mount/cli.sh:1272
+#: big-mount/usr/lib/big-mount/cli.sh:1519
 msgid "How to solve"
 msgstr "Como resolver"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1393
+#: big-mount/usr/lib/big-mount/cli.sh:1293
 msgid "Another operation on this drive is in progress. Try again when it finishes."
 msgstr "Outra operação nesta unidade está em andamento. Tente novamente quando ela terminar."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1411
+#: big-mount/usr/lib/big-mount/cli.sh:1311
 msgid "You can now write to this device."
 msgstr "Agora você pode gravar neste dispositivo."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1413
+#: big-mount/usr/lib/big-mount/cli.sh:1313
 msgid "Unable to fix the device"
 msgstr "Não foi possível corrigir o dispositivo"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1414
+#: big-mount/usr/lib/big-mount/cli.sh:1314
 msgid "Nothing was changed on the device. See the technical details for more information."
 msgstr "Nada foi alterado no dispositivo. Veja os detalhes técnicos para mais informações."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1437
-#: big-mount/usr/lib/big-mount/cli.sh:1446
+#: big-mount/usr/lib/big-mount/cli.sh:1337
+#: big-mount/usr/lib/big-mount/cli.sh:1346
 msgid "Device is busy"
 msgstr "Dispositivo ocupado"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1437
+#: big-mount/usr/lib/big-mount/cli.sh:1337
 msgid "More options…"
 msgstr "Mais opções…"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1442
+#: big-mount/usr/lib/big-mount/cli.sh:1342
 msgid "Refresh the list"
 msgstr "Atualizar a lista"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1442
+#: big-mount/usr/lib/big-mount/cli.sh:1342
 msgid "Show technical details"
 msgstr "Mostrar detalhes técnicos"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1444
+#: big-mount/usr/lib/big-mount/cli.sh:1344
 msgid "Close the listed programs…"
 msgstr "Fechar os programas listados…"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1445
+#: big-mount/usr/lib/big-mount/cli.sh:1345
 msgid "Show programs of all users (administrator)"
 msgstr "Mostrar programas de todos os usuários (administrador)"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1446
+#: big-mount/usr/lib/big-mount/cli.sh:1346
 msgid "What do you want to do?"
 msgstr "O que você deseja fazer?"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1454
+#: big-mount/usr/lib/big-mount/cli.sh:1354
 msgid "Close these programs?"
 msgstr "Fechar estes programas?"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1456
+#: big-mount/usr/lib/big-mount/cli.sh:1356
 msgid "They will be asked to close, as when you close their windows. Unsaved changes in them may be lost: if possible, close them yourself instead."
 msgstr "Eles receberão um pedido para fechar, como quando você fecha as janelas deles. Alterações não salvas podem ser perdidas: se possível, feche-os você mesmo."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1458
+#: big-mount/usr/lib/big-mount/cli.sh:1358
 msgid "These will not be closed:"
 msgstr "Estes não serão fechados:"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1461
+#: big-mount/usr/lib/big-mount/cli.sh:1361
 msgid "Close programs"
 msgstr "Fechar programas"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1490
+#: big-mount/usr/lib/big-mount/cli.sh:1390
 msgid "Writing pending data to the device. Do not disconnect it yet."
 msgstr "Gravando os dados pendentes no dispositivo. Não o desconecte ainda."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1495
-#: big-mount/usr/lib/big-mount/cli.sh:1501
+#: big-mount/usr/lib/big-mount/cli.sh:1395
+#: big-mount/usr/lib/big-mount/cli.sh:1401
 msgid "Safely remove"
 msgstr "Remover com segurança"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1495
+#: big-mount/usr/lib/big-mount/cli.sh:1395
 msgid "This folder is not on a removable storage device."
 msgstr "Esta pasta não está em um dispositivo de armazenamento removível."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1501
+#: big-mount/usr/lib/big-mount/cli.sh:1401
 msgid "The removal of this drive is already in progress."
 msgstr "A remoção desta unidade já está em andamento."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1510
-#: big-mount/usr/lib/big-mount/cli.sh:1513
-#: big-mount/usr/lib/big-mount/cli.sh:1522
+#: big-mount/usr/lib/big-mount/cli.sh:1410
+#: big-mount/usr/lib/big-mount/cli.sh:1413
+#: big-mount/usr/lib/big-mount/cli.sh:1422
 msgid "Safe to disconnect"
 msgstr "Pronto para desconectar"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1511
+#: big-mount/usr/lib/big-mount/cli.sh:1411
 msgid "Successfully unmounted and powered off. You can disconnect it now."
 msgstr "Desmontado e desligado com sucesso. Você já pode desconectá-lo."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1514
+#: big-mount/usr/lib/big-mount/cli.sh:1414
 msgid "Successfully unmounted. You can disconnect it now."
 msgstr "Desmontado com sucesso. Você já pode desconectá-lo."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1516
+#: big-mount/usr/lib/big-mount/cli.sh:1416
 msgid "Device unmounted"
 msgstr "Dispositivo desmontado"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1517
+#: big-mount/usr/lib/big-mount/cli.sh:1417
 msgid "All pending data was written and its filesystems were unmounted."
 msgstr "Todos os dados pendentes foram gravados e os sistemas de arquivos foram desmontados."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1523
+#: big-mount/usr/lib/big-mount/cli.sh:1423
 msgid "Successfully unmounted. This drive cannot be powered off by the computer, but you can disconnect it now."
 msgstr "Desmontado com sucesso. Esta unidade não pode ser desligada pelo computador, mas você já pode desconectá-la."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1531
+#: big-mount/usr/lib/big-mount/cli.sh:1430
+#: big-mount/usr/lib/big-mount/cli.sh:1434
+#: big-mount/usr/lib/big-mount/drive-erase.sh:212
+msgid "Services use this device"
+msgstr "Serviços usam este dispositivo"
+
+#: big-mount/usr/lib/big-mount/cli.sh:1431
 msgid "Removing it will stop these services:"
 msgstr "Remover o dispositivo vai parar estes serviços:"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1534
+#: big-mount/usr/lib/big-mount/cli.sh:1434
 msgid "Stop them and remove"
 msgstr "Parar e remover"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1541
-#: big-mount/usr/lib/big-mount/cli.sh:1556
+#: big-mount/usr/lib/big-mount/cli.sh:1441
+#: big-mount/usr/lib/big-mount/cli.sh:1456
 msgid "Unable to power off device"
 msgstr "Não foi possível desligar o dispositivo"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1542
+#: big-mount/usr/lib/big-mount/cli.sh:1442
 msgid "It was unmounted, but powering it off failed. Wait a moment before disconnecting it."
 msgstr "Ele foi desmontado, mas não foi possível desligá-lo. Aguarde um momento antes de desconectá-lo."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1546
+#: big-mount/usr/lib/big-mount/cli.sh:1446
 msgid "Unable to remove device"
 msgstr "Não foi possível remover o dispositivo"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1547
+#: big-mount/usr/lib/big-mount/cli.sh:1447
 msgid "It holds the operating system that is running now."
 msgstr "Ele contém o sistema operacional que está em execução agora."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1551
-#: big-mount/usr/lib/big-mount/cli.sh:1565
+#: big-mount/usr/lib/big-mount/cli.sh:1451
+#: big-mount/usr/lib/big-mount/cli.sh:1465
 msgid "Unable to unmount device"
 msgstr "Não foi possível desmontar o dispositivo"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1552
+#: big-mount/usr/lib/big-mount/cli.sh:1452
 msgid "Permission was not granted. The device remains mounted."
 msgstr "A permissão não foi concedida. O dispositivo continua montado."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1557
+#: big-mount/usr/lib/big-mount/cli.sh:1457
 msgid "Its filesystems were unmounted, but the drive is still in use, so it was not powered off. Do not disconnect it yet."
 msgstr "Os sistemas de arquivos foram desmontados, mas a unidade ainda está em uso, por isso não foi desligada. Não a desconecte ainda."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1562
+#: big-mount/usr/lib/big-mount/cli.sh:1462
 msgid "Device disconnected"
 msgstr "Dispositivo desconectado"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1563
+#: big-mount/usr/lib/big-mount/cli.sh:1463
 msgid "The device was disconnected before the removal finished. If files were being written to it, check them when you connect it again."
 msgstr "O dispositivo foi desconectado antes de a remoção terminar. Se havia arquivos sendo gravados nele, confira-os quando conectá-lo novamente."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1566
+#: big-mount/usr/lib/big-mount/cli.sh:1466
 msgid "It remains mounted. Nothing was forced."
 msgstr "Ele continua montado. Nada foi forçado."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1617
+#: big-mount/usr/lib/big-mount/cli.sh:1517
 msgid "Device: %s\\nFilesystem: %s\\nPossible reason: %s"
 msgstr "Dispositivo: %s\\nSistema de arquivos: %s\\nPossível motivo: %s"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1619
+#: big-mount/usr/lib/big-mount/cli.sh:1519
 msgid "View details"
 msgstr "Ver detalhes"
 
@@ -1448,6 +1395,7 @@ msgid "Commands such as 'bigmount --diagnose' do not diagnose anything and may p
 msgstr "Comandos como 'bigmount --diagnose' não diagnosticam nada e podem mostrar erros de permissão. Atualize o pacote big-mount."
 
 #: big-mount/usr/lib/big-mount/doctor.sh:145
+#: big-mount/usr/lib/big-mount/drive.sh:590
 msgid "Big-Mount"
 msgstr "Big-Mount"
 
@@ -1652,12 +1600,12 @@ msgid "Drive manager, %s: %s is not installed"
 msgstr "Gerenciador de unidades, %s: %s não está instalado"
 
 #: big-mount/usr/lib/big-mount/doctor.sh:313
-msgid "Drive manager window: PySide6"
-msgstr "Janela do gerenciador de unidades: PySide6"
+msgid "Application: GTK 4 and libadwaita"
+msgstr "Aplicativo: GTK 4 e libadwaita"
 
 #: big-mount/usr/lib/big-mount/doctor.sh:314
-msgid "PySide6 is not installed: bigmount --gui-drive uses dialogs"
-msgstr "O PySide6 não está instalado: bigmount --gui-drive usa caixas de diálogo"
+msgid "The application needs gtk4, libadwaita 1.5 or later and python-gobject: bigmount --gui-drive cannot open. bigmount --drive works without them"
+msgstr "O aplicativo precisa de gtk4, libadwaita 1.5 ou mais recente e python-gobject: bigmount --gui-drive não pode abrir. bigmount --drive funciona sem eles"
 
 #: big-mount/usr/lib/big-mount/doctor.sh:316
 msgid "Notifications: notify-send"
@@ -1876,323 +1824,452 @@ msgid "There is not enough free space at the destination."
 msgstr "Não há espaço livre suficiente no destino."
 
 #: big-mount/usr/lib/big-mount/drive-copy.sh:116
+#: big-mount/usr/lib/big-mount/drive-copy.sh:419
+msgid "GNU ddrescue is not installed (package ddrescue). It makes the disk image."
+msgstr "O GNU ddrescue não está instalado (pacote ddrescue). É ele quem faz a imagem de disco."
+
+#: big-mount/usr/lib/big-mount/drive-copy.sh:117
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:807
+msgid "PhotoRec is not installed (package testdisk)."
+msgstr "O PhotoRec não está instalado (pacote testdisk)."
+
+#: big-mount/usr/lib/big-mount/drive-copy.sh:118
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:602
+msgid "TestDisk is not installed (package testdisk)."
+msgstr "O TestDisk não está instalado (pacote testdisk)."
+
+#: big-mount/usr/lib/big-mount/drive-copy.sh:119
+#: big-mount/usr/lib/big-mount/drive-copy.sh:418
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:630
+#: big-mount/usr/lib/big-mount/drive.sh:508
+msgid "Permission was not granted."
+msgstr "A permissão não foi concedida."
+
+#: big-mount/usr/lib/big-mount/drive-copy.sh:120
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:814
+msgid "This device cannot be read by your user. Make a disk image first (bigmount --drive image), and search in the image: it also spares the disk."
+msgstr "Seu usuário não consegue ler este dispositivo. Faça antes uma imagem de disco (bigmount --drive image) e busque na imagem: isso também poupa o disco."
+
+#: big-mount/usr/lib/big-mount/drive-copy.sh:121
+msgid "The image cannot be stored on the disk being read."
+msgstr "A imagem não pode ficar no disco que está sendo lido."
+
+#: big-mount/usr/lib/big-mount/drive-copy.sh:122
+msgid "An image of another disk already exists in that place. Continuing it would mix the two: choose another name."
+msgstr "Já existe nesse lugar uma imagem de outro disco. Continuá-la misturaria os dois: escolha outro nome."
+
+#: big-mount/usr/lib/big-mount/drive-copy.sh:123
+#: big-mount/usr/lib/big-mount/drive-diag.sh:297
+#: big-mount/usr/lib/big-mount/drive-tui.sh:78
+msgid "The device was disconnected or replaced. Nothing was done."
+msgstr "O dispositivo foi desconectado ou substituído. Nada foi feito."
+
+#: big-mount/usr/lib/big-mount/drive-copy.sh:124
+#: big-mount/usr/lib/big-mount/drive-diag.sh:288
+msgid "This computer has no driver for this filesystem. Installing the right package may solve it."
+msgstr "Este computador não tem driver para este sistema de arquivos. Instalar o pacote certo pode resolver."
+
+#: big-mount/usr/lib/big-mount/drive-copy.sh:125
+#: big-mount/usr/lib/big-mount/drive-diag.sh:293
+msgid "This volume is encrypted. Unlock it first."
+msgstr "Este volume é criptografado. Desbloqueie-o primeiro."
+
+#: big-mount/usr/lib/big-mount/drive-copy.sh:126
+#: big-mount/usr/lib/big-mount/drive-diag.sh:294
+msgid "This is a part of a larger volume (RAID, LVM or similar), not a filesystem of its own. Its volume must be assembled first."
+msgstr "Isto é parte de um volume maior (RAID, LVM ou semelhante), não um sistema de arquivos próprio. O volume precisa ser montado antes."
+
+#: big-mount/usr/lib/big-mount/drive-copy.sh:127
+#: big-mount/usr/lib/big-mount/drive-diag.sh:296
+msgid "This is swap space, not a place for files."
+msgstr "Isto é área de swap, não um lugar para arquivos."
+
+#: big-mount/usr/lib/big-mount/drive-copy.sh:128
+msgid "No filesystem was recognized on it, so its files cannot be listed."
+msgstr "Nenhum sistema de arquivos foi reconhecido nele, então os arquivos não podem ser listados."
+
+#: big-mount/usr/lib/big-mount/drive-copy.sh:129
+msgid "Choose one of the volumes of this drive to see its files."
+msgstr "Escolha um dos volumes deste disco para ver os arquivos."
+
+#: big-mount/usr/lib/big-mount/drive-copy.sh:130
+msgid "This is already a disk image."
+msgstr "Isto já é uma imagem de disco."
+
+#: big-mount/usr/lib/big-mount/drive-copy.sh:131
 msgid "The copy was refused."
 msgstr "A cópia foi recusada."
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:131
+#: big-mount/usr/lib/big-mount/drive-copy.sh:148
 msgid "The source is mounted with writing enabled. Mounting it read-only is safer."
 msgstr "A origem está montada com gravação ativada. Montá-la como somente leitura é mais seguro."
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:132
+#: big-mount/usr/lib/big-mount/drive-copy.sh:149
 msgid "The source drive reported problems. Files that do not advance are set aside so the rest is saved first."
 msgstr "A unidade de origem relatou problemas. Arquivos que não avançam são deixados de lado para salvar o resto primeiro."
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:133
+#: big-mount/usr/lib/big-mount/drive-copy.sh:150
 msgid "The total is not measured on a drive at risk, to avoid extra reads. Progress shows what was copied so far."
 msgstr "O total não é medido em uma unidade em risco, para evitar leituras extras. O progresso mostra o que já foi copiado."
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:134
+#: big-mount/usr/lib/big-mount/drive-copy.sh:151
 msgid "The total is the used space of the volume: an approximation."
 msgstr "O total é o espaço usado do volume: uma aproximação."
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:135
+#: big-mount/usr/lib/big-mount/drive-copy.sh:152
 msgid "The destination is FAT32, which cannot store files of 4 GiB or more. Those files will be listed as failed."
 msgstr "O destino é FAT32, que não guarda arquivos de 4 GiB ou mais. Esses arquivos serão listados como falhas."
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:136
+#: big-mount/usr/lib/big-mount/drive-copy.sh:153
 msgid "The destination does not store Linux permissions. Names and dates are kept, permissions are not."
 msgstr "O destino não guarda permissões do Linux. Nomes e datas são mantidos, as permissões não."
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:137
+#: big-mount/usr/lib/big-mount/drive-copy.sh:154
 msgid "Some files already exist at the destination with different content. See the option for existing files."
 msgstr "Alguns arquivos já existem no destino com conteúdo diferente. Veja a opção para arquivos existentes."
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:138
+#: big-mount/usr/lib/big-mount/drive-copy.sh:155
 msgid "This version of rsync cannot sync each file to the disk (it needs 3.2.4 or later). After a power cut, the last files copied should be checked."
 msgstr "Esta versão do rsync não consegue sincronizar cada arquivo com o disco (precisa da 3.2.4 ou mais nova). Depois de uma queda de energia, confira os últimos arquivos copiados."
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:139
+#: big-mount/usr/lib/big-mount/drive-copy.sh:156
 msgid "The full check reads every file of the source again. On a drive at risk that is extra wear."
 msgstr "A verificação completa lê de novo todos os arquivos da origem. Em uma unidade em risco, isso é desgaste extra."
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:362
+#: big-mount/usr/lib/big-mount/drive-copy.sh:386
+msgid "Making the disk image"
+msgstr "Fazendo a imagem do disco"
+
+#: big-mount/usr/lib/big-mount/drive-copy.sh:387
+msgid "Disk image complete"
+msgstr "Imagem de disco concluída"
+
+#: big-mount/usr/lib/big-mount/drive-copy.sh:388
+msgid "Listing the files"
+msgstr "Listando os arquivos"
+
+#: big-mount/usr/lib/big-mount/drive-copy.sh:389
+msgid "List of files complete"
+msgstr "Lista de arquivos concluída"
+
+#: big-mount/usr/lib/big-mount/drive-copy.sh:390
+msgid "Searching by content"
+msgstr "Procurando pelo conteúdo"
+
+#: big-mount/usr/lib/big-mount/drive-copy.sh:391
+msgid "Search complete"
+msgstr "Busca concluída"
+
+#: big-mount/usr/lib/big-mount/drive-copy.sh:394
 msgid "Waiting to start"
 msgstr "Aguardando o início"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:363
+#: big-mount/usr/lib/big-mount/drive-copy.sh:395
 msgid "Measuring what will be copied"
 msgstr "Medindo o que será copiado"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:364
+#: big-mount/usr/lib/big-mount/drive-copy.sh:396
 msgid "Copying"
 msgstr "Copiando"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:365
+#: big-mount/usr/lib/big-mount/drive-copy.sh:397
 msgid "Checking the result"
 msgstr "Verificando o resultado"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:366
+#: big-mount/usr/lib/big-mount/drive-copy.sh:398
 msgid "Stopping: waiting for the disk to answer"
 msgstr "Parando: aguardando o disco responder"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:367
+#: big-mount/usr/lib/big-mount/drive-copy.sh:399
 msgid "Paused"
 msgstr "Pausada"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:368
+#: big-mount/usr/lib/big-mount/drive-copy.sh:400
 msgid "Completed and checked"
 msgstr "Concluída e verificada"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:369
+#: big-mount/usr/lib/big-mount/drive-copy.sh:401
 msgid "Cancelled"
 msgstr "Cancelada"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:370
+#: big-mount/usr/lib/big-mount/drive-copy.sh:402
 msgid "Failed"
 msgstr "Falhou"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:371
+#: big-mount/usr/lib/big-mount/drive-copy.sh:403
 msgid "Finished, needs your attention"
 msgstr "Terminou, precisa da sua atenção"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:372
+#: big-mount/usr/lib/big-mount/drive-copy.sh:404
 msgid "Interrupted (it can be resumed)"
 msgstr "Interrompida (pode ser retomada)"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:379
+#: big-mount/usr/lib/big-mount/drive-copy.sh:411
 msgid "The source drive was disconnected or unmounted. Connect and mount it again, then resume."
 msgstr "A unidade de origem foi desconectada ou desmontada. Conecte e monte de novo, depois retome."
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:380
+#: big-mount/usr/lib/big-mount/drive-copy.sh:412
 msgid "The destination was disconnected or unmounted. Connect and mount it again, then resume."
 msgstr "O destino foi desconectado ou desmontado. Conecte e monte de novo, depois retome."
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:381
+#: big-mount/usr/lib/big-mount/drive-copy.sh:413
 msgid "The destination ran out of space. Free some space or choose another place, then resume."
 msgstr "O destino ficou sem espaço. Libere espaço ou escolha outro lugar, depois retome."
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:382
+#: big-mount/usr/lib/big-mount/drive-copy.sh:414
 msgid "%s files were set aside because they did not advance. The drive may be getting worse, so the copy stopped."
 msgstr "%s arquivos foram deixados de lado porque não avançavam. A unidade pode estar piorando, por isso a cópia parou."
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:383
+#: big-mount/usr/lib/big-mount/drive-copy.sh:415
 msgid "Some files were not copied. See the list below."
 msgstr "Alguns arquivos não foram copiados. Veja a lista abaixo."
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:384
+#: big-mount/usr/lib/big-mount/drive-copy.sh:416
 msgid "The check found differences between source and destination."
 msgstr "A verificação encontrou diferenças entre origem e destino."
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:385
+#: big-mount/usr/lib/big-mount/drive-copy.sh:417
 msgid "rsync stopped with an error. See the log."
 msgstr "O rsync parou com um erro. Veja o registro."
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:475
+#: big-mount/usr/lib/big-mount/drive-copy.sh:420
+msgid "Some areas of the disk could not be read. The image holds everything that could be."
+msgstr "Algumas áreas do disco não puderam ser lidas. A imagem guarda tudo o que foi possível ler."
+
+#: big-mount/usr/lib/big-mount/drive-copy.sh:421
+msgid "Some folders could not be read, so the list may be incomplete. See the log."
+msgstr "Algumas pastas não puderam ser lidas, então a lista pode estar incompleta. Veja o registro."
+
+#: big-mount/usr/lib/big-mount/drive-copy.sh:422
+msgid "PhotoRec stopped with an error. See the log."
+msgstr "O PhotoRec parou com um erro. Veja o registro."
+
+#: big-mount/usr/lib/big-mount/drive-copy.sh:423
+msgid "No file was recognized by its content. That does not prove there is nothing to recover: another method, or a professional, may find more."
+msgstr "Nenhum arquivo foi reconhecido pelo conteúdo. Isso não prova que não há nada a recuperar: outro método, ou um profissional, pode encontrar mais."
+
+#: big-mount/usr/lib/big-mount/drive-copy.sh:513
 msgid "its content could not be read"
 msgstr "seu conteúdo não pôde ser lido"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:907
+#: big-mount/usr/lib/big-mount/drive-copy.sh:959
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:889
 msgid "Source:"
 msgstr "Origem:"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:907
+#: big-mount/usr/lib/big-mount/drive-copy.sh:959
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:894
 msgid "Destination:"
 msgstr "Destino:"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:909
-#: big-mount/usr/lib/big-mount/drive-copy.sh:911
+#: big-mount/usr/lib/big-mount/drive-copy.sh:961
+#: big-mount/usr/lib/big-mount/drive-copy.sh:963
 msgid "Files:"
 msgstr "Arquivos:"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:921
-#: big-mount/usr/lib/big-mount/drive-copy.sh:922
+#: big-mount/usr/lib/big-mount/drive-copy.sh:973
+#: big-mount/usr/lib/big-mount/drive-copy.sh:974
 msgid "Copied:"
 msgstr "Copiado:"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:926
+#: big-mount/usr/lib/big-mount/drive-copy.sh:978
 msgid "Speed:"
 msgstr "Velocidade:"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:926
+#: big-mount/usr/lib/big-mount/drive-copy.sh:978
 msgid "average"
 msgstr "média"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:927
+#: big-mount/usr/lib/big-mount/drive-copy.sh:979
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:902
 msgid "Elapsed:"
 msgstr "Decorrido:"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:928
+#: big-mount/usr/lib/big-mount/drive-copy.sh:980
 msgid "Remaining:"
 msgstr "Restante:"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:929
+#: big-mount/usr/lib/big-mount/drive-copy.sh:981
 msgid "Waiting for the disk to answer, for %s seconds"
 msgstr "Aguardando o disco responder há %s segundos"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:930
+#: big-mount/usr/lib/big-mount/drive-copy.sh:982
 msgid "Current file:"
 msgstr "Arquivo atual:"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:931
+#: big-mount/usr/lib/big-mount/drive-copy.sh:983
 msgid "Set aside:"
 msgstr "Deixados de lado:"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:932
+#: big-mount/usr/lib/big-mount/drive-copy.sh:984
 msgid "Failed:"
 msgstr "Falharam:"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:972
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1024
 msgid "Cancelled. Files already copied stay at the destination, and the copy can be resumed."
 msgstr "Cancelada. Os arquivos já copiados ficam no destino, e a cópia pode ser retomada."
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:988
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1040
 msgid "Source"
 msgstr "Origem"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:989
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1045
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:916
 msgid "Destination"
 msgstr "Destino"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:990
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1046
 msgid "Files copied"
 msgstr "Arquivos copiados"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:991
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1047
 msgid "Data copied"
 msgstr "Dados copiados"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:992
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1048
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:920
 msgid "Elapsed"
 msgstr "Decorrido"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:994
-#: big-mount/usr/lib/big-mount/drive-copy.sh:995
-#: big-mount/usr/lib/big-mount/drive-copy.sh:996
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1050
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1051
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1052
 msgid "Check"
 msgstr "Verificação"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:994
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1050
 msgid "source and destination match"
 msgstr "origem e destino são iguais"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:995
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1051
 msgid "%s files differ"
 msgstr "%s arquivos diferem"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:996
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1052
 msgid "rsync confirmed each file as it was copied; no second comparison was made"
 msgstr "o rsync confirmou cada arquivo ao copiar; não foi feita uma segunda comparação"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:998
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1054
 msgid "Already at the destination, with different content"
 msgstr "Já no destino, com conteúdo diferente"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1002
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1058
 msgid "Set aside because they did not advance (damaged area of the disk):"
 msgstr "Deixados de lado porque não avançavam (área danificada do disco):"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1005
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1061
 msgid "To try them again, which puts more strain on the disk: bigmount --drive resume %s --retry-deferred"
 msgstr "Para tentar de novo, o que força mais o disco: bigmount --drive resume %s --retry-deferred"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1009
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1065
 msgid "Not copied:"
 msgstr "Não copiados:"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1014
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1070
 msgid "Different at the destination:"
 msgstr "Diferentes no destino:"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1017
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1073
 msgid "Log:"
 msgstr "Registro:"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1041
-#: big-mount/usr/lib/big-mount/drive.sh:196
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1097
+#: big-mount/usr/lib/big-mount/drive.sh:236
 msgid "Serial number"
 msgstr "Número de série"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1041
-#: big-mount/usr/lib/big-mount/drive.sh:212
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1097
+#: big-mount/usr/lib/big-mount/drive.sh:252
 msgid "Label"
 msgstr "Rótulo"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1072
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1128
 msgid "'%s' already exists. Nothing was written."
 msgstr "'%s' já existe. Nada foi gravado."
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1088
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1144
 msgid "Kernel messages:"
 msgstr "Mensagens do kernel:"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1096
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1152
 msgid "Report written to %s"
 msgstr "Relatório gravado em %s"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1144
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1151
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1205
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1212
 msgid "free"
 msgstr "livres"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1147
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1208
 msgid "drive with critical alerts"
 msgstr "unidade com alertas críticos"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1148
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1209
 msgid "same physical disk as the source"
 msgstr "mesmo disco físico da origem"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1149
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1210
 msgid "not enough space"
 msgstr "espaço insuficiente"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1165
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1226
 msgid "Home folder"
 msgstr "Pasta pessoal"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1202
-#: big-mount/usr/lib/big-mount/drive-recovery.sh:233
-msgid "Both --source and --destination are needed."
-msgstr "--source e --destination são necessários."
-
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1270
-msgid "%s files, %s to copy; %s already exist with different content."
-msgstr "%s arquivos, %s a copiar; %s já existem com conteúdo diferente."
-
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1293
-msgid "The copy could not be started."
-msgstr "Não foi possível iniciar a cópia."
-
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1298
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1422
-#: big-mount/usr/lib/big-mount/drive-recovery.sh:185
-msgid "Copy started: %s"
-msgstr "Cópia iniciada: %s"
-
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1300
-#: big-mount/usr/lib/big-mount/drive-recovery.sh:187
-msgid "To follow it: bigmount --drive status %s --watch"
-msgstr "Para acompanhar: bigmount --drive status %s --watch"
-
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1331
-msgid "No copies or images yet."
-msgstr "Ainda não há cópias nem imagens."
-
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1345
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1357
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1394
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1272
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1425
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1437
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1482
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:940
 msgid "There is no job '%s'."
 msgstr "Não existe a tarefa '%s'."
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1377
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1275
+msgid "Only the results of a search by content can be copied this way."
+msgstr "Só os resultados de uma busca por conteúdo podem ser copiados assim."
+
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1282
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:510
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:801
+msgid "Both --source and --destination are needed."
+msgstr "--source e --destination são necessários."
+
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1350
+msgid "%s files, %s to copy; %s already exist with different content."
+msgstr "%s arquivos, %s a copiar; %s já existem com conteúdo diferente."
+
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1373
+msgid "The copy could not be started."
+msgstr "Não foi possível iniciar a cópia."
+
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1378
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1509
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:280
+msgid "Copy started: %s"
+msgstr "Cópia iniciada: %s"
+
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1380
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:282
+msgid "To follow it: bigmount --drive status %s --watch"
+msgstr "Para acompanhar: bigmount --drive status %s --watch"
+
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1411
+msgid "No copies or images yet."
+msgstr "Ainda não há cópias nem imagens."
+
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1445
+msgid "A search cannot be paused, only cancelled. What was found stays."
+msgstr "Uma busca não pode ser pausada, só cancelada. O que foi encontrado fica guardado."
+
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1465
 msgid "It is not running."
 msgstr "Ela não está em execução."
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1400
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1488
 msgid "It is already running."
 msgstr "Ela já está em execução."
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1404
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1492
 msgid "It is already complete."
 msgstr "Ela já está concluída."
 
@@ -2232,271 +2309,386 @@ msgstr "Imagem de disco"
 msgid "Storage"
 msgstr "Armazenamento"
 
-#: big-mount/usr/lib/big-mount/drive-detect.sh:219
+#: big-mount/usr/lib/big-mount/drive-detect.sh:248
 msgid "In use by the running system"
 msgstr "Em uso pelo sistema em execução"
 
-#: big-mount/usr/lib/big-mount/drive-detect.sh:220
+#: big-mount/usr/lib/big-mount/drive-detect.sh:249
 msgid "Mounted"
 msgstr "Montado"
 
-#: big-mount/usr/lib/big-mount/drive-detect.sh:221
+#: big-mount/usr/lib/big-mount/drive-detect.sh:250
 msgid "Mounted read-only"
 msgstr "Montado somente leitura"
 
-#: big-mount/usr/lib/big-mount/drive-detect.sh:222
+#: big-mount/usr/lib/big-mount/drive-detect.sh:251
 msgid "In use as swap"
 msgstr "Em uso como swap"
 
-#: big-mount/usr/lib/big-mount/drive-detect.sh:223
+#: big-mount/usr/lib/big-mount/drive-detect.sh:252
 msgid "Swap space, not in use"
 msgstr "Área de swap, sem uso"
 
-#: big-mount/usr/lib/big-mount/drive-detect.sh:224
+#: big-mount/usr/lib/big-mount/drive-detect.sh:253
 msgid "Encrypted and locked"
 msgstr "Criptografado e bloqueado"
 
-#: big-mount/usr/lib/big-mount/drive-detect.sh:225
+#: big-mount/usr/lib/big-mount/drive-detect.sh:254
 msgid "Encrypted, unlocked"
 msgstr "Criptografado, desbloqueado"
 
-#: big-mount/usr/lib/big-mount/drive-detect.sh:226
+#: big-mount/usr/lib/big-mount/drive-detect.sh:255
 msgid "Part of a volume (RAID, LVM or similar)"
 msgstr "Parte de um volume (RAID, LVM ou semelhante)"
 
-#: big-mount/usr/lib/big-mount/drive-detect.sh:227
+#: big-mount/usr/lib/big-mount/drive-detect.sh:256
 msgid "Holds other volumes"
 msgstr "Contém outros volumes"
 
-#: big-mount/usr/lib/big-mount/drive-detect.sh:228
+#: big-mount/usr/lib/big-mount/drive-detect.sh:257
 msgid "No known filesystem"
 msgstr "Nenhum sistema de arquivos conhecido"
 
-#: big-mount/usr/lib/big-mount/drive-detect.sh:229
+#: big-mount/usr/lib/big-mount/drive-detect.sh:258
 msgid "Not mounted"
 msgstr "Não montado"
 
-#: big-mount/usr/lib/big-mount/drive-detect.sh:230
+#: big-mount/usr/lib/big-mount/drive-detect.sh:259
 msgid "Unknown"
 msgstr "Desconhecido"
 
-#: big-mount/usr/lib/big-mount/drive-detect.sh:300
-#: big-mount/usr/lib/big-mount/drive-diag.sh:202
-#: big-mount/usr/lib/big-mount/drive.sh:202
+#: big-mount/usr/lib/big-mount/drive-detect.sh:334
+#: big-mount/usr/lib/big-mount/drive-diag.sh:206
+#: big-mount/usr/lib/big-mount/drive.sh:242
 msgid "Health"
 msgstr "Saúde"
 
-#: big-mount/usr/lib/big-mount/drive-detect.sh:314
+#: big-mount/usr/lib/big-mount/drive-detect.sh:348
 msgid "A mounted device did not answer in time, so free space is not shown."
 msgstr "Um dispositivo montado não respondeu a tempo, por isso o espaço livre não é mostrado."
 
-#: big-mount/usr/lib/big-mount/drive-detect.sh:316
+#: big-mount/usr/lib/big-mount/drive-detect.sh:350
 msgid "No storage device was found."
 msgstr "Nenhum dispositivo de armazenamento foi encontrado."
 
-#: big-mount/usr/lib/big-mount/drive-diag.sh:131
+#: big-mount/usr/lib/big-mount/drive-diag.sh:135
 msgid "Critical: high risk for the data"
 msgstr "Crítico: alto risco para os dados"
 
-#: big-mount/usr/lib/big-mount/drive-diag.sh:132
+#: big-mount/usr/lib/big-mount/drive-diag.sh:136
 msgid "Attention: needs a closer look"
 msgstr "Atenção: precisa de uma análise"
 
-#: big-mount/usr/lib/big-mount/drive-diag.sh:135
+#: big-mount/usr/lib/big-mount/drive-diag.sh:139
 msgid "No alerts (SMART and system log checked)"
 msgstr "Sem alertas (SMART e registro do sistema verificados)"
 
-#: big-mount/usr/lib/big-mount/drive-diag.sh:136
+#: big-mount/usr/lib/big-mount/drive-diag.sh:140
 msgid "No alerts in the system log (SMART not read)"
 msgstr "Sem alertas no registro do sistema (SMART não lido)"
 
-#: big-mount/usr/lib/big-mount/drive-diag.sh:137
+#: big-mount/usr/lib/big-mount/drive-diag.sh:141
 msgid "No alerts from SMART (system log not readable)"
 msgstr "Sem alertas do SMART (registro do sistema ilegível)"
 
-#: big-mount/usr/lib/big-mount/drive-diag.sh:140
+#: big-mount/usr/lib/big-mount/drive-diag.sh:144
 msgid "Not applicable (a disk image)"
 msgstr "Não se aplica (uma imagem de disco)"
 
-#: big-mount/usr/lib/big-mount/drive-diag.sh:141
+#: big-mount/usr/lib/big-mount/drive-diag.sh:145
 msgid "Unknown: not enough information"
 msgstr "Desconhecido: informações insuficientes"
 
-#: big-mount/usr/lib/big-mount/drive-diag.sh:149
+#: big-mount/usr/lib/big-mount/drive-diag.sh:153
 msgid "The drive has sectors it can no longer read (%s pending), even if its overall verdict says PASSED."
 msgstr "A unidade tem setores que não consegue mais ler (%s pendentes), mesmo que o veredito geral dela diga PASSED."
 
-#: big-mount/usr/lib/big-mount/drive-diag.sh:150
+#: big-mount/usr/lib/big-mount/drive-diag.sh:154
 msgid "The NVMe drive raised a critical warning (%s)."
 msgstr "A unidade NVMe emitiu um aviso crítico (%s)."
 
-#: big-mount/usr/lib/big-mount/drive-diag.sh:151
+#: big-mount/usr/lib/big-mount/drive-diag.sh:155
 msgid "The NVMe drive recorded %s media or data integrity errors."
 msgstr "A unidade NVMe registrou %s erros de mídia ou integridade de dados."
 
-#: big-mount/usr/lib/big-mount/drive-diag.sh:156
+#: big-mount/usr/lib/big-mount/drive-diag.sh:160
 msgid "The drive already replaced damaged sectors with spare ones."
 msgstr "A unidade já substituiu setores danificados por setores reserva."
 
-#: big-mount/usr/lib/big-mount/drive-diag.sh:157
+#: big-mount/usr/lib/big-mount/drive-diag.sh:161
 msgid "The drive reported %s errors it could not correct."
 msgstr "A unidade relatou %s erros que não conseguiu corrigir."
 
-#: big-mount/usr/lib/big-mount/drive-diag.sh:158
+#: big-mount/usr/lib/big-mount/drive-diag.sh:162
 msgid "The cable or adapter corrupted data in transit %s times (CRC errors)."
 msgstr "O cabo ou o adaptador corrompeu dados em trânsito %s vezes (erros de CRC)."
 
-#: big-mount/usr/lib/big-mount/drive-diag.sh:197
-#: big-mount/usr/lib/big-mount/drive.sh:193
+#: big-mount/usr/lib/big-mount/drive-diag.sh:201
+#: big-mount/usr/lib/big-mount/drive.sh:233
 msgid "Type"
 msgstr "Tipo"
 
-#: big-mount/usr/lib/big-mount/drive-diag.sh:198
-#: big-mount/usr/lib/big-mount/drive.sh:197
+#: big-mount/usr/lib/big-mount/drive-diag.sh:202
+#: big-mount/usr/lib/big-mount/drive.sh:237
 msgid "Capacity"
 msgstr "Capacidade"
 
-#: big-mount/usr/lib/big-mount/drive-diag.sh:203
+#: big-mount/usr/lib/big-mount/drive-diag.sh:207
 msgid "SMART verdict"
 msgstr "Veredito do SMART"
 
-#: big-mount/usr/lib/big-mount/drive-diag.sh:205
+#: big-mount/usr/lib/big-mount/drive-diag.sh:209
 msgid "What was found:"
 msgstr "O que foi encontrado:"
 
-#: big-mount/usr/lib/big-mount/drive-diag.sh:210
+#: big-mount/usr/lib/big-mount/drive-diag.sh:214
 msgid "Volumes:"
 msgstr "Volumes:"
 
-#: big-mount/usr/lib/big-mount/drive-diag.sh:219
+#: big-mount/usr/lib/big-mount/drive-diag.sh:223
 msgid "no driver for this filesystem on this computer"
 msgstr "sem driver para este sistema de arquivos neste computador"
 
-#: big-mount/usr/lib/big-mount/drive-diag.sh:221
+#: big-mount/usr/lib/big-mount/drive-diag.sh:225
 msgid "writing blocked on the device"
 msgstr "gravação bloqueada no dispositivo"
 
-#: big-mount/usr/lib/big-mount/drive-diag.sh:227
+#: big-mount/usr/lib/big-mount/drive-diag.sh:231
 msgid "For the SMART details of the drive, which need the administrator password: bigmount --drive diagnose DEVICE --smart"
 msgstr "Para os detalhes de SMART da unidade, que pedem a senha de administrador: bigmount --drive diagnose DISPOSITIVO --smart"
 
-#: big-mount/usr/lib/big-mount/drive-diag.sh:237
+#: big-mount/usr/lib/big-mount/drive-diag.sh:241
 msgid "Copy what matters now, starting with the most important files. Every extra read wears a failing disk."
 msgstr "Copie agora o que importa, começando pelos arquivos mais importantes. Cada leitura extra desgasta um disco que está falhando."
 
-#: big-mount/usr/lib/big-mount/drive-diag.sh:238
+#: big-mount/usr/lib/big-mount/drive-diag.sh:242
 msgid "Do not run repair tools on this disk: they write, and they can destroy what is still readable."
 msgstr "Não use ferramentas de reparo neste disco: elas gravam e podem destruir o que ainda é legível."
 
-#: big-mount/usr/lib/big-mount/drive-diag.sh:239
+#: big-mount/usr/lib/big-mount/drive-diag.sh:243
 msgid "If the data is very important and cannot be replaced, consider a data recovery professional before insisting."
 msgstr "Se os dados forem muito importantes e insubstituíveis, considere um profissional de recuperação antes de insistir."
 
-#: big-mount/usr/lib/big-mount/drive-diag.sh:242
+#: big-mount/usr/lib/big-mount/drive-diag.sh:246
 msgid "Copy your important files to another place."
 msgstr "Copie seus arquivos importantes para outro lugar."
 
-#: big-mount/usr/lib/big-mount/drive-diag.sh:243
+#: big-mount/usr/lib/big-mount/drive-diag.sh:247
 msgid "Try another cable and connect the drive directly to the computer, without a hub."
 msgstr "Experimente outro cabo e conecte a unidade direto no computador, sem hub."
 
-#: big-mount/usr/lib/big-mount/drive-diag.sh:283
+#: big-mount/usr/lib/big-mount/drive-diag.sh:287
 msgid "Permission to mount was not granted."
 msgstr "A permissão para montar não foi concedida."
 
-#: big-mount/usr/lib/big-mount/drive-diag.sh:284
-msgid "This computer has no driver for this filesystem. Installing the right package may solve it."
-msgstr "Este computador não tem driver para este sistema de arquivos. Instalar o pacote certo pode resolver."
-
-#: big-mount/usr/lib/big-mount/drive-diag.sh:285
+#: big-mount/usr/lib/big-mount/drive-diag.sh:289
 msgid "Windows left this partition hibernated (Fast Startup). It can be read only after Windows shuts down completely."
 msgstr "O Windows deixou esta partição hibernada (Inicialização Rápida). Ela só pode ser lida depois que o Windows desligar por completo."
 
-#: big-mount/usr/lib/big-mount/drive-diag.sh:286
+#: big-mount/usr/lib/big-mount/drive-diag.sh:290
 msgid "The drive could not read the start of this filesystem. This is usually damage on the disk, a bad cable or a weak USB port. Making a disk image with GNU ddrescue is the safest next step."
 msgstr "A unidade não conseguiu ler o início deste sistema de arquivos. Em geral é dano no disco, cabo ruim ou porta USB fraca. Fazer uma imagem de disco com o GNU ddrescue é o próximo passo mais seguro."
 
-#: big-mount/usr/lib/big-mount/drive-diag.sh:287
+#: big-mount/usr/lib/big-mount/drive-diag.sh:291
 msgid "The structure of this filesystem seems damaged, or this is not the filesystem it claims to be. Nothing was repaired. A disk image or a search for files (PhotoRec) may still recover data."
 msgstr "A estrutura deste sistema de arquivos parece danificada, ou ele não é o que afirma ser. Nada foi reparado. Uma imagem de disco ou uma busca por arquivos (PhotoRec) ainda pode recuperar dados."
 
-#: big-mount/usr/lib/big-mount/drive-diag.sh:288
+#: big-mount/usr/lib/big-mount/drive-diag.sh:292
 msgid "This filesystem was not closed properly and needs to replay its journal, which writes to the disk. To protect the data that was not done. A disk image, worked on as a copy, is the safe way to read it."
 msgstr "Este sistema de arquivos não foi fechado corretamente e precisa reproduzir o journal, o que grava no disco. Para proteger os dados, isso não foi feito. Uma imagem de disco, usada como cópia, é o jeito seguro de lê-lo."
 
-#: big-mount/usr/lib/big-mount/drive-diag.sh:289
-msgid "This volume is encrypted. Unlock it first."
-msgstr "Este volume é criptografado. Desbloqueie-o primeiro."
-
-#: big-mount/usr/lib/big-mount/drive-diag.sh:290
-msgid "This is a part of a larger volume (RAID, LVM or similar), not a filesystem of its own. Its volume must be assembled first."
-msgstr "Isto é parte de um volume maior (RAID, LVM ou semelhante), não um sistema de arquivos próprio. O volume precisa ser montado antes."
-
-#: big-mount/usr/lib/big-mount/drive-diag.sh:291
+#: big-mount/usr/lib/big-mount/drive-diag.sh:295
 msgid "No filesystem was recognized on it. If it should have partitions, searching for them with TestDisk does not change the disk."
 msgstr "Nenhum sistema de arquivos foi reconhecido. Se deveria ter partições, procurá-las com o TestDisk não altera o disco."
 
-#: big-mount/usr/lib/big-mount/drive-diag.sh:292
-msgid "This is swap space, not a place for files."
-msgstr "Isto é área de swap, não um lugar para arquivos."
-
-#: big-mount/usr/lib/big-mount/drive-diag.sh:293
-#: big-mount/usr/lib/big-mount/drive-tui.sh:78
-msgid "The device was disconnected or replaced. Nothing was done."
-msgstr "O dispositivo foi desconectado ou substituído. Nada foi feito."
-
-#: big-mount/usr/lib/big-mount/drive-diag.sh:294
+#: big-mount/usr/lib/big-mount/drive-diag.sh:298
 msgid "This drive reported problems, so it is only mounted read-only. Writing to it can destroy what is still readable."
 msgstr "Esta unidade relatou problemas, por isso só é montada como somente leitura. Gravar nela pode destruir o que ainda é legível."
 
-#: big-mount/usr/lib/big-mount/drive-diag.sh:295
+#: big-mount/usr/lib/big-mount/drive-diag.sh:299
 msgid "It is already mounted with writing enabled. Unmount it first to mount it read-only (bigmount --drive mount DEVICE --remount)."
 msgstr "Já está montado com gravação ativada. Desmonte primeiro para montar como somente leitura (bigmount --drive mount DISPOSITIVO --remount)."
 
-#: big-mount/usr/lib/big-mount/drive-diag.sh:296
+#: big-mount/usr/lib/big-mount/drive-diag.sh:300
 msgid "It is in use, so it could not be unmounted to be mounted again."
 msgstr "Está em uso, por isso não pôde ser desmontado para montar de novo."
 
-#: big-mount/usr/lib/big-mount/drive-diag.sh:297
+#: big-mount/usr/lib/big-mount/drive-diag.sh:301
 msgid "The reason could not be determined. Nothing was changed on the device. See the technical details."
 msgstr "Não foi possível determinar o motivo. Nada foi alterado no dispositivo. Veja os detalhes técnicos."
 
-#: big-mount/usr/lib/big-mount/drive-recovery.sh:136
+#: big-mount/usr/lib/big-mount/drive-erase.sh:167
+#: big-mount/usr/lib/big-mount/drive-erase.sh:174
+msgid "The confirmation is no longer valid. Nothing was erased. Start again."
+msgstr "A confirmação não vale mais. Nada foi apagado. Comece de novo."
+
+#: big-mount/usr/lib/big-mount/drive-erase.sh:179
+msgid "The name did not match. Nothing was erased."
+msgstr "O nome não confere. Nada foi apagado."
+
+#: big-mount/usr/lib/big-mount/drive-erase.sh:185
+#: big-mount/usr/lib/big-mount/drive-erase.sh:188
+#: big-mount/usr/lib/big-mount/lib.sh:1224
+msgid "The drive was disconnected or replaced. Nothing was erased."
+msgstr "A unidade foi desconectada ou substituída. Nada foi apagado."
+
+#: big-mount/usr/lib/big-mount/drive-erase.sh:214
+msgid "Erasing it will stop these services:"
+msgstr "Apagá-la vai parar estes serviços:"
+
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:95
+msgid "This image already exists. It continues where it stopped, reading only what is still missing."
+msgstr "Esta imagem já existe. Ela continua de onde parou, lendo só o que ainda falta."
+
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:96
+msgid "Files found by content lose their original names and folders."
+msgstr "Arquivos encontrados por conteúdo perdem os nomes e as pastas originais."
+
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:97
+msgid "This drive reported problems. Reading all of it can make it worse: the disk image is read only once, and only with your consent."
+msgstr "Este disco relatou problemas. Ler tudo pode piorar a situação: a imagem de disco lê uma única vez, e só com o seu consentimento."
+
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:98
+msgid "Making the list goes through all the folders. On a drive with problems this is extra wear."
+msgstr "Fazer a lista percorre todas as pastas. Em um disco com problemas, isso é desgaste extra."
+
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:99
+msgid "This SSD erases deleted blocks by itself (TRIM). Files deleted some time ago may be gone for good, however deep the search."
+msgstr "Este SSD apaga sozinho os blocos excluídos (TRIM). Arquivos excluídos há algum tempo podem ter sumido de vez, por mais profunda que seja a busca."
+
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:202
 msgid "Both --source DEVICE and --image FILE are needed."
 msgstr "--source DISPOSITIVO e --image ARQUIVO são necessários."
 
-#: big-mount/usr/lib/big-mount/drive-recovery.sh:140
-msgid "GNU ddrescue is not installed (package ddrescue). It makes the disk image."
-msgstr "O GNU ddrescue não está instalado (pacote ddrescue). É ele quem faz a imagem de disco."
-
-#: big-mount/usr/lib/big-mount/drive-recovery.sh:157
-msgid "The image cannot be stored on the disk being read."
-msgstr "A imagem não pode ficar no disco que está sendo lido."
-
-#: big-mount/usr/lib/big-mount/drive-recovery.sh:165
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:252
 msgid "The image needs %s of free space at the destination."
 msgstr "A imagem precisa de %s livres no destino."
 
-#: big-mount/usr/lib/big-mount/drive-recovery.sh:204
-msgid "TestDisk is not installed (package testdisk)."
-msgstr "O TestDisk não está instalado (pacote testdisk)."
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:331
+msgid "Photos"
+msgstr "Fotos"
 
-#: big-mount/usr/lib/big-mount/drive-recovery.sh:213
-#: big-mount/usr/lib/big-mount/drive.sh:432
-msgid "Permission was not granted."
-msgstr "A permissão não foi concedida."
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:332
+msgid "Videos"
+msgstr "Vídeos"
 
-#: big-mount/usr/lib/big-mount/drive-recovery.sh:236
-msgid "PhotoRec is not installed (package testdisk)."
-msgstr "O PhotoRec não está instalado (pacote testdisk)."
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:333
+msgid "Documents"
+msgstr "Documentos"
 
-#: big-mount/usr/lib/big-mount/drive-recovery.sh:240
-msgid "This device cannot be read by your user. Make a disk image first (bigmount --drive image), and search in the image: it also spares the disk."
-msgstr "Seu usuário não consegue ler este dispositivo. Faça antes uma imagem de disco (bigmount --drive image) e busque na imagem: isso também poupa o disco."
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:334
+msgid "Audio"
+msgstr "Áudio"
 
-#: big-mount/usr/lib/big-mount/drive-recovery.sh:259
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:335
+msgid "Compressed files"
+msgstr "Arquivos compactados"
+
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:336
+msgid "Other files"
+msgstr "Outros arquivos"
+
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:344
+msgid "HEIC and WebP photos are found only when searching all types."
+msgstr "Fotos HEIC e WebP só são encontradas ao procurar todos os tipos."
+
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:345
+msgid "WAV audio can appear among the results: it has the same signature as AVI."
+msgstr "Áudios WAV podem aparecer nos resultados: têm a mesma assinatura do AVI."
+
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:346
+msgid "AVI and WMV videos can appear among the results, and M4A audio is found only when searching all types."
+msgstr "Vídeos AVI e WMV podem aparecer nos resultados, e áudios M4A só são encontrados ao procurar todos os tipos."
+
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:347
+msgid "Word, Excel and LibreOffice files share a signature with ZIP files, so those appear too."
+msgstr "Arquivos do Word, Excel e LibreOffice têm a mesma assinatura dos ZIP, então estes também aparecem."
+
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:348
+msgid "Word, Excel and LibreOffice files can appear among the results: they are ZIP files inside."
+msgstr "Arquivos do Word, Excel e LibreOffice podem aparecer nos resultados: por dentro, eles são ZIP."
+
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:540
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:857
+msgid "Search started: %s"
+msgstr "Busca iniciada: %s"
+
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:843
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:882
 msgid "%s files found by content in %s. Their original names and folders could not be kept."
 msgstr "%s arquivos encontrados por conteúdo em %s. Os nomes e pastas originais não puderam ser mantidos."
+
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:891
+msgid "Files listed:"
+msgstr "Arquivos listados:"
+
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:892
+msgid "Files examined:"
+msgstr "Arquivos examinados:"
+
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:895
+msgid "Candidates found:"
+msgstr "Candidatos encontrados:"
+
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:899
+msgid "Read:"
+msgstr "Lido:"
+
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:912
+msgid "Files listed"
+msgstr "Arquivos listados"
+
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:913
+msgid "Files examined"
+msgstr "Arquivos examinados"
+
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:914
+msgid "These files exist on the volume. Files that were deleted are not on this list."
+msgstr "Estes arquivos existem no volume. Arquivos excluídos não estão nesta lista."
+
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:917
+msgid "Candidates found"
+msgstr "Candidatos encontrados"
+
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:918
+msgid "Found by content: their original names and folders could not be kept, and some may be incomplete. Open them to check."
+msgstr "Encontrados por conteúdo: os nomes e pastas originais não puderam ser mantidos, e alguns podem estar incompletos. Abra para conferir."
+
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:923
+msgid "Could not be read:"
+msgstr "Não puderam ser lidos:"
+
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:948
+msgid "Only a list or a search has results."
+msgstr "Só uma lista ou uma busca têm resultados."
+
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:967
+msgid "The list is not ready yet."
+msgstr "A lista ainda não está pronta."
+
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:991
+msgid "This command only answers with --json."
+msgstr "Este comando só responde com --json."
+
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:1069
+msgid "This is a disk image: searching it does not touch any disk."
+msgstr "Isto é uma imagem de disco: procurar nela não toca em nenhum disco."
+
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:1072
+msgid "The drive reported problems: copy what matters first, without going through everything."
+msgstr "O disco relatou problemas: copie primeiro o que importa, sem percorrer tudo."
+
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:1076
+msgid "The drive reported problems and its files cannot be opened: a disk image reads it only once, and the search is done on the image."
+msgstr "O disco relatou problemas e os arquivos não abrem: uma imagem de disco o lê uma única vez, e a busca é feita na imagem."
+
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:1080
+msgid "The files can be read normally: list them, and choose what to copy."
+msgstr "Os arquivos podem ser lidos normalmente: liste-os e escolha o que copiar."
+
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:1084
+msgid "The files cannot be opened normally: search for them by content."
+msgstr "Os arquivos não abrem normalmente: procure-os pelo conteúdo."
 
 #: big-mount/usr/lib/big-mount/drive.sh:112
 msgid "Usage: bigmount --drive [COMMAND] [OPTIONS]"
@@ -2515,219 +2707,271 @@ msgid "everything known about one drive"
 msgstr "tudo o que se sabe de uma unidade"
 
 #: big-mount/usr/lib/big-mount/drive.sh:117
+msgid "which drive a device, folder or UUID is"
+msgstr "qual é o disco de um dispositivo, pasta ou UUID"
+
+#: big-mount/usr/lib/big-mount/drive.sh:118
 msgid "explain its state; --smart also reads SMART (asks for a password)"
 msgstr "explica o estado dela; --smart também lê o SMART (pede senha)"
 
-#: big-mount/usr/lib/big-mount/drive.sh:118
+#: big-mount/usr/lib/big-mount/drive.sh:119
 msgid "mount a volume without changing it (the default)"
 msgstr "monta um volume sem alterá-lo (o padrão)"
 
-#: big-mount/usr/lib/big-mount/drive.sh:119
+#: big-mount/usr/lib/big-mount/drive.sh:120
 msgid "also block writing on the device itself (asks for a password)"
 msgstr "também bloqueia a gravação no próprio dispositivo (pede senha)"
 
-#: big-mount/usr/lib/big-mount/drive.sh:120
+#: big-mount/usr/lib/big-mount/drive.sh:121
 msgid "unmount first if it is mounted with writing enabled"
 msgstr "desmonta antes se estiver montado com gravação ativada"
 
-#: big-mount/usr/lib/big-mount/drive.sh:121
+#: big-mount/usr/lib/big-mount/drive.sh:122
 msgid "mount with writing enabled (refused on a drive at risk)"
 msgstr "monta com gravação ativada (recusado em unidade em risco)"
 
-#: big-mount/usr/lib/big-mount/drive.sh:122
+#: big-mount/usr/lib/big-mount/drive.sh:123
 msgid "unmount one volume safely"
 msgstr "desmonta um volume com segurança"
 
-#: big-mount/usr/lib/big-mount/drive.sh:123
+#: big-mount/usr/lib/big-mount/drive.sh:124
+msgid "unmount everything on the drive and power it off"
+msgstr "desmonta tudo o que há no disco e o desliga"
+
+#: big-mount/usr/lib/big-mount/drive.sh:125
 msgid "block or allow writing on the device (asks for a password)"
 msgstr "bloqueia ou libera a gravação no dispositivo (pede senha)"
 
-#: big-mount/usr/lib/big-mount/drive.sh:124
+#: big-mount/usr/lib/big-mount/drive.sh:126
 msgid "unlock an encrypted volume"
 msgstr "desbloqueia um volume criptografado"
 
-#: big-mount/usr/lib/big-mount/drive.sh:125
+#: big-mount/usr/lib/big-mount/drive.sh:127
 msgid "where files can be copied to"
 msgstr "para onde os arquivos podem ser copiados"
 
-#: big-mount/usr/lib/big-mount/drive.sh:126
+#: big-mount/usr/lib/big-mount/drive.sh:128
 msgid "copy files in the background and follow the progress"
 msgstr "copia arquivos em segundo plano e acompanha o progresso"
 
-#: big-mount/usr/lib/big-mount/drive.sh:127
+#: big-mount/usr/lib/big-mount/drive.sh:129
 msgid "copy only this file or folder of the source (repeatable)"
 msgstr "copia só este arquivo ou pasta da origem (pode repetir)"
 
-#: big-mount/usr/lib/big-mount/drive.sh:128
+#: big-mount/usr/lib/big-mount/drive.sh:130
+msgid "copy the items listed in FILE, separated by NUL"
+msgstr "copia os itens listados em ARQUIVO, separados por NUL"
+
+#: big-mount/usr/lib/big-mount/drive.sh:131
+msgid "copy found files out of the folder of that search"
+msgstr "copia arquivos encontrados para fora da pasta dessa busca"
+
+#: big-mount/usr/lib/big-mount/drive.sh:132
 msgid "files that already exist: keep them (default), keep them aside, replace them"
 msgstr "arquivos que já existem: mantê-los (padrão), guardá-los à parte, substituí-los"
 
-#: big-mount/usr/lib/big-mount/drive.sh:129
+#: big-mount/usr/lib/big-mount/drive.sh:133
 msgid "how to check the result (full reads the source again)"
 msgstr "como verificar o resultado (full lê a origem de novo)"
 
-#: big-mount/usr/lib/big-mount/drive.sh:130
+#: big-mount/usr/lib/big-mount/drive.sh:134
 msgid "set aside a file that does not advance for N seconds (default 90, 0: never)"
 msgstr "deixa de lado um arquivo que não avança por N segundos (padrão 90, 0: nunca)"
 
-#: big-mount/usr/lib/big-mount/drive.sh:131
+#: big-mount/usr/lib/big-mount/drive.sh:135
 msgid "limit the reading speed"
 msgstr "limita a velocidade de leitura"
 
-#: big-mount/usr/lib/big-mount/drive.sh:132
+#: big-mount/usr/lib/big-mount/drive.sh:136
 msgid "measure the total first (auto: not on a drive at risk)"
 msgstr "mede o total antes (auto: não em unidade em risco)"
 
-#: big-mount/usr/lib/big-mount/drive.sh:133
+#: big-mount/usr/lib/big-mount/drive.sh:137
 msgid "accept a destination on the same physical disk"
 msgstr "aceita um destino no mesmo disco físico"
 
-#: big-mount/usr/lib/big-mount/drive.sh:134
+#: big-mount/usr/lib/big-mount/drive.sh:138
 msgid "accept a drive at risk that is mounted with writing enabled"
 msgstr "aceita uma unidade em risco montada com gravação ativada"
 
-#: big-mount/usr/lib/big-mount/drive.sh:135
+#: big-mount/usr/lib/big-mount/drive.sh:139
 msgid "accept a destination on a drive with critical alerts"
 msgstr "aceita um destino em unidade com alertas críticos"
 
-#: big-mount/usr/lib/big-mount/drive.sh:136
+#: big-mount/usr/lib/big-mount/drive.sh:140
 msgid "start and return, the copy continues in the background"
 msgstr "inicia e volta; a cópia continua em segundo plano"
 
-#: big-mount/usr/lib/big-mount/drive.sh:137
+#: big-mount/usr/lib/big-mount/drive.sh:141
 msgid "copies and images, running and past"
 msgstr "cópias e imagens, em andamento e passadas"
 
-#: big-mount/usr/lib/big-mount/drive.sh:138
+#: big-mount/usr/lib/big-mount/drive.sh:142
 msgid "progress of one of them"
 msgstr "progresso de uma delas"
 
-#: big-mount/usr/lib/big-mount/drive.sh:139
+#: big-mount/usr/lib/big-mount/drive.sh:143
 msgid "stop it safely (it can be resumed later)"
 msgstr "para com segurança (pode ser retomada depois)"
 
-#: big-mount/usr/lib/big-mount/drive.sh:140
+#: big-mount/usr/lib/big-mount/drive.sh:144
 msgid "continue it, also after a shutdown; optionally try what was set aside"
 msgstr "continua, inclusive depois de desligar; opcionalmente tenta o que ficou de lado"
 
-#: big-mount/usr/lib/big-mount/drive.sh:141
+#: big-mount/usr/lib/big-mount/drive.sh:145
 msgid "report of a drive or of a copy (--output FILE)"
 msgstr "relatório de uma unidade ou cópia (--output ARQUIVO)"
 
-#: big-mount/usr/lib/big-mount/drive.sh:142
+#: big-mount/usr/lib/big-mount/drive.sh:146
+msgid "which ways of recovering files can be used on it, and which is advised"
+msgstr "quais formas de recuperar arquivos podem ser usadas nele, e qual é a recomendada"
+
+#: big-mount/usr/lib/big-mount/drive.sh:147
 msgid "make a disk image with GNU ddrescue"
 msgstr "faz uma imagem de disco com o GNU ddrescue"
 
-#: big-mount/usr/lib/big-mount/drive.sh:143
-msgid "look for partitions with TestDisk, changing nothing"
-msgstr "procura partições com o TestDisk, sem alterar nada"
+#: big-mount/usr/lib/big-mount/drive.sh:148
+msgid "read the partition table with TestDisk; --search also looks for lost ones. Nothing is changed"
+msgstr "lê a tabela de partições com o TestDisk; --search também procura as perdidas. Nada é alterado"
 
-#: big-mount/usr/lib/big-mount/drive.sh:144
+#: big-mount/usr/lib/big-mount/drive.sh:149
+msgid "list the files that exist in a folder, by type (not deleted ones)"
+msgstr "lista os arquivos que existem em uma pasta, por tipo (não os excluídos)"
+
+#: big-mount/usr/lib/big-mount/drive.sh:150
 msgid "search for files by content with PhotoRec"
 msgstr "busca arquivos por conteúdo com o PhotoRec"
 
-#: big-mount/usr/lib/big-mount/drive.sh:145
+#: big-mount/usr/lib/big-mount/drive.sh:151
+msgid "only these types: photos,videos,documents,audio,archives (default: all)"
+msgstr "só estes tipos: photos,videos,documents,audio,archives (padrão: all)"
+
+#: big-mount/usr/lib/big-mount/drive.sh:152
+msgid "what a search found"
+msgstr "o que uma busca encontrou"
+
+#: big-mount/usr/lib/big-mount/drive.sh:153
+msgid "whether Secure Erase can be used on a drive, and what would be lost"
+msgstr "se o Secure Erase pode ser usado em um disco, e o que seria perdido"
+
+#: big-mount/usr/lib/big-mount/drive.sh:154
 msgid "machine-readable output"
 msgstr "saída para programas"
 
-#: big-mount/usr/lib/big-mount/drive.sh:146
+#: big-mount/usr/lib/big-mount/drive.sh:155
 msgid "say what would be done, change nothing"
 msgstr "diz o que seria feito, sem alterar nada"
 
-#: big-mount/usr/lib/big-mount/drive.sh:147
+#: big-mount/usr/lib/big-mount/drive.sh:156
 msgid "TARGET is a device (/dev/sdb1) or a folder inside a mounted device."
 msgstr "ALVO é um dispositivo (/dev/sdb1) ou uma pasta dentro de um dispositivo montado."
 
-#: big-mount/usr/lib/big-mount/drive.sh:179
+#: big-mount/usr/lib/big-mount/drive.sh:197
+msgid "bigmount: more than one device has this UUID: %s. Name the device."
+msgstr "bigmount: mais de um dispositivo tem este UUID: %s. Indique o dispositivo."
+
+#: big-mount/usr/lib/big-mount/drive.sh:219
 msgid "The list of devices could not be read."
 msgstr "Não foi possível ler a lista de dispositivos."
 
-#: big-mount/usr/lib/big-mount/drive.sh:194
+#: big-mount/usr/lib/big-mount/drive.sh:234
 msgid "Manufacturer"
 msgstr "Fabricante"
 
-#: big-mount/usr/lib/big-mount/drive.sh:195
+#: big-mount/usr/lib/big-mount/drive.sh:235
 msgid "Model"
 msgstr "Modelo"
 
-#: big-mount/usr/lib/big-mount/drive.sh:200
+#: big-mount/usr/lib/big-mount/drive.sh:240
 msgid "Partition table"
 msgstr "Tabela de partições"
 
-#: big-mount/usr/lib/big-mount/drive.sh:214
+#: big-mount/usr/lib/big-mount/drive.sh:254
 msgid "Size"
 msgstr "Tamanho"
 
-#: big-mount/usr/lib/big-mount/drive.sh:221
+#: big-mount/usr/lib/big-mount/drive.sh:261
 msgid "Space"
 msgstr "Espaço"
 
-#: big-mount/usr/lib/big-mount/drive.sh:223
+#: big-mount/usr/lib/big-mount/drive.sh:263
 msgid "Writing"
 msgstr "Gravação"
 
-#: big-mount/usr/lib/big-mount/drive.sh:223
+#: big-mount/usr/lib/big-mount/drive.sh:263
 msgid "blocked on the device"
 msgstr "bloqueada no dispositivo"
 
-#: big-mount/usr/lib/big-mount/drive.sh:310
+#: big-mount/usr/lib/big-mount/drive.sh:374
 msgid "smartctl is not installed (package smartmontools), so SMART details cannot be read."
 msgstr "O smartctl não está instalado (pacote smartmontools), então os detalhes de SMART não podem ser lidos."
 
-#: big-mount/usr/lib/big-mount/drive.sh:315
+#: big-mount/usr/lib/big-mount/drive.sh:379
 msgid "Permission to read SMART was not granted."
 msgstr "A permissão para ler o SMART não foi concedida."
 
-#: big-mount/usr/lib/big-mount/drive.sh:316
+#: big-mount/usr/lib/big-mount/drive.sh:380
 #: big-mount/usr/lib/big-mount/drive-tui.sh:120
 msgid "The drive did not report SMART data. Many USB adapters do not pass it through."
 msgstr "A unidade não informou dados de SMART. Muitos adaptadores USB não os repassam."
 
-#: big-mount/usr/lib/big-mount/drive.sh:339
+#: big-mount/usr/lib/big-mount/drive.sh:403
 msgid "Mounted read-only at %s"
 msgstr "Montado somente leitura em %s"
 
-#: big-mount/usr/lib/big-mount/drive.sh:340
+#: big-mount/usr/lib/big-mount/drive.sh:404
 msgid "Mounted at %s"
 msgstr "Montado em %s"
 
-#: big-mount/usr/lib/big-mount/drive.sh:342
+#: big-mount/usr/lib/big-mount/drive.sh:406
 msgid "Writing is also blocked on the device itself until it is disconnected."
 msgstr "A gravação também está bloqueada no próprio dispositivo até ele ser desconectado."
 
-#: big-mount/usr/lib/big-mount/drive.sh:363
-#: big-mount/usr/lib/big-mount/drive.sh:421
-#: big-mount/usr/lib/big-mount/drive.sh:440
+#: big-mount/usr/lib/big-mount/drive.sh:429
+#: big-mount/usr/lib/big-mount/drive.sh:497
+#: big-mount/usr/lib/big-mount/drive.sh:516
 msgid "Name a device, such as /dev/sdb1."
 msgstr "Informe um dispositivo, como /dev/sdb1."
 
-#: big-mount/usr/lib/big-mount/drive.sh:411
+#: big-mount/usr/lib/big-mount/drive.sh:487
 msgid "Nothing was done. Use bigmount --unmount to confirm stopping them."
 msgstr "Nada foi feito. Use bigmount --unmount para confirmar a parada deles."
 
-#: big-mount/usr/lib/big-mount/drive.sh:426
+#: big-mount/usr/lib/big-mount/drive.sh:502
 msgid "Writing is now blocked on this device until it is disconnected."
 msgstr "A gravação agora está bloqueada neste dispositivo até ele ser desconectado."
 
-#: big-mount/usr/lib/big-mount/drive.sh:427
+#: big-mount/usr/lib/big-mount/drive.sh:503
 msgid "Writing is allowed on this device again."
 msgstr "A gravação está liberada de novo neste dispositivo."
 
-#: big-mount/usr/lib/big-mount/drive.sh:430
+#: big-mount/usr/lib/big-mount/drive.sh:506
 msgid "Another volume of this drive is mounted with writing enabled. Unmount it first."
 msgstr "Outro volume desta unidade está montado com gravação ativada. Desmonte-o primeiro."
 
-#: big-mount/usr/lib/big-mount/drive.sh:431
+#: big-mount/usr/lib/big-mount/drive.sh:507
 msgid "Refused: this drive holds the running system."
 msgstr "Recusado: esta unidade contém o sistema em execução."
 
-#: big-mount/usr/lib/big-mount/drive.sh:433
+#: big-mount/usr/lib/big-mount/drive.sh:509
 msgid "The helper failed (exit %s)."
 msgstr "O auxiliar falhou (saída %s)."
 
-#: big-mount/usr/lib/big-mount/drive.sh:442
+#: big-mount/usr/lib/big-mount/drive.sh:518
 msgid "Unlocking in the terminal needs an interactive terminal."
 msgstr "Desbloquear no terminal exige um terminal interativo."
+
+#: big-mount/usr/lib/big-mount/drive.sh:577
+msgid "bigmount: the graphical application does not run as administrator. Open it as your user; it asks for the password when it needs it."
+msgstr "bigmount: o aplicativo gráfico não roda como administrador. Abra com o seu usuário; ele pede a senha quando precisar."
+
+#: big-mount/usr/lib/big-mount/drive.sh:581
+msgid "bigmount: there is no graphical session here. Use the manager in the terminal: bigmount --drive"
+msgstr "bigmount: não há sessão gráfica aqui. Use o gerenciador no terminal: bigmount --drive"
+
+#: big-mount/usr/lib/big-mount/drive.sh:591
+msgid "The application needs GTK 4, libadwaita 1.5 or later and PyGObject (packages gtk4, libadwaita and python-gobject). The same tools work in the terminal: bigmount --drive"
+msgstr "O aplicativo precisa de GTK 4, libadwaita 1.5 ou mais recente e PyGObject (pacotes gtk4, libadwaita e python-gobject). As mesmas ferramentas funcionam no terminal: bigmount --drive"
 
 #: big-mount/usr/lib/big-mount/drive-tui.sh:35
 msgid "Press Enter to continue."
@@ -3110,10 +3354,6 @@ msgstr "%s foi desmontado, mas o driver do sistema de arquivos ainda está grava
 msgid "%s is still mounted at %s after being unmounted"
 msgstr "%s continua montado em %s depois de ser desmontado"
 
-#: big-mount/usr/lib/big-mount/lib.sh:1224
-msgid "The drive was disconnected or replaced. Nothing was erased."
-msgstr "A unidade foi desconectada ou substituída. Nada foi apagado."
-
 #: big-mount/usr/lib/big-mount/lib.sh:1231
 msgid "%s is mounted at %s"
 msgstr "%s está montado em %s"
@@ -3126,445 +3366,1245 @@ msgstr "%s está em uso (criptografia, LVM ou RAID)"
 msgid "UDisks2 does not know this drive."
 msgstr "O UDisks2 não conhece esta unidade."
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:391
-msgid "Volumes"
-msgstr "Volumes"
+#: big-mount/usr/lib/big-mount/gui/common.py:50
+msgid "less than a minute"
+msgstr "menos de um minuto"
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:412
-msgid "Power-on hours"
-msgstr "Horas ligado"
+#: big-mount/usr/lib/big-mount/gui/common.py:53
+#, python-format
+msgid "%d min"
+msgstr "%d min"
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:432
+#: big-mount/usr/lib/big-mount/gui/common.py:54
+#, python-format
+msgid "%(h)d h %(m)d min"
+msgstr "%(h)d h %(m)d min"
+
+#: big-mount/usr/lib/big-mount/gui/models.py:271
+msgid "Copy of files"
+msgstr "Cópia de arquivos"
+
+#: big-mount/usr/lib/big-mount/gui/models.py:273
+msgid "List of files"
+msgstr "Lista de arquivos"
+
+#: big-mount/usr/lib/big-mount/gui/models.py:274
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:492
+msgid "Search by content"
+msgstr "Busca por conteúdo"
+
+#: big-mount/usr/lib/big-mount/gui/models.py:284
+#: big-mount/usr/lib/big-mount/gui/pages/job.py:60
+msgid "Files"
+msgstr "Arquivos"
+
+#: big-mount/usr/lib/big-mount/gui/widgets.py:184
 #, python-format
 msgid "%(used)s used, %(free)s free"
 msgstr "%(used)s usados, %(free)s livres"
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:435
+#: big-mount/usr/lib/big-mount/gui/widgets.py:258
+msgid "Copy"
+msgstr "Copiar"
+
+#: big-mount/usr/lib/big-mount/gui/window.py:77
+#: big-mount/usr/lib/big-mount/gui/pages/overview.py:74
+#: big-mount/usr/lib/big-mount/gui/pages/overview.py:82
+msgid "Your drives and devices"
+msgstr "Seus discos e dispositivos"
+
+#: big-mount/usr/lib/big-mount/gui/window.py:82
+#: big-mount/usr/lib/big-mount/gui/window.py:83
+msgid "Main menu"
+msgstr "Menu principal"
+
+#: big-mount/usr/lib/big-mount/gui/window.py:95
+msgid "About Big-Mount"
+msgstr "Sobre o Big-Mount"
+
+#: big-mount/usr/lib/big-mount/gui/window.py:100
+msgid "Drives"
+msgstr "Discos"
+
+#: big-mount/usr/lib/big-mount/gui/window.py:138
+msgid "Home"
+msgstr "Início"
+
+#: big-mount/usr/lib/big-mount/gui/window.py:142
+#: big-mount/usr/lib/big-mount/gui/pages/job.py:302
+#: big-mount/usr/lib/big-mount/gui/pages/job.py:305
+msgid "Copies and searches"
+msgstr "Cópias e buscas"
+
+#: big-mount/usr/lib/big-mount/gui/window.py:246
+msgid "Choose a drive to see how it is doing."
+msgstr "Escolha um disco para ver como ele está."
+
+#: big-mount/usr/lib/big-mount/gui/window.py:258
+msgid "This device was not found."
+msgstr "Este dispositivo não foi encontrado."
+
+#: big-mount/usr/lib/big-mount/gui/window.py:315
+msgid "Your drives, how they are doing, and your files safe on another disk."
+msgstr "Seus discos, como eles estão e seus arquivos a salvo em outro disco."
+
+#: big-mount/usr/lib/big-mount/gui/window.py:329
+#: big-mount/usr/lib/big-mount/gui/window.py:336
+msgid "A drive is being erased"
+msgstr "Um disco está sendo apagado"
+
+#: big-mount/usr/lib/big-mount/gui/window.py:337
+msgid "Do not turn off the computer or disconnect the drive. This window can be closed when it ends."
+msgstr "Não desligue o computador nem desconecte o disco. Esta janela pode ser fechada quando terminar."
+
+#: big-mount/usr/lib/big-mount/gui/window.py:345
+msgid "It keeps working"
+msgstr "Ele continua trabalhando"
+
+#: big-mount/usr/lib/big-mount/gui/window.py:346
+msgid "The work continues in the background, also with this window closed. Open Big-Mount again to follow it."
+msgstr "O trabalho continua em segundo plano, mesmo com esta janela fechada. Abra o Big-Mount de novo para acompanhar."
+
+#: big-mount/usr/lib/big-mount/gui/window.py:347
+msgid "Stay here"
+msgstr "Ficar aqui"
+
+#: big-mount/usr/lib/big-mount/gui/window.py:347
+msgid "Close the window"
+msgstr "Fechar a janela"
+
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:17
+msgid "Passphrase"
+msgstr "Senha"
+
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:31
+msgid "Unlocked."
+msgstr "Desbloqueado."
+
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:33
+msgid "Could not unlock"
+msgstr "Não foi possível desbloquear"
+
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:40
+#, python-format
+msgid "Unlock %s"
+msgstr "Desbloquear %s"
+
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:40
+msgid "Type the passphrase of this volume."
+msgstr "Digite a senha deste volume."
+
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:41
+msgid "Unlock"
+msgstr "Desbloquear"
+
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:47
+msgid "Also block writing on the device itself (asks for the password)"
+msgstr "Bloquear também a gravação no próprio dispositivo (pede a senha)"
+
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:49
+msgid "Whatever a driver or another program tries, the disk does not change. It lasts until the drive is disconnected."
+msgstr "O que quer que um driver ou outro programa tente, o disco não muda. Dura até a unidade ser desconectada."
+
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:50
+msgid "The volume is opened without changing anything on it."
+msgstr "O volume é aberto sem alterar nada nele."
+
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:58
+#, python-format
+msgid "Mount “%s” read-only"
+msgstr "Montar “%s” somente leitura"
+
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:59
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:79
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:459
+msgid "Mount read-only"
+msgstr "Montar somente leitura"
+
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:64
+msgid "Mounting…"
+msgstr "Montando…"
+
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:80
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:870
+msgid "Unmount and mount read-only"
+msgstr "Desmontar e montar somente leitura"
+
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:83
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:993
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:606
+msgid "The reason could not be determined."
+msgstr "Não foi possível saber o motivo."
+
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:86
+msgid "Could not mount"
+msgstr "Não foi possível montar"
+
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:91
+msgid "Unmounting…"
+msgstr "Desmontando…"
+
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:102
+msgid "Could not unmount"
+msgstr "Não foi possível desmontar"
+
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:133
+msgid "Based on the drive's SMART report and on the system log since this computer started."
+msgstr "Com base no relatório SMART do disco e no registro do sistema desde que o computador foi ligado."
+
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:134
+msgid "Based on the system log since this computer started. The drive's own report (SMART) was not read."
+msgstr "Com base no registro do sistema desde que o computador foi ligado. O relatório do próprio disco (SMART) não foi lido."
+
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:135
+msgid "Based on the drive's SMART report. The system log could not be read."
+msgstr "Com base no relatório SMART do disco. O registro do sistema não pôde ser lido."
+
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:136
+msgid "Nothing could be consulted yet, so nothing can be said about this drive."
+msgstr "Nada pôde ser consultado ainda, então não dá para dizer nada sobre este disco."
+
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:142
+msgid "This drive is failing. Copy your files to another drive before trying any repair."
+msgstr "Este disco está falhando. Copie seus arquivos para outro disco antes de tentar qualquer reparo."
+
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:144
+msgid "Something is not right with this drive. Copy what matters to another place."
+msgstr "Há algo errado com este disco. Copie o que importa para outro lugar."
+
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:146
+msgid "No alert was found in the information consulted."
+msgstr "Nenhum alerta encontrado nas informações consultadas."
+
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:148
+msgid "This is a disk image: it has no health of its own."
+msgstr "Isto é uma imagem de disco: ela não tem saúde própria."
+
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:149
+msgid "Not examined yet: there is not enough information."
+msgstr "Ainda não examinado: não há informação suficiente."
+
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:163
+#: big-mount/usr/lib/big-mount/gui/pages/overview.py:125
+msgid "Rescue my files"
+msgstr "Resgatar meus arquivos"
+
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:165
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:348
+msgid "Export diagnosis…"
+msgstr "Exportar diagnóstico…"
+
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:169
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:237
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:275
+msgid "What was found"
+msgstr "O que foi encontrado"
+
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:176
+msgid "What to do"
+msgstr "O que fazer"
+
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:187
+msgid "What the drive itself reports (SMART)"
+msgstr "O que o próprio disco informa (SMART)"
+
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:193
+#, python-format
+msgid "Read at %s, through the administrator password."
+msgstr "Lido em %s, com a senha de administrador."
+
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:195
+msgid "Overall verdict"
+msgstr "Veredito geral"
+
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:195
+msgid "Passed"
+msgstr "Aprovado"
+
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:195
+msgid "Failing"
+msgstr "Falhando"
+
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:196
+msgid "Sectors waiting to be replaced"
+msgstr "Setores aguardando substituição"
+
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:197
+msgid "Sectors already replaced"
+msgstr "Setores já substituídos"
+
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:198
+msgid "Sectors it could not read offline"
+msgstr "Setores que não conseguiu ler sem uso"
+
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:199
+msgid "Errors it could not correct"
+msgstr "Erros que não conseguiu corrigir"
+
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:200
+msgid "Cable or adapter errors"
+msgstr "Erros de cabo ou adaptador"
+
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:201
+msgid "NVMe media errors"
+msgstr "Erros de mídia do NVMe"
+
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:202
+msgid "NVMe life used"
+msgstr "Vida útil usada do NVMe"
+
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:203
+msgid "Hours powered on"
+msgstr "Horas ligado"
+
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:214
+msgid "Not read yet. It needs the administrator password, and through USB it can take a minute. Many USB adapters do not pass it through."
+msgstr "Ainda não lido. Precisa da senha de administrador, e pela USB pode levar um minuto. Muitos adaptadores USB não repassam essa informação."
+
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:215
+msgid "Not read"
+msgstr "Não lido"
+
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:219
+msgid "Read SMART…"
+msgstr "Ler SMART…"
+
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:219
+msgid "Read SMART again…"
+msgstr "Ler SMART de novo…"
+
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:221
+msgid "Asks for the administrator password. It only reads: no test is started."
+msgstr "Pede a senha de administrador. Só lê: nenhum teste é iniciado."
+
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:229
+msgid "Reading SMART. Through USB it can take a minute."
+msgstr "Lendo o SMART. Pela USB pode levar um minuto."
+
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:246
+msgid "Details"
+msgstr "Detalhes"
+
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:256
+msgid "Hidden. It identifies this drive: it is also left out of shared reports."
+msgstr "Oculto. Ele identifica este disco: também fica de fora dos relatórios compartilhados."
+
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:265
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:266
+msgid "Show the serial number"
+msgstr "Mostrar o número de série"
+
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:272
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:274
+msgid "Messages from the system log"
+msgstr "Mensagens do registro do sistema"
+
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:272
+#, python-format
+msgid "%d recent messages about this drive"
+msgstr "%d mensagens recentes sobre este disco"
+
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:283
+#: big-mount/usr/lib/big-mount/gui/pages/maintenance.py:13
+msgid "Advanced maintenance"
+msgstr "Manutenção avançada"
+
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:284
+#: big-mount/usr/lib/big-mount/gui/pages/maintenance.py:38
+msgid "Erase data permanently"
+msgstr "Apagar dados permanentemente"
+
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:284
+msgid "Separate from recovery. Opens an explanation first."
+msgstr "Separado da recuperação. Abre uma explicação antes."
+
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:308
+msgid "Overview"
+msgstr "Visão geral"
+
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:309
+msgid "Recover"
+msgstr "Recuperar"
+
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:311
+msgid "History"
+msgstr "Histórico"
+
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:315
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:316
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:952
+msgid "More options"
+msgstr "Mais opções"
+
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:322
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:384
+msgid "The drive was disconnected"
+msgstr "O disco foi desconectado"
+
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:323
+msgid "Nothing else was done. Connect it again and it comes back here."
+msgstr "Nada mais foi feito. Conecte de novo e ele volta para cá."
+
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:324
+msgid "Back to my drives"
+msgstr "Voltar para meus discos"
+
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:351
+msgid "Block writing on the device…"
+msgstr "Bloquear a gravação no dispositivo…"
+
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:355
+msgid "Advanced maintenance…"
+msgstr "Manutenção avançada…"
+
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:419
+#: big-mount/usr/lib/big-mount/gui/pages/overview.py:50
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:263
+msgid "Recover files"
+msgstr "Recuperar arquivos"
+
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:422
+#: big-mount/usr/lib/big-mount/gui/pages/overview.py:52
+msgid "Check drive"
+msgstr "Verificar disco"
+
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:427
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:429
+msgid "Volumes"
+msgstr "Volumes"
+
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:452
 msgid "This volume spans more than one device. All of them must be connected."
 msgstr "Este volume ocupa mais de um dispositivo. Todos precisam estar conectados."
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:453
-msgid "&Recover files…"
-msgstr "&Recuperar arquivos…"
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:463
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:466
+#: big-mount/usr/lib/big-mount/gui/pages/overview.py:48
+msgid "Open files"
+msgstr "Abrir arquivos"
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:454
-#: big-mount/usr/lib/big-mount/drive-gui.py:1230
-msgid "&Mount read-only"
-msgstr "&Montar somente leitura"
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:464
+msgid "Unmount"
+msgstr "Desmontar"
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:458
-msgid "&Copy files to another disk…"
-msgstr "&Copiar arquivos para outro disco…"
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:468
+msgid "Unlock…"
+msgstr "Desbloquear…"
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:459
-msgid "&Open folder"
-msgstr "&Abrir pasta"
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:485
+msgid "Copy your files to another place, step by step. This never writes to this drive."
+msgstr "Copie seus arquivos para outro lugar, passo a passo. Isso nunca grava neste disco."
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:460
-msgid "&Unmount"
-msgstr "&Desmontar"
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:486
+msgid "Start recovering files"
+msgstr "Começar a recuperar arquivos"
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:462
-msgid "Un&lock…"
-msgstr "Desb&loquear…"
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:489
+msgid "What can be done"
+msgstr "O que dá para fazer"
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:464
-msgid "Look for &lost partitions…"
-msgstr "Procurar partições &perdidas…"
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:490
+msgid "Copy files that can still be read"
+msgstr "Copiar os arquivos que ainda podem ser lidos"
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:483
-msgid "&Technical details"
-msgstr "Detalhes &técnicos"
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:490
+msgid "The quickest and safest: names and folders are kept."
+msgstr "O mais rápido e seguro: nomes e pastas são mantidos."
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:485
-msgid "Read &SMART…"
-msgstr "Ler &SMART…"
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:491
+msgid "List what exists, by type"
+msgstr "Listar o que existe, por tipo"
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:485
-msgid "Asks for the administrator password. Through USB it can take a minute."
-msgstr "Pede a senha de administrador. Pela USB pode levar um minuto."
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:491
+msgid "Goes through the folders. Then you choose what to copy."
+msgstr "Percorre as pastas. Depois você escolhe o que copiar."
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:486
-msgid "&Advanced recovery…"
-msgstr "Recuperação a&vançada…"
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:492
+msgid "For when files cannot be opened. Names and folders are lost, and nothing is guaranteed."
+msgstr "Para quando os arquivos não abrem. Nomes e pastas se perdem, e nada é garantido."
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:487
-msgid "Export &report…"
-msgstr "Exportar &relatório…"
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:504
+msgid "Copies and searches of this drive"
+msgstr "Cópias e buscas deste disco"
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:489
-msgid "Check and erase…"
-msgstr "Verificar e apagar…"
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:508
+msgid "Nothing yet"
+msgstr "Nada ainda"
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:489
-msgid "The drive check of Big-Mount, with Secure Erase"
-msgstr "A verificação de unidade do Big-Mount, com Secure Erase"
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:509
+msgid "What you copy from this drive is listed here."
+msgstr "O que você copiar deste disco aparece aqui."
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:549
-msgid "This item is inside a marked folder. Unmark the folder to choose its items one by one."
-msgstr "Este item está dentro de uma pasta marcada. Desmarque a pasta para escolher os itens um a um."
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:530
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:553
+msgid "Export diagnosis"
+msgstr "Exportar diagnóstico"
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:604
-msgid "What"
-msgstr "O quê"
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:549
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:654
+msgid "Report written."
+msgstr "Relatório gravado."
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:604
-msgid "Where to"
-msgstr "Para onde"
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:554
+msgid "Keep them"
+msgstr "Manter"
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:604
-msgid "Review"
-msgstr "Revisar"
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:554
+msgid "Hide them"
+msgstr "Ocultar"
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:609
-msgid "&Back"
-msgstr "&Voltar"
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:566
+msgid "The drive can be disconnected now."
+msgstr "O disco já pode ser desconectado."
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:611
-#: big-mount/usr/lib/big-mount/drive-gui.py:894
-#: big-mount/usr/lib/big-mount/drive-gui.py:897
-msgid "&Next"
-msgstr "&Avançar"
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:569
+msgid "Could not remove it"
+msgstr "Não foi possível removê-lo"
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:631
-msgid "Copy &everything"
-msgstr "Copiar &tudo"
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:589
+msgid "Whatever a driver or another program tries, the disk does not change. It lasts until the drive is disconnected. It asks for the administrator password."
+msgstr "O que quer que um driver ou outro programa tente, o disco não muda. Dura até o disco ser desconectado. Pede a senha de administrador."
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:632
-msgid "C&hoose files and folders"
-msgstr "Escol&her arquivos e pastas"
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:590
+msgid "Block writing"
+msgstr "Bloquear a gravação"
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:673
+#: big-mount/usr/lib/big-mount/gui/pages/job.py:24
+msgid "Working"
+msgstr "Trabalhando"
+
+#: big-mount/usr/lib/big-mount/gui/pages/job.py:37
+msgid "Looking…"
+msgstr "Verificando…"
+
+#: big-mount/usr/lib/big-mount/gui/pages/job.py:53
+msgid "Progress"
+msgstr "Progresso"
+
+#: big-mount/usr/lib/big-mount/gui/pages/job.py:60
+msgid "Data"
+msgstr "Dados"
+
+#: big-mount/usr/lib/big-mount/gui/pages/job.py:60
+msgid "Speed"
+msgstr "Velocidade"
+
+#: big-mount/usr/lib/big-mount/gui/pages/job.py:61
+msgid "Remaining"
+msgstr "Restante"
+
+#: big-mount/usr/lib/big-mount/gui/pages/job.py:61
+msgid "Set aside"
+msgstr "Deixados de lado"
+
+#: big-mount/usr/lib/big-mount/gui/pages/job.py:78
+msgid "Report"
+msgstr "Relatório"
+
+#: big-mount/usr/lib/big-mount/gui/pages/job.py:86
+msgid "Pause"
+msgstr "Pausar"
+
+#: big-mount/usr/lib/big-mount/gui/pages/job.py:87
+#: big-mount/usr/lib/big-mount/gui/pages/job.py:220
+msgid "Resume"
+msgstr "Retomar"
+
+#: big-mount/usr/lib/big-mount/gui/pages/job.py:88
+msgid "Try set-aside files again"
+msgstr "Tentar de novo os deixados de lado"
+
+#: big-mount/usr/lib/big-mount/gui/pages/job.py:89
+msgid "Reads the damaged areas again, which puts more strain on the disk."
+msgstr "Lê de novo as áreas danificadas, o que força mais o disco."
+
+#: big-mount/usr/lib/big-mount/gui/pages/job.py:90
+msgid "See what was found"
+msgstr "Ver o que foi encontrado"
+
+#: big-mount/usr/lib/big-mount/gui/pages/job.py:91
+msgid "Search this image for files"
+msgstr "Procurar arquivos nesta imagem"
+
+#: big-mount/usr/lib/big-mount/gui/pages/job.py:92
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:304
+msgid "Open destination"
+msgstr "Abrir destino"
+
+#: big-mount/usr/lib/big-mount/gui/pages/job.py:93
+msgid "Show log"
+msgstr "Mostrar registro"
+
+#: big-mount/usr/lib/big-mount/gui/pages/job.py:129
+msgid "This job no longer exists."
+msgstr "Este trabalho não existe mais."
+
+#: big-mount/usr/lib/big-mount/gui/pages/job.py:171
+#, python-format
+msgid "Pass %d of the search. The percentage restarts at each pass."
+msgstr "Etapa %d da busca. A porcentagem recomeça a cada etapa."
+
+#: big-mount/usr/lib/big-mount/gui/pages/job.py:173
+msgid "It goes through the folders, so the total is only known at the end."
+msgstr "Ele percorre as pastas, então o total só é conhecido no final."
+
+#: big-mount/usr/lib/big-mount/gui/pages/job.py:175
+msgid "The total is not measured on a drive at risk, to avoid extra reads. It shows what was copied so far."
+msgstr "O total não é medido em um disco em risco, para evitar leituras extras. Aqui aparece o que já foi copiado."
+
+#: big-mount/usr/lib/big-mount/gui/pages/job.py:201
+#, python-format
+msgid "%s could not be read."
+msgstr "%s não puderam ser lidos."
+
+#: big-mount/usr/lib/big-mount/gui/pages/job.py:220
+msgid "Search again"
+msgstr "Procurar de novo"
+
+#: big-mount/usr/lib/big-mount/gui/pages/job.py:249
+msgid "Stop the search? What was found so far stays."
+msgstr "Parar a busca? O que foi encontrado até aqui fica guardado."
+
+#: big-mount/usr/lib/big-mount/gui/pages/job.py:250
+msgid "Stop the copy? Files already copied stay at the destination, and the copy can be resumed later."
+msgstr "Parar a cópia? Os arquivos já copiados ficam no destino, e a cópia pode ser retomada depois."
+
+#: big-mount/usr/lib/big-mount/gui/pages/job.py:255
+msgid "Stop this work?"
+msgstr "Parar este trabalho?"
+
+#: big-mount/usr/lib/big-mount/gui/pages/job.py:255
+msgid "Keep working"
+msgstr "Continuar trabalhando"
+
+#: big-mount/usr/lib/big-mount/gui/pages/job.py:255
+msgid "Stop"
+msgstr "Parar"
+
+#: big-mount/usr/lib/big-mount/gui/pages/job.py:275
+msgid "The search did not start"
+msgstr "A busca não começou"
+
+#: big-mount/usr/lib/big-mount/gui/pages/job.py:295
+msgid "Log"
+msgstr "Registro"
+
+#: big-mount/usr/lib/big-mount/gui/pages/job.py:295
+msgid "Nothing was recorded."
+msgstr "Nada foi registrado."
+
+#: big-mount/usr/lib/big-mount/gui/pages/job.py:306
+msgid "They keep working with this window closed, and what stopped can be resumed."
+msgstr "Eles continuam com esta janela fechada, e o que parou pode ser retomado."
+
+#: big-mount/usr/lib/big-mount/gui/pages/job.py:310
+msgid "When you recover files, the work is listed here."
+msgstr "Quando você recuperar arquivos, o trabalho aparece aqui."
+
+#: big-mount/usr/lib/big-mount/gui/pages/maintenance.py:32
+msgid "Checking this drive…"
+msgstr "Verificando este disco…"
+
+#: big-mount/usr/lib/big-mount/gui/pages/maintenance.py:40
+msgid "IT ERASES ALL THE FILES ON THE DRIVE FOR GOOD. THIS IS NOT RECOVERY."
+msgstr "APAGA DEFINITIVAMENTE TODOS OS ARQUIVOS DO DISCO. NÃO É RECUPERAÇÃO."
+
+#: big-mount/usr/lib/big-mount/gui/pages/maintenance.py:41
+msgid "To get your files back, go to Recover files instead."
+msgstr "Para ter seus arquivos de volta, vá em Recuperar arquivos."
+
+#: big-mount/usr/lib/big-mount/gui/pages/maintenance.py:54
+msgid "It cannot be used on this drive"
+msgstr "Não pode ser usado neste disco"
+
+#: big-mount/usr/lib/big-mount/gui/pages/maintenance.py:58
+msgid "Nothing was changed. Secure Erase is only offered for SATA drives inside the computer, not in use by the running system, and it is never offered through USB."
+msgstr "Nada foi alterado. O Secure Erase só é oferecido para discos SATA dentro do computador, fora de uso pelo sistema em execução, e nunca pela USB."
+
+#: big-mount/usr/lib/big-mount/gui/pages/maintenance.py:75
+msgid "No partition was found on it."
+msgstr "Nenhuma partição foi encontrada nele."
+
+#: big-mount/usr/lib/big-mount/gui/pages/maintenance.py:77
+msgid "What to expect"
+msgstr "O que esperar"
+
+#: big-mount/usr/lib/big-mount/gui/pages/maintenance.py:82
+#, python-format
+msgid "The drive announces that erasing takes about %s."
+msgstr "O disco informa que apagar leva cerca de %s."
+
+#: big-mount/usr/lib/big-mount/gui/pages/maintenance.py:83
+msgid "Afterwards an empty partition table is written and read back, to check that the drive keeps what is written again."
+msgstr "Depois, uma tabela de partições vazia é gravada e lida de volta, para conferir se o disco voltou a guardar o que é gravado."
+
+#: big-mount/usr/lib/big-mount/gui/pages/maintenance.py:90
+#: big-mount/usr/lib/big-mount/gui/pages/maintenance.py:103
+msgid "Continue…"
+msgstr "Continuar…"
+
+#: big-mount/usr/lib/big-mount/gui/pages/maintenance.py:101
+msgid "Erase the whole drive?"
+msgstr "Apagar o disco inteiro?"
+
+#: big-mount/usr/lib/big-mount/gui/pages/maintenance.py:102
+#, python-format
+msgid "Every file on %s will be lost for good. Have you copied what you need?"
+msgstr "Todos os arquivos de %s serão perdidos para sempre. Você já copiou o que precisa?"
+
+#: big-mount/usr/lib/big-mount/gui/pages/maintenance.py:140
+msgid "Erasing the drive"
+msgstr "Apagando a unidade"
+
+#: big-mount/usr/lib/big-mount/gui/pages/maintenance.py:141
+msgid "Do not turn off the computer or disconnect the drive."
+msgstr "Não desligue o computador nem desconecte a unidade."
+
+#: big-mount/usr/lib/big-mount/gui/pages/overview.py:40
+#, python-format
+msgid "and %d more"
+msgstr "e mais %d"
+
+#: big-mount/usr/lib/big-mount/gui/pages/overview.py:75
+msgid "Choose a drive to see its files, check its health or recover data."
+msgstr "Escolha um disco para ver os arquivos, verificar a saúde ou recuperar dados."
+
+#: big-mount/usr/lib/big-mount/gui/pages/overview.py:88
+msgid "Looking at what is connected…"
+msgstr "Vendo o que está conectado…"
+
+#: big-mount/usr/lib/big-mount/gui/pages/overview.py:90
+msgid "Connect a drive and it appears here by itself."
+msgstr "Conecte um disco e ele aparece aqui sozinho."
+
+#: big-mount/usr/lib/big-mount/gui/pages/overview.py:117
+#, python-format
+msgid "%s reported serious problems. Copy your files to another drive before trying any repair."
+msgstr "%s relatou problemas sérios. Copie seus arquivos para outro disco antes de tentar qualquer reparo."
+
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:20
+msgid "Where should files be recovered from?"
+msgstr "De onde recuperar?"
+
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:21
+msgid "What are you looking for?"
+msgstr "O que procurar?"
+
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:22
+msgid "How should they be looked for?"
+msgstr "Como procurar?"
+
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:24
+msgid "Where should they be saved?"
+msgstr "Para onde salvar?"
+
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:25
+msgid "Check and start"
+msgstr "Confirmar e começar"
+
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:29
+msgid "Quick analysis"
+msgstr "Análise rápida"
+
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:30
+msgid "Lists the files that exist on the volume, by type, and you choose what to copy. Deleted files are not on this list."
+msgstr "Lista os arquivos que existem no volume, por tipo, e você escolhe o que copiar. Arquivos excluídos não entram nesta lista."
+
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:32
+msgid "Copy files directly"
+msgstr "Copiar arquivos diretamente"
+
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:33
+msgid "Copies everything, or the folders you choose, with their names. It does not filter by type, and it does not go through what you leave out."
+msgstr "Copia tudo, ou as pastas que você escolher, com os nomes. Não filtra por tipo e não percorre o que você deixar de fora."
+
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:35
+msgid "Deep analysis"
+msgstr "Análise profunda"
+
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:36
+msgid "Searches every sector for files by their content. It can find what no longer appears, but names and folders are lost, some files come out incomplete and nothing is guaranteed."
+msgstr "Procura em todos os setores por arquivos, pelo conteúdo. Pode achar o que já não aparece, mas nomes e pastas se perdem, alguns arquivos saem incompletos e nada é garantido."
+
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:38
+msgid "Make a disk image only"
+msgstr "Fazer só uma imagem de disco"
+
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:39
+msgid "Copies the whole device to a file on another disk with GNU ddrescue, keeping a map so it can resume and never reads a good area twice."
+msgstr "Copia o dispositivo inteiro para um arquivo em outro disco com o GNU ddrescue, mantendo um mapa para poder retomar e nunca ler duas vezes uma área boa."
+
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:41
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1027
+msgid "Look for lost partitions"
+msgstr "Procurar partições perdidas"
+
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:42
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1031
+msgid "TestDisk reads the partition table and analyzes the disk. It only shows what it finds: nothing is written."
+msgstr "O TestDisk lê a tabela de partições e analisa o disco. Ele só mostra o que encontra: nada é gravado."
+
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:48
+msgid "Recovered"
+msgstr "Recuperados"
+
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:124
+msgid "Recovered files"
+msgstr "Arquivos recuperados"
+
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:132
+msgid "Files found"
+msgstr "Arquivos encontrados"
+
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:255
 #, python-format
 msgid "%d items marked. The total is measured in the next steps."
 msgstr "%d itens marcados. O total é medido nos próximos passos."
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:688
-msgid "Where to? Places on another physical disk, with room, come first."
-msgstr "Para onde? Lugares em outro disco físico, com espaço, vêm primeiro."
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:290
+msgid "Mark what to copy. A marked folder takes everything inside. Only the folders you open are read."
+msgstr "Marque o que copiar. Uma pasta marcada leva tudo o que há dentro. Só as pastas que você abrir são lidas."
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:694
-msgid "&Destination folder:"
-msgstr "Pasta de &destino:"
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:314
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:378
+msgid "Next"
+msgstr "Próximo"
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:699
-#: big-mount/usr/lib/big-mount/drive-gui.py:1273
-#: big-mount/usr/lib/big-mount/drive-gui.py:1345
-msgid "&Browse…"
-msgstr "&Procurar…"
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:348
+#, python-format
+msgid "Step %(n)d of %(t)d"
+msgstr "Etapa %(n)d de %(t)d"
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:709
-msgid "Basic: rsync confirms each file as it is copied"
-msgstr "Básica: o rsync confirma cada arquivo ao copiar"
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:387
+msgid "Look for partitions"
+msgstr "Procurar partições"
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:710
-msgid "Names, sizes and dates compared at the end"
-msgstr "Nomes, tamanhos e datas comparados no final"
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:394
+msgid "Start"
+msgstr "Começar"
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:711
-msgid "Content compared at the end (reads the source again)"
-msgstr "Conteúdo comparado no final (lê a origem de novo)"
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:415
+msgid "The source was unmounted. Nothing was done."
+msgstr "A origem foi desmontada. Nada foi feito."
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:712
-msgid "If a file already e&xists:"
-msgstr "Se um arquivo já e&xistir:"
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:427
+msgid "Choose the drive or the volume. Nothing is read or changed yet."
+msgstr "Escolha o disco ou o volume. Nada é lido nem alterado ainda."
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:714
-msgid "Chec&k the result:"
-msgstr "Veri&ficar o resultado:"
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:432
+msgid "A disk image"
+msgstr "Uma imagem de disco"
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:724
-msgid "A file that does not advance for this long is set aside, so that the others are saved first. 0: never."
-msgstr "Um arquivo que não avança por este tempo é deixado de lado, para salvar os outros primeiro. 0: nunca."
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:433
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:436
+msgid "A disk image saved before"
+msgstr "Uma imagem de disco salva antes"
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:725
-msgid "Set &aside a stuck file after:"
-msgstr "Deixar de l&ado um arquivo preso após:"
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:433
+msgid "Searching it does not touch any disk."
+msgstr "Procurar nela não toca em nenhum disco."
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:732
-msgid "no limit"
-msgstr "sem limite"
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:458
+msgid "The whole drive"
+msgstr "O disco inteiro"
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:734
-msgid "Limit the reading &speed:"
-msgstr "Limitar a &velocidade de leitura:"
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:458
+msgid "For an image or a deep search: every sector, whatever the volumes."
+msgstr "Para uma imagem ou uma busca profunda: todos os setores, sejam quais forem os volumes."
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:745
-msgid "Recovered"
-msgstr "Recuperados"
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:485
+msgid "Image file"
+msgstr "Arquivo de imagem"
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:747
-msgid "Recovered files"
-msgstr "Arquivos recuperados"
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:504
+msgid "Checking what can be done…"
+msgstr "Vendo o que dá para fazer…"
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:760
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:509
+msgid "This source cannot be used"
+msgstr "Esta origem não pode ser usada"
+
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:527
+msgid "You can choose more than one. If you are not sure, leave All."
+msgstr "Você pode escolher mais de um. Na dúvida, deixe Todos."
+
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:530
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:945
+msgid "All types"
+msgstr "Todos os tipos"
+
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:589
+msgid "This drive reported problems: every extra read wears it. Nothing starts without you."
+msgstr "Este disco relatou problemas: cada leitura a mais o desgasta. Nada começa sem você."
+
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:600
+msgid "Advanced"
+msgstr "Avançado"
+
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:600
+msgid "Tools that work with the whole disk"
+msgstr "Ferramentas que trabalham com o disco inteiro"
+
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:607
+msgid "What to copy"
+msgstr "O que copiar"
+
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:609
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:943
+msgid "Everything"
+msgstr "Tudo"
+
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:609
+msgid "All the files of this volume."
+msgstr "Todos os arquivos deste volume."
+
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:610
+msgid "Only what you mark. Recommended on a drive with problems: the most important first."
+msgstr "Só o que você marcar. Recomendado em um disco com problemas: o mais importante primeiro."
+
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:642
+msgid "It asks for the administrator password."
+msgstr "Pede a senha de administrador."
+
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:657
+msgid "Recommended"
+msgstr "Recomendado"
+
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:674
+#, python-format
+msgid "First a disk image is made, which needs free space elsewhere as large as the source (%s). Then the image is searched, and the disk rests."
+msgstr "Primeiro é feita uma imagem do disco, que precisa de espaço livre em outro lugar do tamanho da origem (%s). Depois a busca é feita na imagem, e o disco descansa."
+
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:676
+msgid "A direct copy does not filter by type. To choose by type, use the quick analysis."
+msgstr "A cópia direta não filtra por tipo. Para escolher por tipo, use a análise rápida."
+
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:718
+#, python-format
+msgid "From: %s"
+msgstr "De: %s"
+
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:720
+msgid "Never on the same physical disk as the source. If that disk fails, both are lost."
+msgstr "Nunca no mesmo disco físico da origem. Se esse disco falhar, os dois se perdem."
+
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:721
+msgid "Places on another disk"
+msgstr "Lugares em outro disco"
+
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:722
 msgid "Looking for places…"
 msgstr "Procurando lugares…"
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:784
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:725
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:624
+msgid "Choose another folder…"
+msgstr "Escolher outra pasta…"
+
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:760
+#, python-format
+msgid "Not available: %s"
+msgstr "Indisponível: %s"
+
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:776
 msgid "No other disk is mounted. Connect one, or choose a folder."
 msgstr "Nenhum outro disco está montado. Conecte um, ou escolha uma pasta."
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:813
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:781
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:584
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:613
+msgid "Choose where to save"
+msgstr "Escolha onde salvar"
+
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:803
+msgid "Checking this place…"
+msgstr "Verificando este lugar…"
+
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:809
+msgid "The check could not be done."
+msgstr "Não foi possível verificar."
+
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:813
+msgid "Everything can be saved here."
+msgstr "Dá para salvar aqui."
+
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:815
+#, python-format
+msgid "It can be saved here: %s free."
+msgstr "Dá para salvar aqui: %s livres."
+
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:818
+msgid "It cannot be saved here."
+msgstr "Não dá para salvar aqui."
+
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:877
 msgid "Checking the source and the destination…"
 msgstr "Verificando a origem e o destino…"
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:834
-msgid "&Use the same physical disk anyway"
-msgstr "&Usar o mesmo disco físico mesmo assim"
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:886
+msgid "It cannot be started."
+msgstr "Não pode começar."
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:835
-msgid "&Copy from it while it is mounted with writing enabled"
-msgstr "&Copiar dela enquanto está montada com gravação ativada"
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:906
+msgid "Method"
+msgstr "Método"
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:836
-msgid "&Use that drive with critical alerts anyway"
-msgstr "&Usar essa unidade com alertas críticos mesmo assim"
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:909
+msgid "What"
+msgstr "O quê"
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:844
-msgid "Ready to copy"
-msgstr "Pronto para copiar"
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:912
+msgid "Space it will use"
+msgstr "Espaço que vai usar"
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:848
-#: big-mount/usr/lib/big-mount/drive-gui.py:851
-#: big-mount/usr/lib/big-mount/drive-gui.py:853
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:914
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:916
 msgid "To copy"
 msgstr "A copiar"
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:848
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:914
 #, python-format
 msgid "%(files)s files, %(size)s"
 msgstr "%(files)s arquivos, %(size)s"
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:853
-msgid "not measured"
-msgstr "não medido"
-
-#: big-mount/usr/lib/big-mount/drive-gui.py:855
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:918
 msgid "Free at the destination"
 msgstr "Livre no destino"
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:857
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:920
 msgid "Already there, with different content"
 msgstr "Já lá, com conteúdo diferente"
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:900
-msgid "&Start copying"
-msgstr "&Iniciar a cópia"
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:923
+msgid "Your files will be copied with their names. Nothing is written to the source."
+msgstr "Seus arquivos serão copiados com os nomes. Nada é gravado na origem."
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:966
-msgid "Progress"
-msgstr "Progresso"
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:924
+msgid "First a list of what exists is made. Then you choose what to copy. Nothing is written to the source."
+msgstr "Primeiro é feita uma lista do que existe. Depois você escolhe o que copiar. Nada é gravado na origem."
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:970
-msgid "Files"
-msgstr "Arquivos"
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:925
+msgid "Files will be searched for by their content. Names and folders are lost, some files may come out incomplete, and finding nothing is possible. Nothing is written to the source."
+msgstr "Os arquivos serão procurados pelo conteúdo. Nomes e pastas se perdem, alguns arquivos podem sair incompletos, e é possível não encontrar nada. Nada é gravado na origem."
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:970
-msgid "Copied"
-msgstr "Copiado"
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:926
+msgid "The disk is read once, into a file. Nothing is written to it."
+msgstr "O disco é lido uma vez, para um arquivo. Nada é gravado nele."
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:971
-msgid "Speed"
-msgstr "Velocidade"
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:931
+msgid "After the image, the search needs your confirmation. It can also be started later."
+msgstr "Depois da imagem, a busca precisa da sua confirmação. Ela também pode ser iniciada mais tarde."
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:971
-msgid "Remaining"
-msgstr "Restante"
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:933
+msgid "Good to know"
+msgstr "Bom saber"
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:971
-msgid "Current file"
-msgstr "Arquivo atual"
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:943
+#, python-format
+msgid "%d items you marked"
+msgstr "%d itens que você marcou"
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:972
-msgid "Set aside"
-msgstr "Deixados de lado"
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:953
+msgid "If a file already exists"
+msgstr "Se um arquivo já existir"
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:983
-msgid "Report"
-msgstr "Relatório"
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:958
+msgid "Check the result"
+msgstr "Verificar o resultado"
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:992
-msgid "Show &log"
-msgstr "Mostrar &registro"
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:960
+msgid "Basic: rsync confirms each file as it is copied"
+msgstr "Básica: o rsync confirma cada arquivo ao copiar"
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:994
-msgid "&Open destination"
-msgstr "&Abrir destino"
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:960
+msgid "Names, sizes and dates compared at the end"
+msgstr "Nomes, tamanhos e datas comparados no final"
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:996
-msgid "&Try set-aside files again"
-msgstr "&Tentar de novo os deixados de lado"
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:961
+msgid "Content compared at the end (reads the source again)"
+msgstr "Conteúdo comparado no final (lê a origem de novo)"
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:997
-msgid "Reads the damaged areas again, which puts more strain on the disk."
-msgstr "Lê de novo as áreas danificadas, o que força mais o disco."
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:965
+msgid "Set aside a stuck file after (seconds)"
+msgstr "Deixar de lado um arquivo preso após (segundos)"
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:999
-msgid "&Pause"
-msgstr "&Pausar"
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:967
+msgid "A file that does not advance for this long is set aside, so that the others are saved first. 0: never."
+msgstr "Um arquivo que não avança por este tempo é deixado de lado, para salvar os outros primeiro. 0: nunca."
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:1001
-msgid "&Resume"
-msgstr "&Retomar"
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:971
+msgid "Limit the reading speed (kB/s)"
+msgstr "Limitar a velocidade de leitura (kB/s)"
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:1003
-msgid "&Cancel copy"
-msgstr "&Cancelar cópia"
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:973
+msgid "0: no limit"
+msgstr "0: sem limite"
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:1057
-msgid "working"
-msgstr "trabalhando"
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:984
+msgid "Starting…"
+msgstr "Começando…"
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:1107
-msgid "Cancel copy"
-msgstr "Cancelar cópia"
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:993
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:606
+msgid "It did not start"
+msgstr "Não começou"
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:1108
-msgid "Stop the copy? Files already copied stay at the destination, and the copy can be resumed later."
-msgstr "Parar a cópia? Os arquivos já copiados ficam no destino, e a cópia pode ser retomada depois."
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1033
+msgid "Read the partition table"
+msgstr "Ler a tabela de partições"
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:1110
-msgid "Stop the copy"
-msgstr "Parar a cópia"
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1034
+msgid "Analyze the whole disk"
+msgstr "Analisar o disco inteiro"
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:1111
-msgid "Keep copying"
-msgstr "Continuar copiando"
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1035
+msgid "It reads all of the disk. On a drive with problems this is extra wear."
+msgstr "Lê o disco inteiro. Em um disco com problemas, isso é desgaste extra."
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:1134
-msgid "Log"
-msgstr "Registro"
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1040
+msgid "This drive reported problems: analyzing all of it is extra wear. A disk image first spares it."
+msgstr "Este disco relatou problemas: analisá-lo inteiro é desgaste extra. Fazer antes uma imagem de disco o poupa."
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:1216
-#: big-mount/usr/lib/big-mount/drive-gui.py:1594
-msgid "Mount read-only"
-msgstr "Montar somente leitura"
-
-#: big-mount/usr/lib/big-mount/drive-gui.py:1220
-msgid "The volume is opened without changing anything on it."
-msgstr "O volume é aberto sem alterar nada nele."
-
-#: big-mount/usr/lib/big-mount/drive-gui.py:1225
-msgid "Also block &writing on the device itself (asks for the password)"
-msgstr "Bloquear também a &gravação no próprio dispositivo (pede a senha)"
-
-#: big-mount/usr/lib/big-mount/drive-gui.py:1227
-msgid "Whatever a driver or another program tries, the disk does not change. It lasts until the drive is disconnected."
-msgstr "O que quer que um driver ou outro programa tente, o disco não muda. Dura até a unidade ser desconectada."
-
-#: big-mount/usr/lib/big-mount/drive-gui.py:1253
-#: big-mount/usr/lib/big-mount/drive-gui.py:1315
-msgid "Lost partitions"
-msgstr "Partições perdidas"
-
-#: big-mount/usr/lib/big-mount/drive-gui.py:1254
-msgid "Search by content"
-msgstr "Busca por conteúdo"
-
-#: big-mount/usr/lib/big-mount/drive-gui.py:1265
-msgid "Copies the whole device to a file on another disk with GNU ddrescue, keeping a map so it can resume and never reads a good area twice. Then you work on the copy, and the disk rests. It asks for the administrator password."
-msgstr "Copia o dispositivo inteiro para um arquivo em outro disco com o GNU ddrescue, mantendo um mapa para poder retomar e nunca ler duas vezes uma área boa. Depois você trabalha na cópia, e o disco descansa. Pede a senha de administrador."
-
-#: big-mount/usr/lib/big-mount/drive-gui.py:1279
-msgid "&Make the image"
-msgstr "&Fazer a imagem"
-
-#: big-mount/usr/lib/big-mount/drive-gui.py:1288
-#: big-mount/usr/lib/big-mount/drive-gui.py:1290
-msgid "Image file"
-msgstr "Arquivo de imagem"
-
-#: big-mount/usr/lib/big-mount/drive-gui.py:1310
-msgid "Looks for partitions with TestDisk and only lists what it finds. Nothing is written to the partition table. It asks for the administrator password."
-msgstr "Procura partições com o TestDisk e só lista o que encontra. Nada é gravado na tabela de partições. Pede a senha de administrador."
-
-#: big-mount/usr/lib/big-mount/drive-gui.py:1316
-msgid "&Look for partitions"
-msgstr "&Procurar partições"
-
-#: big-mount/usr/lib/big-mount/drive-gui.py:1321
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1052
 msgid "Looking for partitions…"
 msgstr "Procurando partições…"
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:1335
-msgid "Searches an image for files by their content with PhotoRec. It finds files even without a filesystem, but their original names and folders cannot be kept."
-msgstr "Busca arquivos em uma imagem pelo conteúdo com o PhotoRec. Encontra arquivos mesmo sem sistema de arquivos, mas os nomes e pastas originais não podem ser mantidos."
-
-#: big-mount/usr/lib/big-mount/drive-gui.py:1352
-msgid "B&rowse…"
-msgstr "P&rocurar…"
-
-#: big-mount/usr/lib/big-mount/drive-gui.py:1362
-msgid "&Search for files"
-msgstr "&Buscar arquivos"
-
-#: big-mount/usr/lib/big-mount/drive-gui.py:1369
-msgid "Searching. This reads the whole image and can take a long time."
-msgstr "Buscando. Isso lê a imagem inteira e pode demorar bastante."
-
-#: big-mount/usr/lib/big-mount/drive-gui.py:1374
-#, python-format
-msgid "%(n)s files found by content in %(dir)s. Their original names and folders could not be kept."
-msgstr "%(n)s arquivos encontrados por conteúdo em %(dir)s. Os nomes e pastas originais não puderam ser mantidos."
-
-#: big-mount/usr/lib/big-mount/drive-gui.py:1377
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1064
 msgid "The search failed."
 msgstr "A busca falhou."
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:1435
-msgid "Big-Mount — Storage manager"
-msgstr "Big-Mount — Gerenciador de armazenamento"
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1067
+msgid "What TestDisk found"
+msgstr "O que o TestDisk encontrou"
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:1466
-msgid "Copies and &images"
-msgstr "Cópias e &imagens"
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1073
+msgid "Big-Mount does not rewrite partition tables, on purpose: a mistake there can lose everything. A disk image, or a search by content, recovers files without that risk."
+msgstr "O Big-Mount não regrava tabelas de partições, de propósito: um erro ali pode perder tudo. Uma imagem de disco, ou uma busca por conteúdo, recupera arquivos sem esse risco."
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:1512
-msgid "The copy continues in the background."
-msgstr "A cópia continua em segundo plano."
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1075
+msgid "The analysis did not recognize any partition. That does not prove there is no data: a search by content may still find files."
+msgstr "A análise não reconheceu nenhuma partição. Isso não prova que não há dados: uma busca por conteúdo ainda pode encontrar arquivos."
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:1583
-msgid "Mounting…"
-msgstr "Montando…"
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1077
+msgid "The partition table is empty or unreadable. Analyzing the whole disk may find what it no longer lists."
+msgstr "A tabela de partições está vazia ou ilegível. Analisar o disco inteiro pode achar o que ela já não lista."
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:1595
-msgid "Unmount and mount read-only"
-msgstr "Desmontar e montar somente leitura"
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:212
+msgid "This picture cannot be shown"
+msgstr "Esta imagem não pode ser mostrada"
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:1601
-msgid "Could not mount"
-msgstr "Não foi possível montar"
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:213
+msgid "It may be incomplete. That is common with files found by content."
+msgstr "Ela pode estar incompleta. É comum em arquivos encontrados por conteúdo."
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:1622
-msgid "Unmounting…"
-msgstr "Desmontando…"
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:259
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:260
+msgid "Search by name"
+msgstr "Buscar por nome"
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:1633
-msgid "Could not unmount"
-msgstr "Não foi possível desmontar"
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:262
+msgid "As found"
+msgstr "Como encontrados"
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:1656
-msgid "Reading SMART. Through USB it can take a minute."
-msgstr "Lendo o SMART. Pela USB pode levar um minuto."
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:262
+msgid "Largest first"
+msgstr "Maiores primeiro"
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:1676
-msgid "Hide them"
-msgstr "Ocultar"
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:262
+msgid "By name"
+msgstr "Por nome"
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:1677
-msgid "Keep them"
-msgstr "Manter"
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:263
+msgid "Order"
+msgstr "Ordem"
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:1695
-#: big-mount/usr/lib/big-mount/drive-gui.py:1710
-msgid "Unlock"
-msgstr "Desbloquear"
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:277
+msgid "Name"
+msgstr "Nome"
 
-#: big-mount/usr/lib/big-mount/drive-gui.py:1695
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:281
+msgid "Date"
+msgstr "Data"
+
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:286
+msgid "Reading the list…"
+msgstr "Lendo a lista…"
+
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:288
+msgid "Nothing to show"
+msgstr "Nada a mostrar"
+
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:289
+msgid "No file matches what you asked for."
+msgstr "Nenhum arquivo corresponde ao que você pediu."
+
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:294
+msgid "Recover selected"
+msgstr "Recuperar selecionados"
+
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:296
+msgid "Select all shown"
+msgstr "Selecionar todos"
+
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:297
+msgid "Clear selection"
+msgstr "Limpar"
+
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:305
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:636
+msgid "Save report"
+msgstr "Salvar relatório"
+
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:306
+msgid "Try another method"
+msgstr "Tentar outro método"
+
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:341
+msgid "Candidates found by content. They are saved in the destination folder, without their names and folders, and some may be incomplete. Check them before deleting anything."
+msgstr "Candidatos encontrados por conteúdo. Eles estão salvos na pasta de destino, sem os nomes e pastas, e alguns podem estar incompletos. Confira antes de apagar qualquer coisa."
+
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:342
+msgid "Copy selected to another folder"
+msgstr "Copiar selecionados"
+
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:344
+msgid "These files exist on the volume and have not been copied yet. Deleted files are not on this list."
+msgstr "Estes arquivos existem no volume e ainda não foram copiados. Arquivos excluídos não estão nesta lista."
+
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:357
 #, python-format
-msgid "Passphrase of %s:"
-msgstr "Senha de %s:"
+msgid "All (%d)"
+msgstr "Todos (%d)"
+
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:377
+msgid "The list could not be read."
+msgstr "A lista não pôde ser lida."
+
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:471
+#, python-format
+msgid "%(shown)d shown, %(sel)d selected (%(size)s)"
+msgstr "%(shown)d mostrados, %(sel)d selecionados (%(size)s)"
+
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:488
+msgid "Select"
+msgstr "Selecionar"
+
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:510
+msgid "Preview"
+msgstr "Pré-visualizar"
+
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:576
+msgid "It cannot be copied"
+msgstr "Não pode ser copiado"
+
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:579
+#, python-format
+msgid "%d files with a line break in their names were left out. They cannot be handled safely."
+msgstr "%d arquivos com quebra de linha no nome ficaram de fora. Eles não podem ser tratados com segurança."
+
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:623
+msgid "It cannot be saved here"
+msgstr "Não dá para salvar aqui"
 
 #: locale/templates/big-mount.desktop.in:4
 msgid "Drive manager and file rescue"
@@ -3574,11 +4614,11 @@ msgstr "Gerenciador de unidades e resgate de arquivos"
 msgid "See how your drives are doing, rescue files from them and remove them safely"
 msgstr "Veja como estão suas unidades, resgate arquivos delas e remova-as com segurança"
 
-#: locale/templates/big-mount.desktop.in:10
+#: locale/templates/big-mount.desktop.in:11
 msgid "disk;drive;usb;mount;unmount;read-only;busy;eject;ssd;erase;recover;rescue;backup;smart;storage;diagnostics;"
 msgstr "disco;unidade;usb;pendrive;montar;desmontar;somente leitura;ocupado;ejetar;ssd;apagar;recuperar;resgatar;backup;smart;armazenamento;diagnóstico;"
 
-#: locale/templates/big-mount.desktop.in:14
+#: locale/templates/big-mount.desktop.in:15
 msgid "Storage Diagnostics"
 msgstr "Diagnóstico de Armazenamento"
 
