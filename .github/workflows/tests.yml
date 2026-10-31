@@ -24,7 +24,10 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Prepare the checkout for the test user
-        run: chown -R ci:ci "$GITHUB_WORKSPACE"
+        run: |
+          chown -R ci:ci "$GITHUB_WORKSPACE"
+          # systemd-analyze verify needs this, and a container does not have it
+          install -d -m 1777 /run/systemd
 
       - name: Bash syntax
         run: |

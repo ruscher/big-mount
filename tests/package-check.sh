@@ -146,12 +146,17 @@ if command -v systemd-analyze >/dev/null; then
     # It also reports on the units it loads with this one, and on the machine it runs
     # on: those are shown, and only what is about this unit counts against it
     verify_unit() { systemd-analyze verify "$1" 2>&1 | grep -v "/usr/bin/bigmount" || true; }
-    verify_out="$(verify_unit "$P/usr/lib/systemd/system/big-mount.service")"
-    [ -n "$verify_out" ] && printf '      %s\n' "$verify_out"
-    check "systemd unit verifies" bash -c '[[ $1 != *big-mount.service* ]]' _ "$verify_out"
     mkdir -p "$WORK/bad"
     sed 's/^Type=oneshot/Type=nonsense/' "$P/usr/lib/systemd/system/big-mount.service" > "$WORK/bad/big-mount.service"
-    check "  ... and that check finds a broken unit" bash -c '[[ $1 == *big-mount.service* ]]' _ "$(verify_unit "$WORK/bad/big-mount.service")"
+    verify_bad="$(verify_unit "$WORK/bad/big-mount.service")"
+    # Silence about a broken unit means it did not look: no verdict, rather than a false one
+    if [[ $verify_bad == *big-mount.service* ]]; then
+        verify_out="$(verify_unit "$P/usr/lib/systemd/system/big-mount.service")"
+        [ -n "$verify_out" ] && printf '      %s\n' "$verify_out"
+        check "systemd unit verifies (and a broken one does not)" bash -c '[[ $1 != *big-mount.service* ]]' _ "$verify_out"
+    else
+        printf '  - systemd unit not verified, systemd-analyze cannot work here: %s\n' "$verify_bad"
+    fi
 fi
 check "service keeps FUSE daemons alive (KillMode=process)" grep -qx 'KillMode=process' "$P/usr/lib/systemd/system/big-mount.service"
 for f in usr/bin/bigmount usr/lib/big-mount/*.sh usr/lib/big-mount/bigmount-holders usr/lib/big-mount/bigmount-drive-helper; do
