@@ -1658,6 +1658,8 @@ class AboutAndWelcome(Base):
         present_at(self.win, 360, 700)
         self.win.show_welcome()
         self.assertTrue(pump(lambda: "Welcome to Big-Mount" in text(self.win), 3))
+        # Otherwise the test would pass on a wide window and prove nothing
+        self.assertEqual(self.win.get_width(), 360)
         welcome = self.win.get_visible_dialog()
         pump(timeout=0.3)
         ok, bounds = welcome.start.compute_bounds(welcome)
