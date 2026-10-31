@@ -61,7 +61,7 @@ filesystem. It exists to bring back a failing SSD that keeps nothing it is
 given. The guards:
 
 - reachable only from `bigmount --secure-erase DISK` (a terminal is
-  required) and from **Erase the whole drive…** in `bigmount --gui-drive`;
+  required) and from **Erase the whole drive…** in `bigmount --gui-drive-check`;
   a test fails if any other function calls it;
 - never the drive of the running system, a partition, a USB or hot-plug
   drive, or a drive with a security password;

@@ -5,6 +5,7 @@
 #
 # Sources:
 #   - $"..." strings of the scripts (bash --dump-po-strings)
+#   - _("...") strings of the graphical manager (xgettext)
 #   - .desktop templates (Name, GenericName, Comment, Keywords, X-KDE-Submenu)
 #   - the polkit policy template (description, message)
 # POT=FILE writes the template elsewhere and merges nothing (used by tests).
@@ -22,12 +23,13 @@ trap 'rm -rf -- "$tmp"' EXIT
     done
 } | msguniq --no-wrap -o "$tmp/shell.pot" -
 
+xgettext --no-wrap --from-code=UTF-8 -L Python -k_ -o "$tmp/gui.pot" big-mount/usr/lib/big-mount/drive-gui.py
 xgettext --no-wrap --from-code=UTF-8 -L Desktop -k -kName -kGenericName -kComment -kKeywords -kX-KDE-Submenu \
     -o "$tmp/desktop.pot" locale/templates/*.desktop.in
 xgettext --no-wrap --from-code=UTF-8 --its=locale/its/polkit.its \
     -o "$tmp/polkit.pot" locale/templates/*.policy.in
 
-msgcat --no-wrap --use-first -o "$pot" "$tmp/shell.pot" "$tmp/desktop.pot" "$tmp/polkit.pot"
+msgcat --no-wrap --use-first -o "$pot" "$tmp/shell.pot" "$tmp/gui.pot" "$tmp/desktop.pot" "$tmp/polkit.pot"
 [ -z "${POT:-}" ] || exit 0
 for po in locale/*.po; do
     [ -e "$po" ] || continue

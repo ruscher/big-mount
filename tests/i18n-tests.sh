@@ -68,9 +68,9 @@ for key in Name Comment GenericName Keywords; do
     check "launcher: $key translated" grep -q "^$key\[pt_BR\]=" big-mount/usr/share/applications/big-mount.desktop
 done
 check "service menu: submenu and actions translated" \
-    test "$(grep -c '\[pt_BR\]=' big-mount/usr/share/kio/servicemenus/big-mount.desktop)" -eq 3
+    test "$(grep -c '\[pt_BR\]=' big-mount/usr/share/kio/servicemenus/big-mount.desktop)" -eq 4
 check "polkit: description and message translated (pt_BR form)" \
-    test "$(grep -c 'xml:lang="pt_BR"' big-mount/usr/share/polkit-1/actions/org.biglinux.big-mount.policy)" -eq 2
+    test "$(grep -c 'xml:lang="pt_BR"' big-mount/usr/share/polkit-1/actions/org.biglinux.big-mount.policy)" -eq 4
 
 begin "no user-visible text outside the translation system"
 check "code and templates are English (no accented letters outside .po/.mo)" \

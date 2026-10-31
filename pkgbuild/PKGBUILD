@@ -15,7 +15,12 @@ license=('GPL')
 depends=('bash' 'udisks2' 'util-linux' 'ntfs-3g' 'lsof')
 optdepends=('kdialog: dialogs on KDE Plasma'
             'zenity: dialogs on GNOME and other desktops'
-            'libnotify: desktop notifications (otherwise kdialog --passivepopup is used)')
+            'libnotify: desktop notifications (otherwise kdialog --passivepopup is used)'
+            'rsync: copy files off a drive (bigmount --drive copy)'
+            'pyside6: graphical drive manager (bigmount --gui-drive; otherwise dialogs)'
+            'smartmontools: SMART details of a drive'
+            'ddrescue: disk images of a failing drive'
+            'testdisk: find lost partitions, search files by content (PhotoRec)')
 provides=('big-mount-git')
 conflicts=('big-mount-git')
 replaces=('big-mount-git')
@@ -25,7 +30,7 @@ install=big-mount.install
 # biglinux/big-mount later. Point url/source back to biglinux/big-mount once
 # the official repository carries the same code.
 url="https://github.com/ruscher/big-mount"
-pkgdesc="Mounts internal partitions at boot; diagnoses read-only and busy devices and removes them safely"
+pkgdesc="Mounts internal partitions at boot; diagnoses drives, rescues files from them and removes them safely"
 source=("git+https://github.com/ruscher/big-mount.git")
 makedepends=("git")
 md5sums=(SKIP)

@@ -1,6 +1,7 @@
 # 14 — Drive health and Secure Erase
 
-`bigmount --diagnose DISK` and `bigmount --gui-drive` tell whether a drive
+`bigmount --diagnose DISK` and `bigmount --gui-drive-check` (`--gui-drive` until
+the drive manager of [15](15-drive-architecture.md) took that name) tell whether a drive
 itself has been failing since the computer was started. For a SATA SSD that
 locked itself in a protection mode, `bigmount --secure-erase DISK` (or
 **Erase the whole drive…** in the dialog) can bring it back to work. That
@@ -78,8 +79,9 @@ Where it appears:
 - `bigmount --diagnose PARTITION` and the **Why can't I write here?**
   dialog: one paragraph saying that the drive reported errors. The dialog
   then offers **Check the drive…**.
-- `bigmount --gui-drive [DISK]`, also in the launcher menu as **Check a
-  drive (errors, Secure Erase)**.
+- `bigmount --gui-drive-check [DISK]`, and **Check and erase…** in the drive
+  manager (`bigmount --gui-drive`, in the launcher menu as **Drive manager and
+  file rescue**).
 - `bigmount --doctor`: a warning for each drive with a finding.
 
 The session notifier does not watch drives: kernel errors do not produce

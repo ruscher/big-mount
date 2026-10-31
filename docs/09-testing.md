@@ -13,6 +13,10 @@
 | `shellcheck -x` | shipped code, tests, locale scripts | no findings |
 | `bash -n`, `msgfmt --check`, `desktop-file-validate`, `xmllint`, `systemd-analyze verify` | — | pass (part of the suites above) |
 
+The drive manager has three more suites (`tests/drive-tests.sh`,
+`tests/gui-tests.py`, `tests/drive-integration.sh`): see
+[18](18-drive-final-report.md).
+
 Results of round 8 (2026-10-26), after the last change. What the tests
 of round 8 prove is in [14](14-drive-health-and-secure-erase.md), section
 4; for round 7, see [12](12-field-report.md).

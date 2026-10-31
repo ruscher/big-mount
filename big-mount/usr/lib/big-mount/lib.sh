@@ -1021,12 +1021,16 @@ bm_gdbus() {
 BM_RE_TIMEOUT='failed command: |qc timeout|COMRESET failed|I/O (tag )?[0-9]+ .*timeout'
 BM_RE_SLOWLINK='limiting SATA link speed'
 BM_RE_MEDIUM='critical medium error|Medium Error|Unrecovered read error'
+# How many resets of a USB port count as a problem: one or two are normal
+# while a drive spins up or a program asks it for SMART data
+BM_USB_RESETS_ALERT=3
 
 # Findings of the last bm_drive_health (bm_diag_doc reads them)
 DH_FIND=() DH_DISK=""
 
 # The port of a disk in kernel messages (REPLY, empty if none): ata1 for
-# "ata1.00: failed command", nvme0 for "nvme nvme0: I/O 12 QID 3 timeout".
+# "ata1.00: failed command", nvme0 for "nvme nvme0: I/O 12 QID 3 timeout",
+# 1-9.1 for "usb 1-9.1: reset high-speed USB device".
 # Timeouts are reported on the port, never with the name of the disk.
 bm_drive_port() {
    local p
@@ -1034,6 +1038,8 @@ bm_drive_port() {
    p="$(readlink -f -- "/sys/block/${1##*/}" 2>/dev/null)"
    if [[ $p =~ /(ata[0-9]+)/ ]]; then
       REPLY="${BASH_REMATCH[1]}"
+   elif [[ $p =~ /usb[0-9]+/(.*/)?([0-9]+-[0-9.]+):[0-9]+\.[0-9]+/ ]]; then
+      REPLY="${BASH_REMATCH[2]}"
    elif [[ ${1##*/} =~ ^(nvme[0-9]+)n[0-9]+$ ]]; then
       REPLY="${BASH_REMATCH[1]}"
    fi
@@ -1044,7 +1050,7 @@ bm_drive_port() {
 bm_drive_kmsg() {
    local re="$1"
    DKMSG=()
-   [ -n "$2" ] && re+="|$2"
+   [ -n "$2" ] && re+="|${2//./\\.}"
    command -v journalctl >/dev/null || return 1
    [ -n "$(journalctl -k -b -q -n 1 --no-pager 2>/dev/null)" ] || return 1
    mapfile -t DKMSG < <(journalctl -k -b -q --no-pager -o cat -n 400 --grep "\\b(${re})\\b" 2>/dev/null)
@@ -1075,7 +1081,7 @@ bm_udisks_drive() {
 # bm_drive_health DISK: what the drive and the kernel reported since the
 # computer was started. Read-only, as the user. Sets:
 #   DH_FIND       findings, most serious first: smart-failing timeouts
-#                 io-errors slow-link
+#                 io-errors slow-link usb-resets
 #   DH_COUNT      kernel messages counted, by finding
 #   DH_LINES      the kernel messages that were counted
 #   DH_KLOG       1 when the kernel log could be read
@@ -1089,17 +1095,23 @@ bm_udisks_drive() {
 #   DH_ERASE_MIN  minutes the drive announces for an erase (0: unknown)
 declare -gA DH_COUNT
 bm_drive_health() {
-   local disk="$1" kn="${1##*/}" l k n io_re smart=()
+   local disk="$1" kn="${1##*/}" l k n io_re off_re usb_re="" smart=()
    DH_DISK="$disk" DH_FIND=() DH_COUNT=() DH_LINES=() DH_KLOG=0 DH_SMART="" DH_BAD=0
    DH_ATA=0 DH_SEC="" DH_FROZEN=0 DH_ERASE_MIN=0
    bm_drive_port "$disk"; DH_PORT="$REPLY"
    # "I/O error, dev sda, sector 73448" and "Buffer I/O error on dev sda1"
    io_re="I/O error(,| on) dev ${kn}(p?[0-9]+)?(,|$)|$BM_RE_MEDIUM"
+   off_re="offline error, dev ${kn}(,|$)"
+   # "usb 1-9.1: reset": exact port, so that 1-9.1.2 behind it does not count
+   if [[ $DH_PORT == [0-9]* ]]; then
+      usb_re="usb ${DH_PORT//./\\.}: (reset .*USB device|USB disconnect)"
+   fi
    if bm_drive_kmsg "${kn}(p?[0-9]+)?" "$DH_PORT"; then
       DH_KLOG=1
       for l in "${DKMSG[@]}"; do
-         if [[ $l =~ $BM_RE_TIMEOUT ]]; then k=timeouts
+         if [[ $l =~ $BM_RE_TIMEOUT ]] || [[ $l =~ $off_re ]]; then k=timeouts
          elif [[ $l =~ $io_re ]]; then k=io-errors
+         elif [ -n "$usb_re" ] && [[ $l =~ $usb_re ]]; then k=usb-resets
          elif [[ $l =~ $BM_RE_SLOWLINK ]]; then k=slow-link
          else continue
          fi
@@ -1134,6 +1146,7 @@ bm_drive_health() {
    for k in timeouts io-errors slow-link; do
       [ -n "${DH_COUNT[$k]:-}" ] && DH_FIND+=("$k")
    done
+   [ "${DH_COUNT[usb-resets]:-0}" -ge "$BM_USB_RESETS_ALERT" ] && DH_FIND+=(usb-resets)
    return 0
 }
 

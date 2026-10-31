@@ -90,6 +90,14 @@ expect=(
     "644 usr/lib/big-mount/lib.sh"
     "644 usr/lib/big-mount/ui.sh"
     "644 usr/lib/big-mount/doctor.sh"
+    "755 usr/lib/big-mount/bigmount-drive-helper"
+    "644 usr/lib/big-mount/drive.sh"
+    "644 usr/lib/big-mount/drive-detect.sh"
+    "644 usr/lib/big-mount/drive-diag.sh"
+    "644 usr/lib/big-mount/drive-copy.sh"
+    "644 usr/lib/big-mount/drive-recovery.sh"
+    "644 usr/lib/big-mount/drive-tui.sh"
+    "644 usr/lib/big-mount/drive-gui.py"
     "644 usr/lib/big-mount/version"
     "644 usr/lib/systemd/system/big-mount.service"
     "644 usr/share/libalpm/hooks/big-mount.hook"
@@ -123,6 +131,7 @@ check "the obsolete big-mount-git is replaced and cannot be installed beside it"
 for d in udisks2 util-linux ntfs-3g lsof; do check "depends on $d" grep -qw "$d" <<< "$(grep ^depends= <<< "$pkginfo")"; done
 
 begin "installed files are valid"
+check "syntax: drive-gui.py" python3 -I -c 'import ast,sys; ast.parse(open(sys.argv[1], encoding="utf-8").read())' "$P/usr/lib/big-mount/drive-gui.py"
 if command -v desktop-file-validate >/dev/null; then
     check "launcher .desktop" desktop-file-validate "$P/usr/share/applications/big-mount.desktop"
     check "autostart .desktop" desktop-file-validate "$P/etc/xdg/autostart/big-mount-notifier.desktop"
@@ -130,13 +139,14 @@ fi
 check "service menu: KIO keys present" bash -c 'grep -q "^Type=Service" "$1" && grep -q "^Actions=" "$1" && grep -q "^MimeType=inode/directory;" "$1"' _ "$P/usr/share/kio/servicemenus/big-mount.desktop"
 command -v xmllint >/dev/null && check "polkit policy is well-formed XML" xmllint --noout "$P/usr/share/polkit-1/actions/org.biglinux.big-mount.policy"
 check "polkit exec.path names the installed helper" grep -q '>/usr/lib/big-mount/bigmount-holders<' "$P/usr/share/polkit-1/actions/org.biglinux.big-mount.policy"
+check "polkit exec.path names the drive helper" grep -q '>/usr/lib/big-mount/bigmount-drive-helper<' "$P/usr/share/polkit-1/actions/org.biglinux.big-mount.policy"
 command -v xmllint >/dev/null && check "icon is a well-formed SVG" xmllint --noout "$P/usr/share/icons/hicolor/scalable/apps/big-mount.svg"
 check "translation catalog loads" msgunfmt -o /dev/null "$P/usr/share/locale/pt_BR/LC_MESSAGES/big-mount.mo"
 if command -v systemd-analyze >/dev/null; then
     check "systemd unit verifies" bash -c 'systemd-analyze verify "$1" 2>&1 | grep -v "/usr/bin/bigmount" | grep -q . && exit 1 || exit 0' _ "$P/usr/lib/systemd/system/big-mount.service"
 fi
 check "service keeps FUSE daemons alive (KillMode=process)" grep -qx 'KillMode=process' "$P/usr/lib/systemd/system/big-mount.service"
-for f in usr/bin/bigmount usr/lib/big-mount/*.sh usr/lib/big-mount/bigmount-holders; do
+for f in usr/bin/bigmount usr/lib/big-mount/*.sh usr/lib/big-mount/bigmount-holders usr/lib/big-mount/bigmount-drive-helper; do
     for g in "$P"/$f; do check "syntax: ${g#"$P"/}" bash -n "$g"; done
 done
 

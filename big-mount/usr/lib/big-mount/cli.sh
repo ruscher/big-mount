@@ -12,6 +12,7 @@
 # done: another operation on the same drive is in progress, 11 not erased:
 # the drive stays frozen, 12 the drive did not do what it was told (the
 # Secure Erase was ignored, or what was written afterwards was not kept).
+# The drive manager adds 20 to 25 (drive.sh).
 
 BM_LIB_DIR="${BIGMOUNT_LIB:-/usr/lib/big-mount}"
 # shellcheck source=lib.sh
@@ -35,7 +36,9 @@ bm_usage() {
       "--gui [TARGET]" $"graphical diagnosis" \
       "--gui-remove TARGET" $"graphical safe removal" \
       "--secure-erase DISK" $"erase a whole SATA drive with its own Secure Erase (asks first)" \
-      "--gui-drive [DISK]" $"graphical drive check, with Secure Erase" \
+      "--drive [COMMAND]" $"drive manager and file rescue in the terminal (bigmount --drive --help)" \
+      "--gui-drive [DISK]" $"graphical drive manager and file rescue" \
+      "--gui-drive-check [DISK]" $"graphical drive check, with Secure Erase" \
       "--notifier" $"session service: warn about read-only devices" \
       "--doctor" $"check the installation and the storage stack (for bug reports)" \
       "-V, --version" $"show the version and the source revision" \
@@ -52,6 +55,14 @@ bm_load() {
 bm_main() {
    local cmd="$1" a args=()
    shift
+   # The drive manager has subcommands and resolves paths on its own
+   if [ "$cmd" = --drive ]; then
+      # shellcheck disable=SC2034  # read by drive.sh
+      BM_CWD="$PWD"
+      cd / || return 1
+      bm_load drive.sh && bm_drive_main "$@"
+      return
+   fi
    # Relative paths are resolved now: we leave the current folder below
    for a in "$@"; do
       # An empty target must not silently become the current folder
@@ -75,7 +86,8 @@ bm_main() {
       --gui) bm_ui_init; bm_gui_diagnose "${args[@]}" ;;
       --gui-remove) bm_ui_init; bm_gui_remove "${args[@]}" ;;
       --secure-erase) BM_UI="tty"; bm_ui_init; bm_cmd_secure_erase "${args[@]}" ;;
-      --gui-drive) bm_ui_init; bm_gui_drive "${args[@]}" ;;
+      --gui-drive) bm_load drive.sh && bm_gui_drive_main "${args[@]}" ;;
+      --gui-drive-check) bm_ui_init; bm_gui_drive "${args[@]}" ;;
       --notifier) bm_ui_init; bm_notifier ;;
       *)
          printf $"bigmount: unknown option '%s' (see bigmount --help)"'\n' "$cmd" >&2
@@ -286,7 +298,7 @@ bm_tech_report() {
       printf '%s\n' "drive:       ${F[DISK]} reported: ${DH_FIND[*]} (bigmount --diagnose ${F[DISK]})"
    if [ "${#KMSG[@]}" -gt 0 ]; then
       printf '%s\n' "kernel:"
-      for l in "${KMSG[@]: -10}"; do printf '             %s\n' "$l"; done
+      for l in "${KMSG[@]:$((${#KMSG[@]} > 10 ? ${#KMSG[@]} - 10 : 0))}"; do printf '             %s\n' "$l"; done
    fi
 }
 
@@ -888,6 +900,7 @@ bm_drive_doc() {
          timeouts) printf -v s $"Since the computer was started, it stopped answering and the connection had to be reset (%s kernel messages)." "${DH_COUNT[$k]}"; bm_doc_li "$s" ;;
          io-errors) printf -v s $"Since the computer was started, reading or writing failed (%s kernel messages)." "${DH_COUNT[$k]}"; bm_doc_li "$s" ;;
          slow-link) bm_doc_li $"Since the computer was started, the connection was slowed down after errors." ;;
+         usb-resets) printf -v s $"Since the computer was started, the USB connection was reset or lost %s times." "${DH_COUNT[$k]}"; bm_doc_li "$s" ;;
       esac
    done
    bm_doc_p $"How to solve:"
@@ -904,9 +917,9 @@ bm_drive_report() {
    printf '%s\n' "smart:       ${DH_SMART:-n/a} bad-sectors=$DH_BAD"
    printf '%s\n' "ata:         ata=$DH_ATA security=${DH_SEC:-unsupported} frozen=$DH_FROZEN erase-minutes=$DH_ERASE_MIN"
    if [ "$DH_KLOG" = 1 ]; then
-      for k in timeouts io-errors slow-link; do counts+="${counts:+ }$k=${DH_COUNT[$k]:-0}"; done
+      for k in timeouts io-errors slow-link usb-resets; do counts+="${counts:+ }$k=${DH_COUNT[$k]:-0}"; done
       printf '%s\n' "kernel log:  $counts"
-      for l in "${DH_LINES[@]: -15}"; do printf '             %s\n' "$l"; done
+      for l in "${DH_LINES[@]:$((${#DH_LINES[@]} > 15 ? ${#DH_LINES[@]} - 15 : 0))}"; do printf '             %s\n' "$l"; done
    else
       printf '%s\n' "kernel log:  not readable"
    fi
