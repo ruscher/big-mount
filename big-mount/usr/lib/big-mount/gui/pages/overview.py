@@ -1,47 +1,25 @@
 """Home: every drive at a glance, as a list or as a grid, grouped by where it is,
 with a search, its health in one word, and what can be done with it."""
 
-import os
-
-from gi.repository import Adw, GLib, Gtk
+from gi.repository import Adw, Gtk
 
 from .. import actions
 from .. import widgets as w
-from ..common import _, human_size
+from ..common import _, human_size, save_setting, setting
 
 VIEWS = ("list", "grid")
 CARD_WIDTH = 300
 CARD_CHARS = 36
 
 
-def _settings_file():
-    return os.path.join(GLib.get_user_config_dir(), "big-mount", "gui.ini")
-
-
 def load_view():
-    """The last view chosen, list by default. A preference only: never an error."""
-    keys = GLib.KeyFile()
-    try:
-        keys.load_from_file(_settings_file(), GLib.KeyFileFlags.NONE)
-        view = keys.get_string("home", "view")
-    except GLib.Error:
-        return "list"
+    """The last view chosen, list by default."""
+    view = setting("home", "view", "list")
     return view if view in VIEWS else "list"
 
 
 def save_view(view):
-    keys = GLib.KeyFile()
-    path = _settings_file()
-    try:
-        keys.load_from_file(path, GLib.KeyFileFlags.KEEP_COMMENTS)
-    except GLib.Error:
-        pass
-    keys.set_string("home", "view", view)
-    try:
-        os.makedirs(os.path.dirname(path), exist_ok=True)
-        keys.save_to_file(path)
-    except (GLib.Error, OSError):
-        pass
+    save_setting("home", "view", view)
 
 
 def group_of(dev):

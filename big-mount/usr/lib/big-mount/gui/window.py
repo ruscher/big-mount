@@ -4,6 +4,7 @@ place that knows the drives and the jobs. Pages never ask for a list themselves.
 from gi.repository import Adw, GLib, Gtk
 
 from . import widgets as w
+from .about import create_about
 from .common import _
 from .engine import Engine
 from .models import Device, Job, find_device
@@ -14,6 +15,7 @@ from .pages.maintenance import MaintenancePage
 from .pages.overview import OverviewPage
 from .pages.rescue import RescueWizard
 from .pages.results import ResultsPage
+from .welcome import WelcomeDialog
 
 JOBS_SECONDS = 5
 
@@ -92,7 +94,10 @@ class MainWindow(Adw.ApplicationWindow):
         from gi.repository import Gio
         menu = Gio.Menu()
         menu.append(_("Refresh"), "app.refresh")
-        menu.append(_("About Big-Mount"), "app.about")
+        about = Gio.Menu()
+        about.append(_("Welcome screen"), "app.welcome")
+        about.append(_("About Big-Mount"), "app.about")
+        menu.append_section(None, about)
         return menu
 
     def _side_header(self, row, before):
@@ -361,11 +366,10 @@ class MainWindow(Adw.ApplicationWindow):
         self.nav.push(MaintenancePage(self, device))
 
     def show_about(self):
-        about = Adw.AboutDialog(application_name="Big-Mount", application_icon="big-mount",
-                                developer_name="BigLinux", license_type=Gtk.License.GPL_3_0,
-                                website="https://github.com/ruscher/big-mount",
-                                comments=_("Your drives, how they are doing, and your files safe on another disk."))
-        about.present(self)
+        create_about().present(self)
+
+    def show_welcome(self):
+        WelcomeDialog().present(self)
 
     def notify_text(self, text):
         w.toast(self.toasts, text)

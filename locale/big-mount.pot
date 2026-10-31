@@ -183,7 +183,7 @@ msgstr ""
 #: big-mount/usr/lib/big-mount/cli.sh:106
 #: big-mount/usr/lib/big-mount/cli.sh:799
 #: big-mount/usr/lib/big-mount/cli.sh:1069
-#: big-mount/usr/lib/big-mount/doctor.sh:448
+#: big-mount/usr/lib/big-mount/doctor.sh:444
 #: big-mount/usr/lib/big-mount/drive.sh:227
 msgid "bigmount: unknown option '%s' (see bigmount --help)"
 msgstr ""
@@ -1578,196 +1578,187 @@ msgstr ""
 msgid "Session: %s, desktop: %s, language: %s"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/doctor.sh:301
-#: big-mount/usr/lib/big-mount/doctor.sh:302
-msgid "Dialogs: %s"
-msgstr ""
-
 #: big-mount/usr/lib/big-mount/doctor.sh:303
-msgid "Neither kdialog nor zenity is installed: no dialogs, terminal only"
-msgstr ""
-
-#: big-mount/usr/lib/big-mount/doctor.sh:303
-msgid "Install kdialog (Plasma) or zenity (GNOME)."
-msgstr ""
-
-#: big-mount/usr/lib/big-mount/doctor.sh:307
 msgid "copying files off a drive"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/doctor.sh:307
+#: big-mount/usr/lib/big-mount/doctor.sh:303
 msgid "SMART details"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/doctor.sh:307
+#: big-mount/usr/lib/big-mount/doctor.sh:303
 msgid "disk images"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/doctor.sh:307
+#: big-mount/usr/lib/big-mount/doctor.sh:303
 msgid "lost partitions"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/doctor.sh:307
+#: big-mount/usr/lib/big-mount/doctor.sh:303
 msgid "search by content"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/doctor.sh:309
+#: big-mount/usr/lib/big-mount/doctor.sh:305
 msgid "Drive manager, %s: %s"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/doctor.sh:310
+#: big-mount/usr/lib/big-mount/doctor.sh:306
 msgid "Drive manager, %s: %s is not installed"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/doctor.sh:313
-msgid "Application: GTK 4 and libadwaita"
+#: big-mount/usr/lib/big-mount/doctor.sh:309
+msgid "Application and dialogs: GTK 4 and libadwaita"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/doctor.sh:314
-msgid "The application needs gtk4, libadwaita 1.5 or later and python-gobject: bigmount --gui-drive cannot open. bigmount --drive works without them"
+#: big-mount/usr/lib/big-mount/doctor.sh:310
+msgid "The application and the dialogs need gtk4, libadwaita 1.5 or later and python-gobject: bigmount --gui-drive cannot open and questions are asked in the terminal. bigmount --drive works without them"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/doctor.sh:316
+#: big-mount/usr/lib/big-mount/doctor.sh:312
 msgid "Notifications: notify-send"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/doctor.sh:317
-msgid "notify-send (libnotify) is not installed: kdialog popups are used instead"
+#: big-mount/usr/lib/big-mount/doctor.sh:313
+msgid "notify-send (libnotify) is not installed: no notifications"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/doctor.sh:320
+#: big-mount/usr/lib/big-mount/doctor.sh:313
+msgid "Install libnotify."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/doctor.sh:316
 msgid "No session D-Bus: notifications cannot be shown"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/doctor.sh:322
+#: big-mount/usr/lib/big-mount/doctor.sh:318
 msgid "The read-only notifier is running"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/doctor.sh:324
+#: big-mount/usr/lib/big-mount/doctor.sh:320
 msgid "The read-only notifier is not running"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/doctor.sh:324
+#: big-mount/usr/lib/big-mount/doctor.sh:320
 msgid "It starts at login (/etc/xdg/autostart/big-mount-notifier.desktop)."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/doctor.sh:335
+#: big-mount/usr/lib/big-mount/doctor.sh:331
 msgid "Storage stack"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/doctor.sh:346
+#: big-mount/usr/lib/big-mount/doctor.sh:342
 msgid "Missing program: %s"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/doctor.sh:347
+#: big-mount/usr/lib/big-mount/doctor.sh:343
 msgid "Install the dependencies of big-mount (util-linux, udisks2, lsof, glib2)."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/doctor.sh:350
+#: big-mount/usr/lib/big-mount/doctor.sh:346
 msgid "UDisks2 answers on the system D-Bus"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/doctor.sh:352
+#: big-mount/usr/lib/big-mount/doctor.sh:348
 msgid "UDisks2 does not answer on the system D-Bus"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/doctor.sh:352
+#: big-mount/usr/lib/big-mount/doctor.sh:348
 msgid "Plasma and Big-Mount cannot mount or remove devices. Check: systemctl status udisks2"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/doctor.sh:356
+#: big-mount/usr/lib/big-mount/doctor.sh:352
 msgid "Polkit knows the action of Big-Mount"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/doctor.sh:358
+#: big-mount/usr/lib/big-mount/doctor.sh:354
 msgid "Polkit does not know org.biglinux.big-mount.inspect-processes"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/doctor.sh:358
+#: big-mount/usr/lib/big-mount/doctor.sh:354
 msgid "'Show programs of all users' will not work. Reinstall the big-mount package."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/doctor.sh:362
+#: big-mount/usr/lib/big-mount/doctor.sh:358
 msgid "Kernel log readable (needed to explain read-only devices)"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/doctor.sh:364
+#: big-mount/usr/lib/big-mount/doctor.sh:360
 msgid "Kernel log not readable by this user: read-only causes are explained with fewer details"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/doctor.sh:377
+#: big-mount/usr/lib/big-mount/doctor.sh:373
 msgid "%s: %s, %s, removable"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/doctor.sh:379
+#: big-mount/usr/lib/big-mount/doctor.sh:375
 msgid "%s: %s, %s, internal"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/doctor.sh:383
+#: big-mount/usr/lib/big-mount/doctor.sh:379
 msgid "The kernel has no /sys/block entry for it"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/doctor.sh:385
+#: big-mount/usr/lib/big-mount/doctor.sh:381
 msgid "UDisks2 does not know this device: Plasma and Big-Mount cannot manage it"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/doctor.sh:392
+#: big-mount/usr/lib/big-mount/doctor.sh:388
 msgid "%s: the drive reports problems (%s)"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/doctor.sh:393
+#: big-mount/usr/lib/big-mount/doctor.sh:389
 msgid "For details: bigmount --diagnose %s"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/doctor.sh:404
+#: big-mount/usr/lib/big-mount/doctor.sh:400
 msgid "NVMe controller /dev/%s: storage %s"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/doctor.sh:417
+#: big-mount/usr/lib/big-mount/doctor.sh:413
 msgid "Mounted read-only: %s"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/doctor.sh:417
+#: big-mount/usr/lib/big-mount/doctor.sh:413
 msgid "To know why: bigmount --diagnose DEVICE"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/doctor.sh:425
+#: big-mount/usr/lib/big-mount/doctor.sh:421
 msgid "Outside Big-Mount (for reference)"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/doctor.sh:431
+#: big-mount/usr/lib/big-mount/doctor.sh:427
 msgid "Settings files that do not belong to you (Plasma cannot save them, so settings seem to reset)"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/doctor.sh:432
+#: big-mount/usr/lib/big-mount/doctor.sh:428
 msgid "Usually left by a graphical program run with sudo. An administrator can give them back with chown."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/doctor.sh:434
+#: big-mount/usr/lib/big-mount/doctor.sh:430
 msgid "All your settings files belong to you"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/doctor.sh:440
+#: big-mount/usr/lib/big-mount/doctor.sh:436
 msgid "%d packages have newer versions in the last synchronized package list"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/doctor.sh:441
+#: big-mount/usr/lib/big-mount/doctor.sh:437
 msgid "Keep the system consistent: update everything at once (sudo pacman -Syu), never only some packages."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/doctor.sh:454
+#: big-mount/usr/lib/big-mount/doctor.sh:450
 msgid "Big-Mount check (nothing is changed; labels, serial numbers, UUIDs and personal paths are left out)"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/doctor.sh:461
+#: big-mount/usr/lib/big-mount/doctor.sh:457
 msgid "Result: %d problem(s), %d warning(s)."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/doctor.sh:462
+#: big-mount/usr/lib/big-mount/doctor.sh:458
 msgid "Big-Mount and the storage stack look healthy."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/doctor.sh:463
+#: big-mount/usr/lib/big-mount/doctor.sh:459
 msgid "To report a problem, attach this output: bigmount --doctor > big-mount-report.txt"
 msgstr ""
 
@@ -3462,6 +3453,34 @@ msgstr ""
 msgid "UDisks2 does not know this drive."
 msgstr ""
 
+#: big-mount/usr/lib/big-mount/gui/about.py:15
+msgid "Big-Mount takes care of the drives of your computer:"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/gui/about.py:17
+msgid "mounts the partitions of internal disks at every boot, so they are always there;"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/gui/about.py:18
+msgid "explains why a device cannot be written to, and fixes it when that is safe;"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/gui/about.py:19
+msgid "shows which programs keep a device busy, and removes it safely without forcing anything;"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/gui/about.py:20
+msgid "tells how each drive is doing in one word (Critical, Poor, Good or Healthy) from SMART, errors, age and temperature, and warns when a drive with problems is mounted;"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/gui/about.py:22
+msgid "rescues files from a failing disk: copies them with real progress, resumes after a power cut, makes disk images and finds lost partitions."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/gui/about.py:25
+msgid "Made for BigLinux. It also works on other desktops, and every tool works in the terminal: bigmount --drive"
+msgstr ""
+
 #: big-mount/usr/lib/big-mount/gui/actions.py:19
 msgid "Writing pending data and unmounting…"
 msgstr ""
@@ -3575,18 +3594,22 @@ msgstr ""
 msgid "More options for %s"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/common.py:50
+#: big-mount/usr/lib/big-mount/gui/common.py:95
 msgid "less than a minute"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/common.py:53
+#: big-mount/usr/lib/big-mount/gui/common.py:98
 #, python-format
 msgid "%d min"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/common.py:54
+#: big-mount/usr/lib/big-mount/gui/common.py:99
 #, python-format
 msgid "%(h)d h %(m)d min"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/gui/dialogs.py:147
+msgid "OK"
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/gui/models.py:339
@@ -3607,6 +3630,107 @@ msgstr ""
 msgid "Files"
 msgstr ""
 
+#: big-mount/usr/lib/big-mount/gui/welcome.py:12
+msgid "Drives mounted at boot"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/gui/welcome.py:13
+msgid "The partitions of internal disks are mounted at every boot, ready to use."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/gui/welcome.py:14
+msgid "Health in one word"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/gui/welcome.py:15
+msgid "Critical, Poor, Good or Healthy, from SMART, errors, age and temperature."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/gui/welcome.py:16
+msgid "Rescue your files"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/gui/welcome.py:17
+msgid "Copies files off a failing disk with real progress, and resumes after a power cut."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/gui/welcome.py:18
+msgid "Disk images and lost partitions"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/gui/welcome.py:19
+msgid "Reads a damaged disk only once, and finds partitions that were lost."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/gui/welcome.py:20
+msgid "Why can't I write here?"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/gui/welcome.py:21
+msgid "Explains read-only devices, and fixes them when that is safe."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/gui/welcome.py:22
+msgid "Busy devices"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/gui/welcome.py:23
+msgid "Shows which programs keep a device busy, and asks them to close."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/gui/welcome.py:24
+msgid "Safe removal"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/gui/welcome.py:25
+msgid "Unmounts and powers off a drive without forcing anything."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/gui/welcome.py:26
+msgid "Warnings when it matters"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/gui/welcome.py:27
+msgid "When a drive with problems is mounted, you are told, once per boot."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/gui/welcome.py:28
+msgid "Secure Erase"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/gui/welcome.py:29
+msgid "Restores an internal SATA SSD that no longer keeps what is written."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/gui/welcome.py:30
+msgid "Also in the terminal"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/gui/welcome.py:31
+msgid "The same tools without a window: bigmount --drive"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/gui/welcome.py:55
+#: big-mount/usr/lib/big-mount/gui/welcome.py:64
+msgid "Welcome to Big-Mount"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/gui/welcome.py:67
+msgid "Your drives, how they are doing, and your files safe on another disk."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/gui/welcome.py:81
+msgid "Tip: type to search your drives; F5 refreshes, Ctrl+J opens copies and searches."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/gui/welcome.py:93
+msgid "Show this screen on startup"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/gui/welcome.py:100
+msgid "Let's start"
+msgstr ""
+
 #: big-mount/usr/lib/big-mount/gui/widgets.py:215
 #, python-format
 msgid "%(used)s used, %(free)s free"
@@ -3616,74 +3740,74 @@ msgstr ""
 msgid "Copy"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/window.py:77
-#: big-mount/usr/lib/big-mount/gui/pages/overview.py:178
-#: big-mount/usr/lib/big-mount/gui/pages/overview.py:205
+#: big-mount/usr/lib/big-mount/gui/window.py:79
+#: big-mount/usr/lib/big-mount/gui/pages/overview.py:154
+#: big-mount/usr/lib/big-mount/gui/pages/overview.py:181
 msgid "Your drives and devices"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/window.py:82
-#: big-mount/usr/lib/big-mount/gui/window.py:83
+#: big-mount/usr/lib/big-mount/gui/window.py:84
+#: big-mount/usr/lib/big-mount/gui/window.py:85
 msgid "Main menu"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/window.py:95
+#: big-mount/usr/lib/big-mount/gui/window.py:98
+msgid "Welcome screen"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/gui/window.py:99
 msgid "About Big-Mount"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/window.py:100
+#: big-mount/usr/lib/big-mount/gui/window.py:105
 msgid "Drives"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/window.py:118
+#: big-mount/usr/lib/big-mount/gui/window.py:123
 #, python-format
 msgid "%d running"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/window.py:176
+#: big-mount/usr/lib/big-mount/gui/window.py:181
 msgid "Home"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/window.py:180
+#: big-mount/usr/lib/big-mount/gui/window.py:185
 #: big-mount/usr/lib/big-mount/gui/pages/job.py:302
 #: big-mount/usr/lib/big-mount/gui/pages/job.py:305
 msgid "Copies and searches"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/window.py:290
+#: big-mount/usr/lib/big-mount/gui/window.py:295
 msgid "Choose a drive to see how it is doing."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/window.py:302
+#: big-mount/usr/lib/big-mount/gui/window.py:307
 msgid "This device was not found."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/window.py:367
-msgid "Your drives, how they are doing, and your files safe on another disk."
-msgstr ""
-
-#: big-mount/usr/lib/big-mount/gui/window.py:381
-#: big-mount/usr/lib/big-mount/gui/window.py:388
+#: big-mount/usr/lib/big-mount/gui/window.py:385
+#: big-mount/usr/lib/big-mount/gui/window.py:392
 msgid "A drive is being erased"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/window.py:389
+#: big-mount/usr/lib/big-mount/gui/window.py:393
 msgid "Do not turn off the computer or disconnect the drive. This window can be closed when it ends."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/window.py:397
+#: big-mount/usr/lib/big-mount/gui/window.py:401
 msgid "It keeps working"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/window.py:398
+#: big-mount/usr/lib/big-mount/gui/window.py:402
 msgid "The work continues in the background, also with this window closed. Open Big-Mount again to follow it."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/window.py:399
+#: big-mount/usr/lib/big-mount/gui/window.py:403
 msgid "Stay here"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/window.py:399
+#: big-mount/usr/lib/big-mount/gui/window.py:403
 msgid "Close the window"
 msgstr ""
 
@@ -3791,7 +3915,7 @@ msgid "Not examined yet: there is not enough information."
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/gui/pages/device.py:159
-#: big-mount/usr/lib/big-mount/gui/pages/overview.py:288
+#: big-mount/usr/lib/big-mount/gui/pages/overview.py:264
 msgid "Rescue my files"
 msgstr ""
 
@@ -3976,7 +4100,7 @@ msgid "Block writing on the device…"
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/gui/pages/device.py:441
-#: big-mount/usr/lib/big-mount/gui/pages/overview.py:91
+#: big-mount/usr/lib/big-mount/gui/pages/overview.py:68
 #: big-mount/usr/lib/big-mount/gui/pages/rescue.py:263
 msgid "Recover files"
 msgstr ""
@@ -3996,7 +4120,7 @@ msgstr ""
 
 #: big-mount/usr/lib/big-mount/gui/pages/device.py:485
 #: big-mount/usr/lib/big-mount/gui/pages/device.py:488
-#: big-mount/usr/lib/big-mount/gui/pages/overview.py:88
+#: big-mount/usr/lib/big-mount/gui/pages/overview.py:65
 msgid "Open files"
 msgstr ""
 
@@ -4265,71 +4389,71 @@ msgstr ""
 msgid "Do not turn off the computer or disconnect the drive."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/overview.py:54
+#: big-mount/usr/lib/big-mount/gui/pages/overview.py:32
 msgid "On this computer"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/overview.py:55
+#: big-mount/usr/lib/big-mount/gui/pages/overview.py:33
 msgid "External devices"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/overview.py:56
+#: big-mount/usr/lib/big-mount/gui/pages/overview.py:34
 msgid "Disk images"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/overview.py:66
+#: big-mount/usr/lib/big-mount/gui/pages/overview.py:44
 #, python-format
 msgid "%s free"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/overview.py:69
+#: big-mount/usr/lib/big-mount/gui/pages/overview.py:47
 #, python-format
 msgid "and %d more"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/overview.py:70
+#: big-mount/usr/lib/big-mount/gui/pages/overview.py:48
 msgid "No volume recognized"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/overview.py:179
+#: big-mount/usr/lib/big-mount/gui/pages/overview.py:155
 msgid "Choose a drive to see its files, check its health or recover data."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/overview.py:186
+#: big-mount/usr/lib/big-mount/gui/pages/overview.py:162
 msgid "Search by name, model, label or folder"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/overview.py:187
+#: big-mount/usr/lib/big-mount/gui/pages/overview.py:163
 msgid "Search drives"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/overview.py:194
+#: big-mount/usr/lib/big-mount/gui/pages/overview.py:170
 msgid "List"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/overview.py:194
+#: big-mount/usr/lib/big-mount/gui/pages/overview.py:170
 msgid "Grid"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/overview.py:210
+#: big-mount/usr/lib/big-mount/gui/pages/overview.py:186
 msgid "Looking at what is connected…"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/overview.py:212
+#: big-mount/usr/lib/big-mount/gui/pages/overview.py:188
 msgid "Connect a drive and it appears here by itself."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/overview.py:249
+#: big-mount/usr/lib/big-mount/gui/pages/overview.py:225
 #, python-format
 msgid "%s reported serious problems. Copy your files to another drive before trying any repair."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/overview.py:261
+#: big-mount/usr/lib/big-mount/gui/pages/overview.py:237
 #, python-format
 msgid "No drive matches “%s”"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/overview.py:262
+#: big-mount/usr/lib/big-mount/gui/pages/overview.py:238
 msgid "Search by name, model, volume label, folder or health."
 msgstr ""
 
@@ -4931,10 +5055,6 @@ msgstr ""
 
 #: locale/templates/big-mount-servicemenu.desktop.in:6
 msgid "Storage device"
-msgstr ""
-
-#: locale/templates/big-mount-servicemenu.desktop.in:11
-msgid "Why can't I write here?"
 msgstr ""
 
 #: locale/templates/big-mount-servicemenu.desktop.in:16
