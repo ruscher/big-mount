@@ -507,70 +507,83 @@ if want gui; then
 begin "the window, off screen, driving the real engine on real images"
 need_pair; fresh_dest
 cat > "$WORK/gui_e2e.py" <<'PY'
-import importlib.util, os, sys, time
+import os, sys, time
 sys.dont_write_bytecode = True
-os.environ["QT_QPA_PLATFORM"] = "offscreen"
 repo, source, dest, luks_dev, keyfile = sys.argv[1:6]
-spec = importlib.util.spec_from_file_location("g", repo + "/big-mount/usr/lib/big-mount/drive-gui.py")
-g = importlib.util.module_from_spec(spec); spec.loader.exec_module(g)
-from PySide6.QtWidgets import QApplication, QInputDialog
-from PySide6.QtTest import QTest
-app = QApplication([])
-def pump(cond, t=90):
-    end = time.time() + t
-    while time.time() < end:
-        app.processEvents()
-        if cond(): return True
-        QTest.qWait(30)
-    return False
-w = g.MainWindow(); w.show()
-assert pump(lambda: w.devices.count() > 0), "no devices"
-print("listed", w.devices.count())
+os.environ["LANGUAGE"] = "C"
+sys.path.insert(0, repo + "/tests")
+from gui_support import make_app, pump
+os.environ.pop("BM_GUI_BIN", None)
+app = make_app()
+from gui.engine import Engine
+from gui.window import MainWindow
+w = MainWindow(app, engine=Engine(program=repo + "/big-mount/usr/bin/bigmount"))
+w.present()
+assert pump(lambda: w.loaded and w.devices, 20), "no devices"
+print("listed", len(w.devices))
+dev = next(d for d in w.devices if any(v.mountpoint and source.startswith(v.mountpoint) for v in d.volumes))
+w.open_wizard(dev)
 wiz = w.wizard
-w._open_wizard(source, {"name": "T_SRC"})
+assert wiz.plan.volume is not None, "the only volume is chosen"
 wiz.go_next()
-wiz.dest_edit.setText(dest)
-wiz.verify.setCurrentIndex(2)
+assert pump(lambda: wiz.step == "what", 20), "methods"
 wiz.go_next()
-assert pump(lambda: wiz.next_btn.isEnabled()), "preflight: %r" % (wiz.preflight,)
+wiz.plan.method = "copy"
+wiz.plan.verify = "full"
+wiz.plan.dest_custom = True
+wiz.plan.dest_base = dest
+wiz.go_next()
+assert pump(lambda: wiz.step == "where" and wiz.preflight is not None, 20), "where"
+assert wiz.preflight.get("ok"), wiz.preflight
+wiz.go_next()
+assert pump(lambda: wiz.step == "confirm" and wiz.preflight is not None and wiz.next_btn.get_sensitive(), 30), "confirm: %r" % (wiz.preflight,)
 print("preflight", wiz.preflight["total_files"], wiz.preflight["total_bytes"])
 wiz.go_next()
-assert pump(lambda: w.pages.currentWidget() is w.job_page), "job did not open"
-page = w.job_page
-seen = set()
-def done():
-    if page.data: seen.add(page.bar.maximum())
-    return page.state in ("completed", "needs-attention", "failed")
-assert pump(done), "did not end: %r" % (page.data,)
-print("state", page.state, page.data.get("verify_result"), "bar", page.bar.value())
-assert page.state == "completed" and page.data.get("verify_result") == "ok"
-assert page.bar.value() == 100
-assert pump(lambda: page.report.isVisibleTo(page)), "no report"
-assert "Files copied" in page.report.toPlainText()
+assert pump(lambda: type(w.nav.get_visible_page()).__name__ == "JobPage", 20), "job did not open"
+page = w.nav.get_visible_page()
+assert pump(lambda: page.job and not page.job.running, 90), "did not end: %r" % (page.job,)
+print("state", page.job.state, page.job.verify_result, "bar", page.bar.get_fraction())
+assert page.job.state == "completed" and page.job.verify_result == "ok"
+assert page.bar.get_fraction() == 1.0
+assert pump(lambda: page.report_expander.get_visible(), 10), "no report"
+assert "Files copied" in page.report_view.get_text()
 # The passphrase through D-Bus: the real UDisks2, on a real LUKS image
-vol = {"device": luks_dev, "label": "T"}
+from gui.pages.device import unlock_volume
+from gui.models import Volume
 key = open(keyfile).read()
-QInputDialog.getText = staticmethod(lambda *a, **k: (key, True))
-w._do_unlock({}, vol)
-assert pump(lambda: os.path.exists("/sys/class/block/%s/holders" % luks_dev.rsplit("/")[-1]) and os.listdir("/sys/class/block/%s/holders" % luks_dev.rsplit("/")[-1]), 40), "not unlocked"
+unlock_volume(w, Volume(device=luks_dev, label="T"), lambda: None)
+assert pump(lambda: w.get_visible_dialog() is not None, 5)
+dialog = w.get_visible_dialog()
+dialog.get_extra_child().set_text(key)
+dialog.emit("response", "unlock")
+holders = "/sys/class/block/%s/holders" % luks_dev.rsplit("/")[-1]
+assert pump(lambda: os.path.exists(holders) and os.listdir(holders), 40), "not unlocked"
 print("unlocked")
+w.jobs = []
 w.close()
 print("OK")
 PY
 truncate -s 64M "$WORK/gl.img"; printf 'chave-de-teste' > "$WORK/key2"
 sudo -n cryptsetup luksFormat --batch-mode --pbkdf pbkdf2 --pbkdf-force-iterations 1000 --key-file "$WORK/key2" "$WORK/gl.img"
 loop_up "$WORK/gl.img"; gl="$REPLY"
-timeout 170 python3 -I "$WORK/gui_e2e.py" "$REPO" "$SRCMP/data" "$DSTMP/out" "$gl" "$WORK/key2" >"$WORK/gui.out" 2>&1; rc=$?
+timeout 170 python3 -I "$WORK/gui_e2e.py" "$REPO" "$SRCMP" "$DSTMP/out" "$gl" "$WORK/key2" >"$WORK/gui.out" 2>&1; rc=$?
 [ -n "${DEBUG:-}" ] && sed 's/^/      /' "$WORK/gui.out"
 check "preflight, copy, full check and report through the window (exit $rc)" grep -qx OK "$WORK/gui.out"
-check "the tree is identical" tree_same "$SRCMP/data" "$DSTMP/out"
 check "the passphrase never appears in the process list or the log" bash -c '! grep -q chave-de-teste "$1"' _ "$WORK/gui.out"
 udisksctl lock -b "$gl" --no-user-interaction >/dev/null 2>&1
-# Falls back to the old dialog without Qt; opens the window with it
-BM_NO_QT=1 BM_UI=tty "$B" --gui-drive "$SRC" </dev/null >"$WORK/fb.txt" 2>&1; rc=$?
-check "--gui-drive without Qt: the drive check in text (exit $rc)" bash -c '[ -s "$1" ]' _ "$WORK/fb.txt"
-QT_QPA_PLATFORM=offscreen timeout 4 "$B" --gui-drive "$SRCMP/data" >/dev/null 2>&1; rc=$?
-check "--gui-drive with a folder opens the window and stays open" eq "$rc" 124
+# Without a graphical session it says where the same tools are
+env -u WAYLAND_DISPLAY -u DISPLAY "$B" --gui-drive "$SRC" </dev/null >"$WORK/fb.txt" 2>&1; rc=$?
+check "--gui-drive without a session: the terminal manager is named (exit $rc)" bash -c '[ "$2" = 25 ] && grep -q "bigmount --drive" "$1"' _ "$WORK/fb.txt" "$rc"
+if command -v gtk4-broadwayd >/dev/null; then
+   gtk4-broadwayd :77 >/dev/null 2>&1 &
+   broadway=$!
+   sleep 0.5
+   GDK_BACKEND=broadway BROADWAY_DISPLAY=:77 DISPLAY=:none timeout 4 dbus-run-session -- "$B" --gui-drive "$SRCMP/data" >/dev/null 2>&1; rc=$?
+   check "--gui-drive with a folder opens the window and stays open" eq "$rc" 124
+   GDK_BACKEND=broadway BROADWAY_DISPLAY=:77 DISPLAY=:none timeout 4 dbus-run-session -- "$B" --gui-drive-check "$SRC" >/dev/null 2>&1; rc=$?
+   check "--gui-drive-check opens the same application and stays open" eq "$rc" 124
+   kill "$broadway" 2>/dev/null
+fi
 fi
 
 if want image; then

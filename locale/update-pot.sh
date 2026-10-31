@@ -23,7 +23,8 @@ trap 'rm -rf -- "$tmp"' EXIT
     done
 } | msguniq --no-wrap -o "$tmp/shell.pot" -
 
-xgettext --no-wrap --from-code=UTF-8 -L Python -k_ -o "$tmp/gui.pot" big-mount/usr/lib/big-mount/drive-gui.py
+xgettext --no-wrap --from-code=UTF-8 -L Python -k_ -o "$tmp/gui.pot" \
+    big-mount/usr/lib/big-mount/drive-gui.py big-mount/usr/lib/big-mount/gui/*.py big-mount/usr/lib/big-mount/gui/pages/*.py
 xgettext --no-wrap --from-code=UTF-8 -L Desktop -k -kName -kGenericName -kComment -kKeywords -kX-KDE-Submenu \
     -o "$tmp/desktop.pot" locale/templates/*.desktop.in
 xgettext --no-wrap --from-code=UTF-8 --its=locale/its/polkit.its \

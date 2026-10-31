@@ -97,7 +97,24 @@ expect=(
     "644 usr/lib/big-mount/drive-copy.sh"
     "644 usr/lib/big-mount/drive-recovery.sh"
     "644 usr/lib/big-mount/drive-tui.sh"
+    "644 usr/lib/big-mount/drive-erase.sh"
     "644 usr/lib/big-mount/drive-gui.py"
+    "644 usr/lib/big-mount/gui/__init__.py"
+    "644 usr/lib/big-mount/gui/application.py"
+    "644 usr/lib/big-mount/gui/common.py"
+    "644 usr/lib/big-mount/gui/engine.py"
+    "644 usr/lib/big-mount/gui/models.py"
+    "644 usr/lib/big-mount/gui/monitor.py"
+    "644 usr/lib/big-mount/gui/style.css"
+    "644 usr/lib/big-mount/gui/widgets.py"
+    "644 usr/lib/big-mount/gui/window.py"
+    "644 usr/lib/big-mount/gui/pages/__init__.py"
+    "644 usr/lib/big-mount/gui/pages/device.py"
+    "644 usr/lib/big-mount/gui/pages/job.py"
+    "644 usr/lib/big-mount/gui/pages/maintenance.py"
+    "644 usr/lib/big-mount/gui/pages/overview.py"
+    "644 usr/lib/big-mount/gui/pages/rescue.py"
+    "644 usr/lib/big-mount/gui/pages/results.py"
     "644 usr/lib/big-mount/version"
     "644 usr/lib/systemd/system/big-mount.service"
     "644 usr/share/libalpm/hooks/big-mount.hook"
@@ -128,10 +145,12 @@ check "install script restarts nothing by itself" bash -c '! grep -vE "^\s*(#|ec
 check "configuration preserved on upgrades (backup=)" grep -q "^backup=etc/big-mount.conf" <<< "$pkginfo"
 check "the obsolete big-mount-git is replaced and cannot be installed beside it" \
     bash -c 'source pkgbuild/PKGBUILD 2>/dev/null; [[ " ${replaces[*]} " == *" big-mount-git "* && " ${conflicts[*]} " == *" big-mount-git "* ]]'
-for d in udisks2 util-linux ntfs-3g lsof; do check "depends on $d" grep -qw "$d" <<< "$(grep ^depends= <<< "$pkginfo")"; done
+for d in udisks2 util-linux ntfs-3g lsof gtk4 libadwaita python-gobject; do check "depends on $d" grep -qw "$d" <<< "$(grep ^depends= <<< "$pkginfo")"; done
 
 begin "installed files are valid"
-check "syntax: drive-gui.py" python3 -I -c 'import ast,sys; ast.parse(open(sys.argv[1], encoding="utf-8").read())' "$P/usr/lib/big-mount/drive-gui.py"
+check "syntax: every module of the application" python3 -I -c 'import ast,sys; [ast.parse(open(f, encoding="utf-8").read()) for f in sys.argv[1:]]' "$P/usr/lib/big-mount/drive-gui.py" "$P"/usr/lib/big-mount/gui/*.py "$P"/usr/lib/big-mount/gui/pages/*.py
+check "the package does not need Qt" bash -c 'source pkgbuild/PKGBUILD 2>/dev/null; [[ " ${depends[*]} ${optdepends[*]} " != *pyside* ]]'
+check "no Markdown file is read at run time" bash -c '! grep -rlE "\.md[\"'"'"' ]" "$1/usr/lib/big-mount/gui" "$1/usr/lib/big-mount/drive-gui.py"' _ "$P"
 if command -v desktop-file-validate >/dev/null; then
     check "launcher .desktop" desktop-file-validate "$P/usr/share/applications/big-mount.desktop"
     check "autostart .desktop" desktop-file-validate "$P/etc/xdg/autostart/big-mount-notifier.desktop"

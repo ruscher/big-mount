@@ -1,26 +1,27 @@
 #!/usr/bin/python3
-"""Tests of the graphical drive manager, off screen (QT_QPA_PLATFORM=offscreen).
+"""Tests of the application, off screen, on a private Broadway display.
 
 The window talks to a stand-in for `bigmount` (BM_GUI_BIN) that answers with
 fixtures and records every call, so these tests are about the window: what it
 shows, what it asks the engine for, and what it refuses to pretend. No disk is
-involved, and nothing appears on the screen.
+involved, nothing appears on the screen, and there is no Secure Erase here that
+could touch anything: the stand-in only writes down that it was called.
 
 Usage: python3 tests/gui-tests.py [-v] [--shots DIR]
 """
 
-import sys
-sys.dont_write_bytecode = True
-import atexit
-import json
+import copy
 import os
 import pathlib
 import shutil
-import stat
+import signal
+import subprocess
 import sys
-import tempfile
 import time
 import unittest
+
+os.environ["LANGUAGE"] = "C"
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 
 SHOTS = None
 if "--shots" in sys.argv:
@@ -28,439 +29,1304 @@ if "--shots" in sys.argv:
     SHOTS = sys.argv[i + 1]
     del sys.argv[i:i + 2]
 
-os.environ["QT_QPA_PLATFORM"] = "offscreen"
-os.environ["LANGUAGE"] = "C"
-# Not /tmp: it is often mounted noexec, and the stand-in must run
-WORK = pathlib.Path(tempfile.mkdtemp(prefix="bm-gui-", dir=os.environ.get("TMPDIR", "/var/tmp")))
-atexit.register(shutil.rmtree, WORK, ignore_errors=True)
-STUB = WORK / "bigmount"
-CALLS = WORK / "calls"
-FIX = WORK / "fix"
-FIX.mkdir()
-STUB.write_text(f"""#!/bin/bash
-printf '%s\\n' "$*" >> {CALLS}
-key="$2"
-f="{FIX}/$key.json"
-[ -f "$f" ] && cat "$f"
-rc="{FIX}/$key.rc"
-[ -f "$rc" ] && exit "$(cat "$rc")"
-exit 0
-""")
-STUB.chmod(STUB.stat().st_mode | stat.S_IEXEC)
-os.environ["BM_GUI_BIN"] = str(STUB)
+from gui_support import (Adw, CALLBACK_ERRORS, FIX, GB, Gtk, LIB, REPO, WORK, backup, calls, click, drive, find_button, find_row, fix, fix_text, forget_calls,  # noqa: E402
+                         make_app, pump, seagate, shot, system_disk, text, texts, vol, widgets)
 
-REPO = pathlib.Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(REPO / "big-mount/usr/lib/big-mount"))
+app = make_app()
 
-import importlib.util  # noqa: E402
+from gui.application import parse  # noqa: E402
+from gui.common import human_duration, human_size, human_time  # noqa: E402
+from gui.engine import Engine  # noqa: E402
+from gui.models import Device, Job, Methods, UiState, find_device  # noqa: E402
+from gui.pages.results import Index, ResultsModel  # noqa: E402
+from gui.window import MainWindow  # noqa: E402
 
-spec = importlib.util.spec_from_file_location("drive_gui", REPO / "big-mount/usr/lib/big-mount/drive-gui.py")
-gui = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(gui)
+DEST = WORK / "dest"
+DEST.mkdir()
+SOURCE = WORK / "source"
+SOURCE.mkdir()
+(SOURCE / "a.txt").write_text("a")
+(SOURCE / "pasta").mkdir()
+(SOURCE / "pasta/b.jpg").write_text("b")
 
-from PySide6.QtCore import Qt  # noqa: E402
-from PySide6.QtTest import QTest  # noqa: E402
-from PySide6.QtWidgets import QApplication, QCheckBox, QLabel, QPushButton  # noqa: E402
-
-app = QApplication([])
-gui.setup_icons()
-app.setStyleSheet(gui.app_style(app))
+METHOD_ROWS = [{"id": "copy", "available": True, "why": "", "why_text": "", "finds": "existing", "password": False},
+               {"id": "quick", "available": True, "why": "", "why_text": "", "finds": "existing", "password": False},
+               {"id": "deep", "available": True, "why": "", "why_text": "", "finds": "carved", "password": True},
+               {"id": "image", "available": True, "why": "", "why_text": "", "finds": "image", "password": True},
+               {"id": "partitions", "available": True, "why": "", "why_text": "", "finds": "partitions", "password": True}]
+METHODS = {"target": "/dev/sdb1", "source_kind": "volume", "device": "/dev/sdb1", "volume": "/dev/sdb1", "disk": "/dev/sdb", "level": "critical", "state": "unmounted",
+           "mountpoint": "", "fstype": "ntfs", "recommended": "copy", "recommended_why": "Copy what matters first.", "size": 1000 * GB, "trim": False, "can_read": False, "deep_needs_image": True,
+           "methods": METHOD_ROWS, "notes": [], "categories": [{"id": "photos", "label": "Photos", "deep_note": "HEIC only when searching all types."},
+                                                               {"id": "videos", "label": "Videos", "deep_note": ""}]}
+PREFLIGHT_OK = {"error": "", "error_text": "", "source": "s", "destination": "d", "level": "normal", "total_bytes": GB, "total_files": 3, "conflicts": 0,
+                "avail": 900 * GB, "ok": True, "total_estimate": False, "same_disk": False, "scanned": True, "warnings": [{"key": "x", "text": "A warning from the engine"}]}
+DESTINATIONS = {"destinations": [
+    {"path": str(DEST), "device": "/dev/sda1", "level": "normal", "why": "", "name": "Backup", "fstype": "ext4", "avail": 900 * GB, "independent": True, "recommended": True},
+    {"path": "/run/media/x/SAME", "device": "/dev/sdb2", "level": "normal", "why": "same-disk", "name": "SAME", "fstype": "ext4", "avail": 500 * GB, "independent": False, "recommended": False}]}
 
 
-def vol(device, **kw):
-    v = {"device": device, "type": "part", "fstype": "ntfs", "fsver": "", "label": "", "uuid": "ABC", "state": "unmounted",
-         "state_label": "Not mounted", "mountpoint": "", "size": 1000000000000, "used": None, "avail": None,
-         "read_only": False, "device_read_only": False, "fs_supported": True}
-    v.update(kw)
-    return v
+def job_json(**kw):
+    base = {"id": "20261031-120000-abcd", "kind": "copy", "result_kind": "copied-files", "state": "running", "state_label": "Copying", "reason": "", "reason_text": "", "source": "/src",
+            "destination": str(DEST), "name": "n", "current": "file.txt", "verify": "basic", "verify_result": "", "dir": str(WORK), "categories": "", "then_carve": "", "copy_to": "", "map": "", "level": "",
+            "files_done": 3, "files_total": 0, "bytes_done": 500, "bytes_total": 1000, "rate_now": 10, "rate_avg": 10, "elapsed": 5, "eta": 50, "deferred": 0, "failed": 0, "differ": 0, "conflicts": 0,
+            "read_errors": 0, "stuck": 0, "created": 1793419273, "finished": None, "scanned": 0, "pass": 0, "bad_bytes": 0, "total_estimate": False, "pausable": True}
+    base.update(kw)
+    return base
 
 
-def drive(device, name, level="normal", label="No alerts in the system log (SMART not read)", volumes=None, kind="usb", reasons=()):
-    return {"device": device, "name": name, "kind": kind, "kind_label": "USB storage", "icon": "drive-removable-media-usb",
-            "model": name, "vendor": "", "serial": "S1", "transport": "usb", "transport_label": "USB",
-            "volumes": [vol(device, type="disk", fstype="", state="container", state_label="Holds other volumes"), *(volumes or [])],
-            "health": {"level": level, "label": label, "basis": "log", "reasons": list(reasons), "smart": {"verdict": ""}}}
+def reset():
+    for path in FIX.iterdir():
+        path.unlink()
+    forget_calls()
+    fix("list", {"partial": False, "devices": [system_disk(), seagate(), backup(DEST)]})
+    fix("jobs", {"jobs": []})
+    fix("methods", METHODS)
+    fix("destinations", DESTINATIONS)
+    fix("copy-dry", PREFLIGHT_OK)
+    fix("diagnose", {"device": seagate(), "advice": ["Copy what matters now."], "kernel": ["kernel line"], "volumes": [], "tools": {"smartctl": True}})
 
 
-SEAGATE = drive("/dev/sdb", "ST1000DM003-1CH162", "critical", "Critical: high risk for the data",
-                [vol("/dev/sdb1", label="ARQUIVOS")], reasons=[{"key": "io-errors", "text": "Reading failed (55 kernel messages)."}])
-BACKUP = drive("/dev/sda", "SanDisk Portable SSD", volumes=[vol(
-    "/dev/sda1", label="Novo volume", state="mounted-rw", state_label="Mounted", mountpoint=str(WORK), used=800000000000, avail=1200000000000)])
-
-
-def fix(key, data, rc=None):
-    (FIX / f"{key}.json").write_text(json.dumps(data) if not isinstance(data, str) else data)
-    rcf = FIX / f"{key}.rc"
-    if rc is None:
-        rcf.unlink(missing_ok=True)
-    else:
-        rcf.write_text(str(rc))
-
-
-def calls():
-    return CALLS.read_text().splitlines() if CALLS.exists() else []
-
-
-def pump(cond=None, timeout=3.0):
-    end = time.time() + timeout
-    while time.time() < end:
-        app.processEvents()
-        if cond and cond():
-            for _ in range(5):
-                app.processEvents()
-                QTest.qWait(10)
-            return True
-        QTest.qWait(15)
-    return bool(cond and cond())
-
-
-def shot(widget, name):
-    if SHOTS:
-        pump(timeout=0.15)
-        os.makedirs(SHOTS, exist_ok=True)
-        widget.grab().save(os.path.join(SHOTS, name + ".png"))
-
-
-def texts(widget):
-    return [w.text() for w in widget.findChildren(QLabel) if w.isVisibleTo(widget)]
-
-
-def button_named(widget, fragment):
-    for b in widget.findChildren(QPushButton):
-        if fragment in b.text().replace("&", "") and b.isVisibleTo(widget):
-            return b
-    raise AssertionError(f"no button with {fragment!r}: {[b.text() for b in widget.findChildren(QPushButton)]}")
+def new_window():
+    win = MainWindow(app)
+    win.present()
+    assert pump(lambda: win.loaded, 6), "the list never arrived"
+    pump(timeout=0.1)
+    return win
 
 
 class Base(unittest.TestCase):
     def setUp(self):
-        CALLS.unlink(missing_ok=True)
-        for f in FIX.iterdir():
-            f.unlink()
-        fix("list", {"partial": False, "devices": [SEAGATE, BACKUP]})
-        fix("diagnose", {"device": SEAGATE, "advice": ["Copy what matters now."], "kernel": [], "volumes": [],
-                         "tools": {"ddrescue": False, "testdisk": True, "photorec": True, "smartctl": True, "rsync": True}})
-        fix("jobs", {"jobs": []})
-        self.win = gui.MainWindow()
-        self.win.show()
-        self.assertTrue(pump(lambda: self.win.devices.count() == 2), "the list did not arrive")
+        reset()
+        self.win = new_window()
 
     def tearDown(self):
+        self.win.erase_running = False
+        self.win.jobs = []
+        dialog = self.win.get_visible_dialog()
+        if dialog:
+            dialog.force_close()
         self.win.close()
-        self.win.deleteLater()
+        pump(timeout=0.02)
+        errors, CALLBACK_ERRORS[:] = list(CALLBACK_ERRORS), []
+        self.assertEqual(errors, [], "exceptions in callbacks")
+
+    def see(self, wanted, root=None, timeout=3):
+        root = root or self.win
+        ok = pump(lambda: wanted in text(root), timeout)
+        self.assertTrue(ok, f"{wanted!r} is not on screen:\n{text(root)[:1500]}")
+
+    def dialog(self, timeout=2):
+        pump(lambda: self.win.get_visible_dialog() is not None, timeout)
+        return self.win.get_visible_dialog()
+
+    def mount_in_fixture(self, wiz):
+        """As if it was mounted read-only: the next list must say the same."""
+        dev = seagate()
+        dev["volumes"][1].update(state="mounted-ro", state_label="Mounted read-only", mountpoint=str(SOURCE), read_only=True)
+        fix("list", {"partial": False, "devices": [system_disk(), dev, backup(DEST)]})
+        if wiz.plan.volume:
+            wiz.plan.volume.mountpoint = str(SOURCE)
+            wiz.plan.volume.state = "mounted-ro"
+
+    def wizard_to(self, step, dev_id="serial:S1DFL8G9", method=None):
+        dev = self.win.device_by_id(dev_id)
+        self.win.open_wizard(dev)
+        wiz = self.win.wizard
         pump(timeout=0.05)
+        if step == "source":
+            return wiz
+        wiz.go_next()
+        self.assertTrue(pump(lambda: wiz.step == "what", 4))
+        if step == "what":
+            return wiz
+        wiz.go_next()
+        self.assertEqual(wiz.step, "how")
+        if method:
+            wiz.plan.method = method
+        if step == "how":
+            return wiz
+        self.mount_in_fixture(wiz)
+        wiz.go_next()
+        if step == "pick":
+            self.assertTrue(pump(lambda: wiz.step == "pick", 3))
+            return wiz
+        self.assertTrue(pump(lambda: wiz.step == "where", 3))
+        self.assertTrue(pump(lambda: wiz.preflight is not None, 4))
+        if step == "where":
+            return wiz
+        wiz.go_next()
+        self.assertTrue(pump(lambda: wiz.step == "confirm" and wiz.preflight is not None, 4))
+        return wiz
 
 
-class DeviceListTests(Base):
-    def test_the_list_shows_each_drive_and_its_health_in_words(self):
-        self.assertEqual(self.win.devices.current_device_name(), "/dev/sdb")
-        row = self.win.devices.itemWidget(self.win.devices.item(0))
-        all_text = " ".join(texts(row))
-        self.assertIn("ST1000DM003-1CH162", all_text)
-        self.assertIn("Critical", all_text, "health must be in words, never colour alone")
-        shot(self.win, "01-devices")
+class Words(unittest.TestCase):
+    def test_sizes(self):
+        self.assertEqual(human_size(None), "—")
+        self.assertEqual(human_size(999), "999 B")
+        self.assertIn("kB", human_size(1500))
+        self.assertEqual(human_size(2 * 10 ** 12)[-2:], "TB")
 
-    def test_buttons_a_job_never_shows_together_do_not_widen_the_window(self):
-        # Found in the screenshots. Compared to the buttons, not in pixels: it depends on the fonts
-        page = self.win.job_page
-        buttons = (page.open_btn, page.retry_btn, page.cancel_btn, page.pause_btn, page.resume_btn)
-        self.assertFalse([b for b in buttons if b.isVisibleTo(page)])
-        self.assertLess(page.minimumSizeHint().width(), sum(b.sizeHint().width() for b in buttons))
+    def test_times(self):
+        self.assertEqual(human_time(3725), "01:02:05")
+        self.assertEqual(human_time(None), "—")
+        self.assertEqual(human_duration(30), "less than a minute")
+        self.assertEqual(human_duration(600), "10 min")
+        self.assertEqual(human_duration(7500), "2 h 5 min")
 
-    def test_the_list_has_room_for_a_model_name(self):
-        # Found in the screenshots: "ST1000DM003-1CH16" was cut, a label cannot wrap one word
-        row = self.win.devices.itemWidget(self.win.devices.item(0))
-        title = next(w for w in row.findChildren(QLabel) if "ST1000" in w.text())
-        self.assertGreaterEqual(title.width(), title.fontMetrics().horizontalAdvance(title.text()))
+    def test_arguments_of_both_flags(self):
+        a = parse(["x", "--target", "/dev/sdb", "--section", "health"])
+        self.assertEqual((a.target, a.section), ("/dev/sdb", "health"))
+        self.assertEqual(parse(["x"]).target, "")
 
-    def test_a_refresh_keeps_the_selection(self):
-        self.win.devices.setCurrentRow(1)
-        self.win.refresh()
-        pump(timeout=0.4)
-        self.assertEqual(self.win.devices.current_device_name(), "/dev/sda")
 
-    def test_a_drive_that_goes_away_is_said_out_loud(self):
-        self.win.devices.setCurrentRow(0)
-        fix("list", {"partial": False, "devices": [BACKUP]})
-        self.win.refresh()
-        self.assertTrue(pump(lambda: "disconnected" in self.win.notice.text()), self.win.notice.text())
+class Models(unittest.TestCase):
+    def test_a_job_says_what_it_counts(self):
+        self.assertEqual(Job.from_json(job_json(kind="carve")).count_label, "Candidates found")
+        self.assertEqual(Job.from_json(job_json(kind="scan")).count_label, "Files listed")
+        self.assertEqual(Job.from_json(job_json(kind="copy")).count_label, "Files copied")
 
-    def test_no_drive_at_all(self):
+    def test_states(self):
+        self.assertEqual(Job.from_json(job_json(state="running")).ui_state, UiState.RUNNING)
+        self.assertEqual(Job.from_json(job_json(state="needs-attention")).ui_state, UiState.PARTIAL)
+        self.assertEqual(Job.from_json(job_json(state="failed")).ui_state, UiState.ERROR)
+        self.assertEqual(Job.from_json(job_json(state="completed")).ui_state, UiState.COMPLETED)
+
+    def test_a_search_never_offers_to_resume_a_list_that_ended(self):
+        self.assertFalse(Job.from_json(job_json(kind="carve", state="completed")).can_resume)
+        self.assertTrue(Job.from_json(job_json(kind="carve", state="cancelled")).can_resume)
+        self.assertTrue(Job.from_json(job_json(kind="copy", state="needs-attention")).can_resume)
+
+    def test_identity_is_not_the_device_name(self):
+        a = Device.from_json(seagate())
+        moved = copy.deepcopy(seagate())
+        moved["device"] = "/dev/sdz"
+        b = Device.from_json(moved)
+        self.assertEqual(a.stable_id, b.stable_id)
+        other = Device.from_json(drive("/dev/sdb", "Another disk", serial="OTHER"))
+        self.assertIsNone(find_device([other], stable_id=a.stable_id))
+
+    def test_volumes(self):
+        dev = Device.from_json(seagate())
+        self.assertEqual([v.device for v in dev.content_volumes], ["/dev/sdb1"])
+        self.assertEqual(dev.content_volumes[0].title, "ARQUIVOS")
+        self.assertIsNone(dev.space)
+
+    def test_unknown_fields_are_ignored(self):
+        data = seagate()
+        data["something_new"] = 1
+        data["volumes"][0]["other"] = 2
+        self.assertEqual(Device.from_json(data).device, "/dev/sdb")
+        self.assertEqual(Methods.from_json(METHODS).get("deep").password, True)
+
+
+class EngineClient(unittest.TestCase):
+    def setUp(self):
+        reset()
+
+    def run_cmd(self, method, *args, **kw):
+        out = {}
+        method(*args, lambda r: out.update(r=r), **kw)
+        self.assertTrue(pump(lambda: "r" in out, 4))
+        return out["r"]
+
+    def test_json_exit_and_stderr(self):
+        fix("list", '{"devices": []}', rc=3)
+        res = self.run_cmd(Engine().list_devices)
+        self.assertEqual(res.code, 3)
+        self.assertEqual(res.data, {"devices": []})
+
+    def test_garbage_is_not_data(self):
+        fix("list", "not json")
+        res = self.run_cmd(Engine().list_devices)
+        self.assertIsNone(res.data)
+        self.assertEqual(res.code, 0)
+
+    def test_a_program_that_is_not_there(self):
+        got = {}
+        Engine(program="/nonexistent/bigmount").list_devices(lambda r: got.update(r=r))
+        self.assertTrue(pump(lambda: "r" in got, 3))
+        self.assertEqual(got["r"].code, 127)
+
+    def test_arguments_are_a_list_never_a_line(self):
+        forget_calls()
+        hostile = "/tmp/$(touch /tmp/pwned) ; rm -rf *\t'x'"
+        out = {}
+        Engine().mount(hostile, lambda r: out.update(r=r))
+        self.assertTrue(pump(lambda: "r" in out, 3))
+        self.assertIn(hostile, calls()[-1])
+        self.assertFalse(os.path.exists("/tmp/pwned"))
+
+    def test_invalid_utf8_does_not_break_it(self):
+        (FIX / "list.json").write_bytes(b'{"devices": [], "x": "\xff\xfe"}')
+        res = self.run_cmd(Engine().list_devices)
+        self.assertEqual(res.code, 0)
+
+
+class Home(Base):
+    def test_lists_every_drive(self):
+        self.see("Your drives and devices")
+        for name in ("ST1000DM003-1CH162", "SanDisk Portable SSD", "ADATA LEGEND 800"):
+            self.see(name)
+
+    def test_never_says_healthy(self):
+        all_text = "\n".join(texts(self.win)).lower()
+        self.assertNotIn("healthy", all_text)
+        self.assertNotIn("saudável", all_text)
+
+    def test_critical_drive_comes_with_the_rescue_action(self):
+        self.see("reported serious problems")
+        self.assertIsNotNone(find_button(self.win, "Rescue my files"))
+
+    def test_no_drive(self):
         fix("list", {"partial": False, "devices": []})
         self.win.refresh()
-        self.assertTrue(pump(lambda: self.win.pages.currentWidget() is self.win.empty))
+        self.see("No storage device was found.")
 
-    def test_a_list_that_cannot_be_read_does_not_crash(self):
-        fix("list", "not json at all")
+    def test_partial_list_says_so(self):
+        fix("list", {"partial": True, "devices": [seagate()]})
         self.win.refresh()
-        self.assertTrue(pump(lambda: "could not be read" in self.win.notice.text()))
+        self.see("free space is not shown")
 
-    def test_a_stuck_mount_is_explained(self):
-        fix("list", {"partial": True, "devices": [SEAGATE]})
+    def test_list_that_cannot_be_read_keeps_the_window(self):
+        fix("list", "garbage", rc=1)
         self.win.refresh()
-        self.assertTrue(pump(lambda: "did not answer" in self.win.notice.text()))
+        pump(timeout=0.4)
+        self.assertTrue(self.win.get_mapped())
+
+    def test_hostile_label_is_text(self):
+        evil = "<b>&amp;<span foreground='red'>x"
+        dev = drive("/dev/sdx", evil, volumes=[vol("/dev/sdx1", label=evil)], serial="EVIL")
+        fix("list", {"partial": False, "devices": [dev]})
+        self.win.refresh()
+        self.see(evil)
+
+    def test_many_devices_kinds(self):
+        fix("list", {"partial": False, "devices": [
+            drive("/dev/sda", "Hard disk", kind="hdd", kind_label="Hard disk", serial="H1"),
+            drive("/dev/sdb", "SATA SSD", kind="ssd", kind_label="SSD", serial="H2"),
+            drive("/dev/nvme0n1", "NVMe", kind="nvme", kind_label="NVMe SSD", serial="H3"),
+            drive("/dev/sdc", "USB", serial="H4"),
+            drive("/dev/mmcblk0", "Card", kind="sd", kind_label="SD card", serial="H5"),
+            drive("/dev/loop0", "image.img", kind="image", kind_label="Disk image", serial="", level="na", label="Not applicable (a disk image)"),
+            drive("/dev/sdd", "Cifrado", volumes=[vol("/dev/sdd1", fstype="crypto_LUKS", state="locked", state_label="Encrypted and locked")], serial="H6"),
+        ]})
+        self.win.refresh()
+        for name in ("Hard disk", "SATA SSD", "NVMe", "Card", "image.img", "Cifrado"):
+            self.see(name)
 
 
-class DevicePageTests(Base):
-    def test_diagnosis_and_advice_appear(self):
-        page = self.win.device_page
-        self.assertTrue(pump(lambda: page.diag is not None))
-        self.assertTrue(pump(lambda: any("Copy what matters" in t for t in texts(page))))
-        self.assertTrue(any("Reading failed" in t for t in texts(page)))
+class Routing(Base):
+    def go(self, target, section, answer):
+        fix("resolve", answer, rc=0 if answer.get("ok") else 24)
+        self.win.route(target, section)
 
-    def test_a_volume_offers_only_what_its_state_allows(self):
-        page = self.win.device_page
-        pump(lambda: page.diag is not None)
-        button_named(page, "Recover files")
-        button_named(page, "Mount read-only")
-        self.assertFalse([b for b in page.findChildren(QPushButton) if "Unmount" in b.text() and b.isVisibleTo(page)])
+    def test_the_alias_opens_the_same_window_on_health(self):
+        self.go("/dev/sdb", "health", {"ok": True, "disk": "/dev/sdb", "device": "/dev/sdb"})
+        self.assertTrue(pump(lambda: self.win.nav.get_visible_page() is self.win.device_page, 3))
+        self.assertEqual(self.win.device_page.stack.get_visible_child_name(), "health")
 
-    def test_the_tools_of_a_drive_take_more_than_one_row(self):
-        # Seen on a real screen: in one row, with Plasma fonts in Portuguese, the last was cut
-        page = self.win.device_page
-        pump(lambda: page.diag is not None)
-        pump(lambda: button_named(page, "Read SMART"))
-        first, last = button_named(page, "Technical details"), button_named(page, "Check and erase")
-        self.assertGreater(last.mapTo(page, last.rect().topLeft()).y(), first.mapTo(page, first.rect().topLeft()).y())
+    def test_a_partition_or_folder_selects_its_drive(self):
+        self.go("/run/media/x/ARQUIVOS", "", {"ok": True, "disk": "/dev/sdb", "device": "/dev/sdb1"})
+        self.assertTrue(pump(lambda: self.win.nav.get_visible_page() is self.win.device_page, 3))
+        self.assertEqual(self.win.device_page.stack.get_visible_child_name(), "overview")
+        self.assertEqual(self.win.selected_id, "serial:S1DFL8G9")
 
-    def test_locked_and_unsupported_volumes(self):
-        locked = drive("/dev/sdc", "Cofre", volumes=[vol("/dev/sdc1", fstype="crypto_LUKS", state="locked", state_label="Encrypted and locked", fs_supported=False)])
-        self.win.device_page.show_device(locked)
+    def test_uuid_and_by_id_go_through_the_engine(self):
+        forget_calls()
+        self.go("UUID=ABCD-1234", "", {"ok": True, "disk": "/dev/sdb"})
+        self.assertTrue(pump(lambda: any("resolve UUID=ABCD-1234" in c for c in calls()), 3))
+
+    def test_ambiguous_or_missing_target_is_said_and_goes_home(self):
+        self.go("UUID=SAME", "health", {"ok": False, "error_text": "more than one device has this UUID"})
+        self.assertTrue(pump(lambda: "more than one" in " ".join(w.get_title() for w in widgets(self.win) if isinstance(w, Adw.Toast)) or self.win.nav.get_visible_page() is self.win.overview, 3))
+        self.assertIs(self.win.nav.get_visible_page(), self.win.overview)
+
+    def test_second_invocation_reuses_the_window(self):
+        self.go("/dev/sda", "", {"ok": True, "disk": "/dev/sda"})
+        pump(lambda: self.win.selected_id == "serial:SD1", 3)
+        self.go("/dev/sdb", "health", {"ok": True, "disk": "/dev/sdb"})
+        self.assertTrue(pump(lambda: self.win.selected_id == "serial:S1DFL8G9", 3))
+        self.assertEqual(self.win.device_page.stack.get_visible_child_name(), "health")
+
+    def test_only_one_toolkit_in_the_code(self):
+        code = "".join(p.read_text() for p in (LIB / "gui").rglob("*.py")) + (LIB / "drive-gui.py").read_text()
+        for bad in ("PySide", "PyQt", "QtWidgets", "QML", "WebKit", "shell=True", "os.system", "Electron"):
+            self.assertNotIn(bad, code)
+
+
+class Hotplug(Base):
+    def test_a_new_drive_appears(self):
+        fix("list", {"partial": False, "devices": [seagate(), drive("/dev/sde", "New one", serial="NEW")]})
+        self.win.monitor.poke()
+        self.see("New one", timeout=3)
+
+    def test_selection_follows_the_drive_not_the_name(self):
+        self.win.show_device("serial:S1DFL8G9")
+        moved = seagate()
+        moved["device"] = "/dev/sdz"
+        fix("list", {"partial": False, "devices": [moved]})
+        self.win.refresh()
+        self.assertTrue(pump(lambda: self.win.device_page.dev and self.win.device_page.dev.device == "/dev/sdz", 3))
+        self.assertEqual(self.win.device_page.content.get_visible_child_name(), "drive")
+
+    def test_another_disk_under_the_same_name_is_not_the_same_disk(self):
+        self.win.show_device("serial:S1DFL8G9")
+        fix("list", {"partial": False, "devices": [drive("/dev/sdb", "Other disk", serial="OTHER")]})
+        self.win.refresh()
+        self.assertTrue(pump(lambda: self.win.device_page.content.get_visible_child_name() == "gone", 3))
+        self.see("The drive was disconnected")
+
+    def test_comes_back(self):
+        self.win.show_device("serial:S1DFL8G9")
+        fix("list", {"partial": False, "devices": []})
+        self.win.refresh()
+        pump(lambda: self.win.device_page.content.get_visible_child_name() == "gone", 3)
+        fix("list", {"partial": False, "devices": [seagate()]})
+        self.win.refresh()
+        self.assertTrue(pump(lambda: self.win.device_page.content.get_visible_child_name() == "drive", 3))
+
+    def test_wizard_never_continues_with_a_drive_that_left(self):
+        wiz = self.wizard_to("how")
+        fix("list", {"partial": False, "devices": [drive("/dev/sdb", "Other disk", serial="OTHER")]})
+        self.win.refresh()
+        self.assertTrue(pump(lambda: wiz.step == "source", 3))
+        self.assertIsNone(wiz.plan.device)
+        self.assertFalse(wiz.next_btn.get_sensitive())
+
+
+class Health(Base):
+    def open(self):
+        self.win.show_device("serial:S1DFL8G9", "health")
         pump(timeout=0.2)
-        button_named(self.win.device_page, "Unlock")
-        weird = drive("/dev/sdd", "Mac", volumes=[vol("/dev/sdd1", fstype="apfs", fs_supported=False)])
-        self.win.device_page.show_device(weird)
-        pump(timeout=0.2)
-        self.assertTrue(any("no driver" in t for t in texts(self.win.device_page)))
 
-    def test_names_are_never_rich_text(self):
-        evil = drive("/dev/sdx", "<img src=x>Evil", volumes=[vol("/dev/sdx1", label="<b>bold</b>")])
-        self.win.device_page.show_device(evil)
-        pump(timeout=0.2)
-        for label in self.win.device_page.findChildren(QLabel):
-            if "<" in label.text():
-                self.assertEqual(label.textFormat(), Qt.PlainText, label.text())
+    def test_critical_says_copy_first_and_offers_rescue(self):
+        self.open()
+        self.see("Copy your files to another drive before trying any repair")
+        self.assertIn("suggested-action", find_button(self.win, "Rescue my files").get_css_classes())
 
+    def test_not_read_is_not_no_alert(self):
+        dev = drive("/dev/sdf", "Fresh", level="unknown", label="Unknown: not enough information", basis="none", serial="F1")
+        fix("list", {"partial": False, "devices": [dev]})
+        self.win.refresh()
+        pump(lambda: self.win.device_by_id("serial:F1"), 3)
+        self.win.show_device("serial:F1", "health")
+        self.see("Not examined yet")
+        self.see("Not read")
 
-class WizardTests(Base):
-    def wizard(self, data=None, rc=None):
-        fix("destinations", {"destinations": [
-            {"path": "/mnt/backup", "device": "/dev/sda1", "level": "normal", "why": "", "name": "Backup", "avail": 500000000000, "independent": True, "recommended": True},
-            {"path": "/mnt/same", "device": "/dev/sdb2", "level": "critical", "why": "risky", "name": "Ruim", "avail": 900000000000, "independent": False, "recommended": False}]})
-        if data is not None:
-            fix("copy", data, rc)
-        self.win._open_wizard(str(WORK), SEAGATE)
-        return self.win.wizard
+    def test_normal_never_means_healthy(self):
+        dev = drive("/dev/sdf", "Calm", serial="F2")
+        fix("list", {"partial": False, "devices": [dev]})
+        self.win.refresh()
+        pump(lambda: self.win.device_by_id("serial:F2"), 3)
+        self.win.show_device("serial:F2", "health")
+        self.see("No alert was found in the information consulted")
+        self.see("was not read")
 
-    def test_it_recommends_an_independent_disk(self):
-        w = self.wizard()
-        w.go_next()
-        self.assertTrue(pump(lambda: w.dest_edit.text().startswith("/mnt/backup/")), w.dest_edit.text())
-        shot(self.win, "02-destination")
+    def test_smart_values_with_their_origin(self):
+        dev = drive("/dev/sdf", "Read", level="critical", label="Critical", serial="F3", basis="smart+log",
+                    smart={"verdict": "passed", "pending": 12, "hours": 900, "read_at": 1793419273})
+        fix("list", {"partial": False, "devices": [dev]})
+        self.win.refresh()
+        pump(lambda: self.win.device_by_id("serial:F3"), 3)
+        self.win.show_device("serial:F3", "health")
+        self.see("Read at")
+        self.assertIsNotNone(pump(lambda: find_row(self.win, "Sectors waiting to be replaced"), 2))
 
-    def test_review_shows_real_numbers(self):
-        w = self.wizard({"ok": True, "error": "", "source": "/a", "destination": "/b", "scanned": True, "total_files": 1240,
-                         "total_bytes": 126800000000, "avail": 500000000000, "warnings": []})
-        w.go_next()
-        pump(lambda: w.dest_edit.text())
-        w.go_next()
-        self.assertTrue(pump(lambda: w.next_btn.isEnabled()))
-        joined = " ".join(texts(w))
-        self.assertIn("1240 files", joined)
-        self.assertIn("126 GB", joined)
-        shot(self.win, "03-review")
-
-    def test_a_drive_at_risk_says_the_total_is_not_measured(self):
-        w = self.wizard({"ok": True, "error": "", "source": "/a", "destination": "/b", "scanned": False, "total_estimate": False,
-                         "avail": 5, "warnings": [{"key": "no-total", "text": "The total is not measured on a drive at risk."}]})
-        w.go_next(); pump(lambda: w.dest_edit.text()); w.go_next()
-        self.assertTrue(pump(lambda: w.next_btn.isEnabled()))
-        joined = " ".join(texts(w))
-        self.assertIn("not measured", joined)
-        self.assertIn("at risk", joined)
-
-    def test_a_refusal_blocks_the_start(self):
-        w = self.wizard({"ok": False, "error": "dest-inside-source", "error_text": "The destination is inside the source.", "warnings": []}, 20)
-        w.go_next(); pump(lambda: w.dest_edit.text()); w.go_next()
-        self.assertTrue(pump(lambda: any("inside the source" in t for t in texts(w))))
-        self.assertFalse(w.next_btn.isEnabled())
-        self.assertFalse([c for c in w.findChildren(QCheckBox) if c.isVisibleTo(w)], "that refusal has no override")
-
-    def test_an_override_is_explicit_and_is_passed_on(self):
-        w = self.wizard({"ok": False, "error": "same-disk", "error_text": "Same physical disk.", "warnings": []}, 20)
-        w.go_next(); pump(lambda: w.dest_edit.text()); w.go_next()
-        self.assertTrue(pump(lambda: bool([c for c in w.findChildren(QCheckBox) if c.isVisibleTo(w)])))
-        self.assertFalse(w.next_btn.isEnabled(), "nothing starts until the user decides")
-        check = next(c for c in w.findChildren(QCheckBox) if c.isVisibleTo(w))
-        fix("copy", {"ok": True, "error": "", "warnings": [], "scanned": True, "total_files": 1, "total_bytes": 1})
-        check.setChecked(True)
-        self.assertTrue(pump(lambda: w.next_btn.isEnabled()))
-        self.assertIn("--allow-same-disk", calls()[-1])
-
-    def test_going_back_keeps_the_choices(self):
-        w = self.wizard()
-        w.go_next(); pump(lambda: w.dest_edit.text())
-        w.dest_edit.setText("/mnt/escolhido")
-        w.conflict.setCurrentIndex(1)
-        w.go_back()
-        self.assertEqual(w.stack.currentIndex(), 0)
-        w.go_next()
-        self.assertEqual(w.dest_edit.text(), "/mnt/escolhido")
-        self.assertEqual(w.conflict.currentData(), "backup")
-
-    def test_choosing_items_passes_them_relative_to_the_source(self):
-        (WORK / "fotos").mkdir(exist_ok=True)
-        (WORK / "fotos" / "a b.jpg").write_text("x")
-        (WORK / "doc.txt").write_text("x")
-        w = self.wizard({"ok": True, "error": "", "warnings": [], "scanned": True, "total_files": 1, "total_bytes": 1})
-        w.pick_radio.setChecked(True)
-        self.assertFalse(w.next_btn.isEnabled(), "nothing marked yet")
-        model = w.model
-        root = model.index(str(WORK))
-        self.assertTrue(pump(lambda: model.rowCount(root) >= 2))
-        model.setData(model.index(str(WORK / "fotos")), Qt.Checked.value, Qt.CheckStateRole)
-        self.assertTrue(w.next_btn.isEnabled())
-        self.assertEqual(w.items(), ["fotos"])
-        # A folder marked covers what is inside it
-        self.assertEqual(Qt.CheckState(model.data(model.index(str(WORK / "fotos" / "a b.jpg")), Qt.CheckStateRole)), Qt.Checked)
-        self.assertEqual(Qt.CheckState(model.data(model.index(str(WORK / "doc.txt")), Qt.CheckStateRole)), Qt.Unchecked)
-        w.go_next(); pump(lambda: w.dest_edit.text()); w.go_next()
-        pump(lambda: w.next_btn.isEnabled())
-        last = [c for c in calls() if " copy " in c][-1]
-        self.assertIn("--item fotos", last)
-        shot(self.win, "04-review-items")
-
-    def test_marking_a_folder_absorbs_what_was_marked_inside(self):
-        (WORK / "fotos").mkdir(exist_ok=True)
-        (WORK / "fotos" / "a b.jpg").write_text("x")
-        w = self.wizard()
-        w.pick_radio.setChecked(True)
-        m = w.model
-        pump(lambda: m.rowCount(m.index(str(WORK))) >= 1)
-        m.setData(m.index(str(WORK / "fotos" / "a b.jpg")), Qt.Checked.value, Qt.CheckStateRole)
-        m.setData(m.index(str(WORK / "fotos")), Qt.Checked.value, Qt.CheckStateRole)
-        self.assertEqual(w.items(), ["fotos"])
-
-
-class JobPageTests(Base):
-    JOB = {"id": "20261030-140000-abcd", "kind": "copy", "state": "running", "state_label": "Copying", "reason": "", "reason_text": "",
-           "source": "/run/media/u/ARQUIVOS", "destination": "/mnt/Backup", "current": "Fotos/IMG_1.jpg", "verify": "basic", "verify_result": "",
-           "dir": str(WORK), "files_done": 1240, "files_total": 3800, "bytes_done": 54000000000, "bytes_total": 100000000000, "rate_now": 84200000,
-           "rate_avg": 80000000, "elapsed": 1540, "eta": 1313, "deferred": 0, "failed": 0, "differ": 0, "conflicts": 0, "read_errors": 0, "stuck": 0,
-           "created": 1, "finished": None, "total_estimate": False}
-
-    def show(self, **kw):
-        job = {**self.JOB, **kw}
-        fix("status", job)
-        fix("report", "== report ==\n")
-        self.win.open_job(job["id"])
-        pump(lambda: self.win.job_page.state == job["state"])
-        return self.win.job_page
-
-    def test_real_progress_with_a_total(self):
-        page = self.show()
-        self.assertEqual(page.bar.maximum(), 100)
-        self.assertEqual(page.bar.value(), 54)
-        joined = " ".join(texts(page))
-        for expected in ("1240 / 3800", "54.0 GB / 100 GB", "84.2 MB/s", "00:21:53", "Fotos/IMG_1.jpg"):
-            self.assertIn(expected, joined)
-        shot(self.win, "05-progress")
-
-    def test_without_a_total_there_is_no_percentage_and_no_eta(self):
-        page = self.show(bytes_total=0, files_total=0, eta=None)
-        self.assertEqual(page.bar.maximum(), 0, "a busy bar, not a made-up number")
-        joined = " ".join(texts(page))
-        self.assertNotIn("%", joined)
-        self.assertFalse(page.values["eta"][1].isVisibleTo(page))
-        shot(self.win, "06-progress-unknown")
-
-    def test_an_estimated_total_is_marked_as_such(self):
-        page = self.show(total_estimate=True)
-        self.assertIn("≈", page.bar.format())
-        self.assertIn("≈", page.values["copied"][1].text())
-
-    def test_a_stuck_disk_is_said(self):
-        page = self.show(stuck=40)
-        self.assertIn("Waiting for the disk", page.values["current"][1].text())
-
-    def test_buttons_follow_the_state(self):
-        page = self.show()
-        self.assertTrue(page.pause_btn.isVisibleTo(page))
-        self.assertTrue(page.cancel_btn.isVisibleTo(page))
-        self.assertFalse(page.resume_btn.isVisibleTo(page))
-        page = self.show(state="stopping", state_label="Stopping")
-        self.assertFalse(page.cancel_btn.isEnabled(), "cancelling twice means nothing")
-        page = self.show(state="paused", state_label="Paused")
-        self.assertTrue(page.resume_btn.isVisibleTo(page))
-        self.assertFalse(page.pause_btn.isVisibleTo(page))
-
-    def test_finished_with_files_left_never_looks_complete(self):
-        page = self.show(state="needs-attention", state_label="Finished, needs your attention", reason="files-left",
-                         reason_text="Some files were not copied.", deferred=3, failed=2, bytes_total=0)
-        self.assertTrue(pump(lambda: page.report.isVisibleTo(page)))
-        self.assertNotEqual(page.bar.value(), 100)
-        self.assertTrue(page.retry_btn.isVisibleTo(page))
-        self.assertEqual(page.values["aside"][1].text(), "3")
-        self.assertEqual(page.values["failed"][1].text(), "2")
-        shot(self.win, "07-needs-attention")
-
-    def test_resume_and_retry_call_the_engine(self):
-        page = self.show(state="needs-attention", state_label="x", deferred=1)
-        page.retry_btn.click()
-        self.assertTrue(pump(lambda: any("resume" in c and "--retry-deferred" in c for c in calls())))
-
-    def test_an_interrupted_job_can_be_resumed(self):
-        page = self.show(state="interrupted", state_label="Interrupted (it can be resumed)")
-        self.assertTrue(page.resume_btn.isVisibleTo(page))
-
-    def test_the_poll_stops_when_the_job_ends(self):
-        page = self.show(state="completed", state_label="Completed and checked")
-        self.assertTrue(pump(lambda: not page.timer.isActive()))
-
-
-class JobsPageTests(Base):
-    def test_history(self):
-        fix("jobs", {"jobs": [{**JobPageTests.JOB, "state": "completed", "state_label": "Completed and checked"}]})
-        self.win.show_jobs()
-        self.assertTrue(pump(lambda: self.win.jobs_page.list.count() == 1))
-        shot(self.win, "08-history")
-
-    def test_an_empty_history_says_so(self):
-        self.win.show_jobs()
+    def test_serial_hidden_by_default(self):
+        self.open()
         pump(timeout=0.3)
-        self.assertTrue(self.win.jobs_page.empty.isVisibleTo(self.win.jobs_page))
+        self.assertNotIn("S1DFL8G9", text(self.win))
 
+    def test_smart_only_on_request(self):
+        forget_calls()
+        self.open()
+        pump(timeout=0.4)
+        self.assertFalse(any("--smart" in c for c in calls()))
+        click(self.win, "Read SMART…")
+        self.assertTrue(pump(lambda: any("--smart" in c for c in calls()), 3))
 
-class AccessibilityTests(Base):
-    def test_every_button_has_a_name_and_takes_focus(self):
-        page = self.win.device_page
-        pump(lambda: page.diag is not None)
-        for btn in page.findChildren(QPushButton):
-            self.assertTrue(btn.text().replace("&", "").strip(), "a button without text")
-            self.assertNotEqual(btn.focusPolicy(), Qt.NoFocus)
+    def test_missing_smartctl_is_explained(self):
+        fix("diagnose", {"device": seagate(), "advice": [], "kernel": [], "volumes": [], "tools": {"smartctl": False}})
+        self.open()
+        self.see("smartctl is not installed")
 
-    def test_lists_are_named_for_screen_readers(self):
-        self.assertTrue(self.win.devices.accessibleName())
-        self.assertTrue(self.win.wizard.tree.accessibleName())
-        self.assertTrue(self.win.job_page.bar.accessibleName())
-
-    def test_long_text_does_not_widen_the_window(self):
-        long_name = "M" * 300
-        self.win.device_page.show_device(drive("/dev/sdz", long_name, volumes=[vol("/dev/sdz1", label=long_name)]))
+    def test_maintenance_is_far_from_the_first_level(self):
+        self.win.show_device("serial:S1DFL8G9")
         pump(timeout=0.2)
-        self.assertLess(self.win.width(), 1400)
+        self.assertNotIn("Erase", text(self.win).replace("Erase data permanently", ""))
+        self.assertIsNone(find_button(self.win, "Erase the whole drive"))
 
 
-class SafetyTests(unittest.TestCase):
-    def test_it_contains_no_operation_of_its_own(self):
-        source = (REPO / "big-mount/usr/lib/big-mount/drive-gui.py").read_text()
-        for word in ("subprocess", "os.system", "fsck", "mkfs", "wipefs", "shell=True", "eval(", "exec(", "sudo"):
-            self.assertNotIn(word, source.replace("box.exec()", "").replace("dialog.exec()", "").replace("app.exec()", ""), word)
+class Volumes(Base):
+    def test_mount_is_read_only_and_names_the_disk_it_saw(self):
+        self.win.show_device("serial:S1DFL8G9")
+        pump(timeout=0.2)
+        click(self.win, "Mount read-only")
+        dialog = self.dialog()
+        self.assertIsNotNone(dialog)
+        forget_calls()
+        fix("mount", {"ok": True, "mountpoint": "/run/media/x/A", "read_only": True})
+        dialog.emit("response", "mount")
+        self.assertTrue(pump(lambda: any(c.startswith("--drive mount") for c in calls()), 3))
+        call = next(c for c in calls() if c.startswith("--drive mount"))
+        self.assertIn("--read-only", call)
+        self.assertIn("--expect-diskseq 7", call)
+        self.assertIn("--protect", call, "at risk: writing blocked at the device, on by default")
 
-    def test_it_refuses_to_run_as_root(self):
-        source = (REPO / "big-mount/usr/lib/big-mount/drive-gui.py").read_text()
-        self.assertIn("os.geteuid() == 0", source)
+    def test_mount_on_a_healthy_drive_does_not_ask_for_the_password_by_default(self):
+        dev = drive("/dev/sdf", "Calm", serial="F2", volumes=[vol("/dev/sdf1", label="V")])
+        fix("list", {"partial": False, "devices": [dev]})
+        self.win.refresh()
+        pump(lambda: self.win.device_by_id("serial:F2"), 3)
+        self.win.show_device("serial:F2")
+        pump(timeout=0.2)
+        click(self.win, "Mount read-only")
+        dialog = self.dialog()
+        forget_calls()
+        fix("mount", {"ok": True, "mountpoint": "/run/media/x/A", "read_only": True})
+        dialog.emit("response", "mount")
+        self.assertTrue(pump(lambda: any(c.startswith("--drive mount") for c in calls()), 3))
+        self.assertNotIn("--protect", next(c for c in calls() if c.startswith("--drive mount")))
+
+    def test_failed_mount_is_explained_in_plain_words(self):
+        self.win.show_device("serial:S1DFL8G9")
+        pump(timeout=0.2)
+        click(self.win, "Mount read-only")
+        fix("mount", {"ok": False, "why": "io-error", "text": "The drive could not read the start of this filesystem.", "detail": "tech"}, rc=1)
+        self.dialog().emit("response", "mount")
+        self.assertTrue(pump(lambda: self.win.get_visible_dialog() and "could not read" in self.win.get_visible_dialog().get_body(), 3))
+
+    def test_busy_unmount_says_who(self):
+        dev = backup(DEST)
+        fix("list", {"partial": False, "devices": [dev]})
+        self.win.refresh()
+        pump(lambda: self.win.device_by_id("serial:SD1"), 3)
+        self.win.show_device("serial:SD1")
+        pump(timeout=0.2)
+        fix("unmount", {"ok": False, "busy_summary": "Dolphin is showing files.", "busy_advice": "Close it.", "reason": ""}, rc=3)
+        click(self.win, "Unmount")
+        self.assertTrue(pump(lambda: self.win.get_visible_dialog() and "Dolphin" in self.win.get_visible_dialog().get_body(), 3))
+
+    def test_locked_volume_offers_unlock_and_keeps_the_passphrase_out_of_arguments(self):
+        dev = drive("/dev/sdf", "Crypt", serial="F9", volumes=[vol("/dev/sdf1", fstype="crypto_LUKS", state="locked", state_label="Encrypted and locked")])
+        fix("list", {"partial": False, "devices": [dev]})
+        self.win.refresh()
+        pump(lambda: self.win.device_by_id("serial:F9"), 3)
+        self.win.show_device("serial:F9")
+        pump(timeout=0.2)
+        forget_calls()
+        click(self.win, "Unlock…")
+        dialog = self.dialog()
+        self.assertIsNotNone(dialog)
+        entry = dialog.get_extra_child()
+        self.assertIsInstance(entry, Gtk.PasswordEntry)
+        entry.set_text("segredo")
+        dialog.emit("response", "cancel")
+        pump(timeout=0.2)
+        self.assertFalse(any("segredo" in c for c in calls()))
+        self.assertEqual(entry.get_text(), "")
+
+
+class Wizard(Base):
+    def test_starts_on_the_only_volume_of_the_drive(self):
+        wiz = self.wizard_to("source")
+        self.assertEqual(wiz.plan.volume.device, "/dev/sdb1")
+        self.assertTrue(wiz.next_btn.get_sensitive())
+
+    def test_engine_decides_the_methods(self):
+        forget_calls()
+        wiz = self.wizard_to("how")
+        self.assertTrue(any("methods /dev/sdb1" in c for c in calls()))
+        self.assertEqual(wiz.plan.method, "copy")
+        self.see("Recommended")
+        self.see("Copy what matters first.")
+
+    def test_unavailable_method_says_why_and_cannot_go_on(self):
+        rows = copy.deepcopy(METHOD_ROWS)
+        rows[2].update(available=False, why="no-ddrescue", why_text="GNU ddrescue is not installed (package ddrescue).")
+        fix("methods", {**METHODS, "methods": rows})
+        wiz = self.wizard_to("how", method="deep")
+        wiz._enter("how")
+        self.see("GNU ddrescue is not installed")
+        self.assertFalse(wiz.next_btn.get_sensitive())
+
+    def test_nothing_recommended_available_falls_to_what_is(self):
+        rows = copy.deepcopy(METHOD_ROWS)
+        rows[0].update(available=False, why="no-rsync", why_text="rsync is not installed")
+        fix("methods", {**METHODS, "methods": rows})
+        wiz = self.wizard_to("how")
+        self.assertEqual(wiz.plan.method, "quick")
+
+    def test_going_back_loses_nothing(self):
+        wiz = self.wizard_to("what")
+        wiz.plan.categories = {"photos"}
+        wiz.go_next()
+        wiz.plan.method = "quick"
+        wiz.go_back()
+        self.assertEqual(wiz.step, "what")
+        self.assertEqual(wiz.plan.categories, {"photos"})
+        self.assertTrue(wiz._choice["photos"].get_active())
+        wiz.go_next()
+        self.assertEqual(wiz.plan.method, "quick")
+
+    def test_all_excludes_the_types(self):
+        wiz = self.wizard_to("what")
+        wiz._choice["photos"].set_active(True)
+        self.assertEqual(wiz.plan.categories, {"photos"})
+        self.assertFalse(wiz._choice["all"].get_active())
+        wiz._choice["all"].set_active(True)
+        self.assertEqual(wiz.plan.categories, {"all"})
+        self.assertFalse(wiz._choice["photos"].get_active())
+        wiz._choice["all"].set_active(False)
+        self.assertTrue(wiz._choice["all"].get_active(), "there is always a choice")
+
+    def test_what_a_type_cannot_find_is_said_before(self):
+        wiz = self.wizard_to("what")
+        wiz._choice["photos"].set_active(True)
+        self.see("HEIC only when searching all types.")
+
+    def test_same_disk_has_no_button_at_all(self):
+        wiz = self.wizard_to("where")
+        row = find_row(self.win, "SAME")
+        self.assertIsNotNone(row)
+        self.assertFalse(row.get_sensitive())
+        self.see("same physical disk as the source")
+        self.assertFalse(any(isinstance(x, Gtk.CheckButton) and x.get_sensitive() and x.get_mapped() and x.is_ancestor(row) for x in widgets(row)))
+        self.assertEqual(wiz.plan.dest_base, str(DEST))
+
+    def test_refusal_of_a_folder_blocks_next_and_shows_the_reason(self):
+        wiz = self.wizard_to("where")
+        fix("copy-dry", {"ok": False, "error": "same-disk", "error_text": "The destination is on the same physical disk as the source.", "warnings": []}, rc=20)
+        wiz._set_dest("/run/media/x/SAME/pasta", True)
+        self.see("same physical disk")
+        self.assertFalse(wiz.next_btn.get_sensitive())
+        self.assertIsNone(find_button(self.win, "Use the same physical disk anyway"))
+
+    def test_no_override_is_ever_passed(self):
+        forget_calls()
+        wiz = self.wizard_to("confirm")
+        self.assertTrue(wiz.next_btn.get_sensitive())
+        for c in calls():
+            self.assertNotIn("--allow-same-disk", c)
+            self.assertNotIn("--allow-rw-source", c)
+            self.assertNotIn("--allow-risky-destination", c)
+
+    def test_rw_source_on_a_risky_drive_offers_the_safe_way(self):
+        wiz = self.wizard_to("where")
+        fix("copy-dry", {"ok": False, "error": "rw-source", "error_text": "This drive is at risk and is mounted with writing enabled.", "warnings": []}, rc=20)
+        wiz._set_dest(str(DEST), False)
+        self.assertTrue(pump(lambda: find_button(self.win, "Unmount and mount read-only") is not None, 3))
+        self.assertFalse(wiz.next_btn.get_sensitive())
+
+    def test_summary_shows_engine_numbers_and_warnings(self):
+        self.wizard_to("confirm")
+        self.see("A warning from the engine")
+        self.see("Nothing is written to the source")
+        self.see("Free at the destination", timeout=1)
+
+    def test_start_copy_only_with_consent_and_exact_arguments(self):
+        forget_calls()
+        wiz = self.wizard_to("confirm")
+        self.assertFalse(any(c.startswith("--drive copy") and "--dry-run" not in c for c in calls()), "nothing before Start")
+        fix("copy", {"id": "20261031-120000-abcd"})
+        fix("status", job_json())
+        wiz.go_next()
+        self.assertTrue(pump(lambda: any(c.startswith("--drive copy") and "--no-wait" in c for c in calls()), 3))
+        call = next(c for c in calls() if "--no-wait" in c and c.startswith("--drive copy"))
+        self.assertIn(f"--source {SOURCE}", call)
+        self.assertIn(f"--destination {DEST}/Recovered files", call)
+        self.assertTrue(pump(lambda: type(self.win.nav.get_visible_page()).__name__ == "JobPage", 3))
+
+    def test_refused_start_is_told(self):
+        wiz = self.wizard_to("confirm")
+        fix("copy", {"ok": False, "error": "no-space", "error_text": "There is not enough free space at the destination.", "warnings": []}, rc=21)
+        wiz.go_next()
+        self.assertTrue(pump(lambda: self.win.get_visible_dialog() and "not enough free" in self.win.get_visible_dialog().get_body(), 3))
+        self.assertEqual(wiz.step, "confirm")
+
+    def test_quick_analysis_lists_first_and_keeps_the_destination(self):
+        forget_calls()
+        wiz = self.wizard_to("what")
+        wiz._choice["photos"].set_active(True)
+        wiz.go_next()
+        wiz.plan.method = "quick"
+        self.mount_in_fixture(wiz)
+        wiz.go_next()
+        self.assertTrue(pump(lambda: wiz.preflight is not None, 3))
+        wiz.go_next()
+        self.assertTrue(pump(lambda: wiz.step == "confirm" and wiz.preflight is not None, 3))
+        fix("scan", {"id": "20261031-120000-abcd"})
+        fix("status", job_json(kind="scan", state="analyzing", state_label="Listing the files", bytes_total=0, pausable=False))
+        wiz.go_next()
+        self.assertTrue(pump(lambda: any(c.startswith("--drive scan") for c in calls()), 3))
+        call = next(c for c in calls() if c.startswith("--drive scan"))
+        self.assertIn("--categories photos", call)
+        self.assertIn(f"--copy-to {DEST}", call)
+
+    def test_deep_on_a_physical_disk_is_an_image_first(self):
+        fix("image-dry", {"ok": True, "error": "", "error_text": "", "avail": 2000 * GB, "total_bytes": 1000 * GB, "warnings": []})
+        fix("image", {"id": "20261031-120000-abcd"})
+        fix("status", job_json(kind="image", state="running", state_label="Making the disk image", then_carve="x"))
+        forget_calls()
+        wiz = self.wizard_to("what")
+        wiz._choice["photos"].set_active(True)
+        wiz.go_next()
+        wiz.plan.method = "deep"
+        wiz.go_next()
+        self.assertTrue(pump(lambda: wiz.step == "where" and wiz.preflight is not None, 3))
+        wiz.go_next()
+        self.assertTrue(pump(lambda: wiz.step == "confirm" and wiz.preflight is not None, 3))
+        self.see("the search needs your confirmation")
+        self.assertFalse(any(c.startswith("--drive image") and "--no-wait" in c for c in calls()))
+        wiz.go_next()
+        self.assertTrue(pump(lambda: any("--no-wait" in c and c.startswith("--drive image") for c in calls()), 3))
+        call = next(c for c in calls() if "--no-wait" in c and c.startswith("--drive image"))
+        self.assertIn("--expect-diskseq 7", call)
+        self.assertIn("--then-carve", call)
+        self.assertIn("--categories photos", call)
+
+    def test_deep_on_an_image_searches_directly(self):
+        image = WORK / "disk.img"
+        image.write_bytes(b"\0" * 16)
+        fix("methods", {**METHODS, "source_kind": "image", "level": "na", "recommended": "deep", "deep_needs_image": False, "can_read": True})
+        fix("carve-dry", {"ok": True, "error": "", "error_text": "", "avail": 500 * GB, "total_bytes": 0, "warnings": [{"key": "carve-names", "text": "Names are lost."}]})
+        self.win.open_wizard(image=str(image))
+        wiz = self.win.wizard
+        wiz.go_next()
+        self.assertTrue(pump(lambda: wiz.step == "what", 3))
+        wiz.go_next()
+        wiz.go_next()
+        self.assertTrue(pump(lambda: wiz.step == "where" and wiz.preflight is not None, 4))
+        self.assertTrue(wiz.next_btn.get_sensitive())
+        wiz.go_next()
+        self.assertTrue(pump(lambda: wiz.step == "confirm" and wiz.preflight is not None, 4))
+        self.see("Names are lost.")
+        self.see("finding nothing is possible")
+
+    def test_choose_files_marks_real_paths(self):
+        wiz = self.wizard_to("how")
+        wiz.plan.method = "copy"
+        wiz.plan.scope = "choose"
+        self.mount_in_fixture(wiz)
+        wiz.go_next()
+        self.assertTrue(pump(lambda: wiz.step == "pick", 3))
+        self.assertFalse(wiz.next_btn.get_sensitive(), "nothing marked yet")
+        wiz.picker.marked.add(str(SOURCE / "pasta"))
+        wiz._sync_nav()
+        self.assertEqual(wiz.picker.items(), ["pasta"])
+        self.assertTrue(wiz.next_btn.get_sensitive())
+        forget_calls()
+        wiz.go_next()
+        self.assertTrue(pump(lambda: wiz.step == "where" and wiz.preflight is not None, 3))
+        self.assertTrue(any("--items-from" in c for c in calls()))
+
+    def test_partitions_only_reads(self):
+        wiz = self.wizard_to("how", method="partitions")
+        fix("partitions", {"ok": True, "mode": "list", "found": [{"type": "Linux", "label": "LOST", "start": "0/32/33", "sectors": 2048, "size": 1048576}]})
+        wiz.go_next()
+        page = self.win.nav.get_visible_page()
+        self.assertEqual(type(page).__name__, "PartitionsPage")
+        forget_calls()
+        click(page, "Read the partition table")
+        self.see("LOST", page)
+        self.see("does not rewrite partition tables", page)
+        self.assertEqual(next(c for c in calls() if "partitions" in c), "--drive partitions /dev/sdb --json")
+
+    def test_partitions_search_that_finds_nothing_promises_nothing(self):
+        wiz = self.wizard_to("how", method="partitions")
+        fix("partitions", {"ok": True, "mode": "search", "found": []})
+        wiz.go_next()
+        page = self.win.nav.get_visible_page()
+        click(page, "Analyze the whole disk")
+        self.see("does not prove there is no data", page)
+
+    def test_no_destination_available(self):
+        fix("destinations", {"destinations": []})
+        self.wizard_to("how")
+        wiz = self.win.wizard
+        self.mount_in_fixture(wiz)
+        wiz.go_next()
+        self.see("No other disk is mounted")
+        self.assertFalse(wiz.next_btn.get_sensitive())
+
+    def test_source_unmounted_meanwhile_goes_back_and_says_so(self):
+        wiz = self.wizard_to("where")
+        fix("list", {"partial": False, "devices": [system_disk(), seagate(), backup(DEST)]})
+        self.win.refresh()
+        self.assertTrue(pump(lambda: wiz.step == "how", 3))
+
+    def test_trim_is_told_before(self):
+        fix("methods", {**METHODS, "trim": True, "notes": [{"key": "trim", "text": "This SSD erases deleted blocks by itself (TRIM)."}]})
+        self.wizard_to("how")
+        self.see("TRIM")
+
+
+class Jobs(Base):
+    def open(self, **kw):
+        fix("status", job_json(**kw))
+        self.win.open_job("20261031-120000-abcd")
+        pump(lambda: self.win.nav.get_visible_page().job is not None, 3)
+        return self.win.nav.get_visible_page()
+
+    def test_percentage_only_from_real_numbers(self):
+        page = self.open(bytes_done=500, bytes_total=1000)
+        self.assertEqual(page.percent.get_text(), "50%")
+        self.assertAlmostEqual(page.bar.get_fraction(), 0.5)
+
+    def test_no_total_no_percentage(self):
+        page = self.open(bytes_total=0, bytes_done=500)
+        self.assertEqual(page.percent.get_text(), "")
+        self.see("to avoid extra reads")
+
+    def test_estimate_is_marked(self):
+        page = self.open(total_estimate=True)
+        self.assertTrue(page.percent.get_text().startswith("≈"))
+
+    def test_a_search_never_says_recovered(self):
+        page = self.open(kind="carve", result_kind="carved-candidates", state_label="Searching by content", pass_=1, pausable=False)
+        self.see("Candidates found", page)
+        all_text = text(page).lower()
+        self.assertNotIn("recovered", all_text)
+        self.assertNotIn("deleted files", all_text)
+
+    def test_a_search_cannot_be_paused(self):
+        page = self.open(kind="carve", pausable=False)
+        self.assertFalse(page.pause_btn.get_visible())
+        self.assertTrue(page.cancel_btn.get_visible())
+
+    def test_copy_can_pause_and_resume(self):
+        page = self.open()
+        self.assertTrue(page.pause_btn.get_visible())
+        forget_calls()
+        page.pause_btn.emit("clicked")
+        self.assertTrue(pump(lambda: any("pause" in c for c in calls()), 3))
+        fix("status", job_json(state="paused", state_label="Paused"))
+        self.assertTrue(pump(lambda: page.job.state == "paused", 4))
+        self.assertTrue(page.resume_btn.get_visible())
+        self.assertFalse(page.pause_btn.get_visible())
+
+    def test_cancel_asks_and_the_safe_answer_is_default(self):
+        page = self.open()
+        page.cancel_btn.emit("clicked")
+        dialog = self.dialog()
+        self.assertEqual(dialog.get_default_response(), "keep")
+        self.assertEqual(dialog.get_close_response(), "keep")
+
+    def test_stuck_disk_is_said_without_calling_it_a_crash(self):
+        self.open(stuck=30)
+        self.see("Waiting for the disk to answer")
+
+    def test_finished_with_problems_is_not_success(self):
+        fix_text("report", "the report")
+        page = self.open(state="needs-attention", state_label="Finished, needs your attention", reason="files-left", reason_text="Some files were not copied.", failed=3, deferred=2)
+        self.see("Some files were not copied.", page)
+        self.assertTrue(page.retry_btn.get_visible())
+        self.assertTrue(page.resume_btn.get_visible())
+        self.assertEqual(page.stat["failed"].value.get_text(), "3")
+
+    def test_scan_results_cta(self):
+        fix_text("report", "the report")
+        page = self.open(kind="scan", state="completed", state_label="List of files complete", files_done=5, bytes_total=0, pausable=False)
+        self.assertTrue(page.results_btn.get_visible())
+        self.assertFalse(page.resume_btn.get_visible())
+
+    def test_image_with_a_search_next_needs_consent(self):
+        fix_text("report", "the report")
+        forget_calls()
+        page = self.open(kind="image", state="completed", state_label="Disk image complete", destination=str(DEST / "a.img"), then_carve=str(DEST / "found"), categories="photos")
+        self.assertTrue(page.next_btn.get_visible())
+        self.assertFalse(any(c.startswith("--drive carve") for c in calls()), "never by itself")
+        fix("carve", {"id": "20261031-120000-beef"})
+        page.next_btn.emit("clicked")
+        self.assertTrue(pump(lambda: any(c.startswith("--drive carve") for c in calls()), 3))
+        self.assertIn("--categories photos", next(c for c in calls() if c.startswith("--drive carve")))
+
+    def test_image_with_unread_areas_says_how_much(self):
+        fix_text("report", "r")
+        self.open(kind="image", state="needs-attention", state_label="Finished, needs your attention", reason_text="Some areas could not be read.", bad_bytes=4096)
+        self.see("could not be read.")
+
+    def test_job_gone(self):
+        fix("status", "", rc=1)
+        (FIX / "status.json").unlink()
+        self.win.open_job("20261031-120000-dead")
+        page = self.win.nav.get_visible_page()
+        pump(timeout=0.5)
+        self.assertIsNone(page.job)
+        self.assertFalse(page._poll)
+
+    def test_polling_stops_when_finished_and_when_left(self):
+        fix_text("report", "r")
+        page = self.open(state="completed", state_label="Completed and checked")
+        self.assertTrue(pump(lambda: page._poll == 0, 3))
+
+    def test_jobs_list(self):
+        fix("jobs", {"jobs": [job_json(), job_json(id="20261031-120000-beef", state="paused", state_label="Paused", kind="image")]})
+        self.win.refresh_jobs()
+        self.win.show_jobs()
+        self.see("Copying")
+        self.see("Paused")
+        self.see("Disk image")
+
+    def test_closing_with_work_running_only_warns(self):
+        fix("jobs", {"jobs": [job_json()]})
+        self.win.refresh_jobs()
+        pump(lambda: self.win.jobs, 3)
+        forget_calls()
+        self.assertTrue(self.win._close_request(self.win), "does not close yet")
+        dialog = self.dialog()
+        self.assertIn("continues in the background", dialog.get_body())
+        self.assertFalse(any("cancel" in c or "pause" in c for c in calls()), "closing never stops a job")
+        dialog.force_close()
+        self.win.jobs = []
+
+
+def write_index(records):
+    path = WORK / "index-test"
+    path.write_bytes(b"\0".join(records) + (b"\0" if records else b""))
+    return path
+
+
+class ResultIndex(unittest.TestCase):
+    def test_reads_every_field_also_with_hostile_names(self):
+        names = [b"a.jpg", "acentuação.pdf".encode(), b"com\ttab.png", b"-comeca.txt", b"nome\nquebra.mp3", b"\xff\xfeinvalido.jpg", b"pasta/ com espacos /x.zip"]
+        path = write_index([b"%d\t%d\tphotos\t%s" % (i + 1, 1000 + i, n) for i, n in enumerate(names)])
+        ix = Index(str(path))
+        ix.load()
+        self.assertEqual(len(ix), len(names))
+        for i, n in enumerate(names):
+            self.assertEqual(ix.raw(i), n)
+            self.assertEqual(ix.sizes[i], i + 1)
+        self.assertIn("com\ttab.png", ix.text(2))
+
+    def test_empty_file(self):
+        ix = Index(str(write_index([])))
+        ix.load()
+        self.assertEqual(len(ix), 0)
+
+    def test_broken_record_is_skipped(self):
+        ix = Index(str(write_index([b"garbage", b"1\t2\tphotos\tok.jpg", b"x\ty\tphotos\tbad.jpg"])))
+        ix.load()
+        self.assertEqual(len(ix), 1)
+
+    def test_filters_and_order(self):
+        ix = Index(str(write_index([b"10\t5\tphotos\tb.jpg", b"30\t9\tvideos\ta.mp4", b"20\t7\tphotos\tFOTO.png"])))
+        ix.load()
+        self.assertEqual(list(ix.order({"photos"}, "", "folder")), [0, 2])
+        self.assertEqual(list(ix.order(set(), "foto", "folder")), [2])
+        self.assertEqual(list(ix.order(set(), "", "size")), [1, 2, 0])
+        self.assertEqual(list(ix.order(set(), "", "name")), [1, 0, 2])
+
+    def test_a_million_records_stay_small(self):
+        import resource
+        records = [b"%d\t0\tphotos\trecup_dir.1/f%07d.jpg" % (i, i) for i in range(200000)]
+        ix = Index(str(write_index(records)))
+        del records
+        t0 = time.time()
+        ix.load()
+        took = time.time() - t0
+        self.assertEqual(len(ix), 200000)
+        self.assertLess(took, 8)
+        model = ResultsModel()
+        model.show(ix, ix.order(set(), "", "folder"))
+        self.assertEqual(model.get_n_items(), 200000)
+        self.assertEqual(model.get_item(199999).path, "recup_dir.1/f0199999.jpg")
+        self.assertIsNone(model.get_item(200000))
+        self.assertGreater(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss, 0)
+
+
+class Results(Base):
+    def open(self, kind="carved", dates=False, level=""):
+        root = WORK / "results-root"
+        (root / "recup_dir.1").mkdir(parents=True, exist_ok=True)
+        records = [b"100\t0\tphotos\trecup_dir.1/f1.png", b"200\t0\tdocuments\trecup_dir.1/f2.pdf", b"300\t0\taudio\trecup_dir.1/f3.mp3", b"400\t0\tphotos\tnome\nquebra.jpg"]
+        index = write_index(records)
+        result_kind = "carved-candidates" if kind == "carved" else "existing-files"
+        fix("status", job_json(id="20261031-120000-beef", kind="carve" if kind == "carved" else "scan", state="completed", level=level, copy_to=str(DEST) if kind != "carved" else ""))
+        fix("results", {"id": "20261031-120000-beef", "kind": "carve", "result_kind": result_kind, "root": str(root), "index": str(index), "state": "completed", "names_kept": kind != "carved", "dates_kept": dates, "ready": True, "files": 4,
+                        "categories": [{"id": "photos", "label": "Photos", "files": 2, "bytes": 500}, {"id": "documents", "label": "Documents", "files": 1, "bytes": 200}, {"id": "audio", "label": "Audio", "files": 1, "bytes": 300}]})
+        self.win.open_results("20261031-120000-beef")
+        page = self.win.nav.get_visible_page()
+        self.assertTrue(pump(lambda: page.model.get_n_items() == 4, 4))
+        return page
+
+    def test_candidates_are_called_candidates(self):
+        page = self.open()
+        self.see("Candidates found by content", page)
+        self.assertIsNotNone(find_button(page, "Copy selected to another folder"))
+        self.assertFalse(page.date_col.get_visible(), "no dates for what has none")
+
+    def test_existing_files_are_not_called_deleted(self):
+        page = self.open(kind="scan", dates=True)
+        self.see("exist on the volume", page)
+        self.see("Deleted files are not on this list", page)
+        self.assertTrue(page.date_col.get_visible())
+        self.assertIsNotNone(find_button(page, "Recover selected"))
+
+    def test_filter_by_type(self):
+        page = self.open()
+        page.chip_buttons["photos"].set_active(True)
+        self.assertTrue(pump(lambda: page.model.get_n_items() == 2, 3))
+        self.assertFalse(page.all_chip.get_active())
+        page.all_chip.set_active(True)
+        self.assertTrue(pump(lambda: page.model.get_n_items() == 4, 3))
+        self.assertFalse(page.chip_buttons["photos"].get_active())
+
+    def test_search(self):
+        page = self.open()
+        page.search.set_text("f2")
+        self.assertTrue(pump(lambda: page.model.get_n_items() == 1, 3))
+        page.search.set_text("nothing like this")
+        self.assertTrue(pump(lambda: page.stack.get_visible_child_name() == "nothing", 3))
+
+    def test_selection_survives_filtering(self):
+        page = self.open()
+        page._select_all()
+        self.assertEqual(len(page.selected), 4)
+        self.assertEqual(page.selected_bytes, 1000)
+        page.chip_buttons["audio"].set_active(True)
+        pump(lambda: page.model.get_n_items() == 1, 3)
+        self.assertEqual(len(page.selected), 4)
+        page._select_none()
+        self.assertEqual(page.selected_bytes, 0)
+        self.assertFalse(page.save_btn.get_sensitive())
+
+    def test_recover_selected_uses_the_engine_and_the_chosen_destination(self):
+        page = self.open(kind="scan", dates=True)
+        page._select_all()
+        forget_calls()
+        fix("copy", {"id": "20261031-120000-c0de"})
+        fix("status", job_json())
+        page.save_btn.emit("clicked")
+        self.assertTrue(pump(lambda: any("--no-wait" in c for c in calls()), 4))
+        call = next(c for c in calls() if "--no-wait" in c)
+        self.assertIn(f"--destination {DEST}", call)
+        self.assertIn("--items-from", call)
+        path = call.split("--items-from ", 1)[1].split(" ")[0]
+        names = pathlib.Path(path).read_bytes().split(b"\0")
+        self.assertIn(b"recup_dir.1/f2.pdf", names)
+        self.assertFalse([n for n in names if b"\n" in n], "a line break in a name cannot be handled safely")
+        self.assertEqual(os.stat(path).st_mode & 0o077, 0, "private")
+
+    def test_carved_copy_goes_through_results_of(self):
+        page = self.open()
+        page._select_all()
+        forget_calls()
+        fix("copy", {"id": "20261031-120000-c0de"})
+        fix("status", job_json())
+        page._copy_to([b"recup_dir.1/f1.png"], str(DEST))
+        self.assertTrue(pump(lambda: any("--no-wait" in c for c in calls()), 4))
+        self.assertIn("--results-of 20261031-120000-beef", next(c for c in calls() if "--no-wait" in c))
+
+    def test_refused_destination_offers_another(self):
+        page = self.open(kind="scan")
+        page._select_all()
+        fix("copy-dry", {"ok": False, "error": "same-disk", "error_text": "The destination is on the same physical disk as the source."}, rc=20)
+        page._copy_to([b"x"], "/same")
+        self.assertTrue(pump(lambda: self.win.get_visible_dialog() and "same physical" in self.win.get_visible_dialog().get_body(), 3))
+
+    def test_no_preview_for_a_drive_at_risk(self):
+        from gui.pages.results import FileItem
+        page = self.open(kind="scan", level="critical")
+        self.assertFalse(page._can_preview(FileItem(0, "a.jpg", 10, 0, "photos")))
+        self.win.nav.pop()
+        pump(timeout=0.05)
+        page = self.open()
+        self.assertTrue(page._can_preview(FileItem(0, "a.jpg", 10, 0, "photos")))
+        self.assertFalse(page._can_preview(FileItem(0, "a.exe", 10, 0, "other")))
+        self.assertFalse(page._can_preview(FileItem(0, "huge.jpg", 10 ** 10, 0, "photos")))
+
+    def test_not_ready(self):
+        fix("status", job_json(kind="scan", state="running"))
+        fix("results", {"id": "x", "result_kind": "existing-files", "ready": False, "categories": []})
+        self.win.open_results("20261031-120000-beef")
+        self.see("The list is not ready yet.", timeout=3)
+
+
+ERASE_OK = {"device": "/dev/sdb", "name": "sdb (Samsung SSD 860, 500 GB)", "confirm_name": "sdb", "serial": "X", "why": "", "why_text": "", "detail": "", "table": "gpt", "token": "", "eligible": True, "frozen": False,
+            "diskseq": 7, "erase_minutes": 4, "size": 500 * GB, "partitions": [{"device": "/dev/sdb1", "label": "DATA", "fstype": "ext4", "mountpoint": "", "size": 500 * GB}]}
+TICKET = "0" * 32
+
+
+class Erase(Base):
+    def open(self, check=ERASE_OK):
+        fix("erase-check", check)
+        fix("erase-prepare", {**check, "token": TICKET})
+        self.win.open_maintenance(self.win.device_by_id("serial:S1DFL8G9"))
+        page = self.win.nav.get_visible_page()
+        self.assertTrue(pump(lambda: page.check is not None, 3))
+        return page
+
+    def to_typing(self, page):
+        click(page, "Continue…")
+        self.dialog().emit("response", "continue")
+        self.assertTrue(pump(lambda: page.token is not None, 3))
+
+    def entry(self, page):
+        return next(x for x in widgets(page) if isinstance(x, Gtk.Entry) or isinstance(x, Gtk.Text) and False)
+
+    def test_says_what_it_is_and_what_it_is_not(self):
+        page = self.open()
+        self.see("IT ERASES ALL THE FILES ON THE DRIVE FOR GOOD. THIS IS NOT RECOVERY.", page)
+        self.see("DATA", page)
+        self.see("about 4 min", page)
+
+    def test_nothing_runs_by_opening(self):
+        forget_calls()
+        self.open()
+        pump(timeout=0.2)
+        self.assertFalse(any("__erase-run" in c or "erase-prepare" in c for c in calls()))
+
+    def refusal(self, why, text_):
+        forget_calls()
+        page = self.open({**ERASE_OK, "eligible": False, "why": why, "why_text": text_})
+        self.see(text_, page)
+        self.assertIsNone(find_button(page, "Continue…"))
+        self.assertFalse(any("erase-prepare" in c or "__erase-run" in c for c in calls()))
+
+    def test_refused_system(self):
+        self.refusal("system", "It holds the operating system that is running now.")
+
+    def test_refused_usb(self):
+        self.refusal("removable", "Secure Erase is only offered for drives connected inside the computer")
+
+    def test_refused_nvme(self):
+        self.refusal("not-ata", "Secure Erase is only available for SATA drives.")
+
+    def test_refused_partition(self):
+        self.refusal("not-disk", "Secure Erase works on a whole drive, not on a partition.")
+
+    def test_refused_password(self):
+        self.refusal("password", "A security password is set on this drive.")
+
+    def test_first_confirmation_defaults_to_cancel(self):
+        page = self.open()
+        forget_calls()
+        click(page, "Continue…")
+        dialog = self.dialog()
+        self.assertEqual(dialog.get_default_response(), "cancel")
+        self.assertEqual(dialog.get_close_response(), "cancel")
+        dialog.emit("response", "cancel")
+        pump(timeout=0.1)
+        self.assertFalse(any("erase" in c for c in calls()))
+
+    def test_second_confirmation_wants_the_exact_name(self):
+        page = self.open()
+        self.to_typing(page)
+        forget_calls()
+        button = find_button(page, "Erase the whole drive")
+        self.assertFalse(button.get_sensitive())
+        entry = next(x for x in widgets(page) if isinstance(x, Gtk.Entry))
+        for wrong in ("SDB", "sd", "sdb ", "/dev/sdb", ""):
+            entry.set_text(wrong)
+            self.assertFalse(button.get_sensitive(), wrong)
+        entry.set_text("sdb")
+        self.assertTrue(button.get_sensitive())
+        self.assertFalse(entry.get_activates_default(), "Enter alone never erases")
+        self.assertFalse(any("__erase-run" in c for c in calls()))
+
+    def erase(self, page, result, rc=0):
+        self.to_typing(page)
+        entry = next(x for x in widgets(page) if isinstance(x, Gtk.Entry))
+        entry.set_text("sdb")
+        fix("__erase-run", result, rc=rc)
+        forget_calls()
+        click(page, "Erase the whole drive")
+        self.assertTrue(pump(lambda: any("__erase-run" in c for c in calls()), 3))
+        self.assertTrue(pump(lambda: not self.win.erase_running, 3))
+        return next(c for c in calls() if "__erase-run" in c)
+
+    def test_runs_with_the_ticket_and_the_typed_name_only(self):
+        page = self.open()
+        call = self.erase(page, {"ok": True, "stage": "finished", "title": "Drive erased", "kind": "info", "doc": [{"kind": "p", "text": "It keeps what is written."}]})
+        self.assertIn(f"__erase-run {TICKET} --typed sdb", call)
+        self.assertNotIn("--unfreeze", call)
+        self.assertNotIn("--allow-services", call)
+        self.see("Drive erased", page)
+        self.see("It keeps what is written.", page)
+
+    def test_failure_is_not_called_success(self):
+        page = self.open()
+        self.erase(page, {"ok": False, "stage": "finished", "title": "The drive is failing", "kind": "error", "doc": [{"kind": "p", "text": "Its old contents are still there."}]}, rc=12)
+        self.see("The drive is failing", page)
+        self.assertNotIn("Drive erased", text(page))
+
+    def test_authorization_denied_erases_nothing(self):
+        page = self.open()
+        self.erase(page, {"ok": False, "stage": "finished", "title": "Unable to erase the drive", "kind": "error", "doc": [{"kind": "p", "text": "Permission was not granted. Nothing was erased."}]}, rc=5)
+        self.see("Nothing was erased.", page)
+
+    def test_busy_says_who_and_erases_nothing(self):
+        page = self.open()
+        self.erase(page, {"ok": False, "stage": "busy", "busy_summary": "Dolphin is using it.", "busy_advice": "Close it.", "doc": []}, rc=3)
+        self.see("still in use", page)
+        pump(timeout=0.1)
+        self.assertIsNotNone(find_button(page, "Try again"))
+
+    def test_services_are_never_stopped_silently(self):
+        page = self.open()
+        self.erase(page, {"ok": False, "stage": "services", "title": "Services use this device", "doc": [{"kind": "li", "text": "Plex (plex.service)"}]}, rc=9)
+        dialog = self.dialog()
+        self.assertIn("Plex", dialog.get_body())
+        self.assertEqual(dialog.get_default_response(), "cancel")
+
+    def test_frozen_needs_an_explicit_decision_to_sleep(self):
+        page = self.open()
+        self.erase(page, {"ok": False, "stage": "frozen", "title": "The drive is locked against erasing", "doc": [{"kind": "p", "text": "Sleeping once usually unlocks them."}]}, rc=11)
+        dialog = self.dialog()
+        self.assertIn("Sleeping", dialog.get_body())
+        self.assertEqual(dialog.get_default_response(), "cancel")
+        fix("__erase-run", {"ok": True, "stage": "finished", "title": "Drive erased", "kind": "info", "doc": []})
+        forget_calls()
+        dialog.emit("response", "sleep")
+        self.assertTrue(pump(lambda: any("--unfreeze" in c for c in calls()), 3))
+
+    def test_window_stays_open_while_erasing(self):
+        self.win.erase_running = True
+        self.assertTrue(self.win._close_request(self.win))
+        dialog = self.dialog()
+        self.assertIn("Do not turn off", dialog.get_body())
+        dialog.force_close()
+
+    def test_no_way_around_the_questions(self):
+        code = (LIB / "gui/engine.py").read_text() + (LIB / "drive-erase.sh").read_text()
+        self.assertNotIn("assume-yes", code)
+        self.assertNotIn("--force", code)
+        self.assertNotIn("--yes", code)
+
+
+class Accessibility(Base):
+    def test_icon_buttons_have_names(self):
+        self.win.show_device("serial:S1DFL8G9", "health")
+        pump(timeout=0.4)
+        for widget in widgets(self.win):
+            # The back button belongs to Adwaita, which names it itself
+            if isinstance(widget, Gtk.Button) and widget.get_mapped() and widget.get_icon_name() and not widget.get_label() and widget.get_icon_name() != "go-previous-symbolic":
+                self.assertTrue(widget.get_tooltip_text(), f"{widget.get_icon_name()} has no name")
+
+    def test_escape_never_confirms(self):
+        self.win.show_device("serial:S1DFL8G9")
+        pump(timeout=0.2)
+        click(self.win, "Mount read-only")
+        dialog = self.dialog()
+        self.assertEqual(dialog.get_close_response(), "cancel")
+
+    def test_fits_a_small_screen(self):
+        self.win.set_default_size(1024, 600)
+        pump(timeout=0.2)
+        self.assertLessEqual(self.win.get_height(), 720)
+        minimum, _natural, _a, _b = self.win.measure(Gtk.Orientation.HORIZONTAL, -1)
+        self.assertLessEqual(minimum, 400, "reflows on narrow windows")
+
+    def test_every_page_reflows_on_a_narrow_window(self):
+        self.win.show_device("serial:S1DFL8G9", "health")
+        pump(timeout=0.5)
+        # The header gives way to a title at the breakpoint: what matters is the content
+        self.assertLessEqual(self.win.device_page.health.measure(Gtk.Orientation.HORIZONTAL, -1)[0], 340)
+        self.assertLessEqual(self.win.overview.measure(Gtk.Orientation.HORIZONTAL, -1)[0], 400)
+        wiz = self.wizard_to("how")
+        self.assertLessEqual(wiz.measure(Gtk.Orientation.HORIZONTAL, -1)[0], 400)
+
+    def test_narrow_collapses_to_one_pane(self):
+        self.win.split.set_collapsed(True)
+        self.win.show_device("serial:S1DFL8G9")
+        pump(timeout=0.2)
+        self.assertTrue(self.win.split.get_show_content())
+
+    def test_light_and_dark(self):
+        manager = Adw.StyleManager.get_default()
+        for scheme in (Adw.ColorScheme.FORCE_DARK, Adw.ColorScheme.FORCE_LIGHT, Adw.ColorScheme.DEFAULT):
+            manager.set_color_scheme(scheme)
+            pump(timeout=0.05)
+            self.see("Your drives and devices")
+
+    def test_status_is_not_colour_alone(self):
+        badge = next(x for x in widgets(self.win) if "level-badge" in x.get_css_classes() and x.get_mapped())
+        self.assertTrue(any(isinstance(c, Gtk.Label) and c.get_text() for c in widgets(badge)))
+        self.assertTrue(any(isinstance(c, Gtk.Image) for c in widgets(badge)))
+
+    def test_no_fixed_colours_in_the_style(self):
+        css = (LIB / "gui/style.css").read_text()
+        import re
+        self.assertFalse(re.search(r"#[0-9a-fA-F]{3,8}\b|rgba?\(", css), "named colours only: they follow the theme")
+
+
+class Launcher(unittest.TestCase):
+    """The real entry point and shell router, with the stand-in as the engine."""
+
+    def run_b(self, *args, env=None, timeout=6):
+        e = {k: v for k, v in os.environ.items()}
+        e.update(env or {})
+        return subprocess.run([str(REPO / "big-mount/usr/bin/bigmount"), *args], capture_output=True, text=True, env=e, timeout=timeout)
+
+    def stays_open(self, *args):
+        """The real program, on the private display, with the stand-in as the engine,
+        on a bus of its own: not the running instance of whoever runs this."""
+        env = {**os.environ, "DISPLAY": ":none", "LANGUAGE": "C", "PYTHONWARNINGS": "ignore"}
+        log = WORK / f"launch-{time.time()}.log"
+        with open(log, "w") as handle:
+            proc = subprocess.Popen(["dbus-run-session", "--", str(REPO / "big-mount/usr/bin/bigmount"), *args], env=env,
+                                    stdout=subprocess.DEVNULL, stderr=handle, start_new_session=True)
+        time.sleep(3)
+        alive = proc.poll() is None
+        try:
+            os.killpg(proc.pid, signal.SIGTERM)
+        except ProcessLookupError:
+            pass
+        try:
+            proc.wait(timeout=5)
+        except subprocess.TimeoutExpired:
+            os.killpg(proc.pid, signal.SIGKILL)
+            proc.wait()
+        err = log.read_text()
+        self.assertTrue(alive, err)
+        # The desktop portal of the private bus has no backend: its complaints are not ours
+        problems = [line for line in err.splitlines() if ("Traceback" in line or "CRITICAL" in line) and "portal" not in line]
+        self.assertEqual(problems, [], err)
+
+    @unittest.skipUnless(shutil.which("dbus-run-session"), "dbus-run-session is not installed")
+    def test_gui_drive_opens_and_stays_open(self):
+        self.stays_open("--gui-drive")
+
+    @unittest.skipUnless(shutil.which("dbus-run-session"), "dbus-run-session is not installed")
+    def test_gui_drive_check_opens_the_same_application(self):
+        self.stays_open("--gui-drive-check", "/dev/sdb")
+
+    @unittest.skipUnless(shutil.which("dbus-run-session"), "dbus-run-session is not installed")
+    def test_a_uuid_is_not_taken_for_a_path(self):
+        self.stays_open("--gui-drive", "UUID=ABCD-1234")
+
+    def test_both_flags_reach_the_same_program(self):
+        code = (LIB / "drive.sh").read_text()
+        self.assertEqual(code.count('python3 -I "$py"'), 1)
+        cli = (LIB / "cli.sh").read_text()
+        self.assertIn('--gui-drive | --gui-drive-check)', cli)
+        self.assertIn('bm_gui_drive_main health "$@"', cli)
+        self.assertNotIn("bm_gui_secure_erase", cli)
+
+    def test_no_session_points_to_the_terminal(self):
+        res = self.run_b("--gui-drive", env={"WAYLAND_DISPLAY": "", "DISPLAY": ""})
+        self.assertEqual(res.returncode, 25)
+        self.assertIn("bigmount --drive", res.stderr)
+        res = self.run_b("--gui-drive-check", env={"WAYLAND_DISPLAY": "", "DISPLAY": ""})
+        self.assertEqual(res.returncode, 25)
+
+    def test_the_entry_point_is_only_python_and_gtk(self):
+        src = (LIB / "drive-gui.py").read_text()
+        self.assertIn('gi.require_version("Gtk", "4.0")', src)
+        self.assertIn('gi.require_version("Adw", "1")', src)
+
+    def test_boot_path_loads_nothing_of_this(self):
+        boot = (REPO / "big-mount/usr/bin/bigmount").read_text()
+        for bad in ("python", "gi.repository", "drive-gui", "gtk"):
+            self.assertNotIn(bad, boot.lower())
+
+
+if SHOTS:
+    class Shots(Base):
+        def test_shots(self):
+            shot(self.win, pathlib.Path(SHOTS) / "tests-home.png")
 
 
 if __name__ == "__main__":
-    unittest.main(verbosity=1)
+    unittest.main(verbosity=1 if "-v" not in sys.argv else 2, exit=True, warnings="ignore")

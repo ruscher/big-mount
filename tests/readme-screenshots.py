@@ -1,255 +1,180 @@
 #!/usr/bin/python3
-"""The screenshots of the drive manager in the README, always reproducible.
+"""The pictures of the application in the README, always reproducible.
 
-This is the real window, drawn off screen, in English, with the Breeze style.
-Its data comes from a stand-in for `bigmount` that answers with sample drives,
-so a picture never shows the disks, labels or files of whoever runs this. No
-disk is involved, and nothing appears on the screen.
+This is the real window, drawn off screen, in English. Its data comes from a
+stand-in for `bigmount` that answers with sample drives, so a picture never shows
+the disks, labels or files of whoever runs this. No disk is involved, and nothing
+appears on the screen.
 
-Usage: python3 tests/readme-screenshots.py [DIR]     (default: docs/images)
+Usage: python3 tests/readme-screenshots.py [DIR] [--dark]     (default: docs/images)
 """
 
-import sys
-sys.dont_write_bytecode = True
-import atexit
-import importlib.util
-import json
 import os
 import pathlib
-import shutil
-import stat
-import subprocess
-import tempfile
-import time
+import struct
+import sys
+import zlib
 
-os.environ["QT_QPA_PLATFORM"] = "offscreen"
-os.environ["LANGUAGE"] = "C"
-os.environ["QT_STYLE_OVERRIDE"] = "Breeze"
+os.environ["LANGUAGE"] = os.environ.get("SHOTS_LANGUAGE", "C")
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 
-REPO = pathlib.Path(__file__).resolve().parent.parent
-ARGS = [a for a in sys.argv[1:] if a != "--dark"]
+from gui_support import (Adw, GB, REPO, WORK, backup, drive, fix, make_app, pump,  # noqa: E402
+                         seagate, shot, system_disk, vol)
+
+DARK = "--dark" in sys.argv
+ARGS = [a for a in sys.argv[1:] if not a.startswith("--")]
 OUT = pathlib.Path(ARGS[0]) if ARGS else REPO / "docs/images"
 OUT.mkdir(parents=True, exist_ok=True)
 
-# Not /tmp: it is often mounted noexec, and the stand-in must run
-WORK = pathlib.Path(tempfile.mkdtemp(prefix="bm-shots-", dir=os.environ.get("TMPDIR", "/var/tmp")))
-atexit.register(shutil.rmtree, WORK, ignore_errors=True)
-FIX = WORK / "fix"
-FIX.mkdir()
-STUB = WORK / "bigmount"
-STUB.write_text(f"""#!/bin/bash
-f="{FIX}/$2.json"
-[ -f "$f" ] && cat "$f"
-exit 0
-""")
-STUB.chmod(STUB.stat().st_mode | stat.S_IEXEC)
-os.environ["BM_GUI_BIN"] = str(STUB)
+app = make_app()
+Adw.StyleManager.get_default().set_color_scheme(Adw.ColorScheme.FORCE_DARK if DARK else Adw.ColorScheme.FORCE_LIGHT)
 
-spec = importlib.util.spec_from_file_location("drive_gui", REPO / "big-mount/usr/lib/big-mount/drive-gui.py")
-gui = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(gui)
+from gui.window import MainWindow  # noqa: E402
 
-from PySide6.QtCore import Qt  # noqa: E402
-from PySide6.QtGui import QColor, QIcon, QPalette  # noqa: E402
-from PySide6.QtTest import QTest  # noqa: E402
-from PySide6.QtWidgets import QApplication  # noqa: E402
-
-app = QApplication([])
-gui.setup_icons()
-
-GB = 1000 ** 3
-TB = 1000 ** 4
-
-# The sample source: a folder the file picker can really show
-SOURCE = WORK / "OLD-DATA"
-for name in ("Documents/Taxes", "Music", "Pictures/2019", "Pictures/2020", "Videos"):
-    (SOURCE / name).mkdir(parents=True)
-for name in ("Documents/contract.pdf", "Pictures/2020/IMG_1275.JPG", "notes.txt"):
-    (SOURCE / name).write_text("sample")
-
-
-def palette(dark):
-    """The colours of Breeze Light and Breeze Dark."""
-    window, text, base, button_, mid = (
-        ("#232629", "#fcfcfc", "#141618", "#31363b", "#4d5257") if dark else
-        ("#eff0f1", "#232629", "#ffffff", "#fcfcfc", "#b4b6b8"))
-    pal = QPalette()
-    for role, value in ((QPalette.Window, window), (QPalette.WindowText, text), (QPalette.Base, base),
-                        (QPalette.AlternateBase, window), (QPalette.Text, text), (QPalette.Button, button_),
-                        (QPalette.ButtonText, text), (QPalette.Highlight, "#3daee9"),
-                        (QPalette.HighlightedText, "#fcfcfc"), (QPalette.Mid, mid),
-                        (QPalette.PlaceholderText, "#8c9094")):
-        pal.setColor(role, QColor(value))
-    return pal
-
-
-def fix(key, data):
-    (FIX / f"{key}.json").write_text(data if isinstance(data, str) else json.dumps(data))
-
-
-def vol(device, **kw):
-    v = {"device": device, "type": "part", "fstype": "ntfs", "fsver": "", "label": "", "uuid": "ABC", "state": "unmounted",
-         "state_label": "Not mounted", "mountpoint": "", "size": TB, "used": None, "avail": None,
-         "read_only": False, "device_read_only": False, "fs_supported": True}
-    v.update(kw)
-    return v
-
-
-def drive(device, name, kind, kind_label, icon, size, level, label, volumes, reasons=()):
-    return {"device": device, "name": name, "kind": kind, "kind_label": kind_label, "icon": icon, "model": name, "vendor": "",
-            "serial": "", "transport": kind, "transport_label": kind.upper(),
-            "volumes": [vol(device, type="disk", fstype="", size=size, state="container", state_label="Holds other volumes"), *volumes],
-            "health": {"level": level, "label": label, "basis": "log", "reasons": [{"key": "r", "text": t} for t in reasons],
-                       "smart": {"verdict": ""}}}
-
-
-NO_ALERTS = "No alerts in the system log (SMART not read)"
-FAILING = drive("/dev/sdb", "ST1000DM003-1CH162", "usb", "USB storage", "drive-removable-media-usb", TB, "critical",
-                "Critical: high risk for the data",
-                [vol("/dev/sdb1", label="OLD-DATA", state="mounted-ro", state_label="Mounted read-only", mountpoint="/run/media/me/OLD-DATA",
-                     read_only=True, device_read_only=True, used=620 * GB, avail=380 * GB)],
-                ["Since the computer was started, reading or writing failed (55 kernel messages).",
-                 "Since the computer was started, it stopped answering and the connection had to be reset (2 kernel messages).",
-                 "Since the computer was started, the USB connection was reset or lost 48 times."])
-BACKUP = drive("/dev/sda", "SanDisk Portable SSD", "usb", "USB storage", "drive-removable-media-usb", 2 * TB, "normal", NO_ALERTS,
-               [vol("/dev/sda1", label="Backup", state="mounted-rw", state_label="Mounted", mountpoint="/run/media/me/Backup",
-                    size=2 * TB, used=800 * GB, avail=1200 * GB)])
-SYSTEM = drive("/dev/nvme0n1", "NVMe SSD 1 TB", "nvme", "NVMe SSD", "drive-harddisk-solidstate", TB, "normal", NO_ALERTS,
-               [vol("/dev/nvme0n1p1", fstype="vfat", state="system", state_label="In use by the running system", mountpoint="/boot/efi", size=314000000),
-                vol("/dev/nvme0n1p2", fstype="btrfs", state="system", state_label="In use by the running system", mountpoint="/", size=999 * GB,
-                    used=500 * GB, avail=499 * GB)])
-ADVICE = ["Copy what matters now, starting with the most important files. Every extra read wears a failing disk.",
-          "Do not run repair tools on this disk: they write, and they can destroy what is still readable.",
-          "If the data is very important and cannot be replaced, consider a data recovery professional before insisting."]
-TOOLS = {"ddrescue": True, "testdisk": True, "photorec": True, "smartctl": True, "rsync": True}
-JOB = {"id": "20261030-140000-a1b2", "kind": "copy", "state": "running", "state_label": "Copying", "reason": "", "reason_text": "",
-       "source": "/run/media/me/OLD-DATA", "destination": "/run/media/me/Backup/rescue", "current": "Pictures/2020/IMG_1275.JPG",
-       "verify": "basic", "verify_result": "", "dir": str(WORK), "files_done": 9240, "files_total": 15464, "bytes_done": 27 * GB,
-       "bytes_total": 45 * GB, "rate_now": 31200000, "rate_avg": 28400000, "elapsed": 950, "eta": 634, "deferred": 0, "failed": 0,
-       "differ": 0, "conflicts": 0, "read_errors": 0, "stuck": 0, "created": 1793368800, "finished": None, "total_estimate": False}
-REPORT = """== Copy report ==
-Source:      /run/media/me/OLD-DATA
-Destination: /run/media/me/Backup/rescue
-Copied:      15461 files, 45.6 GB
-Set aside:   1 file (stopped advancing for 90 seconds)
-  Pictures/2020/IMG_1275.JPG
-Not copied:  2 files (reading failed)
-  Videos/trip.mp4
-  Videos/old.mov
-"""
-
-
-def pump(cond=None, timeout=4.0):
-    end = time.time() + timeout
-    while time.time() < end:
-        app.processEvents()
-        if cond and cond():
-            break
-        QTest.qWait(15)
-    for _ in range(6):
-        app.processEvents()
-        QTest.qWait(15)
-
-
-def grab(widget, name):
-    pump(timeout=0.25)
-    widget.grab().save(str(OUT / f"{name}.png"))
-    print(name)
-
-
-def start(dark=False):
-    app.setPalette(palette(dark))
-    # Not the theme of whoever runs this: its icons may not fit this palette
-    QIcon.setThemeName("breeze-dark" if dark else "breeze")
-    app.setStyleSheet(gui.app_style(app))
-    fix("list", {"partial": False, "devices": [FAILING, BACKUP, SYSTEM]})
-    fix("diagnose", {"device": FAILING, "advice": ADVICE, "kernel": [], "volumes": [], "tools": TOOLS})
-    fix("jobs", {"jobs": []})
-    win = gui.MainWindow()
-    win.show()
-    pump(lambda: win.devices.count() == 3 and win.device_page.diag is not None)
-    return win
-
-
-def show_job(win, **kw):
-    job = {**JOB, **kw}
-    fix("status", job)
-    fix("report", REPORT)
-    win.open_job(job["id"])
-    pump(lambda: win.job_page.state == job["state"])
-
-
-# The dark picture in a process of its own: changing the palette of a running
-# application with a window still around once crashed Qt, and the manager never does it
-if "--dark" in sys.argv:
-    win = start(dark=True)
-    grab(win, "drive-manager-dark")
-    win.close()
-    sys.exit(0)
-subprocess.run([sys.executable, __file__, str(OUT), "--dark"], check=True)
-
-win = start()
-grab(win, "drive-manager")
-
-fix("diagnose", {"device": BACKUP, "advice": [], "kernel": [], "volumes": [], "tools": TOOLS})
-win.devices.select_device("/dev/sda")
-pump(timeout=0.5)
-grab(win, "drive-healthy")
-win.devices.select_device("/dev/sdb")
-pump(timeout=0.5)
-
-dialog = gui.MountDialog(FAILING, FAILING["volumes"][1], win)
-dialog.show()
-grab(dialog, "drive-mount-dialog")
-dialog.close()
-
-dialog = gui.AdvancedDialog(win.engine, FAILING, TOOLS, win)
-dialog.show()
-grab(dialog, "drive-advanced")
-dialog.close()
-
+MOUNT = WORK / "ssd"
+MOUNT.mkdir()
+SOURCE = WORK / "arquivos"
+(SOURCE / "Fotos").mkdir(parents=True)
+(SOURCE / "Documentos").mkdir()
+(SOURCE / "Fotos/ferias.jpg").write_text("x")
+(SOURCE / "relatorio.pdf").write_text("x")
+SEA = seagate()
+SEA["volumes"][1].update(state="mounted-ro", state_label="Mounted read-only", mountpoint=str(SOURCE), used=412 * GB, avail=588 * GB, read_only=True)
+SEA_UNMOUNTED = seagate()
+BK = backup(MOUNT)
+SYS = system_disk()
+LUKS = drive("/dev/sdc", "Kingston DataTraveler", volumes=[vol("/dev/sdc1", fstype="crypto_LUKS", state="locked", state_label="Encrypted and locked", size=64 * GB)], serial="KG1", size=64 * GB)
+CARD = drive("/dev/mmcblk0", "SD card", kind="sd", kind_label="SD card", volumes=[vol("/dev/mmcblk0p1", fstype="vfat", label="CAMERA", size=128 * GB)], serial="SD9", size=128 * GB)
+fix("list", {"partial": False, "devices": [SYS, SEA_UNMOUNTED, BK, LUKS, CARD]})
+fix("jobs", {"jobs": []})
+fix("diagnose", {"device": SEA, "tools": {"smartctl": True, "ddrescue": True, "photorec": True, "testdisk": True, "rsync": True},
+                 "advice": ["Copy what matters now, starting with the most important files. Every extra read wears a failing disk.",
+                            "Do not run repair tools on this disk: they write, and they can destroy what is still readable.",
+                            "If the data is very important and cannot be replaced, consider a data recovery professional before insisting."],
+                 "kernel": ["blk_update_request: I/O error, dev sdb, sector 2048"], "volumes": []})
 fix("destinations", {"destinations": [
-    {"path": "/run/media/me/Backup", "device": "/dev/sda1", "level": "normal", "why": "", "name": "Backup", "avail": 1200 * GB, "independent": True, "recommended": True},
-    {"path": "/mnt/old-backup", "device": "/dev/sdb2", "level": "critical", "why": "risky", "name": "ST1000DM003-1CH162", "avail": 90 * GB, "independent": False, "recommended": False}]})
-fix("copy", {"ok": True, "error": "", "source": "/run/media/me/OLD-DATA", "destination": "/run/media/me/Backup/rescue", "scanned": False,
-             "total_estimate": False, "avail": 1200 * GB,
-             "warnings": [{"key": "no-total", "text": "The total is not measured on a drive at risk: walking the whole disk would wear it. The copy shows what was really copied, without a percentage."}]})
-win._open_wizard(str(SOURCE), FAILING)
-wizard = win.wizard
-# The picker needs a folder that exists; the picture says where it would be
-wizard.source_label.setText("Source: /run/media/me/OLD-DATA")
+    {"path": str(MOUNT), "device": "/dev/sda1", "level": "normal", "why": "", "name": "Backup", "fstype": "ntfs", "avail": 1200 * GB, "independent": True, "recommended": True},
+    {"path": "/home/maria", "device": "/dev/nvme0n1p2", "level": "normal", "why": "", "name": "Home folder", "fstype": "btrfs", "avail": 579 * GB, "independent": True, "recommended": True},
+    {"path": "/run/media/maria/OTHER", "device": "/dev/sdb2", "level": "critical", "why": "same-disk", "name": "OTHER", "fstype": "ext4", "avail": 200 * GB, "independent": False, "recommended": False}]})
+METHODS = {"target": "/dev/sdb1", "source_kind": "volume", "device": "/dev/sdb1", "volume": "/dev/sdb1", "disk": "/dev/sdb", "level": "critical", "state": "unmounted",
+           "mountpoint": "", "fstype": "ntfs", "recommended": "copy", "recommended_why": "The drive reported problems: copy what matters first, without going through everything.",
+           "size": 1000 * GB, "trim": False, "can_read": False, "deep_needs_image": True,
+           "methods": [{"id": "copy", "available": True, "why": "", "why_text": "", "finds": "existing", "password": False},
+                       {"id": "quick", "available": True, "why": "", "why_text": "", "finds": "existing", "password": False},
+                       {"id": "deep", "available": True, "why": "", "why_text": "", "finds": "carved", "password": True},
+                       {"id": "image", "available": True, "why": "", "why_text": "", "finds": "image", "password": True},
+                       {"id": "partitions", "available": True, "why": "", "why_text": "", "finds": "partitions", "password": True}],
+           "notes": [], "categories": [
+               {"id": "photos", "label": "Photos", "deep_note": "HEIC and WebP photos are found only when searching all types."},
+               {"id": "videos", "label": "Videos", "deep_note": ""}, {"id": "documents", "label": "Documents", "deep_note": ""},
+               {"id": "audio", "label": "Audio", "deep_note": ""}, {"id": "archives", "label": "Compressed files", "deep_note": ""}]}
+fix("methods", METHODS)
+fix("mount", {"device": "/dev/sdb1", "mountpoint": str(SOURCE), "why": "", "text": "", "detail": "", "ok": True, "read_only": True, "protected": True, "exit": 0})
+fix("copy-dry", {"error": "", "error_text": "", "source": str(SOURCE), "destination": str(MOUNT / "out"), "level": "critical", "total_bytes": 412 * GB, "total_files": 0, "conflicts": 0,
+                 "avail": 1200 * GB, "ok": True, "total_estimate": True, "same_disk": False, "scanned": False,
+                 "warnings": [{"key": "source-risk", "text": "The source drive reported problems. Files that do not advance are set aside so the rest is saved first."},
+                              {"key": "total-estimate", "text": "The total is the used space of the volume: an approximation."}]})
+
+
+def job(**kw):
+    base = {"id": "20261031-120000-abcd", "kind": "copy", "result_kind": "copied-files", "state": "running", "state_label": "Copying", "reason": "", "reason_text": "",
+            "source": str(SOURCE), "destination": str(MOUNT), "name": "ARQUIVOS", "current": "Fotos/2019/ferias/DSC_0142.jpg", "verify": "basic", "verify_result": "", "dir": str(WORK),
+            "categories": "", "then_carve": "", "copy_to": "", "map": "", "level": "critical", "files_done": 18342, "files_total": 0, "bytes_done": 148 * GB, "bytes_total": 412 * GB,
+            "rate_now": 94 * 1000 * 1000, "rate_avg": 88 * 1000 * 1000, "elapsed": 1720, "eta": 2800, "deferred": 2, "failed": 0, "differ": 0, "conflicts": 0, "read_errors": 3, "stuck": 0,
+            "created": 1793419273, "finished": None, "scanned": 0, "pass": 0, "bad_bytes": 0, "total_estimate": True, "pausable": True}
+    base.update(kw)
+    return base
+
+
+win = MainWindow(app)
+win.set_default_size(1024, 700)
+win.present()
+assert pump(lambda: win.loaded, 8)
 pump(timeout=0.3)
-wizard.pick_radio.setChecked(True)
-root = wizard.model.index(str(SOURCE))
-pump(lambda: wizard.model.rowCount(root) >= 4)
-wizard.model.setData(wizard.model.index(str(SOURCE / "Pictures")), Qt.Checked.value, Qt.CheckStateRole)
-wizard.model.setData(wizard.model.index(str(SOURCE / "Documents")), Qt.Checked.value, Qt.CheckStateRole)
-wizard.tree.expand(wizard.model.index(str(SOURCE / "Pictures")))
+suffix = "-dark" if DARK else ""
+shot(win, OUT / f"app-overview{suffix}.png")
+
+win.show_device(SEA_UNMOUNTED["stable_id"])
 pump(timeout=0.4)
-grab(win, "drive-wizard-what")
-wizard.go_next()
-pump(lambda: wizard.dest_edit.text())
-grab(win, "drive-wizard-where")
-wizard.go_next()
-pump(lambda: wizard.next_btn.isEnabled())
-grab(win, "drive-wizard-review")
+shot(win, OUT / f"app-drive{suffix}.png")
+win.show_device(SEA_UNMOUNTED["stable_id"], "health")
+pump(timeout=0.6)
+shot(win, OUT / f"app-health{suffix}.png")
 
-show_job(win)
-grab(win, "drive-copy-progress")
-show_job(win, bytes_total=0, files_total=0, eta=None, state="analyzing", state_label="Copying")
-show_job(win, bytes_total=0, files_total=0, eta=None)
-grab(win, "drive-copy-at-risk")
-show_job(win, state="needs-attention", state_label="Finished, needs your attention", reason="files-left",
-         reason_text="Some files were not copied.", deferred=1, failed=2, bytes_done=int(45.6 * GB), bytes_total=0, files_done=15461,
-         files_total=0, current="", rate_now=0, eta=None, elapsed=4410)
-pump(lambda: win.job_page.report.isVisibleTo(win.job_page))
-grab(win, "drive-copy-attention")
+win.open_wizard(win.device_by_id(SEA_UNMOUNTED["stable_id"]), win.device_by_id(SEA_UNMOUNTED["stable_id"]).content_volumes[0])
+pump(timeout=0.3)
+shot(win, OUT / f"app-rescue-source{suffix}.png")
+wiz = win.wizard
+wiz.go_next()
+assert pump(lambda: wiz.step == "what", 5)
+pump(timeout=0.2)
+shot(win, OUT / f"app-rescue-what{suffix}.png")
+wiz.go_next()
+pump(timeout=0.2)
+shot(win, OUT / f"app-rescue-how{suffix}.png")
+wiz.plan.volume.mountpoint = str(SOURCE)
+wiz.plan.volume.state = "mounted-ro"
+wiz.go_next()
+assert pump(lambda: wiz.step == "where", 5)
+assert pump(lambda: wiz.preflight is not None, 6)
+pump(timeout=0.3)
+shot(win, OUT / f"app-rescue-where{suffix}.png")
+wiz.go_next()
+assert pump(lambda: wiz.step == "confirm" and wiz.preflight is not None, 6)
+pump(timeout=0.3)
+shot(win, OUT / f"app-rescue-confirm{suffix}.png")
 
-fix("jobs", {"jobs": [
-    {**JOB, "id": "20261030-140000-a1b2", "state": "needs-attention", "state_label": "Finished, needs your attention", "deferred": 1, "failed": 2},
-    {**JOB, "id": "20261029-091500-c3d4", "state": "completed", "state_label": "Completed and checked", "source": "/run/media/me/PENDRIVE", "created": 1793265300},
-    {**JOB, "id": "20261028-180000-e5f6", "state": "interrupted", "state_label": "Interrupted (it can be resumed)", "source": "/run/media/me/SD-CARD", "created": 1793214000}]})
-win.show_jobs()
-pump(lambda: win.jobs_page.list.count() == 3)
-grab(win, "drive-jobs")
-win.close()
+fix("status", job())
+fix("jobs", {"jobs": [job()]})
+win.refresh_jobs()
+win.open_job("20261031-120000-abcd", replace_top=True)
+pump(timeout=0.6)
+shot(win, OUT / f"app-job-running{suffix}.png")
+
+# Results: a real index in the format of the engine
+
+
+def png(w, h):
+    raw = b"".join(b"\0" + bytes((x * 3 + y * 5) % 256 for x in range(w * 3)) for y in range(h))
+
+    def c(t, b):
+        return struct.pack(">I", len(b)) + t + b + struct.pack(">I", zlib.crc32(t + b))
+    return b"\x89PNG\r\n\x1a\n" + c(b"IHDR", struct.pack(">IIBBBBB", w, h, 8, 2, 0, 0, 0)) + c(b"IDAT", zlib.compress(raw)) + c(b"IEND", b"")
+
+
+carved = WORK / "found"
+(carved / "recup_dir.1").mkdir(parents=True)
+records = []
+for i in range(40):
+    cat, ext = (("photos", "png") if i % 3 == 0 else ("documents", "pdf") if i % 3 == 1 else ("audio", "mp3"))
+    name = f"recup_dir.1/f{2048 + i * 4096:07d}.{ext}"
+    if ext == "png":
+        (carved / name).write_bytes(png(64, 48))
+    records.append(f"{(i + 1) * 183042}\t0\t{cat}\t{name}".encode())
+index = WORK / "index"
+index.write_bytes(b"\0".join(records) + b"\0")
+fix("status", job(id="20261031-120000-beef", kind="carve", result_kind="carved-candidates", state="completed", state_label="Search complete", files_done=40, source="/home/maria/disk.img", destination=str(carved), bytes_total=0, bytes_done=int(1e9), eta=None, deferred=0, level="", total_estimate=False))
+fix("results", {"id": "20261031-120000-beef", "kind": "carve", "result_kind": "carved-candidates", "root": str(carved), "index": str(index), "state": "completed", "names_kept": False, "dates_kept": False, "ready": True,
+                "files": 40, "categories": [{"id": "photos", "label": "Photos", "files": 14, "bytes": 1000}, {"id": "documents", "label": "Documents", "files": 13, "bytes": 1000}, {"id": "audio", "label": "Audio", "files": 13, "bytes": 1000}]})
+win.open_results("20261031-120000-beef")
+pump(timeout=1.0)
+shot(win, OUT / f"app-results{suffix}.png")
+
+win.show_overview()
+pump(timeout=0.1)
+fix("erase-check", {"device": "/dev/sde", "name": "sde (Samsung SSD 860, 500 GB)", "confirm_name": "sde", "serial": "X", "why": "", "why_text": "", "detail": "", "table": "gpt", "token": "", "eligible": True, "frozen": True, "diskseq": 9, "erase_minutes": 4, "size": 500 * GB,
+                    "partitions": [{"device": "/dev/sde1", "label": "DATA", "fstype": "ext4", "mountpoint": "", "size": 500 * GB}]})
+win.open_maintenance(win.device_by_id(BK["stable_id"]))
+pump(timeout=0.5)
+shot(win, OUT / f"app-erase{suffix}.png")
+
+# The same window where there is little room
+small = MainWindow(app)
+small.set_default_size(420, 700)
+small.present()
+assert pump(lambda: small.loaded, 8)
+pump(timeout=0.5)
+small.show_device(SEA_UNMOUNTED["stable_id"], "health")
+pump(timeout=0.8)
+shot(small, OUT / f"app-narrow{suffix}.png")
+print("written to", OUT)
