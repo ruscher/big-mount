@@ -479,6 +479,8 @@ FAKE_LEVEL=critical; check "  ... a drive at risk with a volume: copy what matte
 check "  ... a locked volume cannot be listed, and says why" bash -c '[[ $1 == *"False locked" ]]' _ "$(bm_rec_methods_case /dev/sdb1 | method quick)"
 FAKE_LEVEL=critical; check "  ... a drive at risk that cannot be opened: an image" eq "$(bm_rec_methods_case /dev/sdb1 | python3 -I -c 'import json,sys; print(json.load(sys.stdin)["recommended"])')" image
 FAKE_LEVEL=normal; check "  ... a whole disk has no files to list until a volume is chosen" bash -c '[[ $1 == *"False pick-volume" ]]' _ "$(bm_rec_methods_case /dev/sdc | method copy)"
+FAKE_LEVEL=attention; check "  ... a whole disk at risk: an image, and never 'its files cannot be opened'" bash -c '[[ $1 == image$'"'"'\t'"'"'* && $1 == *"choose one of its volumes"* && $1 != *"cannot be opened"* ]]' _ \
+    "$(LANGUAGE=C bm_rec_methods_case /dev/sdc | python3 -I -c 'import json,sys; d=json.load(sys.stdin); print(d["recommended"] + "\t" + d["recommended_why"])')"
 printf 'x' > "$WORK/some.img"; check "  ... an image: search it, it touches no disk" bash -c '[[ $1 == deep* ]]' _ "$(bm_rec_methods_case "$WORK/some.img" | method deep)"
 check "  ... an image is not imaged again" bash -c '[[ $1 == *"False image-file" ]]' _ "$(bm_rec_methods_case "$WORK/some.img" | method image)"
 unset -f bm_resolve bm_dv_fs_supported bm_ds_level bm_rec_methods_case method

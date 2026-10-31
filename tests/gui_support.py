@@ -55,6 +55,8 @@ STUB.write_text(f"""#!/bin/bash
 printf '%s\\n' "$*" >> {CALLS}
 key="$2"
 for a in "$@"; do [ "$a" = --dry-run ] && key="$2-dry"; done
+d="{FIX}/$key.delay"
+[ -f "$d" ] && sleep "$(cat "$d")"
 f="{FIX}/$key.json"
 [ -f "$f" ] && cat "$f"
 t="{FIX}/$key.txt"
@@ -137,9 +139,15 @@ def system_disk():
         label="No alerts (SMART and system log checked)", basis="smart+log", seq=2)
 
 
-def fix(key, data, rc=None):
-    """What the stand-in answers to `bigmount --drive KEY` (KEY-dry with --dry-run)."""
+def fix(key, data, rc=None, delay=None):
+    """What the stand-in answers to `bigmount --drive KEY` (KEY-dry with --dry-run),
+    after `delay` seconds when it should take a while."""
     (FIX / f"{key}.json").write_text(json.dumps(data) if not isinstance(data, str) else data)
+    delayf = FIX / f"{key}.delay"
+    if delay is None:
+        delayf.unlink(missing_ok=True)
+    else:
+        delayf.write_text(str(delay))
     rcf = FIX / f"{key}.rc"
     if rc is None:
         rcf.unlink(missing_ok=True)
@@ -149,7 +157,7 @@ def fix(key, data, rc=None):
 
 def unfix(*keys):
     for key in keys:
-        for ext in ("json", "txt", "rc"):
+        for ext in ("json", "txt", "rc", "delay"):
             (FIX / f"{key}.{ext}").unlink(missing_ok=True)
 
 

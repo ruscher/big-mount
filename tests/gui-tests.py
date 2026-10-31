@@ -740,6 +740,83 @@ class Wizard(Base):
         click(page, "Analyze the whole disk")
         self.see("does not prove there is no data", page)
 
+    def whole_drive_to_how(self, rows):
+        fix("methods", {**METHODS, "target": "/dev/sdb", "source_kind": "disk", "volume": "", "recommended": "image", "methods": rows})
+        wiz = self.wizard_to("source")
+        wiz.plan.volume = None
+        wiz.go_next()
+        self.assertTrue(pump(lambda: wiz.step == "what", 4))
+        wiz.go_next()
+        self.assertEqual(wiz.step, "how")
+        return wiz
+
+    def test_whole_drive_leads_to_its_volume(self):
+        # What a person met on a real disk: only lost partitions could be chosen
+        rows = copy.deepcopy(METHOD_ROWS)
+        for r in rows[:2]:
+            r.update(available=False, why="pick-volume", why_text="Choose one of the volumes of this drive to see its files.")
+        wiz = self.whole_drive_to_how(rows)
+        self.see("You chose the whole drive")
+        self.see("Not available: Choose one of the volumes")
+        fix("methods", METHODS)
+        forget_calls()
+        click(wiz, "Use the volume ARQUIVOS")
+        self.assertTrue(pump(lambda: wiz.plan.methods is not None and wiz.plan.volume is not None, 3))
+        self.assertTrue(any("methods /dev/sdb1" in c for c in calls()))
+        self.assertEqual(wiz.step, "how")
+        self.assertEqual(wiz.plan.method, "copy")
+        self.assertTrue(wiz.next_btn.get_sensitive())
+        self.assertNotIn("You chose the whole drive", text(wiz))
+
+    def test_the_row_of_a_method_offers_the_volume(self):
+        rows = copy.deepcopy(METHOD_ROWS)
+        rows[0].update(available=False, why="pick-volume", why_text="Choose one of the volumes of this drive to see its files.")
+        wiz = self.whole_drive_to_how(rows)
+        fix("methods", METHODS)
+        click(wiz, "Use ARQUIVOS")
+        self.assertTrue(pump(lambda: wiz.plan.volume is not None and wiz.plan.methods is not None, 3))
+        self.assertEqual(wiz.plan.volume.device, "/dev/sdb1")
+
+    def test_missing_tool_can_be_checked_again_after_installing(self):
+        rows = copy.deepcopy(METHOD_ROWS)
+        rows[2].update(available=False, why="no-ddrescue", why_text="GNU ddrescue is not installed (package ddrescue).")
+        fix("methods", {**METHODS, "methods": rows})
+        wiz = self.wizard_to("how", method="deep")
+        wiz._enter("how")
+        self.assertFalse(wiz.next_btn.get_sensitive())
+        fix("methods", METHODS)
+        forget_calls()
+        click(wiz, "Check again")
+        self.assertTrue(pump(lambda: any("methods /dev/sdb1" in c for c in calls()) and wiz.plan.methods is not None, 3))
+        self.assertEqual(wiz.plan.method, "deep")
+        self.assertTrue(wiz.next_btn.get_sensitive())
+
+    def test_partitions_lead_back_to_the_files_of_a_volume(self):
+        wiz = self.wizard_to("how", method="partitions")
+        fix("partitions", {"ok": True, "mode": "list", "found": [{"type": "HPFS - NTFS", "label": "ARQUIVOS", "start": "0/32/33", "sectors": 2048, "size": 1048576}]})
+        wiz.go_next()
+        page = self.win.nav.get_visible_page()
+        self.see("Volumes this drive already has", page)
+        click(page, "Read the partition table")
+        self.see("ARQUIVOS", page)
+        forget_calls()
+        click(page, "Recover its files")
+        self.assertTrue(pump(lambda: self.win.nav.get_visible_page() is wiz and wiz.plan.methods is not None, 3))
+        self.assertEqual(wiz.step, "how")
+        self.assertEqual(wiz.plan.volume.device, "/dev/sdb1")
+        self.assertTrue(any("methods /dev/sdb1" in c for c in calls()))
+
+    def test_partitions_search_shows_time_and_says_there_is_no_percentage(self):
+        wiz = self.wizard_to("how", method="partitions")
+        fix("partitions", {"ok": True, "mode": "search", "found": []}, delay=1.5)
+        wiz.go_next()
+        page = self.win.nav.get_visible_page()
+        click(page, "Analyze the whole disk")
+        self.see("Elapsed: 00:00:0", page)
+        self.see("there is no percentage", page)
+        self.see("does not prove there is no data", page, timeout=5)
+        self.assertIsNone(page._timer)
+
     def test_no_destination_available(self):
         fix("destinations", {"destinations": []})
         self.wizard_to("how")

@@ -10,7 +10,7 @@ import time
 from gi.repository import Adw, Gio, GLib, GObject, Gtk
 
 from .. import widgets as w
-from ..common import _, human_size
+from ..common import _, human_size, human_time
 from ..models import Methods
 from .device import mount_volume, run_mount
 
@@ -455,7 +455,10 @@ class RescueWizard(Adw.NavigationPage):
                 bits.append(vol.mountpoint)
             icon_name = "channel-secure-symbolic" if vol.state == "locked" else "drive-harddisk-symbolic"
             group.add_row(self._source_row(dev, vol, vol.title, " · ".join(b for b in bits if b), icon_name))
-        group.add_row(self._source_row(dev, None, _("The whole drive"), _("For an image or a deep search: every sector, whatever the volumes."), dev.symbolic_icon))
+        whole = _("For an image or a deep search: every sector, whatever the volumes.")
+        if vols:
+            whole = _("Only for a disk image, a deep search or lost partitions. To copy files, choose a volume above.")
+        group.add_row(self._source_row(dev, None, _("The whole drive"), whole, dev.symbolic_icon))
         return group
 
     def _source_row(self, dev, vol, title, subtitle, icon_name):
@@ -589,6 +592,11 @@ class RescueWizard(Adw.NavigationPage):
             box.append(w.notice(_("This drive reported problems: every extra read wears it. Nothing starts without you."), "attention"))
         if methods.recommended_why:
             box.append(self._note(methods.recommended_why))
+        usable = self._usable_volumes()
+        if usable:
+            box.append(w.notice(_("You chose the whole drive. Copying files and the quick analysis work with the files of a volume."), "info"))
+            box.append(w.button_row(*(w.button(_("Use the volume %s") % v.title, lambda v=v: self.use_volume(v), css=("pill", "suggested-action"))
+                                      for v in usable)))
         group = w.Group()
         self._radio_group = None
         order = [methods.recommended] + [m for m in ("quick", "copy", "deep") if m != methods.recommended]
@@ -622,6 +630,39 @@ class RescueWizard(Adw.NavigationPage):
         box.append(self.deep_note)
         self._render_deep_note()
 
+    def _usable_volumes(self):
+        """The volumes with files of a drive chosen whole: what copy and quick need."""
+        plan = self.plan
+        if plan.image or not plan.device or plan.volume:
+            return []
+        return [v for v in plan.device.content_volumes if v.can_hold_files]
+
+    def use_volume(self, vol):
+        """Back to step 3 with a volume of the same drive as the source."""
+        nav = self.window.nav
+        if nav.get_visible_page() is not self:
+            nav.pop_to_page(self)
+        plan = self.plan
+        plan.image = ""
+        plan.volume = vol
+        plan.methods = None
+        plan.method = None
+        self._load_methods(lambda: self._enter("how"))
+
+    def check_again(self):
+        """After a missing tool was installed: ask the engine again, keep the choice."""
+        plan = self.plan
+        keep = plan.method
+        plan.methods = None
+        plan.method = None
+
+        def then():
+            m = plan.methods.get(keep)
+            if m and m.available:
+                plan.method = keep
+            self._enter("how")
+        self._load_methods(then)
+
     def _note(self, text):
         row = w.hbox(10)
         row.append(w.icon("dialog-information-symbolic"))
@@ -641,7 +682,7 @@ class RescueWizard(Adw.NavigationPage):
         if m and m.password:
             subtitle += " " + _("It asks for the administrator password.")
         if m and not m.available:
-            subtitle = m.why_text or subtitle
+            subtitle = _("Not available: %s") % (m.why_text or subtitle)
         r = w.row(title_fn(), subtitle, activatable=bool(m and m.available))
         radio = Gtk.CheckButton(group=self._radio_group, active=plan.method == mid, valign=Gtk.Align.CENTER)
         self._radio_group = self._radio_group or radio
@@ -651,8 +692,13 @@ class RescueWizard(Adw.NavigationPage):
         r.add_prefix(radio)
         if m and m.available:
             r.set_activatable_widget(radio)
-        else:
-            r.set_sensitive(False)
+        elif m and m.why == "pick-volume" and len(self._usable_volumes()) == 1:
+            # The row stays readable: its reason is what to do next
+            vol = self._usable_volumes()[0]
+            r.add_suffix(self._row_button(_("Use %s") % vol.title, lambda: self.use_volume(vol)))
+        elif m and m.why.startswith("no-"):
+            r.add_suffix(self._row_button(_("Check again"), self.check_again,
+                                          tooltip=_("After installing the package, check again without leaving the assistant.")))
         if mid == plan.methods.recommended:
             pill = w.label(_("Recommended"), css=("recommended-pill",), wrap=False)
             pill.set_valign(Gtk.Align.CENTER)
@@ -667,6 +713,11 @@ class RescueWizard(Adw.NavigationPage):
         radio.connect("toggled", toggled)
         return r
 
+    def _row_button(self, text, callback, tooltip=None):
+        b = w.button(text, callback, tooltip=tooltip)
+        b.set_valign(Gtk.Align.CENTER)
+        return b
+
     def _render_deep_note(self):
         plan = self.plan
         text = ""
@@ -680,7 +731,7 @@ class RescueWizard(Adw.NavigationPage):
     def _after_how(self):
         plan = self.plan
         if plan.method == "partitions":
-            self.window.nav.push(PartitionsPage(self.window, plan))
+            self.window.nav.push(PartitionsPage(self.window, plan, self))
             return
         if plan.needs_mount:
             mount_volume(self.window, plan.device, plan.volume, self._mounted)
@@ -1023,10 +1074,12 @@ def write_items(items):
 class PartitionsPage(Adw.NavigationPage):
     """TestDisk, read-only: it shows what it finds and writes nothing."""
 
-    def __init__(self, window, plan):
+    def __init__(self, window, plan, wizard=None):
         super().__init__(title=_("Look for lost partitions"), tag="partitions")
         self.window = window
         self.plan = plan
+        self.wizard = wizard
+        self._timer = None
         self.box = w.box(spacing=18)
         self.box.append(w.label(_("TestDisk reads the partition table and analyzes the disk. It only shows what it finds: nothing is written."), css=("dim-label",)))
         self.list_btn = w.button(_("Read the partition table"), lambda: self.run(False), css=("pill",))
@@ -1037,9 +1090,28 @@ class PartitionsPage(Adw.NavigationPage):
             self.box.append(w.label(_("This drive reported problems: analyzing all of it is extra wear. A disk image first spares it."), css=("dim-label",)))
         self.results = w.box(spacing=12)
         self.box.append(self.results)
+        self.box.append(self._volumes_group())
         tool = Adw.ToolbarView(content=w.page_scroller(self.box, maximum=760))
         tool.add_top_bar(Adw.HeaderBar())
         self.set_child(tool)
+
+    def _volumes_group(self):
+        """The volumes the system already sees on this drive are not lost: their files
+        can be recovered directly, which is what a person usually came for."""
+        plan = self.plan
+        vols = [v for v in plan.device.content_volumes if v.can_hold_files] if plan.device and not plan.image else []
+        group = w.Group(_("Volumes this drive already has"),
+                        _("They are not lost. To recover their files, copying them is faster and reads the disk less than any analysis."))
+        for vol in vols:
+            bits = [vol.fstype, human_size(vol.size), vol.state_label]
+            r = w.row(vol.title, " · ".join(b for b in bits if b), icon_name="drive-harddisk-symbolic")
+            if self.wizard:
+                b = w.button(_("Recover its files"), lambda v=vol: self.wizard.use_volume(v), css=("suggested-action",))
+                b.set_valign(Gtk.Align.CENTER)
+                r.add_suffix(b)
+            group.add_row(r)
+        group.set_visible(bool(vols))
+        return group
 
     def run(self, search):
         w.clear(self.results)
@@ -1047,12 +1119,28 @@ class PartitionsPage(Adw.NavigationPage):
         spinner.set_size_request(24, 24)
         self.results.append(spinner)
         self.results.append(w.label(_("Looking for partitions…"), xalign=0.5))
+        self.elapsed = w.label("", css=("dim-label", "numeric"), xalign=0.5)
+        self.results.append(self.elapsed)
+        if search:
+            self.results.append(w.label(_("TestDisk does not say how far it has gone, so there is no percentage. Analyzing a whole disk reads all of it and can take hours; the drive can be used for nothing else meanwhile."),
+                                        css=("caption", "dim-label"), xalign=0.5))
         self.list_btn.set_sensitive(False)
         self.search_btn.set_sensitive(False)
+        started = GLib.get_monotonic_time()
+
+        def tick():
+            seconds = (GLib.get_monotonic_time() - started) // 1000000
+            self.elapsed.set_text(_("Elapsed: %s") % human_time(seconds))
+            return True
+        tick()
+        self._timer = GLib.timeout_add_seconds(1, tick)
         target = self.plan.device.device if self.plan.device and not self.plan.image else self.plan.target
         self.window.engine.partitions(target, lambda res: self._done(res, search), search=search)
 
     def _done(self, res, search):
+        if self._timer:
+            GLib.source_remove(self._timer)
+            self._timer = None
         self.list_btn.set_sensitive(True)
         self.search_btn.set_sensitive(True)
         w.clear(self.results)
