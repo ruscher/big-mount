@@ -467,15 +467,18 @@ class DevicePage(QScrollArea):
         return card
 
     def _tools_row(self, dev):
+        # In a grid: in one row they did not fit, with the fonts of a real Plasma in Portuguese
         wrap = QWidget()
-        lay = QHBoxLayout(wrap)
+        lay = QGridLayout(wrap)
         lay.setContentsMargins(0, 4, 0, 0)
         lay.setSpacing(6)
+        columns = 3
 
         def add(verb, text, icon, tip=""):
             btn = button(text, icon, tip=tip)
             btn.clicked.connect(lambda: self.action.emit(verb, dev, {}))
-            lay.addWidget(btn)
+            n = lay.count()
+            lay.addWidget(btn, n // columns, n % columns)
 
         add("details", _("&Technical details"), "documentation")
         if dev.get("kind") != "image" and self.tools.get("smartctl"):
@@ -484,7 +487,7 @@ class DevicePage(QScrollArea):
         add("report", _("Export &report…"), "document-save")
         if dev.get("kind") != "image":
             add("check", _("Check and erase…"), "dialog-password", _("The drive check of Big-Mount, with Secure Erase"))
-        lay.addStretch(1)
+        lay.setColumnStretch(columns, 1)
         return wrap
 
 

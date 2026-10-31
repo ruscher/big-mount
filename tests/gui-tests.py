@@ -215,6 +215,14 @@ class DevicePageTests(Base):
         button_named(page, "Mount read-only")
         self.assertFalse([b for b in page.findChildren(QPushButton) if "Unmount" in b.text() and b.isVisibleTo(page)])
 
+    def test_the_tools_of_a_drive_take_more_than_one_row(self):
+        # Seen on a real screen: in one row, with Plasma fonts in Portuguese, the last was cut
+        page = self.win.device_page
+        pump(lambda: page.diag is not None)
+        pump(lambda: button_named(page, "Read SMART"))
+        first, last = button_named(page, "Technical details"), button_named(page, "Check and erase")
+        self.assertGreater(last.mapTo(page, last.rect().topLeft()).y(), first.mapTo(page, first.rect().topLeft()).y())
+
     def test_locked_and_unsupported_volumes(self):
         locked = drive("/dev/sdc", "Cofre", volumes=[vol("/dev/sdc1", fstype="crypto_LUKS", state="locked", state_label="Encrypted and locked", fs_supported=False)])
         self.win.device_page.show_device(locked)
