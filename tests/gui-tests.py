@@ -30,7 +30,7 @@ if "--shots" in sys.argv:
     del sys.argv[i:i + 2]
 
 from gui_support import (Adw, CALLBACK_ERRORS, FIX, GB, Gtk, LIB, REPO, WORK, backup, calls, click, drive, find_button, find_row, fix, fix_text, forget_calls,  # noqa: E402
-                         make_app, pump, seagate, shot, system_disk, text, texts, vol, widgets)
+                         make_app, present_at, pump, seagate, shot, system_disk, text, texts, vol, widgets)
 
 app = make_app()
 
@@ -1653,6 +1653,17 @@ class AboutAndWelcome(Base):
         self.win.show_welcome()
         self.assertTrue(pump(lambda: self.win.get_visible_dialog() is not None, 2))
         self.assertFalse(self.win.get_visible_dialog().show_switch.get_active())
+
+    def test_on_a_narrow_screen_the_button_stays_whole(self):
+        present_at(self.win, 360, 700)
+        self.win.show_welcome()
+        self.assertTrue(pump(lambda: "Welcome to Big-Mount" in text(self.win), 3))
+        welcome = self.win.get_visible_dialog()
+        pump(timeout=0.3)
+        ok, bounds = welcome.start.compute_bounds(welcome)
+        self.assertTrue(ok)
+        self.assertGreater(bounds.get_width(), 0)
+        self.assertLessEqual(bounds.get_x() + bounds.get_width(), welcome.get_width())
 
     def test_never_over_a_drive_that_was_asked_for(self):
         save_setting("welcome", "show", "true")

@@ -90,7 +90,9 @@ class WelcomeDialog(Adw.Dialog):
         bottom.set_margin_top(12)
         bottom.set_margin_bottom(16)
         self.show_switch = Gtk.Switch(active=should_show(), valign=Gtk.Align.CENTER)
-        switch_label = w.label(_("Show this screen on startup"), wrap=False)
+        # It wraps: the footer is outside the scroller, and the button must stay reachable
+        switch_label = w.label(_("Show this screen on startup"))
+        switch_label.set_hexpand(True)
         self.show_switch.update_property([Gtk.AccessibleProperty.LABEL], [switch_label.get_text()])
         switch_box = w.hbox(8)
         switch_box.append(self.show_switch)

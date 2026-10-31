@@ -1513,8 +1513,11 @@ user actions ── udisksctl/D-Bus ──▶ UDisks2 ── polkit decides (pas
 - **Other users' data:** as a user, `lsof` sees only your processes. Other
   accounts appear only with the administrator password.
 - **Untrusted data** (labels, file and process names) never goes through
-  `eval` or a shell. It is escaped for HTML/Pango in dialogs and stripped of
-  escape sequences in the terminal. Translation catalogs are loaded with
+  `eval` or a shell. Dialogs receive it as data and show it in GTK labels with
+  markup off, after replacing control characters; notifications escape it for
+  their markup; in the terminal every control character, ESC included, becomes
+  `?`, so an escape sequence cannot act (what follows the ESC is shown as plain
+  text). Translation catalogs are loaded with
   `noexpand_translation`, and configuration values are never used as printf
   formats.
 - **Races:** `flock` at boot, a per-drive lock for removals (a double
