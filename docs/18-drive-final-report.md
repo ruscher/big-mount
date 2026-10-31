@@ -14,7 +14,7 @@ and security in [17](17-drive-security.md).
 | `tests/run-tests.sh new` | boot path | 114 passed, 0 failed (unchanged) |
 | `tests/lib-tests.sh` | library | 236 passed, 0 failed (one new) |
 | `tests/i18n-tests.sh` | translations | 38 passed, 0 failed |
-| `tests/package-check.sh` | PKGBUILD | 69 passed, 0 failed (was 52: the new files) |
+| `tests/package-check.sh` | PKGBUILD | 70 passed, 0 failed (was 52: the new files) |
 | `tests/integration.sh` | existing real scenarios | 134 passed, 0 failed, 1 skipped (needs root) |
 | `shellcheck -x`, `bash -n` | as in CI | no findings |
 

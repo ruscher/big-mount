@@ -143,7 +143,15 @@ check "polkit exec.path names the drive helper" grep -q '>/usr/lib/big-mount/big
 command -v xmllint >/dev/null && check "icon is a well-formed SVG" xmllint --noout "$P/usr/share/icons/hicolor/scalable/apps/big-mount.svg"
 check "translation catalog loads" msgunfmt -o /dev/null "$P/usr/share/locale/pt_BR/LC_MESSAGES/big-mount.mo"
 if command -v systemd-analyze >/dev/null; then
-    check "systemd unit verifies" bash -c 'systemd-analyze verify "$1" 2>&1 | grep -v "/usr/bin/bigmount" | grep -q . && exit 1 || exit 0' _ "$P/usr/lib/systemd/system/big-mount.service"
+    # It also reports on the units it loads with this one, and on the machine it runs
+    # on: those are shown, and only what is about this unit counts against it
+    verify_unit() { systemd-analyze verify "$1" 2>&1 | grep -v "/usr/bin/bigmount" || true; }
+    verify_out="$(verify_unit "$P/usr/lib/systemd/system/big-mount.service")"
+    [ -n "$verify_out" ] && printf '      %s\n' "$verify_out"
+    check "systemd unit verifies" bash -c '[[ $1 != *big-mount.service* ]]' _ "$verify_out"
+    mkdir -p "$WORK/bad"
+    sed 's/^Type=oneshot/Type=nonsense/' "$P/usr/lib/systemd/system/big-mount.service" > "$WORK/bad/big-mount.service"
+    check "  ... and that check finds a broken unit" bash -c '[[ $1 == *big-mount.service* ]]' _ "$(verify_unit "$WORK/bad/big-mount.service")"
 fi
 check "service keeps FUSE daemons alive (KillMode=process)" grep -qx 'KillMode=process' "$P/usr/lib/systemd/system/big-mount.service"
 for f in usr/bin/bigmount usr/lib/big-mount/*.sh usr/lib/big-mount/bigmount-holders usr/lib/big-mount/bigmount-drive-helper; do
