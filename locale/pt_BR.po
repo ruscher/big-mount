@@ -2674,19 +2674,27 @@ msgstr "Este comando só responde com --json."
 msgid "This is a disk image: searching it does not touch any disk."
 msgstr "Isto é uma imagem de disco: procurar nela não toca em nenhum disco."
 
-#: big-mount/usr/lib/big-mount/drive-recovery.sh:1072
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:1073
+msgid "The drive reported problems. For the whole drive, a disk image reads it only once. To copy files, choose one of its volumes."
+msgstr "O disco relatou problemas. No disco inteiro, uma imagem de disco o lê uma única vez. Para copiar arquivos, escolha um dos volumes dele."
+
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:1077
+msgid "For the whole drive, files are searched by their content. To copy files, choose one of its volumes."
+msgstr "No disco inteiro, os arquivos são procurados pelo conteúdo. Para copiar arquivos, escolha um dos volumes dele."
+
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:1081
 msgid "The drive reported problems: copy what matters first, without going through everything."
 msgstr "O disco relatou problemas: copie primeiro o que importa, sem percorrer tudo."
 
-#: big-mount/usr/lib/big-mount/drive-recovery.sh:1076
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:1085
 msgid "The drive reported problems and its files cannot be opened: a disk image reads it only once, and the search is done on the image."
 msgstr "O disco relatou problemas e os arquivos não abrem: uma imagem de disco o lê uma única vez, e a busca é feita na imagem."
 
-#: big-mount/usr/lib/big-mount/drive-recovery.sh:1080
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:1089
 msgid "The files can be read normally: list them, and choose what to copy."
 msgstr "Os arquivos podem ser lidos normalmente: liste-os e escolha o que copiar."
 
-#: big-mount/usr/lib/big-mount/drive-recovery.sh:1084
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:1093
 msgid "The files cannot be opened normally: search for them by content."
 msgstr "Os arquivos não abrem normalmente: procure-os pelo conteúdo."
 
@@ -3389,7 +3397,7 @@ msgid "List of files"
 msgstr "Lista de arquivos"
 
 #: big-mount/usr/lib/big-mount/gui/models.py:274
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:492
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:497
 msgid "Search by content"
 msgstr "Busca por conteúdo"
 
@@ -3398,18 +3406,18 @@ msgstr "Busca por conteúdo"
 msgid "Files"
 msgstr "Arquivos"
 
-#: big-mount/usr/lib/big-mount/gui/widgets.py:184
+#: big-mount/usr/lib/big-mount/gui/widgets.py:197
 #, python-format
 msgid "%(used)s used, %(free)s free"
 msgstr "%(used)s usados, %(free)s livres"
 
-#: big-mount/usr/lib/big-mount/gui/widgets.py:258
+#: big-mount/usr/lib/big-mount/gui/widgets.py:271
 msgid "Copy"
 msgstr "Copiar"
 
 #: big-mount/usr/lib/big-mount/gui/window.py:77
+#: big-mount/usr/lib/big-mount/gui/pages/overview.py:66
 #: big-mount/usr/lib/big-mount/gui/pages/overview.py:74
-#: big-mount/usr/lib/big-mount/gui/pages/overview.py:82
 msgid "Your drives and devices"
 msgstr "Seus discos e dispositivos"
 
@@ -3517,7 +3525,7 @@ msgstr "Montar “%s” somente leitura"
 
 #: big-mount/usr/lib/big-mount/gui/pages/device.py:59
 #: big-mount/usr/lib/big-mount/gui/pages/device.py:79
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:459
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:464
 msgid "Mount read-only"
 msgstr "Montar somente leitura"
 
@@ -3526,13 +3534,13 @@ msgid "Mounting…"
 msgstr "Montando…"
 
 #: big-mount/usr/lib/big-mount/gui/pages/device.py:80
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:870
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:921
 msgid "Unmount and mount read-only"
 msgstr "Desmontar e montar somente leitura"
 
 #: big-mount/usr/lib/big-mount/gui/pages/device.py:83
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:993
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:606
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1044
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:608
 msgid "The reason could not be determined."
 msgstr "Não foi possível saber o motivo."
 
@@ -3548,324 +3556,324 @@ msgstr "Desmontando…"
 msgid "Could not unmount"
 msgstr "Não foi possível desmontar"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:133
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:135
 msgid "Based on the drive's SMART report and on the system log since this computer started."
 msgstr "Com base no relatório SMART do disco e no registro do sistema desde que o computador foi ligado."
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:134
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:136
 msgid "Based on the system log since this computer started. The drive's own report (SMART) was not read."
 msgstr "Com base no registro do sistema desde que o computador foi ligado. O relatório do próprio disco (SMART) não foi lido."
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:135
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:137
 msgid "Based on the drive's SMART report. The system log could not be read."
 msgstr "Com base no relatório SMART do disco. O registro do sistema não pôde ser lido."
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:136
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:138
 msgid "Nothing could be consulted yet, so nothing can be said about this drive."
 msgstr "Nada pôde ser consultado ainda, então não dá para dizer nada sobre este disco."
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:142
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:144
 msgid "This drive is failing. Copy your files to another drive before trying any repair."
 msgstr "Este disco está falhando. Copie seus arquivos para outro disco antes de tentar qualquer reparo."
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:144
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:146
 msgid "Something is not right with this drive. Copy what matters to another place."
 msgstr "Há algo errado com este disco. Copie o que importa para outro lugar."
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:146
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:148
 msgid "No alert was found in the information consulted."
 msgstr "Nenhum alerta encontrado nas informações consultadas."
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:148
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:150
 msgid "This is a disk image: it has no health of its own."
 msgstr "Isto é uma imagem de disco: ela não tem saúde própria."
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:149
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:151
 msgid "Not examined yet: there is not enough information."
 msgstr "Ainda não examinado: não há informação suficiente."
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:163
-#: big-mount/usr/lib/big-mount/gui/pages/overview.py:125
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:165
+#: big-mount/usr/lib/big-mount/gui/pages/overview.py:117
 msgid "Rescue my files"
 msgstr "Resgatar meus arquivos"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:165
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:348
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:167
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:350
 msgid "Export diagnosis…"
 msgstr "Exportar diagnóstico…"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:169
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:171
 #: big-mount/usr/lib/big-mount/gui/pages/results.py:237
 #: big-mount/usr/lib/big-mount/gui/pages/results.py:275
 msgid "What was found"
 msgstr "O que foi encontrado"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:176
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:178
 msgid "What to do"
 msgstr "O que fazer"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:187
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:189
 msgid "What the drive itself reports (SMART)"
 msgstr "O que o próprio disco informa (SMART)"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:193
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:195
 #, python-format
 msgid "Read at %s, through the administrator password."
 msgstr "Lido em %s, com a senha de administrador."
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:195
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:197
 msgid "Overall verdict"
 msgstr "Veredito geral"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:195
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:197
 msgid "Passed"
 msgstr "Aprovado"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:195
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:197
 msgid "Failing"
 msgstr "Falhando"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:196
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:198
 msgid "Sectors waiting to be replaced"
 msgstr "Setores aguardando substituição"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:197
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:199
 msgid "Sectors already replaced"
 msgstr "Setores já substituídos"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:198
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:200
 msgid "Sectors it could not read offline"
 msgstr "Setores que não conseguiu ler sem uso"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:199
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:201
 msgid "Errors it could not correct"
 msgstr "Erros que não conseguiu corrigir"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:200
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:202
 msgid "Cable or adapter errors"
 msgstr "Erros de cabo ou adaptador"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:201
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:203
 msgid "NVMe media errors"
 msgstr "Erros de mídia do NVMe"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:202
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:204
 msgid "NVMe life used"
 msgstr "Vida útil usada do NVMe"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:203
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:205
 msgid "Hours powered on"
 msgstr "Horas ligado"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:214
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:216
 msgid "Not read yet. It needs the administrator password, and through USB it can take a minute. Many USB adapters do not pass it through."
 msgstr "Ainda não lido. Precisa da senha de administrador, e pela USB pode levar um minuto. Muitos adaptadores USB não repassam essa informação."
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:215
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:217
 msgid "Not read"
 msgstr "Não lido"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:219
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:221
 msgid "Read SMART…"
 msgstr "Ler SMART…"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:219
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:221
 msgid "Read SMART again…"
 msgstr "Ler SMART de novo…"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:221
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:223
 msgid "Asks for the administrator password. It only reads: no test is started."
 msgstr "Pede a senha de administrador. Só lê: nenhum teste é iniciado."
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:229
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:231
 msgid "Reading SMART. Through USB it can take a minute."
 msgstr "Lendo o SMART. Pela USB pode levar um minuto."
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:246
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:248
 msgid "Details"
 msgstr "Detalhes"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:256
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:258
 msgid "Hidden. It identifies this drive: it is also left out of shared reports."
 msgstr "Oculto. Ele identifica este disco: também fica de fora dos relatórios compartilhados."
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:265
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:266
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:267
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:268
 msgid "Show the serial number"
 msgstr "Mostrar o número de série"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:272
 #: big-mount/usr/lib/big-mount/gui/pages/device.py:274
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:276
 msgid "Messages from the system log"
 msgstr "Mensagens do registro do sistema"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:272
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:274
 #, python-format
 msgid "%d recent messages about this drive"
 msgstr "%d mensagens recentes sobre este disco"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:283
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:285
 #: big-mount/usr/lib/big-mount/gui/pages/maintenance.py:13
 msgid "Advanced maintenance"
 msgstr "Manutenção avançada"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:284
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:286
 #: big-mount/usr/lib/big-mount/gui/pages/maintenance.py:38
 msgid "Erase data permanently"
 msgstr "Apagar dados permanentemente"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:284
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:286
 msgid "Separate from recovery. Opens an explanation first."
 msgstr "Separado da recuperação. Abre uma explicação antes."
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:308
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:310
 msgid "Overview"
 msgstr "Visão geral"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:309
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:311
 msgid "Recover"
 msgstr "Recuperar"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:311
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:313
 msgid "History"
 msgstr "Histórico"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:315
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:316
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:952
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:317
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:318
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1003
 msgid "More options"
 msgstr "Mais opções"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:322
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:384
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:324
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:386
 msgid "The drive was disconnected"
 msgstr "O disco foi desconectado"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:323
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:325
 msgid "Nothing else was done. Connect it again and it comes back here."
 msgstr "Nada mais foi feito. Conecte de novo e ele volta para cá."
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:324
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:326
 msgid "Back to my drives"
 msgstr "Voltar para meus discos"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:351
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:353
 msgid "Block writing on the device…"
 msgstr "Bloquear a gravação no dispositivo…"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:355
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:357
 msgid "Advanced maintenance…"
 msgstr "Manutenção avançada…"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:419
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:424
 #: big-mount/usr/lib/big-mount/gui/pages/overview.py:50
 #: big-mount/usr/lib/big-mount/gui/pages/rescue.py:263
 msgid "Recover files"
 msgstr "Recuperar arquivos"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:422
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:427
 #: big-mount/usr/lib/big-mount/gui/pages/overview.py:52
 msgid "Check drive"
 msgstr "Verificar disco"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:427
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:429
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:432
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:434
 msgid "Volumes"
 msgstr "Volumes"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:452
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:457
 msgid "This volume spans more than one device. All of them must be connected."
 msgstr "Este volume ocupa mais de um dispositivo. Todos precisam estar conectados."
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:463
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:466
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:468
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:471
 #: big-mount/usr/lib/big-mount/gui/pages/overview.py:48
 msgid "Open files"
 msgstr "Abrir arquivos"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:464
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:469
 msgid "Unmount"
 msgstr "Desmontar"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:468
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:473
 msgid "Unlock…"
 msgstr "Desbloquear…"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:485
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:490
 msgid "Copy your files to another place, step by step. This never writes to this drive."
 msgstr "Copie seus arquivos para outro lugar, passo a passo. Isso nunca grava neste disco."
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:486
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:491
 msgid "Start recovering files"
 msgstr "Começar a recuperar arquivos"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:489
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:494
 msgid "What can be done"
 msgstr "O que dá para fazer"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:490
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:495
 msgid "Copy files that can still be read"
 msgstr "Copiar os arquivos que ainda podem ser lidos"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:490
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:495
 msgid "The quickest and safest: names and folders are kept."
 msgstr "O mais rápido e seguro: nomes e pastas são mantidos."
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:491
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:496
 msgid "List what exists, by type"
 msgstr "Listar o que existe, por tipo"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:491
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:496
 msgid "Goes through the folders. Then you choose what to copy."
 msgstr "Percorre as pastas. Depois você escolhe o que copiar."
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:492
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:497
 msgid "For when files cannot be opened. Names and folders are lost, and nothing is guaranteed."
 msgstr "Para quando os arquivos não abrem. Nomes e pastas se perdem, e nada é garantido."
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:504
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:509
 msgid "Copies and searches of this drive"
 msgstr "Cópias e buscas deste disco"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:508
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:513
 msgid "Nothing yet"
 msgstr "Nada ainda"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:509
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:514
 msgid "What you copy from this drive is listed here."
 msgstr "O que você copiar deste disco aparece aqui."
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:530
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:553
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:535
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:558
 msgid "Export diagnosis"
 msgstr "Exportar diagnóstico"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:549
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:654
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:554
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:656
 msgid "Report written."
 msgstr "Relatório gravado."
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:554
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:559
 msgid "Keep them"
 msgstr "Manter"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:554
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:559
 msgid "Hide them"
 msgstr "Ocultar"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:566
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:571
 msgid "The drive can be disconnected now."
 msgstr "O disco já pode ser desconectado."
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:569
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:574
 msgid "Could not remove it"
 msgstr "Não foi possível removê-lo"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:589
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:594
 msgid "Whatever a driver or another program tries, the disk does not change. It lasts until the drive is disconnected. It asks for the administrator password."
 msgstr "O que quer que um driver ou outro programa tente, o disco não muda. Dura até o disco ser desconectado. Pede a senha de administrador."
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:590
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:595
 msgid "Block writing"
 msgstr "Bloquear a gravação"
 
@@ -3927,7 +3935,7 @@ msgid "Search this image for files"
 msgstr "Procurar arquivos nesta imagem"
 
 #: big-mount/usr/lib/big-mount/gui/pages/job.py:92
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:304
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:305
 msgid "Open destination"
 msgstr "Abrir destino"
 
@@ -4038,25 +4046,25 @@ msgstr "O disco informa que apagar leva cerca de %s."
 msgid "Afterwards an empty partition table is written and read back, to check that the drive keeps what is written again."
 msgstr "Depois, uma tabela de partições vazia é gravada e lida de volta, para conferir se o disco voltou a guardar o que é gravado."
 
-#: big-mount/usr/lib/big-mount/gui/pages/maintenance.py:90
-#: big-mount/usr/lib/big-mount/gui/pages/maintenance.py:103
+#: big-mount/usr/lib/big-mount/gui/pages/maintenance.py:89
+#: big-mount/usr/lib/big-mount/gui/pages/maintenance.py:100
 msgid "Continue…"
 msgstr "Continuar…"
 
-#: big-mount/usr/lib/big-mount/gui/pages/maintenance.py:101
+#: big-mount/usr/lib/big-mount/gui/pages/maintenance.py:98
 msgid "Erase the whole drive?"
 msgstr "Apagar o disco inteiro?"
 
-#: big-mount/usr/lib/big-mount/gui/pages/maintenance.py:102
+#: big-mount/usr/lib/big-mount/gui/pages/maintenance.py:99
 #, python-format
 msgid "Every file on %s will be lost for good. Have you copied what you need?"
 msgstr "Todos os arquivos de %s serão perdidos para sempre. Você já copiou o que precisa?"
 
-#: big-mount/usr/lib/big-mount/gui/pages/maintenance.py:140
+#: big-mount/usr/lib/big-mount/gui/pages/maintenance.py:134
 msgid "Erasing the drive"
 msgstr "Apagando a unidade"
 
-#: big-mount/usr/lib/big-mount/gui/pages/maintenance.py:141
+#: big-mount/usr/lib/big-mount/gui/pages/maintenance.py:135
 msgid "Do not turn off the computer or disconnect the drive."
 msgstr "Não desligue o computador nem desconecte a unidade."
 
@@ -4065,19 +4073,19 @@ msgstr "Não desligue o computador nem desconecte a unidade."
 msgid "and %d more"
 msgstr "e mais %d"
 
-#: big-mount/usr/lib/big-mount/gui/pages/overview.py:75
+#: big-mount/usr/lib/big-mount/gui/pages/overview.py:67
 msgid "Choose a drive to see its files, check its health or recover data."
 msgstr "Escolha um disco para ver os arquivos, verificar a saúde ou recuperar dados."
 
-#: big-mount/usr/lib/big-mount/gui/pages/overview.py:88
+#: big-mount/usr/lib/big-mount/gui/pages/overview.py:80
 msgid "Looking at what is connected…"
 msgstr "Vendo o que está conectado…"
 
-#: big-mount/usr/lib/big-mount/gui/pages/overview.py:90
+#: big-mount/usr/lib/big-mount/gui/pages/overview.py:82
 msgid "Connect a drive and it appears here by itself."
 msgstr "Conecte um disco e ele aparece aqui sozinho."
 
-#: big-mount/usr/lib/big-mount/gui/pages/overview.py:117
+#: big-mount/usr/lib/big-mount/gui/pages/overview.py:109
 #, python-format
 msgid "%s reported serious problems. Copy your files to another drive before trying any repair."
 msgstr "%s relatou problemas sérios. Copie seus arquivos para outro disco antes de tentar qualquer reparo."
@@ -4135,12 +4143,12 @@ msgid "Copies the whole device to a file on another disk with GNU ddrescue, keep
 msgstr "Copia o dispositivo inteiro para um arquivo em outro disco com o GNU ddrescue, mantendo um mapa para poder retomar e nunca ler duas vezes uma área boa."
 
 #: big-mount/usr/lib/big-mount/gui/pages/rescue.py:41
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1027
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1078
 msgid "Look for lost partitions"
 msgstr "Procurar partições perdidas"
 
 #: big-mount/usr/lib/big-mount/gui/pages/rescue.py:42
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1031
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1084
 msgid "TestDisk reads the partition table and analyzes the disk. It only shows what it finds: nothing is written."
 msgstr "O TestDisk lê a tabela de partições e analisa o disco. Ele só mostra o que encontra: nada é gravado."
 
@@ -4205,287 +4213,335 @@ msgid "Searching it does not touch any disk."
 msgstr "Procurar nela não toca em nenhum disco."
 
 #: big-mount/usr/lib/big-mount/gui/pages/rescue.py:458
-msgid "The whole drive"
-msgstr "O disco inteiro"
-
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:458
 msgid "For an image or a deep search: every sector, whatever the volumes."
 msgstr "Para uma imagem ou uma busca profunda: todos os setores, sejam quais forem os volumes."
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:485
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:460
+msgid "Only for a disk image, a deep search or lost partitions. To copy files, choose a volume above."
+msgstr "Só para uma imagem de disco, uma análise profunda ou partições perdidas. Para copiar arquivos, escolha um volume acima."
+
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:461
+msgid "The whole drive"
+msgstr "O disco inteiro"
+
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:488
 msgid "Image file"
 msgstr "Arquivo de imagem"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:504
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:507
 msgid "Checking what can be done…"
 msgstr "Vendo o que dá para fazer…"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:509
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:512
 msgid "This source cannot be used"
 msgstr "Esta origem não pode ser usada"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:527
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:530
 msgid "You can choose more than one. If you are not sure, leave All."
 msgstr "Você pode escolher mais de um. Na dúvida, deixe Todos."
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:530
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:945
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:533
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:996
 msgid "All types"
 msgstr "Todos os tipos"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:589
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:592
 msgid "This drive reported problems: every extra read wears it. Nothing starts without you."
 msgstr "Este disco relatou problemas: cada leitura a mais o desgasta. Nada começa sem você."
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:600
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:597
+msgid "You chose the whole drive. Copying files and the quick analysis work with the files of a volume."
+msgstr "Você escolheu o disco inteiro. Copiar arquivos e a análise rápida trabalham com os arquivos de um volume."
+
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:598
+#, python-format
+msgid "Use the volume %s"
+msgstr "Usar o volume %s"
+
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:608
 msgid "Advanced"
 msgstr "Avançado"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:600
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:608
 msgid "Tools that work with the whole disk"
 msgstr "Ferramentas que trabalham com o disco inteiro"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:607
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:615
 msgid "What to copy"
 msgstr "O que copiar"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:609
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:943
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:617
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:994
 msgid "Everything"
 msgstr "Tudo"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:609
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:617
 msgid "All the files of this volume."
 msgstr "Todos os arquivos deste volume."
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:610
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:618
 msgid "Only what you mark. Recommended on a drive with problems: the most important first."
 msgstr "Só o que você marcar. Recomendado em um disco com problemas: o mais importante primeiro."
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:642
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:683
 msgid "It asks for the administrator password."
 msgstr "Pede a senha de administrador."
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:657
-msgid "Recommended"
-msgstr "Recomendado"
-
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:674
-#, python-format
-msgid "First a disk image is made, which needs free space elsewhere as large as the source (%s). Then the image is searched, and the disk rests."
-msgstr "Primeiro é feita uma imagem do disco, que precisa de espaço livre em outro lugar do tamanho da origem (%s). Depois a busca é feita na imagem, e o disco descansa."
-
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:676
-msgid "A direct copy does not filter by type. To choose by type, use the quick analysis."
-msgstr "A cópia direta não filtra por tipo. Para escolher por tipo, use a análise rápida."
-
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:718
-#, python-format
-msgid "From: %s"
-msgstr "De: %s"
-
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:720
-msgid "Never on the same physical disk as the source. If that disk fails, both are lost."
-msgstr "Nunca no mesmo disco físico da origem. Se esse disco falhar, os dois se perdem."
-
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:721
-msgid "Places on another disk"
-msgstr "Lugares em outro disco"
-
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:722
-msgid "Looking for places…"
-msgstr "Procurando lugares…"
-
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:725
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:624
-msgid "Choose another folder…"
-msgstr "Escolher outra pasta…"
-
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:760
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:685
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:811
 #, python-format
 msgid "Not available: %s"
 msgstr "Indisponível: %s"
 
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:698
+#, python-format
+msgid "Use %s"
+msgstr "Usar %s"
+
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:700
+msgid "Check again"
+msgstr "Verificar de novo"
+
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:701
+msgid "After installing the package, check again without leaving the assistant."
+msgstr "Depois de instalar o pacote, verifique de novo sem sair do assistente."
+
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:703
+msgid "Recommended"
+msgstr "Recomendado"
+
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:725
+#, python-format
+msgid "First a disk image is made, which needs free space elsewhere as large as the source (%s). Then the image is searched, and the disk rests."
+msgstr "Primeiro é feita uma imagem do disco, que precisa de espaço livre em outro lugar do tamanho da origem (%s). Depois a busca é feita na imagem, e o disco descansa."
+
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:727
+msgid "A direct copy does not filter by type. To choose by type, use the quick analysis."
+msgstr "A cópia direta não filtra por tipo. Para escolher por tipo, use a análise rápida."
+
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:769
+#, python-format
+msgid "From: %s"
+msgstr "De: %s"
+
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:771
+msgid "Never on the same physical disk as the source. If that disk fails, both are lost."
+msgstr "Nunca no mesmo disco físico da origem. Se esse disco falhar, os dois se perdem."
+
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:772
+msgid "Places on another disk"
+msgstr "Lugares em outro disco"
+
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:773
+msgid "Looking for places…"
+msgstr "Procurando lugares…"
+
 #: big-mount/usr/lib/big-mount/gui/pages/rescue.py:776
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:626
+msgid "Choose another folder…"
+msgstr "Escolher outra pasta…"
+
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:827
 msgid "No other disk is mounted. Connect one, or choose a folder."
 msgstr "Nenhum outro disco está montado. Conecte um, ou escolha uma pasta."
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:781
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:584
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:613
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:832
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:586
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:615
 msgid "Choose where to save"
 msgstr "Escolha onde salvar"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:803
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:854
 msgid "Checking this place…"
 msgstr "Verificando este lugar…"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:809
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:860
 msgid "The check could not be done."
 msgstr "Não foi possível verificar."
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:813
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:864
 msgid "Everything can be saved here."
 msgstr "Dá para salvar aqui."
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:815
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:866
 #, python-format
 msgid "It can be saved here: %s free."
 msgstr "Dá para salvar aqui: %s livres."
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:818
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:869
 msgid "It cannot be saved here."
 msgstr "Não dá para salvar aqui."
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:877
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:928
 msgid "Checking the source and the destination…"
 msgstr "Verificando a origem e o destino…"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:886
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:937
 msgid "It cannot be started."
 msgstr "Não pode começar."
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:906
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:957
 msgid "Method"
 msgstr "Método"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:909
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:960
 msgid "What"
 msgstr "O quê"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:912
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:963
 msgid "Space it will use"
 msgstr "Espaço que vai usar"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:914
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:916
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:965
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:967
 msgid "To copy"
 msgstr "A copiar"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:914
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:965
 #, python-format
 msgid "%(files)s files, %(size)s"
 msgstr "%(files)s arquivos, %(size)s"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:918
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:969
 msgid "Free at the destination"
 msgstr "Livre no destino"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:920
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:971
 msgid "Already there, with different content"
 msgstr "Já lá, com conteúdo diferente"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:923
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:974
 msgid "Your files will be copied with their names. Nothing is written to the source."
 msgstr "Seus arquivos serão copiados com os nomes. Nada é gravado na origem."
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:924
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:975
 msgid "First a list of what exists is made. Then you choose what to copy. Nothing is written to the source."
 msgstr "Primeiro é feita uma lista do que existe. Depois você escolhe o que copiar. Nada é gravado na origem."
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:925
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:976
 msgid "Files will be searched for by their content. Names and folders are lost, some files may come out incomplete, and finding nothing is possible. Nothing is written to the source."
 msgstr "Os arquivos serão procurados pelo conteúdo. Nomes e pastas se perdem, alguns arquivos podem sair incompletos, e é possível não encontrar nada. Nada é gravado na origem."
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:926
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:977
 msgid "The disk is read once, into a file. Nothing is written to it."
 msgstr "O disco é lido uma vez, para um arquivo. Nada é gravado nele."
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:931
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:982
 msgid "After the image, the search needs your confirmation. It can also be started later."
 msgstr "Depois da imagem, a busca precisa da sua confirmação. Ela também pode ser iniciada mais tarde."
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:933
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:984
 msgid "Good to know"
 msgstr "Bom saber"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:943
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:994
 #, python-format
 msgid "%d items you marked"
 msgstr "%d itens que você marcou"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:953
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1004
 msgid "If a file already exists"
 msgstr "Se um arquivo já existir"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:958
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1009
 msgid "Check the result"
 msgstr "Verificar o resultado"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:960
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1011
 msgid "Basic: rsync confirms each file as it is copied"
 msgstr "Básica: o rsync confirma cada arquivo ao copiar"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:960
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1011
 msgid "Names, sizes and dates compared at the end"
 msgstr "Nomes, tamanhos e datas comparados no final"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:961
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1012
 msgid "Content compared at the end (reads the source again)"
 msgstr "Conteúdo comparado no final (lê a origem de novo)"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:965
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1016
 msgid "Set aside a stuck file after (seconds)"
 msgstr "Deixar de lado um arquivo preso após (segundos)"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:967
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1018
 msgid "A file that does not advance for this long is set aside, so that the others are saved first. 0: never."
 msgstr "Um arquivo que não avança por este tempo é deixado de lado, para salvar os outros primeiro. 0: nunca."
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:971
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1022
 msgid "Limit the reading speed (kB/s)"
 msgstr "Limitar a velocidade de leitura (kB/s)"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:973
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1024
 msgid "0: no limit"
 msgstr "0: sem limite"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:984
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1035
 msgid "Starting…"
 msgstr "Começando…"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:993
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:606
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1044
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:608
 msgid "It did not start"
 msgstr "Não começou"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1033
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1085
 msgid "Read the partition table"
 msgstr "Ler a tabela de partições"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1034
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1086
 msgid "Analyze the whole disk"
 msgstr "Analisar o disco inteiro"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1035
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1087
 msgid "It reads all of the disk. On a drive with problems this is extra wear."
 msgstr "Lê o disco inteiro. Em um disco com problemas, isso é desgaste extra."
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1040
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1090
 msgid "This drive reported problems: analyzing all of it is extra wear. A disk image first spares it."
 msgstr "Este disco relatou problemas: analisá-lo inteiro é desgaste extra. Fazer antes uma imagem de disco o poupa."
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1052
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1103
+msgid "Volumes this drive already has"
+msgstr "Volumes que este disco já tem"
+
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1104
+msgid "They are not lost. To recover their files, copying them is faster and reads the disk less than any analysis."
+msgstr "Eles não estão perdidos. Para recuperar os arquivos deles, copiar é mais rápido e lê o disco menos que qualquer análise."
+
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1109
+msgid "Recover its files"
+msgstr "Recuperar os arquivos"
+
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1121
 msgid "Looking for partitions…"
 msgstr "Procurando partições…"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1064
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1125
+msgid "TestDisk does not say how far it has gone, so there is no percentage. Analyzing a whole disk reads all of it and can take hours; the drive can be used for nothing else meanwhile."
+msgstr "O TestDisk não informa quanto já avançou, por isso não há porcentagem. Analisar um disco inteiro lê o disco todo e pode levar horas; enquanto isso, o disco não pode ser usado para mais nada."
+
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1133
+#, python-format
+msgid "Elapsed: %s"
+msgstr "Decorrido: %s"
+
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1149
 msgid "The search failed."
 msgstr "A busca falhou."
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1067
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1152
 msgid "What TestDisk found"
 msgstr "O que o TestDisk encontrou"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1073
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1158
 msgid "Big-Mount does not rewrite partition tables, on purpose: a mistake there can lose everything. A disk image, or a search by content, recovers files without that risk."
 msgstr "O Big-Mount não regrava tabelas de partições, de propósito: um erro ali pode perder tudo. Uma imagem de disco, ou uma busca por conteúdo, recupera arquivos sem esse risco."
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1075
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1160
 msgid "The analysis did not recognize any partition. That does not prove there is no data: a search by content may still find files."
 msgstr "A análise não reconheceu nenhuma partição. Isso não prova que não há dados: uma busca por conteúdo ainda pode encontrar arquivos."
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1077
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1162
 msgid "The partition table is empty or unreadable. Analyzing the whole disk may find what it no longer lists."
 msgstr "A tabela de partições está vazia ou ilegível. Analisar o disco inteiro pode achar o que ela já não lista."
 
@@ -4538,71 +4594,71 @@ msgstr "Nada a mostrar"
 msgid "No file matches what you asked for."
 msgstr "Nenhum arquivo corresponde ao que você pediu."
 
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:294
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:296
 msgid "Recover selected"
 msgstr "Recuperar selecionados"
 
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:296
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:298
 msgid "Select all shown"
 msgstr "Selecionar todos"
 
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:297
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:299
 msgid "Clear selection"
 msgstr "Limpar"
 
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:305
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:636
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:306
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:638
 msgid "Save report"
 msgstr "Salvar relatório"
 
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:306
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:307
 msgid "Try another method"
 msgstr "Tentar outro método"
 
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:341
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:343
 msgid "Candidates found by content. They are saved in the destination folder, without their names and folders, and some may be incomplete. Check them before deleting anything."
 msgstr "Candidatos encontrados por conteúdo. Eles estão salvos na pasta de destino, sem os nomes e pastas, e alguns podem estar incompletos. Confira antes de apagar qualquer coisa."
 
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:342
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:344
 msgid "Copy selected to another folder"
 msgstr "Copiar selecionados"
 
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:344
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:346
 msgid "These files exist on the volume and have not been copied yet. Deleted files are not on this list."
 msgstr "Estes arquivos existem no volume e ainda não foram copiados. Arquivos excluídos não estão nesta lista."
 
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:357
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:359
 #, python-format
 msgid "All (%d)"
 msgstr "Todos (%d)"
 
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:377
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:379
 msgid "The list could not be read."
 msgstr "A lista não pôde ser lida."
 
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:471
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:473
 #, python-format
 msgid "%(shown)d shown, %(sel)d selected (%(size)s)"
 msgstr "%(shown)d mostrados, %(sel)d selecionados (%(size)s)"
 
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:488
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:490
 msgid "Select"
 msgstr "Selecionar"
 
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:510
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:512
 msgid "Preview"
 msgstr "Pré-visualizar"
 
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:576
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:578
 msgid "It cannot be copied"
 msgstr "Não pode ser copiado"
 
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:579
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:581
 #, python-format
 msgid "%d files with a line break in their names were left out. They cannot be handled safely."
 msgstr "%d arquivos com quebra de linha no nome ficaram de fora. Eles não podem ser tratados com segurança."
 
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:623
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:625
 msgid "It cannot be saved here"
 msgstr "Não dá para salvar aqui"
 

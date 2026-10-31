@@ -1067,6 +1067,15 @@ bm_rec_methods() {
    local rec why_rec
    case "$kind:$level:$fs_ok" in
       image:*) rec=deep why_rec=$"This is a disk image: searching it does not touch any disk." ;;
+      # A whole drive has no files of its own: that says nothing about its volumes
+      disk:critical:* | disk:attention:*)
+         rec=image
+         why_rec=$"The drive reported problems. For the whole drive, a disk image reads it only once. To copy files, choose one of its volumes."
+         ;;
+      disk:*)
+         rec=deep
+         why_rec=$"For the whole drive, files are searched by their content. To copy files, choose one of its volumes."
+         ;;
       *:critical:1 | *:attention:1)
          rec=copy
          why_rec=$"The drive reported problems: copy what matters first, without going through everything."
