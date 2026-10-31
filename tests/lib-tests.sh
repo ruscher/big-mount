@@ -533,7 +533,8 @@ else
     echo "  - no NVMe controller on this machine: controller case not exercised"
 fi
 nvp="$(lsblk -nrpo NAME,TYPE 2>/dev/null | awk '$1 ~ /nvme[0-9]+n[0-9]+p[0-9]+$/ && $2 == "part" { print $1; exit }')"
-if [ -n "$nvp" ]; then
+# In a container lsblk sees the disks of the host, and /dev does not have them
+if [ -n "$nvp" ] && [ -b "$nvp" ]; then
     bm_resolve "$nvp"; check "a real NVMe partition ($nvp) resolves to itself" eq "$R_DEV" "$nvp"
     bm_facts "$nvp"; check "  ... and its disk is the namespace, not 'nvme'" bash -c '[[ $1 =~ ^/dev/nvme[0-9]+n[0-9]+$ ]]' _ "${F[DISK]}"
 fi
