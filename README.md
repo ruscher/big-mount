@@ -6,9 +6,14 @@
 
 <p align="center">
   Automatic mounting of internal partitions at boot, diagnosis of read-only
-  devices, what keeps a device busy, and safe removal.<br>
+  devices, what keeps a device busy, safe removal, and a drive manager that
+  rescues files from failing disks.<br>
   Made for <a href="https://www.biglinux.com.br">BigLinux</a> (Manjaro/Arch, KDE Plasma 6, Wayland).
   It also works on GNOME and without any graphical session.
+</p>
+
+<p align="center">
+  <img src="docs/images/drive-manager.png" width="720" alt="The Big-Mount drive manager">
 </p>
 
 ---
@@ -21,6 +26,11 @@
 4. [Automatic mounting at boot](#4-automatic-mounting-at-boot)
 5. [Why can't I write here? (read-only devices)](#5-why-cant-i-write-here-read-only-devices)
 6. [Busy devices and safe removal](#6-busy-devices-and-safe-removal)
+   - [6a. Drive manager and file rescue](#6a-drive-manager-and-file-rescue)
+     - [Step by step, in the window](#6a2-rescue-files-step-by-step-in-the-window)
+     - [The same in the terminal](#6a3-the-same-in-the-terminal)
+     - [Commands and options](#6a4-commands)
+     - [When the files cannot be reached](#6a7-when-the-files-cannot-be-reached)
 7. [Desktop integration and notifications](#7-desktop-integration-and-notifications)
 8. [Command reference](#8-command-reference)
 9. [Configuration](#9-configuration)
@@ -43,7 +53,8 @@
 | **Diagnosis** (`bigmount --diagnose`, `--gui`) | on request | you | explains why a device cannot be written to, and offers the fix when it is safe |
 | **Busy device** (`bigmount --busy`) | on request | you | shows which programs, or other holders, prevent the unmount |
 | **Safe removal** (`--unmount`, `--safe-remove`, `--gui-remove`) | on request | you | unmounts and powers off the drive through UDisks2, without forcing anything |
-| **Drive check and Secure Erase** (`--diagnose DISK`, `--gui-drive`, `--secure-erase`) | on request | you (UDisks2 asks for the administrator password to erase) | tells whether a drive stopped answering or failed to read and write since boot; erases a SATA SSD that no longer keeps what is written, and checks that it keeps it again |
+| **Drive check and Secure Erase** (`--diagnose DISK`, `--gui-drive-check`, `--secure-erase`) | on request | you (UDisks2 asks for the administrator password to erase) | tells whether a drive stopped answering or failed to read and write since boot; erases a SATA SSD that no longer keeps what is written, and checks that it keeps it again |
+| **Drive manager and file rescue** (`--drive`, `--gui-drive`) | on request | you (UDisks2 and polkit for what needs more) | explains how a drive is doing, mounts it without changing it, copies files off it with real progress, resumes after a power cut, makes disk images ([6a](#6a-drive-manager-and-file-rescue)) |
 | **Notifier** (`bigmount --notifier`) | when you log in | you | tells you, once per boot, when a device was mounted read-only, and why |
 
 The priorities of the project, in order: **data integrity**, stability and
@@ -75,6 +86,9 @@ package attached:
 sudo pacman -U ./big-mount-*-any.pkg.tar.zst
 ```
 
+Check the version of the release: the drive manager needs 2.3.0 or later. Until there
+is a release of it, [build the package](#23-build-the-package-yourself).
+
 ### 2.2 From the BigLinux repository
 
 Big-Mount is part of BigLinux. To install or update it:
@@ -96,7 +110,8 @@ version once the work has been merged there.
 
 ### 2.3 Build the package yourself
 
-`pkgbuild/PKGBUILD` builds the `master` branch of this repository:
+`pkgbuild/PKGBUILD` builds the `master` branch of this repository, downloading
+it from GitHub, so it builds what was pushed and not your local changes:
 
 ```bash
 git clone https://github.com/ruscher/big-mount.git
@@ -168,9 +183,20 @@ cannot be traced to a commit.
 | `kdialog` | optional | dialogs on KDE Plasma |
 | `zenity` | optional | dialogs on GNOME and other desktops |
 | `libnotify` | optional | notifications (`notify-send`); without it `kdialog --passivepopup` is used |
-| `polkit` | comes with `udisks2` | authorization; `pkexec` for the administrator view |
+| `polkit` | comes with `udisks2` | authorization; `pkexec` for the administrator view and the helper of the drive manager |
+| `rsync` | optional | copying files off a drive (`--drive copy`) |
+| `pyside6` | optional | the window of the drive manager (`--gui-drive`); without it, dialogs |
+| `smartmontools` | optional | SMART details of a drive |
+| `ddrescue` | optional | disk images of a failing drive |
+| `testdisk` | optional | finding lost partitions, searching files by content (PhotoRec) |
 
-Without `kdialog` or `zenity`, everything works in the terminal.
+Without `kdialog` or `zenity`, everything works in the terminal. Optional packages
+are detected when they are needed, and what is missing is explained. Big-Mount
+never installs anything by itself. To have the whole drive manager:
+
+```bash
+sudo pacman -S --needed rsync pyside6 smartmontools ddrescue testdisk
+```
 
 ### 2.6 Disable or uninstall
 
@@ -199,6 +225,8 @@ bigmount --diagnose ~/Stick/photos     # any folder on the device works too
 bigmount --busy /run/media/$USER/HDD   # what is using this device?
 bigmount --safe-remove /dev/sdc        # unmount everything and power the drive off
 bigmount --gui                         # the same, in dialogs
+bigmount --gui-drive                   # drive manager: health of each drive, rescue files
+bigmount --drive                       # the same in menus, in any terminal and over SSH
 sudo bigmount --dry-run                # what the boot would mount, without mounting
 bigmount --doctor                      # is the installation healthy? (for bug reports)
 bigmount --version                     # which version and which code is installed
@@ -208,9 +236,13 @@ bigmount --version                     # which version and which code is install
 a user, it only explains that (exit 5) instead of failing on each step.
 
 In Dolphin: right-click a folder → **Storage device** → **Why can't I
-write here?** or **Safely remove**.
+write here?**, **Safely remove** or **Diagnose the drive and rescue files**.
 
-In the application menu: **Storage Diagnostics**.
+In the application menu: **Storage Diagnostics**, whose right-click menu
+has **Drive manager and file rescue**.
+
+A disk is failing and you need the files? Go to
+[6a](#6a-drive-manager-and-file-rescue), and do not run repair tools on it first.
 
 ---
 
@@ -490,7 +522,7 @@ partition`, and a partition table you erased comes back.
 
 ```bash
 bigmount --diagnose /dev/sda        # the drive, then each of its filesystems
-bigmount --gui-drive                # in a dialog (launcher: Check a drive)
+bigmount --gui-drive-check          # in a dialog (or Check and erase… in bigmount --gui-drive)
 sudo bigmount --secure-erase /dev/sda
 ```
 
@@ -667,12 +699,425 @@ Final messages, shown only after verification:
 
 ---
 
+## 6a. Drive manager and file rescue
+
+For a drive that may be failing, a drive the desktop cannot open, or any time files
+must come off a disk and you want to know that they really did. This is new in
+2.3.0. It works in a window, in menus in any terminal (also over SSH), and as
+commands for scripts. All three use the same engine, so they say the same things.
+
+<p align="center">
+  <img src="docs/images/drive-manager.png" width="820" alt="The drive manager showing a failing disk: critical health, what was found, and what to do">
+</p>
+
+```bash
+bigmount --gui-drive            # the window
+bigmount --drive                # the same in menus, in any terminal
+```
+
+Also from the desktop: right-click a folder in Dolphin → **Storage device** →
+**Diagnose the drive and rescue files**, or right-click **Storage Diagnostics** in the
+application menu → **Drive manager and file rescue**.
+
+The pictures in this section are the real window, drawn by
+[`tests/readme-screenshots.py`](tests/readme-screenshots.py) with sample drives. The
+terminal transcripts are real output, with a real copy between two disposable disk
+images; only the names of the user, the volumes and one model were changed. The window
+follows the Plasma theme and the system language.
+
+### 6a.1 What it does differently from a file manager
+
+- **It protects the disk first.** A read-only mount, without replaying journals
+  where possible, and optionally blocking writes on the device itself. Repair tools
+  are never run: they write, and can destroy what is still readable.
+- **One bad sector does not hold the rest.** A file that stops advancing is set
+  aside after 90 seconds and the copy goes on. Good files are saved first.
+- **A power cut loses nothing.** A file gets its final name only after it was fully
+  written and synced, and the job resumes, also with the drive under another name.
+- **It says what really happened.** Without a measured total there is no percentage:
+  a drive at risk is not scanned just to draw a bar. `completed` means nothing was
+  left behind, and otherwise you get the list.
+- **The destination is checked.** Not inside the source, not on the same physical
+  disk (through partitions, LUKS and LVM) unless you allow it, enough room, and
+  existing files are kept unless you decide otherwise.
+
+These rules come from a real rescue, of a disk with 1,848 pending sectors behind a
+USB bridge: 15,464 files saved, one set aside, and a power cut in the middle.
+[`docs/16-drive-copy-engine.md`](docs/16-drive-copy-engine.md) tells which rule came
+from what.
+
+### 6a.2 Rescue files, step by step, in the window
+
+**1. Look at the drive.** The list on the left shows every drive and what is known
+about its health, in words and an icon, never in colour alone. Reading this touches
+nothing on the disk: it comes from the kernel log, udev and UDisks2.
+
+| Level | Meaning |
+| --- | --- |
+| **Critical** | the drive reports failure, unreadable sectors, or 3 or more read errors |
+| **Attention** | timeouts, 3 or more USB resets, replaced sectors on a hard disk, one read error, CRC errors |
+| **No alerts** | nothing was found, and it says where it looked: SMART and log, log only, SMART only. It never says "healthy" |
+| **Unknown** | neither the log nor SMART could be read |
+
+**Read SMART…** asks for the password and adds the counters of the drive. The raw
+counters decide, not the verdict: that disk with 1,848 pending sectors said `PASSED`.
+
+<p align="center">
+  <img src="docs/images/drive-healthy.png" width="620" alt="A drive with no alerts, its volume mounted, with free space and the available actions">
+  <img src="docs/images/drive-manager-dark.png" width="620" alt="The same window with the Breeze Dark theme">
+</p>
+
+**2. Mount it without changing it.** **Mount read-only** opens the volume. On a drive
+at risk, the option to also block writing on the device itself comes checked.
+
+<p align="center">
+  <img src="docs/images/drive-mount-dialog.png" width="380" alt="The dialog to mount read-only, with the option to block writing on the device">
+</p>
+
+**3. Choose what to copy.** **Copy files to another disk…** copies everything, or what
+you mark. Start with what matters most.
+
+<p align="center">
+  <img src="docs/images/drive-wizard-what.png" width="820" alt="Assistant, step 1: choosing folders to copy">
+</p>
+
+**4. Choose where.** Places on another physical disk, with room, come first, and each
+of the others says what is wrong with it. Here you also decide what happens to files
+that already exist, how to check the result, how long a stuck file may hold the copy,
+and an optional limit on the reading speed.
+
+<p align="center">
+  <img src="docs/images/drive-wizard-where.png" width="820" alt="Assistant, step 2: destinations with the reasons, and the options of the copy">
+</p>
+
+**5. Review.** Every check runs here, writing nothing. On a healthy drive this step
+measures the total. On a drive at risk it does not, and tells you why.
+
+<p align="center">
+  <img src="docs/images/drive-wizard-review.png" width="820" alt="Assistant, step 3: review before starting">
+</p>
+
+**6. Follow it, or close the window.** The copy runs in the background and goes on
+without the window. Numbers are real: files, bytes, current speed, average, time left
+only when it can be known. **Pause** and **Cancel copy** stop it safely, and it can be
+resumed either way.
+
+<p align="center">
+  <img src="docs/images/drive-copy-progress.png" width="620" alt="A copy with a measured total: percentage, files, speed and time left">
+  <img src="docs/images/drive-copy-at-risk.png" width="620" alt="A copy on a drive at risk: a busy bar, with what was really copied and no percentage">
+</p>
+
+**7. Read the result.** When anything was left behind, it never looks complete: you
+get the list, the reason, and **Try set-aside files again**, which reads the damaged
+areas once more and so happens only when you ask.
+
+<p align="center">
+  <img src="docs/images/drive-copy-attention.png" width="820" alt="A copy that finished with files left behind: the report lists them">
+</p>
+
+**Copies and images** lists every copy, running or past, including one interrupted by
+a power cut, ready to resume.
+
+<p align="center">
+  <img src="docs/images/drive-jobs.png" width="620" alt="The list of copies: one needing attention, one completed, one interrupted">
+</p>
+
+### 6a.3 The same in the terminal
+
+`bigmount --drive` without a command opens numbered menus. They need no graphical
+session, and have no colours or boxes on a plain terminal, or with `NO_COLOR` set.
+
+```text
+╭──────────────────────────────────────────────╮
+│           BIG-MOUNT DRIVE MANAGER            │
+│         Safe diagnosis and recovery          │
+╰──────────────────────────────────────────────╯
+
+Devices found: 3
+
+ 1. SanDisk Portable SSD — 2 TB
+    USB storage
+    Health: No alerts in the system log (SMART not read)
+      sda1 “Backup” 2 TB ntfs — Mounted /run/media/me/Backup
+
+ 2. ST1000DM003-1CH162 — 1 TB
+    USB storage
+    Health: Critical: high risk for the data
+      sdb1 “OLD-DATA” 1 TB ntfs — Not mounted
+
+ 3. NVMe SSD — 1 TB
+    NVMe SSD
+    Health: No alerts in the system log (SMART not read)
+      nvme0n1p1 314 MB vfat — In use by the running system /boot/efi
+      nvme0n1p2 999 GB btrfs — In use by the running system /home
+
+  j) Copies and images
+  a) Refresh
+  0) Quit
+Choose a device [1-3]: 2
+
+DEVICE: ST1000DM003-1CH162
+
+1. Complete information
+2. Storage diagnosis
+3. Mount safely (read-only)
+4. Explore files
+5. Copy files to another disk
+6. Advanced recovery
+7. Unmount safely
+8. Export report
+0. Back
+Choose:
+```
+
+The diagnosis, as a command:
+
+```text
+$ bigmount --drive diagnose /dev/sdb
+
+== ST1000DM003-1CH162 ==
+Type: USB storage
+Capacity: 1 TB
+Connection: USB
+Device: /dev/sdb
+Health: Critical: high risk for the data
+What was found:
+
+  - Since the computer was started, reading or writing failed (55 kernel messages).
+  - Since the computer was started, it stopped answering and the connection had to be reset (2 kernel messages).
+  - Since the computer was started, the USB connection was reset or lost 48 times.
+  - Copy what matters now, starting with the most important files. Every extra read wears a failing disk.
+  - Do not run repair tools on this disk: they write, and they can destroy what is still readable.
+  - If the data is very important and cannot be replaced, consider a data recovery professional before insisting.
+Volumes:
+
+  - /dev/sdb1: ntfs — Not mounted — writing blocked on the device
+For the SMART details of the drive, which need the administrator password: bigmount --drive diagnose DEVICE --smart
+```
+
+A complete rescue, from the command line:
+
+```text
+$ bigmount --drive mount /dev/loop1 --read-only
+Mounted read-only at /run/media/me/OLD-DATA
+
+$ bigmount --drive destinations --source /run/media/me/OLD-DATA
+* /run/media/me/Backup  (264 MB free)
+* /home/me  (153 GB free)
+
+$ bigmount --drive copy --source /run/media/me/OLD-DATA --destination /run/media/me/Backup/rescue \
+           --item Pictures --item Documents/Taxes --dry-run
+dry-run: /run/media/me/OLD-DATA → /run/media/me/Backup/rescue
+41 files, 31 MB to copy; 0 already exist with different content.
+
+$ bigmount --drive copy --source /run/media/me/OLD-DATA --destination /run/media/me/Backup/rescue \
+           --item Pictures --item Documents/Taxes
+Copy started: 20261030-214916-0acc
+To follow it: bigmount --drive status 20261030-214916-0acc --watch
+Completed and checked
+Source:                /run/media/me/OLD-DATA
+Destination:           /run/media/me/Backup/rescue
+Files:                 41 / 41
+[████████████████████████████] 100%
+Copied:                31 MB / 31 MB
+Speed:                 0 B/s (average 31 MB/s)
+Elapsed:               00:00:01
+Current file:          Pictures/2020/IMG_9.JPG
+
+$ bigmount --drive report 20261030-214916-0acc
+== Completed and checked ==
+Source: /run/media/me/OLD-DATA
+Destination: /run/media/me/Backup/rescue
+Files copied: 41
+Data copied: 31 MB
+Elapsed: 00:00:01
+Check: rsync confirmed each file as it was copied; no second comparison was made
+
+Log: /home/me/.local/state/big-mount/jobs/20261030-214916-0acc/events.log
+
+$ bigmount --drive copy --source /run/media/me/OLD-DATA --destination /run/media/me/OLD-DATA/inside
+The destination is inside the source. The copy would copy itself.
+$ echo $?
+20
+```
+
+Interrupting and resuming, at any moment:
+
+```bash
+bigmount --drive jobs                          # every copy, and its id
+bigmount --drive status ID --watch             # follow it; Ctrl+C stops watching, not the copy
+bigmount --drive pause ID                      # stop safely, to resume later
+bigmount --drive cancel ID                     # the same, and it is marked as cancelled
+bigmount --drive resume ID                     # also after a power cut, or at another mount point
+bigmount --drive resume ID --retry-deferred    # also what was set aside: more strain on the disk
+```
+
+### 6a.4 Commands
+
+| Command | What it does |
+| --- | --- |
+| `bigmount --drive` | interactive menus (needs a terminal) |
+| `list` | drives, volumes, and what is known about their health |
+| `inspect TARGET` | everything known about a drive or a volume |
+| `diagnose TARGET` | explains the state of the drive, reading nothing from it |
+| `diagnose TARGET --smart` | also reads SMART (asks for the password) |
+| `mount DEV` | mounts a volume without changing it; `--read-only` is the default |
+| `unmount TARGET` | unmounts with every check of safe removal |
+| `protect DEV`, `unprotect DEV` | blocks or allows writing on the device itself (asks for the password) |
+| `unlock DEV` | unlocks an encrypted volume |
+| `destinations --source FOLDER [--need BYTES]` | where the files can go, best first |
+| `copy --source FOLDER --destination FOLDER` | copies in the background and follows the progress |
+| `jobs` | copies and images, running and past |
+| `status ID [--watch]` | progress of one of them |
+| `pause ID`, `cancel ID` | stop safely; either can be resumed |
+| `resume ID [--retry-deferred]` | goes on; optionally tries what was set aside |
+| `report TARGET\|ID` | report of a drive or a copy; `--output FILE`, `--anonymize` |
+| `image --source DEV --image FILE [--map FILE] [--retries N]` | disk image with GNU ddrescue |
+| `partitions TARGET` | looks for partitions with TestDisk, changing nothing |
+| `carve --source DEV\|IMAGE --destination FOLDER` | searches for files by content with PhotoRec |
+
+Every command is `bigmount --drive COMMAND`. `TARGET` is a device or a folder inside
+a mounted device. `--json` gives output for programs, `--dry-run` says what would be
+done, and `bigmount --drive --help` lists all of this in your language.
+
+Options of `mount`:
+
+| Option | Effect |
+| --- | --- |
+| `--read-only` | the default: read-only, `noatime`, `nosuid`, `nodev`, `noexec`, and `noload` on ext3/ext4 so the journal is not replayed |
+| `--protect` | also blocks writing on the block device (asks for the password). Lasts until the drive is disconnected |
+| `--remount` | unmounts first, when it is mounted with writing enabled |
+| `--read-write` | mounts with writing enabled; refused on a drive at risk |
+
+Options of `copy`:
+
+| Option | Default | Effect |
+| --- | --- | --- |
+| `--item PATH` | everything | only this file or folder of the source; can be repeated |
+| `--on-conflict skip\|backup\|overwrite` | `skip` | files that already exist: keep them, keep the old ones in `.big-mount-backup-ID`, or replace them |
+| `--verify basic\|metadata\|full` | `basic` | `basic`: rsync checks each file as it copies. `metadata`: names, sizes and dates at the end. `full`: the content at the end, which **reads everything again** |
+| `--stall-seconds N` | `90` | sets aside a file that does not advance for N seconds; `0` never |
+| `--bwlimit KBPS` | no limit | limits the reading speed |
+| `--scan auto\|yes\|no` | `auto` | measures the total first; `auto` does not on a drive at risk |
+| `--allow-same-disk` | off | accepts a destination on the same physical disk |
+| `--allow-rw-source` | off | accepts a drive at risk mounted with writing enabled |
+| `--allow-risky-destination` | off | accepts a destination on a drive with critical alerts |
+| `--no-wait` | off | starts and returns; the copy goes on in the background |
+| `--dry-run` | off | runs the checks, says what would be copied, writes nothing |
+
+Exit codes of `--drive`, on top of those in [section 8](#8-command-reference):
+
+| Code | Meaning |
+| --- | --- |
+| 20 | refused by a safety check |
+| 21 | no space at the destination |
+| 22 | finished, but files were not copied or the check found differences |
+| 23 | cancelled or paused |
+| 24 | a device went away or did not answer |
+| 25 | a tool this needs is not installed |
+
+### 6a.5 What a copy refuses, and what it keeps
+
+Refused, always: the same folder; a destination inside the source, or the reverse
+(compared on real paths, so a symbolic link does not fool it); the same filesystem; a
+read-only or unwritable destination; items outside the source; a measured total that
+does not fit.
+
+Refused unless you allow it with an option: the same physical disk, a destination on
+a drive with critical alerts, a source at risk mounted with writing enabled.
+
+Copied as they are: symbolic links are copied as links and never followed, and names
+that are not valid UTF-8 survive (old disks in Latin-1). Nothing is ever deleted at
+either end. A copy stays inside one filesystem and skips special files and devices.
+
+### 6a.6 What each state means
+
+| State | Meaning |
+| --- | --- |
+| **Copying**, **Checking the result** | running in the background, with or without the window |
+| **Stopping** | asked to stop. While a read is stuck in the driver this waits for it: nothing is killed |
+| **Paused**, **Cancelled** | stopped safely. The files already copied stay at the destination. Can be resumed |
+| **Interrupted** | the computer or the supervisor went away, as in a power cut. Can be resumed |
+| **Completed and checked** | nothing was set aside or failed, and the check found no difference |
+| **Finished, needs your attention** | anything else: the report lists each file and the reason |
+| **Failed** | it could not go on, and the report says why |
+
+More than 100 files set aside stops the copy: the drive is probably getting worse.
+
+Each job keeps its records in `~/.local/state/big-mount/jobs/ID/` (mode 700):
+
+```text
+job.conf       what was asked, with the UUIDs of both ends
+state.env      how far it got, replaced atomically
+events.log     rsync log: what was sent
+rsync.out      what went wrong
+deferred.txt   set aside
+failed.txt     not copied, with the reason
+report.txt, report.json
+```
+
+### 6a.7 When the files cannot be reached
+
+**Advanced recovery…** in the window, or these commands. They read the disk and write
+elsewhere. Repairing a filesystem or a partition table is not done here, on purpose.
+
+<p align="center">
+  <img src="docs/images/drive-advanced.png" width="560" alt="Advanced recovery: disk image, lost partitions, search by content">
+</p>
+
+```bash
+# A copy of the whole device, to a file on ANOTHER disk. It resumes from its map and
+# never reads a good area twice. Then you work on the copy, and the disk rests.
+bigmount --drive image --source /dev/sdb --image /mnt/backup/disk.img
+
+# Partitions that can still be found
+bigmount --drive partitions /mnt/backup/disk.img
+
+# Files found by their content (photos, documents), in an image
+bigmount --drive carve --source /mnt/backup/disk.img --destination /mnt/backup/found
+```
+
+| Tool | Package | Without it |
+| --- | --- | --- |
+| GNU ddrescue | `ddrescue` | `image` explains what is missing (exit 25). Nothing is installed by itself |
+| TestDisk, PhotoRec | `testdisk` | `partitions` and `carve` explain the same |
+| smartctl | `smartmontools` | `diagnose --smart` explains the same; the log still works |
+| rsync | `rsync` | `copy` explains the same |
+| PySide6 | `pyside6` | `--gui-drive` falls back to the dialogs of `--gui-drive-check` |
+
+### 6a.8 Encrypted volumes, and the running system
+
+An encrypted volume is shown as locked and is not touched until you unlock it. The
+window sends the passphrase straight to UDisks2 over D-Bus, and in the terminal
+`udisksctl` asks for it, so it never appears in arguments, files or logs. Nothing
+tries to get around encryption.
+
+The partitions of the running system can be read from, and cannot be unmounted or
+protected: `bigmount --drive unmount /` is refused with exit code 4.
+
+### 6a.9 Reports for a bug report or a forum
+
+```bash
+bigmount --drive report /dev/sdb --anonymize --output drive.txt
+```
+
+`--anonymize` hides serial numbers, UUIDs, volume labels (also in mount points), your
+home folder and your user name. The names of the files of a copy stay, because they
+are what the report is about, so read it before you post it. An existing file is never
+overwritten by `--output`.
+
+Details: [architecture](docs/15-drive-architecture.md),
+[copy engine](docs/16-drive-copy-engine.md), [security](docs/17-drive-security.md),
+[tests and status](docs/18-drive-final-report.md).
+
+---
+
 ## 7. Desktop integration and notifications
 
 | Integration | Where | Details |
 | --- | --- | --- |
-| Dolphin service menu | right-click a folder → **Storage device** | **Why can't I write here?** (`bigmount --gui %f`) and **Safely remove (shows what keeps it busy)** (`bigmount --gui-remove %f`) |
-| Launcher | application menu → **Storage Diagnostics** | choose a device from a list; its action **Check a drive (errors, Secure Erase)** opens `bigmount --gui-drive` |
+| Dolphin service menu | right-click a folder → **Storage device** | **Diagnose the drive and rescue files** (`bigmount --gui-drive %f`), **Why can't I write here?** (`bigmount --gui %f`) and **Safely remove (shows what keeps it busy)** (`bigmount --gui-remove %f`) |
+| Launcher | application menu → **Storage Diagnostics** | choose a device from a list; its action **Drive manager and file rescue** opens `bigmount --gui-drive` |
 | Notifications | when a device you cannot write to is mounted, and when a removal ends | see below |
 | Dialogs | KDialog (Plasma) or Zenity (GNOME) | light/dark theme, HiDPI and screen readers come from the toolkit |
 
@@ -747,7 +1192,9 @@ empty target is refused.
 | `  --assume-yes` | — | do not ask before closing programs (with `--close-apps`) or stopping services that depend on the device (scripts) |
 | `bigmount --gui [TARGET]` | no | diagnosis in a dialog; without a target, a list |
 | `bigmount --gui-remove TARGET` | no | safe removal in dialogs |
-| `bigmount --gui-drive [DISK]` | no | drive check in a dialog, with **Erase the whole drive…** when it is possible |
+| `bigmount --drive [COMMAND]` | no | drive manager and file rescue in the terminal, see [6a](#6a-drive-manager-and-file-rescue) and `bigmount --drive --help` |
+| `bigmount --gui-drive [DISK\|FOLDER]` | no | the drive manager window; dialogs when PySide6 or a display is missing |
+| `bigmount --gui-drive-check [DISK]` | no | drive check in a dialog, with **Erase the whole drive…** when it is possible |
 | `bigmount --secure-erase DISK` | no (UDisks2 asks for the administrator password; `sudo` when there is no graphical session) | erases a whole internal SATA drive with its own Secure Erase, after confirmation, then checks it ([5.4](#54-drive-errors-and-secure-erase)) |
 | `bigmount --notifier` | no | session notifier (started by autostart) |
 | `bigmount --doctor` | no | read-only self-check of the installation, the service, the session and the storage stack; anonymized, for bug reports ([12.2](#122-bigmount---doctor)) |
@@ -771,6 +1218,7 @@ Exit codes:
 | 10 | nothing done: another operation on the same drive is in progress |
 | 11 | nothing erased: the drive stays frozen |
 | 12 | the drive did not do what it was told: the erase was ignored or what was written afterwards was not kept (replace it), or the result could not be checked |
+| 20–25 | `--drive`: refused by a safety check, no space, files not copied, cancelled or paused, device gone, tool missing ([6a.4](#6a4-commands)) |
 
 For `--doctor`: 0 when no problem was found (warnings may exist), 1 when at
 least one problem was found.
@@ -859,6 +1307,14 @@ To mount a partition somewhere else or with other options, put it in
 | `/usr/lib/big-mount/ui.sh` | dialogs (KDialog/Zenity/terminal) and notifications |
 | `/usr/lib/big-mount/cli.sh` | commands, texts, graphical flows and the notifier |
 | `/usr/lib/big-mount/doctor.sh` | `--version` and `--doctor` (loaded only by them) |
+| `/usr/lib/big-mount/drive.sh` | `--drive`: commands, JSON output, exit codes |
+| `/usr/lib/big-mount/drive-detect.sh` | one snapshot of drives, volumes and what sits on what |
+| `/usr/lib/big-mount/drive-diag.sh` | health level, SMART, read-only mounting |
+| `/usr/lib/big-mount/drive-copy.sh` | checks before copying, jobs, supervisor, reports |
+| `/usr/lib/big-mount/drive-recovery.sh` | ddrescue, TestDisk, PhotoRec |
+| `/usr/lib/big-mount/drive-tui.sh` | the menus of `--drive` |
+| `/usr/lib/big-mount/drive-gui.py` | the window of `--gui-drive` (PySide6) |
+| `/usr/lib/big-mount/bigmount-drive-helper` | privileged helper of the drive manager (through `pkexec`) |
 | `/usr/lib/big-mount/version` | the git revision the package was built from |
 | `/usr/lib/big-mount/bigmount-holders` | privileged, read-only helper (through `pkexec`) |
 | `/usr/lib/systemd/system/big-mount.service` | boot service |
@@ -867,7 +1323,7 @@ To mount a partition somewhere else or with other options, put it in
 | `/etc/xdg/autostart/big-mount-notifier.desktop` | starts the notifier in the session |
 | `/usr/share/applications/big-mount.desktop` | "Storage Diagnostics" launcher |
 | `/usr/share/kio/servicemenus/big-mount.desktop` | Dolphin service menu |
-| `/usr/share/polkit-1/actions/org.biglinux.big-mount.policy` | polkit action of the privileged helper |
+| `/usr/share/polkit-1/actions/org.biglinux.big-mount.policy` | polkit actions of the two privileged helpers |
 | `/usr/share/icons/hicolor/scalable/apps/big-mount.svg` | icon |
 | `/usr/share/locale/pt_BR/LC_MESSAGES/big-mount.mo` | Brazilian Portuguese translation |
 
@@ -881,6 +1337,7 @@ Files created while running:
 | `/run/lock/big-mount.lock` | service | lock against simultaneous runs |
 | `$XDG_RUNTIME_DIR/big-mount-drive-<disk>.lock` | removal | one removal of a drive at a time (private to the user) |
 | `~/.local/state/big-mount/notified` | notifier | warnings already shown during this boot |
+| `~/.local/state/big-mount/jobs/ID/` | drive manager | one folder per copy or image (mode 700): settings, progress, logs, reports |
 
 ---
 
@@ -894,6 +1351,7 @@ big-mount.service ── writes ──▶  /run/big-mount/status ── reads �
 
 user actions ── udisksctl/D-Bus ──▶ UDisks2 ── polkit decides (password if needed)
 "programs of all users" ── pkexec ──▶ /usr/lib/big-mount/bigmount-holders (read-only)
+"block writing, SMART, image" ── pkexec ──▶ /usr/lib/big-mount/bigmount-drive-helper
 ```
 
 - **Root** only runs the boot path and the `bigmount-holders` helper. The
@@ -902,6 +1360,15 @@ user actions ── udisksctl/D-Bus ──▶ UDisks2 ── polkit decides (pas
   polkit action (`org.biglinux.big-mount.inspect-processes`,
   `auth_admin_keep`), so authorizing it gives access to no other mode as
   root. Its output is deleted as soon as the dialog closes.
+- **The drive manager** runs entirely as you: the window, the menus and the copy.
+  What needs root goes through one small helper with its own polkit action
+  (`org.biglinux.big-mount.drive-helper`, `auth_admin_keep`). It has five commands
+  (`protect`, `unprotect`, `smart`, `partitions`, `image`), a clean environment, a
+  fixed `PATH`, and checks every argument before using it. It refuses the running
+  system, never starts a self-test, and writes an image only into a real folder owned
+  by you, never on the disk being read. The window does not run as root.
+  [`docs/17-drive-security.md`](docs/17-drive-security.md) has each command and what
+  it refuses.
 - **Mounting, unmounting, locking, powering off and taking ownership** go
   through UDisks2, whose own polkit policy decides. Big-Mount widens no
   permission.
@@ -927,7 +1394,8 @@ user actions ── udisksctl/D-Bus ──▶ UDisks2 ── polkit decides (pas
   as "disconnected" instead of being retried or forced.
 - A test scans the shipped code for forbidden commands (`ntfsfix`, `mkfs`,
   `fsck`, `umount -f/-l`, `kill -9`, `fuser -k`, `chmod -R`, `chown -R`,
-  `remove_hiberfile`, `--force`).
+  `remove_hiberfile`, `--force`, and in the drive manager also `dd`, `wipefs`,
+  `eval`, `btrfs check --repair`).
 
 ---
 
@@ -1020,6 +1488,31 @@ journal (on Arch that needs the `wheel`, `adm` or `systemd-journal` groups).
 The diagnosis still works with fewer details about errors, and the remount
 fix is withheld for lack of evidence.
 
+**The window of the drive manager does not open, only a dialog.** It needs
+`pyside6` and a graphical session. `bigmount --doctor` lists the optional tools.
+
+**"The total is not measured", and there is no percentage.** That is on purpose: the
+drive has alerts, and walking the whole disk to draw a bar would wear it. The window
+shows what was really copied. `--scan yes` measures anyway.
+
+**A copy has been at "Stopping" for minutes.** A read is stuck in the driver, and the
+kernel has not given up on it yet. Nothing is killed, and it ends when that read
+returns. Your data is not at risk from waiting.
+
+**A file was set aside.** It stopped advancing, usually on a damaged area. Everything
+else goes on, and it is listed in the report. To try again when the rest is safe:
+`bigmount --drive resume ID --retry-deferred`, and a higher `--stall-seconds` on a new
+copy gives each file more time.
+
+**"Could not mount" on XFS or Btrfs with an unclean log.** UDisks2 does not accept the
+options that would open them without replaying it, and replaying writes to the disk.
+Make an image and work on the image
+([6a.7](#6a7-when-the-files-cannot-be-reached)).
+
+**The disk went away during a copy.** The copy stops with exit code 24 and keeps what
+it saved. Reconnect it, mount it again, and `bigmount --drive resume ID`: the job finds
+it by UUID, even under another name.
+
 ---
 
 ## 13. Translations
@@ -1028,6 +1521,7 @@ Big-Mount is written in English. Every user-visible text goes through GNU
 gettext:
 
 - `$"..."` strings in the shell scripts (the BigLinux convention);
+- `_("...")` strings in the window of the drive manager;
 - the `.desktop` files and the polkit policy, generated from English
   templates in `locale/templates/`.
 
@@ -1078,19 +1572,22 @@ never put a variable inside `$"..."`.
 ```text
 big-mount/                  tree the PKGBUILD copies to /
   usr/bin/bigmount          boot path + entry point of the commands
-  usr/lib/big-mount/        lib.sh, ui.sh, cli.sh, doctor.sh, bigmount-holders
+  usr/lib/big-mount/        lib.sh, ui.sh, cli.sh, doctor.sh, bigmount-holders,
+                            drive*.sh, drive-gui.py, bigmount-drive-helper
   usr/lib/systemd/system/   big-mount.service
   usr/share/...             hook, desktop files, service menu, polkit, icon, locale
   etc/                      big-mount.conf, autostart
 pkgbuild/PKGBUILD           official packaging (source: biglinux/big-mount)
 locale/                     translations (see 13)
 tests/                      suites, stubs, benchmarks, fixtures
-docs/                       audits, decisions and results (01-13)
+docs/                       audits, decisions and results (01-18), images
 .github/workflows/          BigLinux build and tests
 ```
 
 The boot path lives entirely in `/usr/bin/bigmount` and sources nothing.
-The libraries are loaded only by the other commands.
+The libraries are loaded only by the other commands. The drive manager is loaded only
+by `--drive` and `--gui-drive`, and a test checks that. The window has no recovery
+logic: it only calls `bigmount --drive ... --json`.
 
 ### 14.2 Tests
 
@@ -1100,6 +1597,10 @@ bash tests/run-tests.sh old        # the original script, as a reference
 bash tests/lib-tests.sh            # library: decisions, process policy, removal protections, notifications
 bash tests/i18n-tests.sh           # catalog, generated resources, runtime languages
 bash tests/package-check.sh        # package() on the checkout, installed files, metadata
+bash tests/drive-tests.sh          # drive manager, with fixtures instead of the machine
+python3 tests/gui-tests.py         # the window, off screen, with a stand-in for the engine
+python3 tests/readme-screenshots.py  # the pictures of this README, with sample drives
+bash tests/drive-integration.sh    # REAL filesystems and failures on disposable devices (needs sudo)
 bash tests/integration.sh          # REAL mounts of disposable images through UDisks2
 BM=/usr/bin/bigmount bash tests/integration.sh   # the same against the installed package
 bash tests/bench.sh big-mount/usr/bin/bigmount 20  # boot path performance
@@ -1115,18 +1616,24 @@ bash tests/measure-session.sh      # diagnosis time, notification latency, notif
   busy devices, closing programs, safe removal of single- and
   multi-partition drives, the running system, GUI flows with scripted clicks
   and the notifier.
+- `drive-integration.sh` uses real filesystems on loop devices (ext4, Btrfs, XFS, NTFS,
+  exFAT, FAT32), real UDisks2 and LUKS, and device-mapper for real read errors (dm-error)
+  and hung reads (dm-delay). It also covers disk full, a device going away, pause,
+  cancel and a simulated power cut, TestDisk and PhotoRec, the menus in a real pty, and
+  the window with the real engine. A guard refuses any device it did not create.
+  Results are in [`docs/18-drive-final-report.md`](docs/18-drive-final-report.md).
 
 Quality checks:
 
 ```bash
 shellcheck -x -P big-mount/usr/lib/big-mount:tests \
     big-mount/usr/bin/bigmount big-mount/usr/lib/big-mount/*.sh \
-    big-mount/usr/lib/big-mount/bigmount-holders locale/*.sh tests/stubs/* \
-    $(ls tests/*.sh | grep -v bigmount.old.sh)
+    big-mount/usr/lib/big-mount/bigmount-holders big-mount/usr/lib/big-mount/bigmount-drive-helper \
+    locale/*.sh tests/stubs/* $(ls tests/*.sh | grep -v bigmount.old.sh)
 ```
 
 `.github/workflows/tests.yml` runs syntax, shellcheck and every suite except
-the integration one on each pull request, in an Arch Linux container and as
+the two integration ones on each pull request, in an Arch Linux container and as
 a normal user (the generated translation files depend on the gettext
 version, so CI uses the same tools as BigLinux).
 
@@ -1151,8 +1658,9 @@ Releases are tagged on `master` (`vMAJOR.MINOR.PATCH`), and each one carries
 the package built from that tag by `pkgbuild/PKGBUILD`. The package version
 comes from `pkgver()`: the UTC date and time of the commit, never the build
 time, and `package()` writes the commit to `/usr/lib/big-mount/version`
-([2.4](#24-what-happens-on-installation-and-updates)). The screenshots in
-this README are real captures of the dialogs on Plasma 6 (Breeze, dark). To test a branch,
+([2.4](#24-what-happens-on-installation-and-updates)). The screenshots of the
+dialogs in this README are real captures on Plasma 6 (Breeze, dark), and those of the
+drive manager come from `tests/readme-screenshots.py`. To test a branch,
 use [section 2.3](#23-build-the-package-yourself).
 
 `build-package.yml` asks the BigLinux build service to build the package on
@@ -1179,6 +1687,10 @@ docs or tests do not trigger it either.
 | [`docs/12-field-report.md`](docs/12-field-report.md) | the SDDM/NVMe field report: evidence, root causes, fixes, tests |
 | [`docs/13-versioning-and-doctor.md`](docs/13-versioning-and-doctor.md) | traceable versions, `--version`, `--doctor`, separating desktop problems |
 | [`docs/14-drive-health-and-secure-erase.md`](docs/14-drive-health-and-secure-erase.md) | the failing SSD field case, drive health, Secure Erase and its verification |
+| [`docs/15-drive-architecture.md`](docs/15-drive-architecture.md) | drive manager: layout, what was reused, commands, levels of health |
+| [`docs/16-drive-copy-engine.md`](docs/16-drive-copy-engine.md) | what a real failing disk taught, jobs, what counts as copied, stopping and resuming |
+| [`docs/17-drive-security.md`](docs/17-drive-security.md) | the privileged helper, untrusted data, passwords, races |
+| [`docs/18-drive-final-report.md`](docs/18-drive-final-report.md) | tests, bugs they found, and what is not validated yet |
 
 ---
 
@@ -1202,6 +1714,10 @@ At boot, the difference is larger than measured here, because the original
 version activated `udisksd` over D-Bus (`systemd-analyze blame` recorded
 1.019 s for the old service). Diagnosis tools (`lsof`, `journalctl`) never
 run during boot. Details in [`docs/08-performance.md`](docs/08-performance.md).
+
+The drive manager adds nothing to the boot or the session: nothing of it is loaded
+unless you ask for it, and Python and Qt only start with `--gui-drive`. Diagnosing a
+failing disk took 0.15 s on the development machine, because it reads nothing from it.
 
 ---
 
@@ -1248,6 +1764,23 @@ run during boot. Details in [`docs/08-performance.md`](docs/08-performance.md).
   ([`docs/14`](docs/14-drive-health-and-secure-erase.md)). Some computers
   freeze the drive again when they wake up; then it can only be erased in
   another computer, or by hot-plugging it.
+- Drive manager:
+  - Resuming works per file: a large file that was interrupted starts over. A file with
+    read errors is not saved in part: a disk image keeps what can be read.
+  - `--protect` lasts until the drive is disconnected. Clicking a failing disk in
+    Dolphin mounts it with writing enabled before the manager can protect it, which is
+    the policy of UDisks2 and the desktop, left unchanged on purpose.
+  - XFS and Btrfs with an unclean log cannot be mounted without replaying it through
+    UDisks2 ([12.3](#123-other-problems)).
+  - The first read of a damaged area can take minutes, and `cancel` waits for it.
+  - Owners are not preserved, because a copy does not run as root. A file of 4 GiB or
+    more cannot go to FAT32, and is warned about and listed as failed.
+  - The window cannot select names that are not valid UTF-8 one by one: use **Copy
+    everything** or the terminal.
+  - Not validated yet ([`docs/18`](docs/18-drive-final-report.md)): real `ddrescue` (the
+    job around it was tested with a stand-in), a real unplug and plug events in the
+    window, real LVM, RAID, multi-device Btrfs, SD and eMMC (detected from fixtures), a
+    screen reader.
 - Users of the `biglinux-stable` repository get these fixes only after
   BigLinux merges this work and publishes the package; until then the
   repository ships the December 2025 script ([12.1](#121-errors-about-sddm-or-devnvme)).
