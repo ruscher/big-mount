@@ -100,6 +100,7 @@ expect=(
     "644 usr/lib/big-mount/drive-erase.sh"
     "644 usr/lib/big-mount/drive-gui.py"
     "644 usr/lib/big-mount/gui/__init__.py"
+    "644 usr/lib/big-mount/gui/actions.py"
     "644 usr/lib/big-mount/gui/application.py"
     "644 usr/lib/big-mount/gui/common.py"
     "644 usr/lib/big-mount/gui/engine.py"

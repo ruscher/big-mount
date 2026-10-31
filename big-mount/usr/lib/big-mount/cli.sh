@@ -1488,6 +1488,42 @@ bm_notifier_key() {
    REPLY="$boot ${F[UUID]:-${1##*/}} $D_CAUSE"
 }
 
+# bm_notifier_health DEV: a drive that reports problems gets a window, once per
+# boot and drive (not per volume, not per reconnection), with the way to look
+# at it. Only what the diagnosis reads anyway: the kernel log, udev and UDisks2,
+# never the disk itself.
+bm_notifier_health() {
+   local dev="$1" disk boot="" key name grade w
+   [ "${F[DISK_TYPE]:-}" = disk ] || return 0
+   disk="${F[DISK]}"
+   declare -F bm_ds_level >/dev/null || { bm_load drive-detect.sh; bm_load drive-diag.sh; }
+   bm_dv_scan 2>/dev/null || return 0
+   [ -n "${DV[$disk|TYPE]:-}" ] || return 0
+   bm_ds_level "$disk"
+   case "$DS_LEVEL" in critical | attention) ;; *) return 0 ;; esac
+   read -r boot < /proc/sys/kernel/random/boot_id 2>/dev/null
+   bm_dv_stable_id "$disk"; key="$boot health $REPLY"
+   grep -qxF -- "$key" "$BM_NOTIFIED" 2>/dev/null && return 0
+   printf '%s\n' "$key" >> "$BM_NOTIFIED"
+   bm_dv_name "$disk"; name="$REPLY"
+   bm_ds_grade_label; grade="$REPLY"
+   bm_doc_new
+   printf -v REPLY $"%s: %s" "$name" "$grade"
+   bm_doc_h "$REPLY"
+   if [ "$DS_LEVEL" = critical ]; then
+      bm_doc_p $"This drive reported serious problems. Copy your files to another drive before trying any repair."
+   else
+      bm_doc_p $"This drive reported problems. Copy what matters to another place."
+   fi
+   for w in "${DS_WHY[@]}"; do bm_ds_why_text "$w"; bm_doc_li "$REPLY"; done
+   bm_doc_p $"Big-Mount shows what was found and how to rescue the files without writing to the drive."
+   (
+      if bm_ui_confirm $"A drive needs attention" dialog-warning $"Open Big-Mount" $"Close"; then
+         "$BM_SELF" --gui-drive-check "$disk"
+      fi
+   ) </dev/null >/dev/null 8>&- &
+}
+
 bm_notifier_check() {
    local dev="$1" mp="$2" key cause body icon name l_details l_help acts=()
    [[ $dev == /dev/* ]] || return 0
@@ -1496,6 +1532,8 @@ bm_notifier_check() {
       *) return 0 ;;
    esac
    [ "$mp" = /mnt/user-mount ] && return 0
+   bm_facts "$dev" || return 0
+   bm_notifier_health "$dev"
    bm_facts "$dev" || return 0
    # Optical discs and images are read-only by nature: nothing to explain
    [ "${F[DISK_TYPE]}" = rom ] && return 0

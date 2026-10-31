@@ -6,6 +6,7 @@ import time
 
 from gi.repository import Adw, Gio, GLib, Gtk
 
+from .. import actions
 from .. import widgets as w
 from ..common import _, human_size
 
@@ -88,19 +89,7 @@ def run_mount(window, dev, vol, protect, remount, then):
 
 
 def unmount_volume(window, vol, then=None):
-    window.notify_text(_("Unmounting…"))
-
-    def done(res):
-        window.refresh()
-        if res.ok:
-            window.notify_text(_("Unmounted. Everything was written to the device."))
-            if then:
-                then()
-            return
-        data = res.data or {}
-        text = "\n\n".join(x for x in (data.get("busy_summary"), data.get("busy_advice"), data.get("reason")) if x)
-        w.alert(window, _("Could not unmount"), text or res.message)
-    window.engine.unmount(vol.device, done)
+    actions.unmount(window, vol.device, then=then)
 
 
 class HealthView(Gtk.Box):
@@ -157,7 +146,12 @@ class HealthView(Gtk.Box):
             return
         h = dev.health
         panel = w.box(spacing=10, css=("health-panel", "card", f"level-{h.level}"))
-        panel.append(w.LevelBadge(h.level, h.label))
+        top = w.hbox(10)
+        grade = w.GradeBadge(h)
+        grade.add_css_class("grade-large")
+        top.append(grade)
+        top.append(w.LevelBadge(h.level, h.label))
+        panel.append(top)
         panel.append(w.label(self._headline(dev), css=("title-3",)))
         panel.append(w.label(self._evidence(dev), css=("dim-label",)))
         buttons = []
@@ -173,6 +167,12 @@ class HealthView(Gtk.Box):
             reasons.add_row(w.row(reason.get("text", ""), icon_name="dialog-warning-symbolic"))
         if h.reasons:
             self.append(reasons)
+
+        if h.notes:
+            notes = w.Group(_("Why it is not called healthy"))
+            for note in h.notes:
+                notes.add_row(w.row(note.get("text", ""), icon_name="dialog-information-symbolic"))
+            self.append(notes)
 
         if self.diag and self.diag.get("advice"):
             advice = w.Group(_("What to do"))
@@ -193,6 +193,8 @@ class HealthView(Gtk.Box):
         if read_at:
             when = time.strftime("%Y-%m-%d %H:%M", time.localtime(read_at))
             group.set_description(w.escape(_("Read at %s, through the administrator password.") % when))
+        elif dev.health.basis in ("smart", "smart+log"):
+            group.set_description(w.escape(_("As the system keeps it up to date, without a password.")))
         values = (
             (_("Overall verdict"), {"passed": _("Passed"), "failed": _("Failing")}.get(smart.get("verdict"), smart.get("verdict"))),
             (_("Sectors waiting to be replaced"), smart.get("pending")),
@@ -202,7 +204,8 @@ class HealthView(Gtk.Box):
             (_("Cable or adapter errors"), smart.get("crc")),
             (_("NVMe media errors"), smart.get("nvme_media")),
             (_("NVMe life used"), f"{smart['nvme_used']}%" if smart.get("nvme_used") is not None else None),
-            (_("Hours powered on"), smart.get("hours")),
+            (_("Hours powered on"), self._hours(smart.get("hours"))),
+            (_("Temperature now"), f"{smart['temperature']} °C" if smart.get("temperature") is not None else None),
         )
         shown = False
         for title, value in values:
@@ -223,6 +226,17 @@ class HealthView(Gtk.Box):
             read.set_tooltip_text(_("Asks for the administrator password. It only reads: no test is started."))
             group.set_header_suffix(read)
         return group
+
+    @staticmethod
+    def _hours(hours):
+        if hours is None or hours == "":
+            return None
+        years = (int(hours) + 4380) // 8760
+        if years < 1:
+            return str(hours)
+        if years == 1:
+            return _("%s (about a year of use)") % hours
+        return _("%(h)s (about %(y)d years of use)") % {"h": hours, "y": years}
 
     def _read_smart(self):
         if self.smart_busy or not self.dev:
@@ -283,9 +297,9 @@ class HealthView(Gtk.Box):
 
     def _maintenance_group(self, dev):
         group = w.Group(_("Advanced maintenance"))
-        r = w.row(_("Erase data permanently"), _("Separate from recovery. Opens an explanation first."), activatable=True)
+        r = w.row(_("Erase data permanently"), _("Separate from recovery. Warns first, then checks the drive and asks twice more."), activatable=True)
         r.add_suffix(w.icon("go-next-symbolic"))
-        r.connect("activated", lambda *_a: self.window.open_maintenance(dev))
+        r.connect("activated", lambda *_a: actions.erase(self.window, dev))
         group.add_row(r)
         return group
 
@@ -338,6 +352,7 @@ class DevicePage(Adw.NavigationPage):
     def _install_actions(self):
         group = Gio.SimpleActionGroup()
         for name, handler in (("technical", self.show_technical), ("report", self.export_report), ("remove", self.safe_remove),
+                              ("unmount", self.unmount), ("force", self.force_unmount),
                               ("protect", self.protect), ("maintenance", self.maintenance), ("refresh", self.window.refresh)):
             action = Gio.SimpleAction.new(name, None)
             action.connect("activate", lambda _a, _p, h=handler: h())
@@ -351,10 +366,12 @@ class DevicePage(Adw.NavigationPage):
         menu.append_section(None, first)
         second = Gio.Menu()
         second.append(_("Block writing on the device…"), "device.protect")
+        second.append(_("Unmount"), "device.unmount")
+        second.append(_("Force unmount (close the programs using it)…"), "device.force")
         second.append(_("Safely remove"), "device.remove")
         menu.append_section(None, second)
         third = Gio.Menu()
-        third.append(_("Advanced maintenance…"), "device.maintenance")
+        third.append(_("Erase data permanently…"), "device.maintenance")
         menu.append_section(None, third)
         self.menu_button.set_menu_model(menu)
 
@@ -560,19 +577,16 @@ class DevicePage(Adw.NavigationPage):
                 default="hide", close="cancel", suggested=("hide",), callback=answered)
 
     def safe_remove(self):
-        if not self.dev:
-            return
-        dev = self.dev
+        if self.dev:
+            actions.unmount(self.window, self.dev.device, remove=True)
 
-        def done(res):
-            self.window.refresh()
-            data = res.data or {}
-            if res.ok:
-                self.window.notify_text(_("The drive can be disconnected now."))
-                return
-            text = "\n\n".join(x for x in (data.get("busy_summary"), data.get("busy_advice"), data.get("reason")) if x)
-            w.alert(self.window, _("Could not remove it"), text or res.message)
-        self.window.engine.safe_remove(dev.device, done)
+    def unmount(self):
+        if self.dev:
+            actions.unmount(self.window, actions.drive_target(self.dev))
+
+    def force_unmount(self):
+        if self.dev:
+            actions.force_unmount(self.window, actions.drive_target(self.dev))
 
     def protect(self):
         if not self.dev:
@@ -596,7 +610,7 @@ class DevicePage(Adw.NavigationPage):
 
     def maintenance(self):
         if self.dev:
-            self.window.open_maintenance(self.dev)
+            actions.erase(self.window, self.dev)
 
 
 def job_row(window, job):

@@ -120,8 +120,11 @@ bm_drive_usage() {
       "  --protect" $"also block writing on the device itself (asks for a password)" \
       "  --remount" $"unmount first if it is mounted with writing enabled" \
       "  --read-write" $"mount with writing enabled (refused on a drive at risk)" \
-      "unmount TARGET" $"unmount one volume safely" \
+      "unmount TARGET" $"unmount one volume safely; a whole drive: all of its volumes" \
       "safe-remove TARGET" $"unmount everything on the drive and power it off" \
+      "  --allow-services" $"also stop the services that use it (asked first in the window)" \
+      "busy TARGET" $"which programs keep a volume busy, and which of them may be closed" \
+      "close-apps TARGET" $"ask your programs that keep it busy to close (never the system, never one that is writing)" \
       "protect DEV | unprotect DEV" $"block or allow writing on the device (asks for a password)" \
       "unlock DEV" $"unlock an encrypted volume" \
       "destinations --source FOLDER" $"where files can be copied to" \
@@ -450,13 +453,17 @@ bm_drive_mount() {
    return "$rc"
 }
 
-# unmount, and safe-remove: everything on the drive, and power it off if it can be
+# unmount, and safe-remove: everything on the drive, and power it off if it can be.
+# Never forced, never lazy: a busy volume is reported with what keeps it
+# busy, and only the person decides to close those programs (close-apps).
 bm_drive_unmount() {
-   local target="" json=0 a rc dry=0 mode="${BM_DRIVE_REMOVE_MODE:-unmount}"
+   local target="" json=0 a rc dry=0 mode="${BM_DRIVE_REMOVE_MODE:-unmount}" i services=""
+   RM_ALLOW_SERVICES=0
    for a in "$@"; do
       case "$a" in
          --json) json=1 ;;
          --dry-run) dry=1 ;;
+         --allow-services) RM_ALLOW_SERVICES=1 ;;
          -*) bm_drive_badarg "$a"; return 2 ;;
          *) target="$a" ;;
       esac
@@ -468,12 +475,19 @@ bm_drive_unmount() {
       printf '%s\n' $"Another removal of this drive is in progress. Nothing was done." >&2
       return 10
    }
+   # A whole drive has nothing mounted of its own: unmount all of its volumes
+   [ "$mode" = unmount ] && [ "${F[NAME]:-}" = "${F[DISK]:-}" ] && [ -z "${F[FSTYPE]:-}" ] && mode=drive
    bm_remove_core "$mode" "$R_DEV"; rc=$?
    bm_drive_unlock
    if [ "$json" = 1 ]; then
       if [ "$rc" -eq 3 ]; then bm_busy_doc "$RM_BUSY_DEV"; bm_busy_summary; else BUSY_SUMMARY="" BUSY_ADVICE=""; fi
-      printf '{%s,%s,%s}\n' "$(bm_jo_inner device "$R_DEV" reason "$RM_REASON" busy_summary "$BUSY_SUMMARY" busy_advice "$BUSY_ADVICE")" \
-         "$(bm_jb ok "$([ "$rc" -eq 0 ] && echo 1)" powered_off "${RM_POWERED:-0}" removable "${RM_REMOVABLE:-0}")" "$(bm_jn exit "$rc")"
+      for i in "${!RM_DEP_UNITS[@]}"; do
+         services+="${services:+,}$(bm_jo unit "${RM_DEP_UNITS[i]}" name "${RM_DEP_NAMES[i]}")"
+      done
+      bm_dep_restart_text
+      printf '{%s,"services":[%s],%s,%s}\n' \
+         "$(bm_jo_inner device "$R_DEV" busy_device "$RM_BUSY_DEV" reason "$RM_REASON" busy_summary "$BUSY_SUMMARY" busy_advice "$BUSY_ADVICE" services_back "$REPLY")" \
+         "$services" "$(bm_jb ok "$([ "$rc" -eq 0 ] && echo 1)" powered_off "${RM_POWERED:-0}" removable "${RM_REMOVABLE:-0}")" "$(bm_jn exit "$rc")"
       return "$rc"
    fi
    case "$rc" in
@@ -489,6 +503,86 @@ bm_drive_unmount() {
       *) printf $"Could not unmount: %s"'\n' "$RM_REASON" >&2 ;;
    esac
    return "$rc"
+}
+
+# bm_drive_busy_target TARGET: R_DEV, the volume to look at. For a whole drive,
+# the first of its volumes that something keeps busy (or the first mounted one)
+bm_drive_busy_target() {
+   local d first=""
+   bm_drive_abs "$1"
+   bm_resolve "$REPLY" || { bm_resolve_fail "$1"; return 24; }
+   bm_facts "$R_DEV" || return 24
+   [ "${F[NAME]:-}" = "${F[DISK]:-}" ] && [ -z "${F[FSTYPE]:-}" ] || return 0
+   bm_drive_members "${F[DISK]}"
+   for d in "${DRIVE_DEVS[@]}"; do
+      bm_mounts "$d"
+      [ "${#M_TARGET[@]}" -gt 0 ] || continue
+      first="${first:-$d}"
+      bm_busy_collect "$d"
+      [ "$BUSY_COUNT" -gt 0 ] && { R_DEV="$d"; return 0; }
+   done
+   [ -n "$first" ] && R_DEV="$first"
+   return 0
+}
+
+# busy TARGET --json: who keeps it busy. Programs are listed with whether they
+# may be closed (bm_close_refusal says why not); the rest keeps it busy too.
+bm_drive_busy() {
+   local target="" json=0 a i pid progs="" others="" access mp=""
+   local -A seen=()
+   for a in "$@"; do
+      case "$a" in
+         --json) json=1 ;;
+         -*) bm_drive_badarg "$a"; return 2 ;;
+         *) target="$a" ;;
+      esac
+   done
+   [ "$json" = 1 ] || { bm_cmd_busy "$target"; return; }
+   bm_drive_busy_target "$target" || return 24
+   bm_busy_collect "$R_DEV"
+   bm_busy_summary
+   bm_busy_as_holders
+   for i in "${!BUSY_PID[@]}"; do
+      pid="${BUSY_PID[i]}"
+      [ -n "${seen[$pid]:-}" ] && continue
+      seen[$pid]=1
+      bm_access_label "${BUSY_FD[i]}" "${BUSY_ACCESS[i]}" ""; access="$REPLY"
+      bm_close_refusal "$i"
+      progs+="${progs:+,}{$(bm_jo_inner app "${BUSY_APP[i]}" comm "${BUSY_COMM[i]}" activity "$access" why "$REPLY"),$(bm_jn pid "$pid"),$(bm_jb closable "$([ -z "$REPLY" ] && echo 1)")}"
+   done
+   for i in "${!O_KIND[@]}"; do
+      bm_other_label "${O_KIND[i]}" "${O_WHAT[i]}"
+      others+="${others:+,}$(bm_jo kind "${O_KIND[i]}" text "$REPLY")"
+   done
+   bm_mounts "$R_DEV"; mp="${M_TARGET[0]:-}"
+   printf '{%s,"programs":[%s],"others":[%s],%s}\n' \
+      "$(bm_jo_inner device "$R_DEV" mountpoint "$mp" summary "$BUSY_SUMMARY" advice "$BUSY_ADVICE")" \
+      "$progs" "$others" "$(bm_jn count "$BUSY_COUNT")"
+}
+
+# close-apps TARGET --json: ask the programs of this user that keep it busy to
+# close (SIGTERM, as closing their windows; never SIGKILL). The list is made
+# here again, never taken from the caller: only what may be closed now is.
+bm_drive_close_apps() {
+   local target="" a i closed="" kept=""
+   for a in "$@"; do
+      case "$a" in
+         --json) ;;
+         -*) bm_drive_badarg "$a"; return 2 ;;
+         *) target="$a" ;;
+      esac
+   done
+   bm_drive_busy_target "$target" || return 24
+   bm_busy_collect "$R_DEV"
+   bm_close_candidates
+   bm_close_args
+   CLOSE_LEFT=()
+   [ "${#CLOSE_ARGS[@]}" -gt 0 ] && bm_close_processes "${CLOSE_ARGS[@]}"
+   for i in "${CLOSE_NAMES[@]}"; do closed+="${closed:+,}$(bm_js "$i"; printf '%s' "$REPLY")"; done
+   for i in "${!KEEP_NAMES[@]}"; do kept+="${kept:+,}$(bm_jo name "${KEEP_NAMES[i]}" why "${KEEP_WHY[i]}")"; done
+   printf '{%s,"asked":[%s],"kept":[%s],%s,%s}\n' "$(bm_jo_inner device "$R_DEV")" "$closed" "$kept" \
+      "$(bm_jn still_running "${#CLOSE_LEFT[@]}")" "$(bm_jb ok "$([ "${#CLOSE_LEFT[@]}" -eq 0 ] && echo 1)")"
+   [ "${#CLOSE_LEFT[@]}" -eq 0 ]
 }
 
 # protect/unprotect: on the helper, which refuses the running system
@@ -540,6 +634,8 @@ bm_drive_main() {
       mount) bm_drive_mount "$@" ;;
       unmount) bm_drive_unmount "$@" ;;
       safe-remove) BM_DRIVE_REMOVE_MODE=remove bm_drive_unmount "$@" ;;
+      busy) bm_drive_busy "$@" ;;
+      close-apps) bm_drive_close_apps "$@" ;;
       protect | unprotect) bm_drive_protect "$cmd" "$@" ;;
       unlock) bm_drive_unlock_volume "$@" ;;
       destinations | copy | jobs | status | pause | cancel | resume | report | __run)

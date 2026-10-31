@@ -151,11 +151,11 @@ class JobPage(Adw.NavigationPage):
         self.state_icon.set_from_icon_name(job.icon)
 
         done, total = job.bytes_done or 0, job.bytes_total or 0
-        pct = min(100, done * 100 // total) if total else None
+        pct = job.percent
         if pct is not None:
             self._stop_pulse()
             self.bar.set_fraction(pct / 100)
-            self.percent.set_text(("≈ " if job.total_estimate else "") + f"{pct}%")
+            self.percent.set_text(job.percent_text)
         elif running:
             self._start_pulse()
             self.percent.set_text("")

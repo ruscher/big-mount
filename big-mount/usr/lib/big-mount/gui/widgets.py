@@ -4,7 +4,7 @@ devices and files is data: nothing here treats it as markup."""
 from gi.repository import Adw, Gio, GLib, Gtk, Pango
 
 from .common import _, human_size
-from .models import LEVEL_ICONS
+from .models import GRADE_ICONS, LEVEL_ICONS
 
 
 def label(text="", css=(), wrap=True, xalign=0.0, ellipsize=False, selectable=False):
@@ -182,6 +182,24 @@ class LevelBadge(Gtk.Box):
         self._image.set_from_icon_name(LEVEL_ICONS.get(level, LEVEL_ICONS["unknown"]))
         self._label.set_text(text)
         self.update_property([Gtk.AccessibleProperty.LABEL], [_("Health") + ": " + text])
+
+
+class GradeBadge(Gtk.Box):
+    """The grade of a drive as a pill: an icon and a word, never colour alone. The
+    tooltip says what the grade rests on."""
+
+    def __init__(self, health):
+        super().__init__(orientation=Gtk.Orientation.HORIZONTAL, spacing=5, valign=Gtk.Align.CENTER)
+        self.add_css_class("grade-pill")
+        self.add_css_class(f"grade-{health.grade}")
+        self.append(icon(GRADE_ICONS.get(health.grade, GRADE_ICONS["unknown"]), 14))
+        self.append(label(health.grade_label, wrap=False))
+        tip = health.label
+        if health.notes:
+            tip += "\n" + "\n".join(n.get("text", "") for n in health.notes)
+        self.set_tooltip_text(tip)
+        self.set_accessible_role(Gtk.AccessibleRole.LABEL)
+        self.update_property([Gtk.AccessibleProperty.LABEL], [_("Health") + ": " + health.grade_label])
 
 
 class UsageBar(Gtk.Box):

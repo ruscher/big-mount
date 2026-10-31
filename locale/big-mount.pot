@@ -184,7 +184,7 @@ msgstr ""
 #: big-mount/usr/lib/big-mount/cli.sh:799
 #: big-mount/usr/lib/big-mount/cli.sh:1069
 #: big-mount/usr/lib/big-mount/doctor.sh:448
-#: big-mount/usr/lib/big-mount/drive.sh:224
+#: big-mount/usr/lib/big-mount/drive.sh:227
 msgid "bigmount: unknown option '%s' (see bigmount --help)"
 msgstr ""
 
@@ -428,20 +428,20 @@ msgstr ""
 
 #: big-mount/usr/lib/big-mount/cli.sh:267
 #: big-mount/usr/lib/big-mount/cli.sh:551
-#: big-mount/usr/lib/big-mount/drive-diag.sh:204
-#: big-mount/usr/lib/big-mount/drive.sh:239
+#: big-mount/usr/lib/big-mount/drive-diag.sh:289
+#: big-mount/usr/lib/big-mount/drive.sh:242
 msgid "Device"
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/cli.sh:268
 #: big-mount/usr/lib/big-mount/cli.sh:552
-#: big-mount/usr/lib/big-mount/drive.sh:253
+#: big-mount/usr/lib/big-mount/drive.sh:256
 msgid "Filesystem"
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/cli.sh:270
 #: big-mount/usr/lib/big-mount/cli.sh:553
-#: big-mount/usr/lib/big-mount/drive.sh:257
+#: big-mount/usr/lib/big-mount/drive.sh:260
 msgid "Mounted at"
 msgstr ""
 
@@ -454,7 +454,7 @@ msgid "Writable, but not by your user"
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/cli.sh:273
-#: big-mount/usr/lib/big-mount/drive.sh:256
+#: big-mount/usr/lib/big-mount/drive.sh:259
 msgid "Status"
 msgstr ""
 
@@ -751,7 +751,7 @@ msgid "They start again by themselves when the device is mounted again."
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/cli.sh:805
-#: big-mount/usr/lib/big-mount/drive.sh:468
+#: big-mount/usr/lib/big-mount/drive.sh:475
 msgid "Another removal of this drive is in progress. Nothing was done."
 msgstr ""
 
@@ -760,7 +760,7 @@ msgid "Device removed safely. It can be disconnected now."
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/cli.sh:823
-#: big-mount/usr/lib/big-mount/drive.sh:480
+#: big-mount/usr/lib/big-mount/drive.sh:494
 msgid "Unmounted. Everything was written to the device."
 msgstr ""
 
@@ -789,7 +789,7 @@ msgid "Still running: %s"
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/cli.sh:845
-#: big-mount/usr/lib/big-mount/drive.sh:485
+#: big-mount/usr/lib/big-mount/drive.sh:499
 msgid "These services use the device and will be stopped when it is unmounted:"
 msgstr ""
 
@@ -807,12 +807,12 @@ msgid "Unmounted, but powering the drive off failed (%s). Wait a moment before d
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/cli.sh:860
-#: big-mount/usr/lib/big-mount/drive.sh:482
+#: big-mount/usr/lib/big-mount/drive.sh:496
 msgid "Refused: this drive holds the running system (%s)."
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/cli.sh:861
-#: big-mount/usr/lib/big-mount/drive.sh:483
+#: big-mount/usr/lib/big-mount/drive.sh:497
 msgid "Permission to unmount was not granted."
 msgstr ""
 
@@ -825,7 +825,7 @@ msgid "Unmounted. This drive cannot be powered off by the computer; it can be di
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/cli.sh:866
-#: big-mount/usr/lib/big-mount/drive.sh:489
+#: big-mount/usr/lib/big-mount/drive.sh:503
 msgid "Could not unmount: %s"
 msgstr ""
 
@@ -843,8 +843,8 @@ msgid "Drive"
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/cli.sh:891
-#: big-mount/usr/lib/big-mount/drive-diag.sh:203
-#: big-mount/usr/lib/big-mount/drive.sh:238
+#: big-mount/usr/lib/big-mount/drive-diag.sh:288
+#: big-mount/usr/lib/big-mount/drive.sh:241
 msgid "Connection"
 msgstr ""
 
@@ -877,27 +877,27 @@ msgid "Problems found:"
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/cli.sh:912
-#: big-mount/usr/lib/big-mount/drive-diag.sh:152
+#: big-mount/usr/lib/big-mount/drive-diag.sh:228
 msgid "The drive itself reports that it is failing (SMART)."
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/cli.sh:913
-#: big-mount/usr/lib/big-mount/drive-diag.sh:157
+#: big-mount/usr/lib/big-mount/drive-diag.sh:233
 msgid "Since the computer was started, it stopped answering and the connection had to be reset (%s kernel messages)."
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/cli.sh:914
-#: big-mount/usr/lib/big-mount/drive-diag.sh:156
+#: big-mount/usr/lib/big-mount/drive-diag.sh:232
 msgid "Since the computer was started, reading or writing failed (%s kernel messages)."
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/cli.sh:915
-#: big-mount/usr/lib/big-mount/drive-diag.sh:159
+#: big-mount/usr/lib/big-mount/drive-diag.sh:235
 msgid "Since the computer was started, the connection was slowed down after errors."
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/cli.sh:916
-#: big-mount/usr/lib/big-mount/drive-diag.sh:158
+#: big-mount/usr/lib/big-mount/drive-diag.sh:234
 msgid "Since the computer was started, the USB connection was reset or lost %s times."
 msgstr ""
 
@@ -1161,6 +1161,7 @@ msgstr ""
 #: big-mount/usr/lib/big-mount/cli.sh:1243
 #: big-mount/usr/lib/big-mount/cli.sh:1246
 #: big-mount/usr/lib/big-mount/cli.sh:1248
+#: big-mount/usr/lib/big-mount/cli.sh:1521
 msgid "Close"
 msgstr ""
 
@@ -1177,7 +1178,7 @@ msgid "Safely remove…"
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/cli.sh:1272
-#: big-mount/usr/lib/big-mount/cli.sh:1519
+#: big-mount/usr/lib/big-mount/cli.sh:1557
 msgid "How to solve"
 msgstr ""
 
@@ -1341,11 +1342,35 @@ msgstr ""
 msgid "It remains mounted. Nothing was forced."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/cli.sh:1517
-msgid "Device: %s\\nFilesystem: %s\\nPossible reason: %s"
+#: big-mount/usr/lib/big-mount/cli.sh:1511
+msgid "%s: %s"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:1514
+msgid "This drive reported serious problems. Copy your files to another drive before trying any repair."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:1516
+msgid "This drive reported problems. Copy what matters to another place."
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/cli.sh:1519
+msgid "Big-Mount shows what was found and how to rescue the files without writing to the drive."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:1521
+msgid "A drive needs attention"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:1521
+msgid "Open Big-Mount"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:1555
+msgid "Device: %s\\nFilesystem: %s\\nPossible reason: %s"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/cli.sh:1557
 msgid "View details"
 msgstr ""
 
@@ -1390,7 +1415,7 @@ msgid "Commands such as 'bigmount --diagnose' do not diagnose anything and may p
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/doctor.sh:145
-#: big-mount/usr/lib/big-mount/drive.sh:590
+#: big-mount/usr/lib/big-mount/drive.sh:686
 msgid "Big-Mount"
 msgstr ""
 
@@ -1836,7 +1861,7 @@ msgstr ""
 #: big-mount/usr/lib/big-mount/drive-copy.sh:119
 #: big-mount/usr/lib/big-mount/drive-copy.sh:418
 #: big-mount/usr/lib/big-mount/drive-recovery.sh:630
-#: big-mount/usr/lib/big-mount/drive.sh:508
+#: big-mount/usr/lib/big-mount/drive.sh:602
 msgid "Permission was not granted."
 msgstr ""
 
@@ -1854,28 +1879,28 @@ msgid "An image of another disk already exists in that place. Continuing it woul
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/drive-copy.sh:123
-#: big-mount/usr/lib/big-mount/drive-diag.sh:297
+#: big-mount/usr/lib/big-mount/drive-diag.sh:387
 #: big-mount/usr/lib/big-mount/drive-tui.sh:78
 msgid "The device was disconnected or replaced. Nothing was done."
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/drive-copy.sh:124
-#: big-mount/usr/lib/big-mount/drive-diag.sh:288
+#: big-mount/usr/lib/big-mount/drive-diag.sh:378
 msgid "This computer has no driver for this filesystem. Installing the right package may solve it."
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/drive-copy.sh:125
-#: big-mount/usr/lib/big-mount/drive-diag.sh:293
+#: big-mount/usr/lib/big-mount/drive-diag.sh:383
 msgid "This volume is encrypted. Unlock it first."
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/drive-copy.sh:126
-#: big-mount/usr/lib/big-mount/drive-diag.sh:294
+#: big-mount/usr/lib/big-mount/drive-diag.sh:384
 msgid "This is a part of a larger volume (RAID, LVM or similar), not a filesystem of its own. Its volume must be assembled first."
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/drive-copy.sh:127
-#: big-mount/usr/lib/big-mount/drive-diag.sh:296
+#: big-mount/usr/lib/big-mount/drive-diag.sh:386
 msgid "This is swap space, not a place for files."
 msgstr ""
 
@@ -2169,12 +2194,12 @@ msgid "Log:"
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/drive-copy.sh:1097
-#: big-mount/usr/lib/big-mount/drive.sh:236
+#: big-mount/usr/lib/big-mount/drive.sh:239
 msgid "Serial number"
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/drive-copy.sh:1097
-#: big-mount/usr/lib/big-mount/drive.sh:252
+#: big-mount/usr/lib/big-mount/drive.sh:255
 msgid "Label"
 msgstr ""
 
@@ -2353,8 +2378,8 @@ msgid "Unknown"
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/drive-detect.sh:334
-#: big-mount/usr/lib/big-mount/drive-diag.sh:206
-#: big-mount/usr/lib/big-mount/drive.sh:242
+#: big-mount/usr/lib/big-mount/drive-diag.sh:292
+#: big-mount/usr/lib/big-mount/drive.sh:245
 msgid "Health"
 msgstr ""
 
@@ -2366,149 +2391,205 @@ msgstr ""
 msgid "No storage device was found."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-diag.sh:135
+#: big-mount/usr/lib/big-mount/drive-diag.sh:184
+msgid "Critical"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/drive-diag.sh:185
+msgid "Poor"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/drive-diag.sh:186
+msgid "Good"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/drive-diag.sh:187
+msgid "Healthy"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/drive-diag.sh:188
+msgid "Not applicable"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/drive-diag.sh:189
+msgid "Not assessed"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/drive-diag.sh:197
+msgid "Only the system log was consulted. Without the drive's own report (SMART) it cannot be called healthy."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/drive-diag.sh:198
+msgid "It has used %s%% of the life its maker rates it for: it is near or past its end."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/drive-diag.sh:199
+msgid "It has used %s%% of the life its maker rates it for."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/drive-diag.sh:200
+msgid "Some of its SMART values were below their safe limit in the past."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/drive-diag.sh:203
+msgid "Powered on for %s hours, about %s years of use: failures become more likely."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/drive-diag.sh:205
+msgid "It is hot now (%s °C). Heat shortens its life: give it air."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/drive-diag.sh:211
 msgid "Critical: high risk for the data"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-diag.sh:136
+#: big-mount/usr/lib/big-mount/drive-diag.sh:212
 msgid "Attention: needs a closer look"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-diag.sh:139
+#: big-mount/usr/lib/big-mount/drive-diag.sh:215
 msgid "No alerts (SMART and system log checked)"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-diag.sh:140
+#: big-mount/usr/lib/big-mount/drive-diag.sh:216
 msgid "No alerts in the system log (SMART not read)"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-diag.sh:141
+#: big-mount/usr/lib/big-mount/drive-diag.sh:217
 msgid "No alerts from SMART (system log not readable)"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-diag.sh:144
+#: big-mount/usr/lib/big-mount/drive-diag.sh:220
 msgid "Not applicable (a disk image)"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-diag.sh:145
+#: big-mount/usr/lib/big-mount/drive-diag.sh:221
 msgid "Unknown: not enough information"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-diag.sh:153
+#: big-mount/usr/lib/big-mount/drive-diag.sh:229
 msgid "The drive has sectors it can no longer read (%s pending), even if its overall verdict says PASSED."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-diag.sh:154
+#: big-mount/usr/lib/big-mount/drive-diag.sh:230
 msgid "The NVMe drive raised a critical warning (%s)."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-diag.sh:155
+#: big-mount/usr/lib/big-mount/drive-diag.sh:231
 msgid "The NVMe drive recorded %s media or data integrity errors."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-diag.sh:160
+#: big-mount/usr/lib/big-mount/drive-diag.sh:236
 msgid "The drive already replaced damaged sectors with spare ones."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-diag.sh:161
+#: big-mount/usr/lib/big-mount/drive-diag.sh:237
 msgid "The drive reported %s errors it could not correct."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-diag.sh:162
+#: big-mount/usr/lib/big-mount/drive-diag.sh:238
 msgid "The cable or adapter corrupted data in transit %s times (CRC errors)."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-diag.sh:201
-#: big-mount/usr/lib/big-mount/drive.sh:233
+#: big-mount/usr/lib/big-mount/drive-diag.sh:239
+msgid "%s of its SMART values are below their safe limit now."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/drive-diag.sh:286
+#: big-mount/usr/lib/big-mount/drive.sh:236
 msgid "Type"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-diag.sh:202
-#: big-mount/usr/lib/big-mount/drive.sh:237
+#: big-mount/usr/lib/big-mount/drive-diag.sh:287
+#: big-mount/usr/lib/big-mount/drive.sh:240
 msgid "Capacity"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-diag.sh:207
+#: big-mount/usr/lib/big-mount/drive-diag.sh:293
 msgid "SMART verdict"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-diag.sh:209
+#: big-mount/usr/lib/big-mount/drive-diag.sh:295
 msgid "What was found:"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-diag.sh:214
+#: big-mount/usr/lib/big-mount/drive-diag.sh:299
+msgid "Why it is not called healthy:"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/drive-diag.sh:304
 msgid "Volumes:"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-diag.sh:223
+#: big-mount/usr/lib/big-mount/drive-diag.sh:313
 msgid "no driver for this filesystem on this computer"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-diag.sh:225
+#: big-mount/usr/lib/big-mount/drive-diag.sh:315
 msgid "writing blocked on the device"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-diag.sh:231
+#: big-mount/usr/lib/big-mount/drive-diag.sh:321
 msgid "For the SMART details of the drive, which need the administrator password: bigmount --drive diagnose DEVICE --smart"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-diag.sh:241
+#: big-mount/usr/lib/big-mount/drive-diag.sh:331
 msgid "Copy what matters now, starting with the most important files. Every extra read wears a failing disk."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-diag.sh:242
+#: big-mount/usr/lib/big-mount/drive-diag.sh:332
 msgid "Do not run repair tools on this disk: they write, and they can destroy what is still readable."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-diag.sh:243
+#: big-mount/usr/lib/big-mount/drive-diag.sh:333
 msgid "If the data is very important and cannot be replaced, consider a data recovery professional before insisting."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-diag.sh:246
+#: big-mount/usr/lib/big-mount/drive-diag.sh:336
 msgid "Copy your important files to another place."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-diag.sh:247
+#: big-mount/usr/lib/big-mount/drive-diag.sh:337
 msgid "Try another cable and connect the drive directly to the computer, without a hub."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-diag.sh:287
+#: big-mount/usr/lib/big-mount/drive-diag.sh:377
 msgid "Permission to mount was not granted."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-diag.sh:289
+#: big-mount/usr/lib/big-mount/drive-diag.sh:379
 msgid "Windows left this partition hibernated (Fast Startup). It can be read only after Windows shuts down completely."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-diag.sh:290
+#: big-mount/usr/lib/big-mount/drive-diag.sh:380
 msgid "The drive could not read the start of this filesystem. This is usually damage on the disk, a bad cable or a weak USB port. Making a disk image with GNU ddrescue is the safest next step."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-diag.sh:291
+#: big-mount/usr/lib/big-mount/drive-diag.sh:381
 msgid "The structure of this filesystem seems damaged, or this is not the filesystem it claims to be. Nothing was repaired. A disk image or a search for files (PhotoRec) may still recover data."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-diag.sh:292
+#: big-mount/usr/lib/big-mount/drive-diag.sh:382
 msgid "This filesystem was not closed properly and needs to replay its journal, which writes to the disk. To protect the data that was not done. A disk image, worked on as a copy, is the safe way to read it."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-diag.sh:295
+#: big-mount/usr/lib/big-mount/drive-diag.sh:385
 msgid "No filesystem was recognized on it. If it should have partitions, searching for them with TestDisk does not change the disk."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-diag.sh:298
+#: big-mount/usr/lib/big-mount/drive-diag.sh:388
 msgid "This drive reported problems, so it is only mounted read-only. Writing to it can destroy what is still readable."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-diag.sh:299
+#: big-mount/usr/lib/big-mount/drive-diag.sh:389
 msgid "It is already mounted with writing enabled. Unmount it first to mount it read-only (bigmount --drive mount DEVICE --remount)."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-diag.sh:300
+#: big-mount/usr/lib/big-mount/drive-diag.sh:390
 msgid "It is in use, so it could not be unmounted to be mounted again."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-diag.sh:301
+#: big-mount/usr/lib/big-mount/drive-diag.sh:391
 msgid "The reason could not be determined. Nothing was changed on the device. See the technical details."
 msgstr ""
 
@@ -2523,7 +2604,7 @@ msgstr ""
 
 #: big-mount/usr/lib/big-mount/drive-erase.sh:185
 #: big-mount/usr/lib/big-mount/drive-erase.sh:188
-#: big-mount/usr/lib/big-mount/lib.sh:1224
+#: big-mount/usr/lib/big-mount/lib.sh:1273
 msgid "The drive was disconnected or replaced. Nothing was erased."
 msgstr ""
 
@@ -2734,7 +2815,7 @@ msgid "mount with writing enabled (refused on a drive at risk)"
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/drive.sh:123
-msgid "unmount one volume safely"
+msgid "unmount one volume safely; a whole drive: all of its volumes"
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/drive.sh:124
@@ -2742,237 +2823,249 @@ msgid "unmount everything on the drive and power it off"
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/drive.sh:125
-msgid "block or allow writing on the device (asks for a password)"
+msgid "also stop the services that use it (asked first in the window)"
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/drive.sh:126
-msgid "unlock an encrypted volume"
+msgid "which programs keep a volume busy, and which of them may be closed"
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/drive.sh:127
-msgid "where files can be copied to"
+msgid "ask your programs that keep it busy to close (never the system, never one that is writing)"
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/drive.sh:128
-msgid "copy files in the background and follow the progress"
+msgid "block or allow writing on the device (asks for a password)"
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/drive.sh:129
-msgid "copy only this file or folder of the source (repeatable)"
+msgid "unlock an encrypted volume"
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/drive.sh:130
-msgid "copy the items listed in FILE, separated by NUL"
+msgid "where files can be copied to"
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/drive.sh:131
-msgid "copy found files out of the folder of that search"
+msgid "copy files in the background and follow the progress"
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/drive.sh:132
-msgid "files that already exist: keep them (default), keep them aside, replace them"
+msgid "copy only this file or folder of the source (repeatable)"
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/drive.sh:133
-msgid "how to check the result (full reads the source again)"
+msgid "copy the items listed in FILE, separated by NUL"
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/drive.sh:134
-msgid "set aside a file that does not advance for N seconds (default 90, 0: never)"
+msgid "copy found files out of the folder of that search"
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/drive.sh:135
-msgid "limit the reading speed"
+msgid "files that already exist: keep them (default), keep them aside, replace them"
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/drive.sh:136
-msgid "measure the total first (auto: not on a drive at risk)"
+msgid "how to check the result (full reads the source again)"
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/drive.sh:137
-msgid "accept a destination on the same physical disk"
+msgid "set aside a file that does not advance for N seconds (default 90, 0: never)"
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/drive.sh:138
-msgid "accept a drive at risk that is mounted with writing enabled"
+msgid "limit the reading speed"
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/drive.sh:139
-msgid "accept a destination on a drive with critical alerts"
+msgid "measure the total first (auto: not on a drive at risk)"
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/drive.sh:140
-msgid "start and return, the copy continues in the background"
+msgid "accept a destination on the same physical disk"
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/drive.sh:141
-msgid "copies and images, running and past"
+msgid "accept a drive at risk that is mounted with writing enabled"
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/drive.sh:142
-msgid "progress of one of them"
+msgid "accept a destination on a drive with critical alerts"
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/drive.sh:143
-msgid "stop it safely (it can be resumed later)"
+msgid "start and return, the copy continues in the background"
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/drive.sh:144
-msgid "continue it, also after a shutdown; optionally try what was set aside"
+msgid "copies and images, running and past"
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/drive.sh:145
-msgid "report of a drive or of a copy (--output FILE)"
+msgid "progress of one of them"
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/drive.sh:146
-msgid "which ways of recovering files can be used on it, and which is advised"
+msgid "stop it safely (it can be resumed later)"
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/drive.sh:147
-msgid "make a disk image with GNU ddrescue"
+msgid "continue it, also after a shutdown; optionally try what was set aside"
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/drive.sh:148
-msgid "read the partition table with TestDisk; --search also looks for lost ones. Nothing is changed"
+msgid "report of a drive or of a copy (--output FILE)"
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/drive.sh:149
-msgid "list the files that exist in a folder, by type (not deleted ones)"
+msgid "which ways of recovering files can be used on it, and which is advised"
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/drive.sh:150
-msgid "search for files by content with PhotoRec"
+msgid "make a disk image with GNU ddrescue"
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/drive.sh:151
-msgid "only these types: photos,videos,documents,audio,archives (default: all)"
+msgid "read the partition table with TestDisk; --search also looks for lost ones. Nothing is changed"
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/drive.sh:152
-msgid "what a search found"
+msgid "list the files that exist in a folder, by type (not deleted ones)"
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/drive.sh:153
-msgid "whether Secure Erase can be used on a drive, and what would be lost"
+msgid "search for files by content with PhotoRec"
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/drive.sh:154
-msgid "machine-readable output"
+msgid "only these types: photos,videos,documents,audio,archives (default: all)"
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/drive.sh:155
-msgid "say what would be done, change nothing"
+msgid "what a search found"
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/drive.sh:156
+msgid "whether Secure Erase can be used on a drive, and what would be lost"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/drive.sh:157
+msgid "machine-readable output"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/drive.sh:158
+msgid "say what would be done, change nothing"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/drive.sh:159
 msgid "TARGET is a device (/dev/sdb1) or a folder inside a mounted device."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive.sh:197
+#: big-mount/usr/lib/big-mount/drive.sh:200
 msgid "bigmount: more than one device has this UUID: %s. Name the device."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive.sh:219
+#: big-mount/usr/lib/big-mount/drive.sh:222
 msgid "The list of devices could not be read."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive.sh:234
+#: big-mount/usr/lib/big-mount/drive.sh:237
 msgid "Manufacturer"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive.sh:235
+#: big-mount/usr/lib/big-mount/drive.sh:238
 msgid "Model"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive.sh:240
+#: big-mount/usr/lib/big-mount/drive.sh:243
 msgid "Partition table"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive.sh:254
+#: big-mount/usr/lib/big-mount/drive.sh:257
 msgid "Size"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive.sh:261
+#: big-mount/usr/lib/big-mount/drive.sh:264
 msgid "Space"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive.sh:263
+#: big-mount/usr/lib/big-mount/drive.sh:266
 msgid "Writing"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive.sh:263
+#: big-mount/usr/lib/big-mount/drive.sh:266
 msgid "blocked on the device"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive.sh:374
+#: big-mount/usr/lib/big-mount/drive.sh:377
 msgid "smartctl is not installed (package smartmontools), so SMART details cannot be read."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive.sh:379
+#: big-mount/usr/lib/big-mount/drive.sh:382
 msgid "Permission to read SMART was not granted."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive.sh:380
+#: big-mount/usr/lib/big-mount/drive.sh:383
 #: big-mount/usr/lib/big-mount/drive-tui.sh:120
 msgid "The drive did not report SMART data. Many USB adapters do not pass it through."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive.sh:403
+#: big-mount/usr/lib/big-mount/drive.sh:406
 msgid "Mounted read-only at %s"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive.sh:404
+#: big-mount/usr/lib/big-mount/drive.sh:407
 msgid "Mounted at %s"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive.sh:406
+#: big-mount/usr/lib/big-mount/drive.sh:409
 msgid "Writing is also blocked on the device itself until it is disconnected."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive.sh:429
-#: big-mount/usr/lib/big-mount/drive.sh:497
-#: big-mount/usr/lib/big-mount/drive.sh:516
+#: big-mount/usr/lib/big-mount/drive.sh:432
+#: big-mount/usr/lib/big-mount/drive.sh:591
+#: big-mount/usr/lib/big-mount/drive.sh:610
 msgid "Name a device, such as /dev/sdb1."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive.sh:487
+#: big-mount/usr/lib/big-mount/drive.sh:501
 msgid "Nothing was done. Use bigmount --unmount to confirm stopping them."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive.sh:502
+#: big-mount/usr/lib/big-mount/drive.sh:596
 msgid "Writing is now blocked on this device until it is disconnected."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive.sh:503
+#: big-mount/usr/lib/big-mount/drive.sh:597
 msgid "Writing is allowed on this device again."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive.sh:506
+#: big-mount/usr/lib/big-mount/drive.sh:600
 msgid "Another volume of this drive is mounted with writing enabled. Unmount it first."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive.sh:507
+#: big-mount/usr/lib/big-mount/drive.sh:601
 msgid "Refused: this drive holds the running system."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive.sh:509
+#: big-mount/usr/lib/big-mount/drive.sh:603
 msgid "The helper failed (exit %s)."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive.sh:518
+#: big-mount/usr/lib/big-mount/drive.sh:612
 msgid "Unlocking in the terminal needs an interactive terminal."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive.sh:577
+#: big-mount/usr/lib/big-mount/drive.sh:673
 msgid "bigmount: the graphical application does not run as administrator. Open it as your user; it asks for the password when it needs it."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive.sh:581
+#: big-mount/usr/lib/big-mount/drive.sh:677
 msgid "bigmount: there is no graphical session here. Use the manager in the terminal: bigmount --drive"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive.sh:591
+#: big-mount/usr/lib/big-mount/drive.sh:687
 msgid "The application needs GTK 4, libadwaita 1.5 or later and PyGObject (packages gtk4, libadwaita and python-gobject). The same tools work in the terminal: bigmount --drive"
 msgstr ""
 
@@ -3357,16 +3450,129 @@ msgstr ""
 msgid "%s is still mounted at %s after being unmounted"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/lib.sh:1231
+#: big-mount/usr/lib/big-mount/lib.sh:1280
 msgid "%s is mounted at %s"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/lib.sh:1234
+#: big-mount/usr/lib/big-mount/lib.sh:1283
 msgid "%s is in use (encryption, LVM or RAID)"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/lib.sh:1240
+#: big-mount/usr/lib/big-mount/lib.sh:1289
 msgid "UDisks2 does not know this drive."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/gui/actions.py:19
+msgid "Writing pending data and unmounting…"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/gui/actions.py:26
+msgid "The drive can be disconnected now."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/gui/actions.py:38
+msgid "Could not remove it"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/gui/actions.py:38
+msgid "Could not unmount"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/gui/actions.py:39
+msgid "The reason could not be determined. Nothing was forced."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/gui/actions.py:48
+msgid "Unmounting it stops these services:"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/gui/actions.py:54
+msgid "Stop them and unmount"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/gui/actions.py:83
+#, python-format
+msgid "Will not be closed: %s"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/gui/actions.py:89
+msgid "Closing asks each program to quit, as when you close its window. Changes not saved in them may be lost: if you can, close them yourself instead."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/gui/actions.py:94
+msgid "Close them and unmount"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/gui/actions.py:101
+msgid "It is in use"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/gui/actions.py:106
+msgid "Asking the programs to close…"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/gui/actions.py:111
+msgid "Some programs did not close"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/gui/actions.py:112
+msgid "They are still running, so nothing was unmounted. Close them yourself, then try again."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/gui/actions.py:124
+#, python-format
+msgid "Erase everything on %s?"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/gui/actions.py:125
+msgid ""
+"This is not recovery: it destroys every file on the whole drive, for good. No program, and no data recovery service, can bring them back.\n"
+"\n"
+"Copy what you want to keep first. The next page checks whether this drive can be erased, and asks for confirmation twice more."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/gui/actions.py:127
+msgid "I understand, continue"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/gui/actions.py:144
+msgid "Open the drive"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/gui/actions.py:145
+msgid "Check its health"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/gui/actions.py:146
+msgid "Recover files…"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/gui/actions.py:150
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:369
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:486
+msgid "Unmount"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/gui/actions.py:151
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:370
+msgid "Force unmount (close the programs using it)…"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/gui/actions.py:156
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:374
+msgid "Erase data permanently…"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/gui/actions.py:171
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:331
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:332
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1003
+msgid "More options"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/gui/actions.py:172
+#, python-format
+msgid "More options for %s"
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/gui/common.py:50
@@ -3383,36 +3589,36 @@ msgstr ""
 msgid "%(h)d h %(m)d min"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/models.py:271
+#: big-mount/usr/lib/big-mount/gui/models.py:339
 msgid "Copy of files"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/models.py:273
+#: big-mount/usr/lib/big-mount/gui/models.py:341
 msgid "List of files"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/models.py:274
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:497
+#: big-mount/usr/lib/big-mount/gui/models.py:342
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:514
 msgid "Search by content"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/models.py:284
+#: big-mount/usr/lib/big-mount/gui/models.py:352
 #: big-mount/usr/lib/big-mount/gui/pages/job.py:60
 msgid "Files"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/widgets.py:197
+#: big-mount/usr/lib/big-mount/gui/widgets.py:215
 #, python-format
 msgid "%(used)s used, %(free)s free"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/widgets.py:271
+#: big-mount/usr/lib/big-mount/gui/widgets.py:289
 msgid "Copy"
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/gui/window.py:77
-#: big-mount/usr/lib/big-mount/gui/pages/overview.py:66
-#: big-mount/usr/lib/big-mount/gui/pages/overview.py:74
+#: big-mount/usr/lib/big-mount/gui/pages/overview.py:178
+#: big-mount/usr/lib/big-mount/gui/pages/overview.py:205
 msgid "Your drives and devices"
 msgstr ""
 
@@ -3429,178 +3635,179 @@ msgstr ""
 msgid "Drives"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/window.py:138
+#: big-mount/usr/lib/big-mount/gui/window.py:118
+#, python-format
+msgid "%d running"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/gui/window.py:176
 msgid "Home"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/window.py:142
+#: big-mount/usr/lib/big-mount/gui/window.py:180
 #: big-mount/usr/lib/big-mount/gui/pages/job.py:302
 #: big-mount/usr/lib/big-mount/gui/pages/job.py:305
 msgid "Copies and searches"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/window.py:246
+#: big-mount/usr/lib/big-mount/gui/window.py:290
 msgid "Choose a drive to see how it is doing."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/window.py:258
+#: big-mount/usr/lib/big-mount/gui/window.py:302
 msgid "This device was not found."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/window.py:315
+#: big-mount/usr/lib/big-mount/gui/window.py:367
 msgid "Your drives, how they are doing, and your files safe on another disk."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/window.py:329
-#: big-mount/usr/lib/big-mount/gui/window.py:336
+#: big-mount/usr/lib/big-mount/gui/window.py:381
+#: big-mount/usr/lib/big-mount/gui/window.py:388
 msgid "A drive is being erased"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/window.py:337
+#: big-mount/usr/lib/big-mount/gui/window.py:389
 msgid "Do not turn off the computer or disconnect the drive. This window can be closed when it ends."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/window.py:345
+#: big-mount/usr/lib/big-mount/gui/window.py:397
 msgid "It keeps working"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/window.py:346
+#: big-mount/usr/lib/big-mount/gui/window.py:398
 msgid "The work continues in the background, also with this window closed. Open Big-Mount again to follow it."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/window.py:347
+#: big-mount/usr/lib/big-mount/gui/window.py:399
 msgid "Stay here"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/window.py:347
+#: big-mount/usr/lib/big-mount/gui/window.py:399
 msgid "Close the window"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:17
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:18
 msgid "Passphrase"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:31
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:32
 msgid "Unlocked."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:33
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:34
 msgid "Could not unlock"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:40
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:41
 #, python-format
 msgid "Unlock %s"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:40
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:41
 msgid "Type the passphrase of this volume."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:41
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:42
 msgid "Unlock"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:47
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:48
 msgid "Also block writing on the device itself (asks for the password)"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:49
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:50
 msgid "Whatever a driver or another program tries, the disk does not change. It lasts until the drive is disconnected."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:50
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:51
 msgid "The volume is opened without changing anything on it."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:58
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:59
 #, python-format
 msgid "Mount “%s” read-only"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:59
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:79
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:464
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:60
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:80
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:481
 msgid "Mount read-only"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:64
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:65
 msgid "Mounting…"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:80
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:81
 #: big-mount/usr/lib/big-mount/gui/pages/rescue.py:921
 msgid "Unmount and mount read-only"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:83
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:84
 #: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1044
 #: big-mount/usr/lib/big-mount/gui/pages/results.py:608
 msgid "The reason could not be determined."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:86
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:87
 msgid "Could not mount"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:91
-msgid "Unmounting…"
-msgstr ""
-
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:102
-msgid "Could not unmount"
-msgstr ""
-
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:135
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:124
 msgid "Based on the drive's SMART report and on the system log since this computer started."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:136
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:125
 msgid "Based on the system log since this computer started. The drive's own report (SMART) was not read."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:137
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:126
 msgid "Based on the drive's SMART report. The system log could not be read."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:138
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:127
 msgid "Nothing could be consulted yet, so nothing can be said about this drive."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:144
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:133
 msgid "This drive is failing. Copy your files to another drive before trying any repair."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:146
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:135
 msgid "Something is not right with this drive. Copy what matters to another place."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:148
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:137
 msgid "No alert was found in the information consulted."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:150
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:139
 msgid "This is a disk image: it has no health of its own."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:151
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:140
 msgid "Not examined yet: there is not enough information."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:165
-#: big-mount/usr/lib/big-mount/gui/pages/overview.py:117
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:159
+#: big-mount/usr/lib/big-mount/gui/pages/overview.py:288
 msgid "Rescue my files"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:167
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:350
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:161
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:365
 msgid "Export diagnosis…"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:171
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:165
 #: big-mount/usr/lib/big-mount/gui/pages/results.py:237
 #: big-mount/usr/lib/big-mount/gui/pages/results.py:275
 msgid "What was found"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:172
+msgid "Why it is not called healthy"
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/gui/pages/device.py:178
@@ -3617,258 +3824,253 @@ msgid "Read at %s, through the administrator password."
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/gui/pages/device.py:197
-msgid "Overall verdict"
-msgstr ""
-
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:197
-msgid "Passed"
-msgstr ""
-
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:197
-msgid "Failing"
-msgstr ""
-
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:198
-msgid "Sectors waiting to be replaced"
+msgid "As the system keeps it up to date, without a password."
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/gui/pages/device.py:199
-msgid "Sectors already replaced"
+msgid "Overall verdict"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:199
+msgid "Passed"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:199
+msgid "Failing"
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/gui/pages/device.py:200
-msgid "Sectors it could not read offline"
+msgid "Sectors waiting to be replaced"
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/gui/pages/device.py:201
-msgid "Errors it could not correct"
+msgid "Sectors already replaced"
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/gui/pages/device.py:202
-msgid "Cable or adapter errors"
+msgid "Sectors it could not read offline"
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/gui/pages/device.py:203
-msgid "NVMe media errors"
+msgid "Errors it could not correct"
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/gui/pages/device.py:204
-msgid "NVMe life used"
+msgid "Cable or adapter errors"
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/gui/pages/device.py:205
+msgid "NVMe media errors"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:206
+msgid "NVMe life used"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:207
 msgid "Hours powered on"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:216
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:208
+msgid "Temperature now"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:219
 msgid "Not read yet. It needs the administrator password, and through USB it can take a minute. Many USB adapters do not pass it through."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:217
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:220
 msgid "Not read"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:221
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:224
 msgid "Read SMART…"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:221
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:224
 msgid "Read SMART again…"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:223
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:226
 msgid "Asks for the administrator password. It only reads: no test is started."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:231
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:238
+#, python-format
+msgid "%s (about a year of use)"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:239
+#, python-format
+msgid "%(h)s (about %(y)d years of use)"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:245
 msgid "Reading SMART. Through USB it can take a minute."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:248
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:262
 msgid "Details"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:258
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:272
 msgid "Hidden. It identifies this drive: it is also left out of shared reports."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:267
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:268
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:281
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:282
 msgid "Show the serial number"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:274
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:276
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:288
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:290
 msgid "Messages from the system log"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:274
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:288
 #, python-format
 msgid "%d recent messages about this drive"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:285
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:299
 #: big-mount/usr/lib/big-mount/gui/pages/maintenance.py:13
 msgid "Advanced maintenance"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:286
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:300
 #: big-mount/usr/lib/big-mount/gui/pages/maintenance.py:38
 msgid "Erase data permanently"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:286
-msgid "Separate from recovery. Opens an explanation first."
-msgstr ""
-
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:310
-msgid "Overview"
-msgstr ""
-
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:311
-msgid "Recover"
-msgstr ""
-
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:313
-msgid "History"
-msgstr ""
-
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:317
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:318
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1003
-msgid "More options"
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:300
+msgid "Separate from recovery. Warns first, then checks the drive and asks twice more."
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/gui/pages/device.py:324
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:386
-msgid "The drive was disconnected"
+msgid "Overview"
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/gui/pages/device.py:325
+msgid "Recover"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:327
+msgid "History"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:338
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:403
+msgid "The drive was disconnected"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:339
 msgid "Nothing else was done. Connect it again and it comes back here."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:326
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:340
 msgid "Back to my drives"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:353
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:368
 msgid "Block writing on the device…"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:357
-msgid "Advanced maintenance…"
-msgstr ""
-
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:424
-#: big-mount/usr/lib/big-mount/gui/pages/overview.py:50
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:441
+#: big-mount/usr/lib/big-mount/gui/pages/overview.py:91
 #: big-mount/usr/lib/big-mount/gui/pages/rescue.py:263
 msgid "Recover files"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:427
-#: big-mount/usr/lib/big-mount/gui/pages/overview.py:52
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:444
 msgid "Check drive"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:432
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:434
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:449
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:451
 msgid "Volumes"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:457
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:474
 msgid "This volume spans more than one device. All of them must be connected."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:468
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:471
-#: big-mount/usr/lib/big-mount/gui/pages/overview.py:48
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:485
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:488
+#: big-mount/usr/lib/big-mount/gui/pages/overview.py:88
 msgid "Open files"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:469
-msgid "Unmount"
-msgstr ""
-
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:473
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:490
 msgid "Unlock…"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:490
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:507
 msgid "Copy your files to another place, step by step. This never writes to this drive."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:491
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:508
 msgid "Start recovering files"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:494
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:511
 msgid "What can be done"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:495
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:512
 msgid "Copy files that can still be read"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:495
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:512
 msgid "The quickest and safest: names and folders are kept."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:496
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:513
 msgid "List what exists, by type"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:496
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:513
 msgid "Goes through the folders. Then you choose what to copy."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:497
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:514
 msgid "For when files cannot be opened. Names and folders are lost, and nothing is guaranteed."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:509
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:526
 msgid "Copies and searches of this drive"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:513
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:530
 msgid "Nothing yet"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:514
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:531
 msgid "What you copy from this drive is listed here."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:535
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:558
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:552
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:575
 msgid "Export diagnosis"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:554
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:571
 #: big-mount/usr/lib/big-mount/gui/pages/results.py:656
 msgid "Report written."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:559
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:576
 msgid "Keep them"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:559
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:576
 msgid "Hide them"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:571
-msgid "The drive can be disconnected now."
-msgstr ""
-
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:574
-msgid "Could not remove it"
-msgstr ""
-
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:594
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:608
 msgid "Whatever a driver or another program tries, the disk does not change. It lasts until the drive is disconnected. It asks for the administrator password."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:595
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:609
 msgid "Block writing"
 msgstr ""
 
@@ -4063,26 +4265,72 @@ msgstr ""
 msgid "Do not turn off the computer or disconnect the drive."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/overview.py:40
+#: big-mount/usr/lib/big-mount/gui/pages/overview.py:54
+msgid "On this computer"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/gui/pages/overview.py:55
+msgid "External devices"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/gui/pages/overview.py:56
+msgid "Disk images"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/gui/pages/overview.py:66
+#, python-format
+msgid "%s free"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/gui/pages/overview.py:69
 #, python-format
 msgid "and %d more"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/overview.py:67
+#: big-mount/usr/lib/big-mount/gui/pages/overview.py:70
+msgid "No volume recognized"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/gui/pages/overview.py:179
 msgid "Choose a drive to see its files, check its health or recover data."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/overview.py:80
+#: big-mount/usr/lib/big-mount/gui/pages/overview.py:186
+msgid "Search by name, model, label or folder"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/gui/pages/overview.py:187
+msgid "Search drives"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/gui/pages/overview.py:194
+msgid "List"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/gui/pages/overview.py:194
+msgid "Grid"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/gui/pages/overview.py:210
 msgid "Looking at what is connected…"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/overview.py:82
+#: big-mount/usr/lib/big-mount/gui/pages/overview.py:212
 msgid "Connect a drive and it appears here by itself."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/overview.py:109
+#: big-mount/usr/lib/big-mount/gui/pages/overview.py:249
 #, python-format
 msgid "%s reported serious problems. Copy your files to another drive before trying any repair."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/gui/pages/overview.py:261
+#, python-format
+msgid "No drive matches “%s”"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/gui/pages/overview.py:262
+msgid "Search by name, model, volume label, folder or health."
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/gui/pages/rescue.py:20

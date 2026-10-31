@@ -468,6 +468,50 @@ sudo -n "$H.safe" protect /dev/../etc/passwd >/dev/null 2>&1; check "a path out 
 unset BM_HELPER_CMD
 fi
 
+if want busy; then
+begin "a busy volume: who holds it, only what may be closed is closed, nothing is forced"
+# FAT: UDisks2 mounts it as this user, who may write to it
+new_img busy 64M mkfs.vfat -n T_BUSY && d="$REPLY"
+mp="$(mnt_rw "$d")"
+( cd "$mp" && exec sleep 300 ) &
+reader=$!
+bash -c 'exec 3>"$1/escrevendo.txt" || exit 1; printf parte >&3; exec sleep 300' _ "$mp" &
+writer=$!
+sleep 1
+check "two programs hold it, one of them writing" kill -0 "$writer"
+out="$("$B" --drive unmount "$d" --json)"; rc=$?
+check "busy: exit 3" eq "$rc" 3
+check "  ... still mounted: nothing was forced" findmnt -n --mountpoint "$mp"
+check "  ... and it says which volume" eq "$(json busy_device <<< "$out")" "$d"
+out="$("$B" --drive busy "$d" --json)"
+check "busy: valid JSON" valid_json <<< "$out"
+check "  ... the reader may be closed, the writer may not" python3 -I -c 'import json,sys
+p={x["pid"]:x for x in json.loads(sys.argv[1])["programs"]}
+r,w=int(sys.argv[2]),int(sys.argv[3])
+assert p[r]["closable"] and not p[w]["closable"] and p[w]["why"], p' "$out" "$reader" "$writer"
+"$B" --drive close-apps "$d" --json > "$WORK/closed.json"; rc=$?
+check "close-apps: the reader was asked to close (SIGTERM)" bash -c '! kill -0 "$1" 2>/dev/null' _ "$reader"
+check "  ... the one writing was not" kill -0 "$writer"
+check "  ... and it is told why" python3 -I -c 'import json,sys; d=json.load(open(sys.argv[1])); assert d["kept"] and d["kept"][0]["why"], d' "$WORK/closed.json"
+check "  ... so it is still mounted" findmnt -n --mountpoint "$mp"
+kill "$writer"; wait "$writer" "$reader" 2>/dev/null
+"$B" --drive unmount "$d" >/dev/null; check "with nothing left, it unmounts" eq "$?" 0
+mp="$(mnt_rw "$d")"
+check "  ... and what was being written is there: nothing was cut under it" eq "$(cat "$mp/escrevendo.txt")" parte
+umnt "$d"
+# The whole drive: every volume of it, as the Home page asks
+truncate -s 96M "$WORK/whole.img"
+printf 'label: gpt\n,40M\n,\n' | sfdisk -q "$WORK/whole.img"
+loop_up "$WORK/whole.img" && d="$REPLY"
+sudo -n mkfs.vfat -n T_W1 "${d}p1" >/dev/null; sudo -n mkfs.vfat -n T_W2 "${d}p2" >/dev/null; udevadm settle
+mnt_rw "${d}p1" >/dev/null; mnt_rw "${d}p2" >/dev/null
+check "a drive with two mounted volumes" bash -c '[ "$(findmnt -n -S "$1p1" | wc -l)$(findmnt -n -S "$1p2" | wc -l)" = 11 ]' _ "$d"
+"$B" --drive unmount "$d" --json > "$WORK/whole.json"; rc=$?
+check "unmount of the whole drive: exit 0" eq "$rc" 0
+check "  ... both volumes unmounted" bash -c '! findmnt -n -S "$1p1" >/dev/null && ! findmnt -n -S "$1p2" >/dev/null' _ "$d"
+check "  ... and not powered off: only a safe removal does that" eq "$(json powered_off < "$WORK/whole.json")" false
+fi
+
 if want system; then
 begin "the running system is refused, whatever the command"
 "$B" --drive unmount / >/dev/null 2>&1; check "unmount /: exit 4" eq "$?" 4

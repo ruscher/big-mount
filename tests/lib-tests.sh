@@ -662,6 +662,29 @@ FAKE_SMART=("b true" "b true" "b true" "x 0"); FAKE_DKMSG=("${FIELD_KMSG[@]}"); 
 check "SMART predicts a failure: first finding" eq "${DH_FIND[0]}:$DH_SMART" "smart-failing:failing"
 FAKE_SMART=("b true" "b false" "b true" "x 9"); bm_drive_health /dev/sda
 check "SMART disabled: no verdict from it" eq "$DH_SMART:$DH_BAD" ":0"
+FAKE_SMART=("b true" "b true" "b false" "x 0" "t 126000000" "d 311.15" "i 0" "i 2"); FAKE_DKMSG=(); bm_drive_health /dev/sda
+check "UDisks2 without a password: hours, temperature, values failing now and in the past" eq "$DH_HOURS:$DH_TEMP:$DH_ATTR_FAIL:$DH_ATTR_PAST" "35000:38:0:2"
+FAKE_SMART=("b true" "b true" "b false" "x 0" "t 0" "d 0.0" "i 0" "i 0"); bm_drive_health /dev/sda
+check "  ... a drive that does not say them: unknown, never 0 hours or -273 °C" eq "$DH_HOURS:$DH_TEMP" ":"
+FAKE_UP=(); FAKE_SMART=()
+FAKE_NVME=("t 1793464880" 'as 2 "spare" "temperature"' "t 7610" "q 330")
+FAKE_NVME_ATTRS='a{sv} 4 "avail_spare" y 9 "percent_used" y 93 "media_errors" t 2 "wctemp" q 356'
+busctl() {
+    case "$*" in
+        *SmartGetAttributes*) printf '%s\n' "$FAKE_NVME_ATTRS" ;;
+        *NVMe.Controller*) printf '%s\n' "${FAKE_NVME[@]}" ;;
+        *) printf '%s\n' "${FAKE_SMART[@]}" ;;
+    esac
+}
+bm_drive_health /dev/nvme0n1
+check "NVMe through UDisks2: its warnings, life used, media errors and limits" \
+    eq "$DH_SMART|$DH_NVME_WARN|$DH_HOURS|$DH_TEMP|$DH_NVME_USED|$DH_NVME_MEDIA|$DH_NVME_HOT" "ok|spare,temperature|7610|57|93|2|83"
+FAKE_NVME=("t 0" "as 0" "t 0" "q 0"); bm_drive_health /dev/nvme0n1
+check "  ... never updated by UDisks2: nothing is said" eq "$DH_SMART:$DH_NVME_USED" ":"
+FAKE_NVME=("t 1793464880" "as 0" "t 10" "q 300"); FAKE_NVME_ATTRS='a{sv} 1 "percent_used" y 5'; bm_drive_health /dev/nvme0n1
+check "  ... no warning: none" eq "$DH_SMART:$DH_NVME_WARN:$DH_NVME_USED" "ok::5"
+busctl() { printf '%s\n' "${FAKE_SMART[@]}"; }
+sata_up
 FAKE_KLOG=0 FAKE_DKMSG=(); bm_drive_health /dev/sda
 check "unreadable kernel log: no finding, and it is known" eq "${#DH_FIND[@]}:$DH_KLOG" "0:0"
 FAKE_UP=([ID_ATA]=1 [ID_BUS]=usb [ID_ATA_FEATURE_SET_SECURITY]=1); bm_drive_health /dev/sda

@@ -23,10 +23,11 @@ bm_ds_smart_file() {
 #   SM_PENDING SM_OFFLINE SM_REALLOC SM_UNCORR SM_CRC SM_HOURS  raw values or ""
 #   SM_NVME_WARN   NVMe critical warning (0x00 is fine)  SM_NVME_MEDIA  media errors
 #   SM_NVME_USED   percentage used
+#   SM_TEMP        temperature, °C
 bm_ds_smart_parse() {
-   local line id raw k v
+   local line id raw k v head=""
    SM_VERDICT="" SM_PENDING="" SM_OFFLINE="" SM_REALLOC="" SM_UNCORR="" SM_CRC="" SM_HOURS=""
-   SM_NVME_WARN="" SM_NVME_MEDIA="" SM_NVME_USED=""
+   SM_NVME_WARN="" SM_NVME_MEDIA="" SM_NVME_USED="" SM_TEMP=""
    [ -r "$1" ] || return 1
    while IFS= read -r line; do
       case "$line" in
@@ -37,9 +38,14 @@ bm_ds_smart_parse() {
          "Critical Warning:"*) v="${line#*:}"; SM_NVME_WARN="${v//[[:space:]]/}" ;;
          "Media and Data Integrity Errors:"*) v="${line#*:}"; SM_NVME_MEDIA="${v//[^0-9]/}" ;;
          "Percentage Used:"*) v="${line#*:}"; SM_NVME_USED="${v//[^0-9]/}" ;;
+         "Power On Hours:"*) v="${line#*:}"; SM_HOURS="${v//[^0-9]/}" ;;
+         "Temperature:"*Celsius*) v="${line#*:}"; v="${v%%Celsius*}"; SM_TEMP="${v//[^0-9]/}" ;;
          *)
             # ID# ATTRIBUTE_NAME FLAG VALUE WORST THRESH TYPE UPDATED WHEN_FAILED RAW_VALUE
             read -r id k _ _ _ _ _ _ _ raw _ <<< "$line"
+            # Some drives count the hours twice, and the power-on counter of a
+            # few Seagate models wraps: the head flying hours are a floor
+            if [ "$k" = Head_Flying_Hours ] && [[ $raw =~ ^([0-9]+)h ]]; then head="${BASH_REMATCH[1]}"; continue; fi
             [[ $id =~ ^[0-9]+$ ]] && [[ $raw =~ ^[0-9]+$ ]] || continue
             case "$id" in
                5) SM_REALLOC="$raw" ;;
@@ -48,10 +54,13 @@ bm_ds_smart_parse() {
                197) SM_PENDING="$raw" ;;
                198) SM_OFFLINE="$raw" ;;
                199) SM_CRC="$raw" ;;
+               194) SM_TEMP="$raw" ;;
+               190) SM_TEMP="${SM_TEMP:-$raw}" ;;
             esac
             ;;
       esac
    done < "$1"
+   [ -n "$head" ] && [ "$head" -gt "${SM_HOURS:-0}" ] && SM_HOURS="$head"
    return 0
 }
 
@@ -81,9 +90,10 @@ bm_ds_smart_read() {
 bm_ds_level() {
    local disk="$1" w
    DS_LEVEL=unknown DS_WHY=() DS_BASIS=none DS_SMART_AT="" SM_VERDICT="" SM_PENDING="" SM_OFFLINE="" SM_REALLOC="" SM_UNCORR="" SM_CRC="" SM_HOURS=""
-   SM_NVME_WARN="" SM_NVME_MEDIA="" SM_NVME_USED=""
+   SM_NVME_WARN="" SM_NVME_MEDIA="" SM_NVME_USED="" SM_TEMP="" DS_DISK="$disk" DS_GRADE=unknown DS_NOTES=()
+   DH_HOURS="" DH_TEMP="" DH_ATTR_FAIL="" DH_ATTR_PAST="" DH_NVME_WARN="" DH_NVME_USED="" DH_NVME_MEDIA="" DH_NVME_HOT=""
    case "${DV[$disk|TYPE]:-disk}" in
-      loop | rom) DS_LEVEL=na; return 0 ;;
+      loop | rom) DS_LEVEL=na DS_GRADE=na; return 0 ;;
    esac
    bm_drive_health "$disk"
    bm_ds_smart_file "$disk"
@@ -93,6 +103,10 @@ bm_ds_level() {
       bm_ds_smart_parse "$REPLY"; have_smart=1
       DS_SMART_AT="$(stat -c %Y -- "$REPLY" 2>/dev/null)"
    fi
+   # What UDisks2 keeps without a password fills what was not read with it
+   SM_HOURS="${SM_HOURS:-$DH_HOURS}" SM_TEMP="${SM_TEMP:-$DH_TEMP}"
+   SM_NVME_USED="${SM_NVME_USED:-$DH_NVME_USED}" SM_NVME_MEDIA="${SM_NVME_MEDIA:-$DH_NVME_MEDIA}"
+   [ -z "$SM_NVME_WARN" ] && [ -n "$DH_NVME_WARN" ] && SM_NVME_WARN="$DH_NVME_WARN"
    if [ "$DH_KLOG" = 1 ] && { [ "$have_smart" = 1 ] || [ -n "$DH_SMART" ]; }; then DS_BASIS=smart+log
    elif [ "$DH_KLOG" = 1 ]; then DS_BASIS=log
    elif [ "$have_smart" = 1 ] || [ -n "$DH_SMART" ]; then DS_BASIS=smart
@@ -119,6 +133,7 @@ bm_ds_level() {
    [ "${SM_REALLOC:-0}" -gt 0 ] 2>/dev/null && attn+=(reallocated)
    [ "${SM_UNCORR:-0}" -gt 0 ] 2>/dev/null && attn+=(uncorrectable)
    [ "${SM_CRC:-0}" -gt 0 ] 2>/dev/null && attn+=(link-errors)
+   [ "${DH_ATTR_FAIL:-0}" -gt 0 ] 2>/dev/null && attn+=(attrs-failing)
    # A few replaced sectors are normal on an SSD (see 14), not on a hard disk
    [ "${DV[$disk|ROTA]:-0}" = 1 ] && [ "${DV[$disk|TRAN]:-}" != usb ] && [ "${DH_BAD:-0}" -gt 0 ] && attn+=(reallocated)
 
@@ -127,9 +142,70 @@ bm_ds_level() {
    elif [ "${#attn[@]}" -gt 0 ]; then DS_LEVEL=attention
    elif [ "$DS_BASIS" != none ]; then DS_LEVEL=normal
    fi
+   bm_ds_grade
    return 0
 }
 
+# bm_ds_grade: the level in one word for a person, also weighing wear, age
+# and heat (called by bm_ds_level).
+#   DS_GRADE  critical | poor | good | healthy | unknown | na
+#   DS_NOTES  why a drive without alerts is not "healthy" (bm_ds_note_text)
+# "healthy" needs the drive's own report: from the system log alone the best
+# that can be said is "good". Age alone never makes a drive poor: worn-out
+# flash (90 % of its rated life) does.
+bm_ds_grade() {
+   DS_NOTES=()
+   case "$DS_LEVEL" in
+      critical) DS_GRADE=critical; return 0 ;;
+      attention) DS_GRADE=poor; return 0 ;;
+      na) DS_GRADE=na; return 0 ;;
+      normal) ;;
+      *) DS_GRADE=unknown; return 0 ;;
+   esac
+   local rota="${DV[$DS_DISK|ROTA]:-0}" old=50000 hot=70
+   # Hard disks fail more often after about four years powered on
+   [ "$rota" = 1 ] && old=35000 hot=55
+   [ -n "$DH_NVME_HOT" ] && hot="$DH_NVME_HOT"
+   case "$DS_BASIS" in smart+log | smart) ;; *) DS_NOTES+=(smart-unread) ;; esac
+   if [ "${SM_NVME_USED:-0}" -ge 90 ] 2>/dev/null; then DS_NOTES+=(worn-out)
+   elif [ "${SM_NVME_USED:-0}" -ge 50 ] 2>/dev/null; then DS_NOTES+=(wear)
+   fi
+   [ "${DH_ATTR_PAST:-0}" -gt 0 ] 2>/dev/null && DS_NOTES+=(attrs-past)
+   [ "${SM_HOURS:-0}" -ge "$old" ] 2>/dev/null && DS_NOTES+=(old)
+   [ "${SM_TEMP:-0}" -ge "$hot" ] 2>/dev/null && DS_NOTES+=(hot)
+   if [[ " ${DS_NOTES[*]} " == *" worn-out "* ]]; then DS_GRADE=poor
+   elif [ "${#DS_NOTES[@]}" -gt 0 ]; then DS_GRADE=good
+   else DS_GRADE=healthy
+   fi
+}
+
+bm_ds_grade_label() {
+   case "$DS_GRADE" in
+      critical) REPLY=$"Critical" ;;
+      poor) REPLY=$"Poor" ;;
+      good) REPLY=$"Good" ;;
+      healthy) REPLY=$"Healthy" ;;
+      na) REPLY=$"Not applicable" ;;
+      *) REPLY=$"Not assessed" ;;
+   esac
+}
+
+# bm_ds_note_text KEY: one sentence for a person
+bm_ds_note_text() {
+   local years
+   case "$1" in
+      smart-unread) REPLY=$"Only the system log was consulted. Without the drive's own report (SMART) it cannot be called healthy." ;;
+      worn-out) printf -v REPLY $"It has used %s%% of the life its maker rates it for: it is near or past its end." "$SM_NVME_USED" ;;
+      wear) printf -v REPLY $"It has used %s%% of the life its maker rates it for." "$SM_NVME_USED" ;;
+      attrs-past) REPLY=$"Some of its SMART values were below their safe limit in the past." ;;
+      old)
+         years=$(((SM_HOURS + 4380) / 8760))
+         printf -v REPLY $"Powered on for %s hours, about %s years of use: failures become more likely." "$SM_HOURS" "$years"
+         ;;
+      hot) printf -v REPLY $"It is hot now (%s °C). Heat shortens its life: give it air." "$SM_TEMP" ;;
+      *) REPLY="$1" ;;
+   esac
+}
 bm_ds_level_label() {
    case "$DS_LEVEL" in
       critical) REPLY=$"Critical: high risk for the data" ;;
@@ -160,6 +236,7 @@ bm_ds_why_text() {
       reallocated) REPLY=$"The drive already replaced damaged sectors with spare ones." ;;
       uncorrectable) printf -v REPLY $"The drive reported %s errors it could not correct." "${SM_UNCORR:-?}" ;;
       link-errors) printf -v REPLY $"The cable or adapter corrupted data in transit %s times (CRC errors)." "${SM_CRC:-?}" ;;
+      attrs-failing) printf -v REPLY $"%s of its SMART values are below their safe limit now." "${DH_ATTR_FAIL:-?}" ;;
       *) REPLY="$1" ;;
    esac
 }
@@ -172,10 +249,18 @@ bm_ds_json() {
       [ "$first" = 1 ] && first=0 || why+=","
       why+="$(bm_jo key "$w" text "$REPLY")"
    done
+   local notes="" note
+   first=1
+   for w in "${DS_NOTES[@]}"; do
+      bm_ds_note_text "$w"
+      [ "$first" = 1 ] && first=0 || notes+=","
+      notes+="$(bm_jo key "$w" text "$REPLY")"
+   done
    bm_ds_level_label; local label="$REPLY"
-   printf '"health":{"level":"%s","label":%s,"basis":"%s","reasons":[%s],"smart":{%s}}' \
-      "$DS_LEVEL" "$(bm_js "$label"; printf '%s' "$REPLY")" "$DS_BASIS" "$why" \
-      "$(bm_jn pending "$SM_PENDING" offline "$SM_OFFLINE" reallocated "$SM_REALLOC" uncorrectable "$SM_UNCORR" crc "$SM_CRC" hours "$SM_HOURS" read_at "$DS_SMART_AT" nvme_media "$SM_NVME_MEDIA" nvme_used "$SM_NVME_USED"),$(bm_jo_inner verdict "$SM_VERDICT" nvme_warning "$SM_NVME_WARN")"
+   bm_ds_grade_label; note="$REPLY"
+   printf '"health":{"level":"%s","label":%s,"grade":"%s","grade_label":%s,"basis":"%s","reasons":[%s],"notes":[%s],"smart":{%s}}' \
+      "$DS_LEVEL" "$(bm_js "$label"; printf '%s' "$REPLY")" "$DS_GRADE" "$(bm_js "$note"; printf '%s' "$REPLY")" "$DS_BASIS" "$why" "$notes" \
+      "$(bm_jn pending "$SM_PENDING" offline "$SM_OFFLINE" reallocated "$SM_REALLOC" uncorrectable "$SM_UNCORR" crc "$SM_CRC" hours "$SM_HOURS" temperature "$SM_TEMP" read_at "$DS_SMART_AT" nvme_media "$SM_NVME_MEDIA" nvme_used "$SM_NVME_USED"),$(bm_jo_inner verdict "$SM_VERDICT" nvme_warning "$SM_NVME_WARN")"
 }
 
 # ---------------------------------------------------------------------------
@@ -203,11 +288,16 @@ bm_dg_show() {
    bm_tran_label "${DV[$d|TRAN]:-}"; bm_doc_kv $"Connection" "$REPLY"
    bm_doc_kv $"Device" "$d"
    bm_ds_level "$d"
-   bm_ds_level_label; bm_doc_kv $"Health" "$REPLY"
+   bm_ds_grade_label; local grade="$REPLY"
+   bm_ds_level_label; bm_doc_kv $"Health" "$grade — $REPLY"
    [ -n "$SM_VERDICT" ] && bm_doc_kv $"SMART verdict" "$SM_VERDICT"
    if [ "${#DS_WHY[@]}" -gt 0 ]; then
       bm_doc_p $"What was found:"
       for w in "${DS_WHY[@]}"; do bm_ds_why_text "$w"; bm_doc_li "$REPLY"; done
+   fi
+   if [ "${#DS_NOTES[@]}" -gt 0 ]; then
+      bm_doc_p $"Why it is not called healthy:"
+      for w in "${DS_NOTES[@]}"; do bm_ds_note_text "$w"; bm_doc_li "$REPLY"; done
    fi
    bm_ds_advice
    for w in "${DS_ADVICE[@]}"; do bm_doc_li "$w"; done

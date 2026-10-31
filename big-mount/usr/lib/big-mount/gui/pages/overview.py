@@ -1,12 +1,124 @@
-"""Home: every drive at a glance, with what can be done with it."""
+"""Home: every drive at a glance, as a list or as a grid, grouped by where it is,
+with a search, its health in one word, and what can be done with it."""
 
-from gi.repository import Adw, Gtk
+import os
 
+from gi.repository import Adw, GLib, Gtk
+
+from .. import actions
 from .. import widgets as w
 from ..common import _, human_size
 
+VIEWS = ("list", "grid")
+CARD_WIDTH = 300
+CARD_CHARS = 36
+
+
+def _settings_file():
+    return os.path.join(GLib.get_user_config_dir(), "big-mount", "gui.ini")
+
+
+def load_view():
+    """The last view chosen, list by default. A preference only: never an error."""
+    keys = GLib.KeyFile()
+    try:
+        keys.load_from_file(_settings_file(), GLib.KeyFileFlags.NONE)
+        view = keys.get_string("home", "view")
+    except GLib.Error:
+        return "list"
+    return view if view in VIEWS else "list"
+
+
+def save_view(view):
+    keys = GLib.KeyFile()
+    path = _settings_file()
+    try:
+        keys.load_from_file(path, GLib.KeyFileFlags.KEEP_COMMENTS)
+    except GLib.Error:
+        pass
+    keys.set_string("home", "view", view)
+    try:
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        keys.save_to_file(path)
+    except (GLib.Error, OSError):
+        pass
+
+
+def group_of(dev):
+    if dev.kind == "image":
+        return "image"
+    return "external" if dev.external else "internal"
+
+
+GROUP_TITLES = {
+    "internal": lambda: _("On this computer"),
+    "external": lambda: _("External devices"),
+    "image": lambda: _("Disk images"),
+}
+
+
+def volumes_line(dev):
+    """Its volumes in one line: name, filesystem, state, free space."""
+    parts = []
+    for vol in dev.content_volumes[:3]:
+        bits = [vol.title, (vol.fstype or "").upper() if vol.fstype in ("ntfs", "vfat", "exfat") else vol.fstype, vol.state_label]
+        if vol.avail is not None:
+            bits.append(_("%s free") % human_size(vol.avail))
+        parts.append(" · ".join(b for b in bits if b))
+    if len(dev.content_volumes) > 3:
+        parts.append(_("and %d more") % (len(dev.content_volumes) - 3))
+    return "\n".join(parts) or _("No volume recognized")
+
+
+def quick_buttons(window, dev, icons_only):
+    """What is done most: open its files, recover them, remove it safely."""
+    buttons = []
+    mounted = [v for v in dev.content_volumes if v.mounted and v.state != "system"]
+
+    def make(text, icon_name, callback, css=()):
+        if icons_only:
+            # A flat button for most; the one that matters now is filled and round
+            b = w.icon_button(icon_name, text, callback, css=("circular", *css) if css else ("flat",))
+            b.set_valign(Gtk.Align.CENTER)
+            return b
+        return w.button(text, callback, css=css, icon_name=icon_name)
+
+    if len(mounted) == 1:
+        buttons.append(make(_("Open files"), "folder-open-symbolic", lambda: w.open_folder(window, mounted[0].mountpoint)))
+    if dev.kind != "optical":
+        style = ("suggested-action",) if dev.health.risky else ()
+        buttons.append(make(_("Recover files"), "document-save-symbolic", lambda: window.open_wizard(dev), style))
+    if dev.external and dev.kind != "image" and not dev.has_system:
+        buttons.append(make(_("Safely remove"), "media-eject-symbolic", lambda: actions.unmount(window, dev.device, remove=True)))
+    return buttons
+
+
+class DriveRow(Adw.ActionRow):
+    """A drive in the list: one line of what it is, its volumes, its grade, actions."""
+
+    def __init__(self, window, dev):
+        super().__init__(use_markup=False, activatable=True)
+        # Names of drives and volumes are data: set as text, after markup is off
+        self.set_title(dev.name)
+        self.set_subtitle(f"{dev.subtitle} · {dev.device}\n{volumes_line(dev)}")
+        self.dev = dev
+        self.add_css_class("drive-row")
+        self.set_title_lines(1)
+        self.set_subtitle_lines(4)
+        image = w.icon(dev.symbolic_icon, 28, css=("drive-row-icon",))
+        image.set_valign(Gtk.Align.CENTER)
+        self.add_prefix(image)
+        self.add_suffix(w.GradeBadge(dev.health))
+        for b in quick_buttons(window, dev, icons_only=True):
+            self.add_suffix(b)
+        self.add_suffix(actions.drive_menu(window, self, dev))
+        self.connect("activated", lambda *_a: window.show_device(dev.stable_id))
+        self.update_property([Gtk.AccessibleProperty.LABEL], [f"{dev.name}, {dev.subtitle}, {dev.health.grade_label}"])
+
 
 class DriveCard(Gtk.FlowBoxChild):
+    """A drive in the grid: the same, with room for its usage."""
+
     def __init__(self, window, dev):
         super().__init__(css_classes=["drive-slot"])
         self.dev = dev
@@ -23,37 +135,33 @@ class DriveCard(Gtk.FlowBoxChild):
         names.append(title)
         names.append(w.label(dev.subtitle, css=("caption", "dim-label")))
         head.append(names)
+        menu = actions.drive_menu(window, self, dev)
+        menu.set_valign(Gtk.Align.START)
+        head.append(menu)
         card.append(head)
-        badge = w.LevelBadge(dev.health.level, dev.health.label, compact=True)
-        badge.set_size_request(240, -1)
-        card.append(badge)
+        grade = w.hbox(8)
+        badge = w.GradeBadge(dev.health)
+        badge.set_halign(Gtk.Align.START)
+        grade.append(badge)
+        card.append(grade)
+        if dev.health.label:
+            detail = w.label(dev.health.label, css=("caption", "dim-label"))
+            detail.set_max_width_chars(CARD_CHARS)
+            card.append(detail)
         space = dev.space
         if space:
             card.append(w.UsageBar(*space))
-        volumes = w.box(spacing=2)
-        for vol in dev.content_volumes[:3]:
-            parts = [vol.title, vol.fstype or "", vol.state_label]
-            line = w.label(" · ".join(p for p in parts if p), css=("caption", "dim-label"), ellipsize=True)
-            line.set_max_width_chars(36)
-            volumes.append(line)
-        if len(dev.content_volumes) > 3:
-            volumes.append(w.label(_("and %d more") % (len(dev.content_volumes) - 3), css=("caption", "dim-label")))
-        card.append(volumes)
-        spacer = Gtk.Box(vexpand=True)
-        card.append(spacer)
-        mounted = [v for v in dev.content_volumes if v.mounted and v.state != "system"]
-        rescue_style = ("suggested-action",) if dev.health.risky else ()
-        buttons = []
-        if len(mounted) == 1:
-            buttons.append(w.button(_("Open files"), lambda: w.open_folder(window, mounted[0].mountpoint), icon_name="folder-open-symbolic"))
-        if dev.kind != "optical":
-            buttons.append(w.button(_("Recover files"), lambda: window.open_wizard(dev), css=rescue_style, icon_name="document-save-symbolic"))
-        if dev.kind != "image":
-            buttons.append(w.button(_("Check drive"), lambda: window.show_device(dev.stable_id, "health"), icon_name="system-search-symbolic"))
-        card.append(w.button_row(*buttons))
-        # Its natural width decides how many fit side by side, whatever the texts ask for
-        self.set_child(Adw.Clamp(maximum_size=350, tightening_threshold=300, unit=Adw.LengthUnit.PX, child=card))
-        self.update_property([Gtk.AccessibleProperty.LABEL], [f"{dev.name}, {dev.subtitle}, {dev.health.label}"])
+        vols = w.label(volumes_line(dev), css=("caption", "dim-label"))
+        vols.set_max_width_chars(CARD_CHARS)
+        card.append(vols)
+        card.append(Gtk.Box(vexpand=True))
+        buttons = quick_buttons(window, dev, icons_only=False)
+        if buttons:
+            card.append(w.button_row(*buttons))
+        # Its natural width decides how many fit side by side: long texts wrap instead
+        card.set_size_request(CARD_WIDTH, -1)
+        self.set_child(card)
+        self.update_property([Gtk.AccessibleProperty.LABEL], [f"{dev.name}, {dev.subtitle}, {dev.health.grade_label}"])
 
 
 class OverviewPage(Adw.NavigationPage):
@@ -61,6 +169,8 @@ class OverviewPage(Adw.NavigationPage):
         super().__init__(title=_("Big-Mount"), tag="home")
         self.window = window
         self._signature = None
+        self.view = load_view()
+        self.query = ""
 
         self.content = w.box(spacing=18)
         self.content.append(w.label(_("Your drives and devices"), css=("title-1",)))
@@ -69,11 +179,29 @@ class OverviewPage(Adw.NavigationPage):
         self.content.append(self.alerts)
         self.running = w.box(spacing=6)
         self.content.append(self.running)
-        self.flow = Gtk.FlowBox(selection_mode=Gtk.SelectionMode.NONE, column_spacing=14, row_spacing=14,
-                                min_children_per_line=1, max_children_per_line=3, homogeneous=True, activate_on_single_click=True)
-        self.flow.update_property([Gtk.AccessibleProperty.LABEL], [_("Your drives and devices")])
-        self.flow.connect("child-activated", lambda _f, child: window.show_device(child.dev.stable_id))
-        self.content.append(self.flow)
+
+        tools = w.hbox(8)
+        self.search = Gtk.SearchEntry(placeholder_text=_("Search by name, model, label or folder"), hexpand=True)
+        self.search.update_property([Gtk.AccessibleProperty.LABEL], [_("Search drives")])
+        self.search.connect("search-changed", self._searched)
+        self.search.set_key_capture_widget(self)
+        tools.append(self.search)
+        switch = w.hbox(0, css=("linked",))
+        self.view_buttons = {}
+        first = None
+        for key, icon_name, text in (("list", "view-list-symbolic", _("List")), ("grid", "view-grid-symbolic", _("Grid"))):
+            b = Gtk.ToggleButton(icon_name=icon_name, tooltip_text=text, active=self.view == key, group=first)
+            b.update_property([Gtk.AccessibleProperty.LABEL], [text])
+            b.connect("toggled", lambda button, k=key: button.get_active() and self.set_view(k))
+            first = first or b
+            self.view_buttons[key] = b
+            switch.append(b)
+        tools.append(switch)
+        self.content.append(tools)
+
+        self.groups = w.box(spacing=18)
+        self.groups.update_property([Gtk.AccessibleProperty.LABEL], [_("Your drives and devices")])
+        self.content.append(self.groups)
 
         self.stack = Gtk.Stack(transition_type=Gtk.StackTransitionType.CROSSFADE)
         self.stack.add_named(w.page_scroller(self.content, maximum=1180), "list")
@@ -88,6 +216,18 @@ class OverviewPage(Adw.NavigationPage):
         tool.add_top_bar(header)
         self.set_child(tool)
 
+    def set_view(self, view):
+        if view == self.view or view not in VIEWS:
+            return
+        self.view = view
+        self.view_buttons[view].set_active(True)
+        save_view(view)
+        self._render_drives()
+
+    def _searched(self, entry):
+        self.query = entry.get_text().strip()
+        self._render_drives()
+
     def update(self):
         win = self.window
         if not win.loaded:
@@ -100,9 +240,7 @@ class OverviewPage(Adw.NavigationPage):
         if signature == self._signature:
             return
         self._signature = signature
-        w.clear(self.flow)
-        for dev in win.devices:
-            self.flow.append(DriveCard(win, dev))
+        self._render_drives()
         w.clear(self.alerts)
         for dev in win.devices:
             if dev.health.level == "critical":
@@ -112,6 +250,37 @@ class OverviewPage(Adw.NavigationPage):
         w.clear(self.running)
         for job in [j for j in win.jobs if j.running]:
             self.running.append(self._running_row(job))
+
+    def _render_drives(self):
+        w.clear(self.groups)
+        words = self.query.split()
+        shown = [d for d in self.window.devices if d.matches(words)]
+        if words and not shown:
+            self.groups.append(Adw.StatusPage(icon_name="edit-find-symbolic", title=_("No drive matches “%s”") % self.query,
+                                              description=_("Search by name, model, volume label, folder or health.")))
+            return
+        for key in ("internal", "external", "image"):
+            devs = [d for d in shown if group_of(d) == key]
+            if not devs:
+                continue
+            section = w.box(spacing=8)
+            head = w.label(f"{GROUP_TITLES[key]()} · {len(devs)}", css=("heading",))
+            head.set_accessible_role(Gtk.AccessibleRole.HEADING)
+            section.append(head)
+            if self.view == "list":
+                box = Gtk.ListBox(selection_mode=Gtk.SelectionMode.NONE, css_classes=["boxed-list"])
+                for dev in devs:
+                    box.append(DriveRow(self.window, dev))
+            else:
+                box = Gtk.FlowBox(selection_mode=Gtk.SelectionMode.NONE, column_spacing=14, row_spacing=14,
+                                  min_children_per_line=1, max_children_per_line=3, homogeneous=True, activate_on_single_click=True)
+                box.set_halign(Gtk.Align.START)
+                box.connect("child-activated", lambda _f, child: self.window.show_device(child.dev.stable_id))
+                for dev in devs:
+                    box.append(DriveCard(self.window, dev))
+            box.update_property([Gtk.AccessibleProperty.LABEL], [GROUP_TITLES[key]()])
+            section.append(box)
+            self.groups.append(section)
 
     def _alert(self, dev, text):
         return w.notice(text, "critical", _("Rescue my files"), lambda: self.window.open_wizard(dev))
@@ -123,6 +292,8 @@ class OverviewPage(Adw.NavigationPage):
         group = w.Group()
         done = human_size(job.bytes_done)
         r = w.row(f"{job.state_label}", f"{job.source} — {done}", activatable=True, icon_name="media-playback-start-symbolic")
+        if job.percent is not None:
+            r.add_suffix(w.label(job.percent_text, css=("numeric", "heading"), wrap=False))
         r.add_suffix(w.icon("go-next-symbolic"))
         r.connect("activated", lambda *_a: self.window.open_job(job.id))
         group.add_row(r)
