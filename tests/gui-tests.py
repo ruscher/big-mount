@@ -196,7 +196,7 @@ class Notifier(unittest.TestCase):
         self.assertIn("Exec=/usr/bin/bigmount --notifier", entry.read_text(encoding="utf-8"))
         self.assertTrue(pump(lambda: "--notifier" in calls(), 3), "the notifier was not started")
         # Off: the entry goes and the running notifier, named by its lock, stops
-        proc = subprocess.Popen(["bash", "-c", "sleep 60", "bigmount", "--notifier"])
+        proc = subprocess.Popen([sys.executable, "-c", "import time; time.sleep(60)", "--notifier"])
         (WORK / "big-mount-notifier.lock").write_text(f"{proc.pid}\n", encoding="utf-8")
         set_notifier(False)
         self.assertFalse(entry.exists())
