@@ -185,7 +185,7 @@ msgstr "mostra esta ajuda"
 
 #: big-mount/usr/lib/big-mount/cli.sh:46
 msgid "TARGET is a device (/dev/sdb1) or any folder inside a mounted device."
-msgstr "ALVO é um dispositivo (/dev/sdb1) ou qualquer pasta dentro de um dispositivo montado."
+msgstr "TARGET é um dispositivo (/dev/sdb1) ou qualquer pasta dentro de um dispositivo montado."
 
 #: big-mount/usr/lib/big-mount/cli.sh:106
 #: big-mount/usr/lib/big-mount/cli.sh:799
@@ -1111,7 +1111,7 @@ msgstr "Nada foi apagado."
 #: big-mount/usr/lib/big-mount/drive-erase.sh:201
 #: big-mount/usr/lib/big-mount/drive-erase.sh:204
 #: big-mount/usr/lib/big-mount/drive-erase.sh:221
-#: big-mount/usr/lib/big-mount/lib.sh:1297
+#: big-mount/usr/lib/big-mount/lib.sh:1295
 msgid "The drive was disconnected or replaced. Nothing was erased."
 msgstr "A unidade foi desconectada ou substituída. Nada foi apagado."
 
@@ -2905,7 +2905,7 @@ msgstr "copia só este arquivo ou pasta da origem (pode repetir)"
 
 #: big-mount/usr/lib/big-mount/drive.sh:133
 msgid "copy the items listed in FILE, separated by NUL"
-msgstr "copia os itens listados em ARQUIVO, separados por NUL"
+msgstr "copia os itens listados em FILE, separados por NUL"
 
 #: big-mount/usr/lib/big-mount/drive.sh:134
 msgid "copy found files out of the folder of that search"
@@ -3009,7 +3009,7 @@ msgstr "diz o que seria feito, sem alterar nada"
 
 #: big-mount/usr/lib/big-mount/drive.sh:159
 msgid "TARGET is a device (/dev/sdb1) or a folder inside a mounted device."
-msgstr "ALVO é um dispositivo (/dev/sdb1) ou uma pasta dentro de um dispositivo montado."
+msgstr "TARGET é um dispositivo (/dev/sdb1) ou uma pasta dentro de um dispositivo montado."
 
 #: big-mount/usr/lib/big-mount/drive.sh:200
 msgid "bigmount: more than one device has this UUID: %s. Name the device."
@@ -3467,51 +3467,51 @@ msgstr "Pasta aberta"
 msgid "Open for reading"
 msgstr "Aberto para leitura"
 
-#: big-mount/usr/lib/big-mount/lib.sh:652
+#: big-mount/usr/lib/big-mount/lib.sh:650
 msgid "belongs to another user or to the system"
 msgstr "pertence a outro usuário ou ao sistema"
 
-#: big-mount/usr/lib/big-mount/lib.sh:655
+#: big-mount/usr/lib/big-mount/lib.sh:653
 msgid "part of the desktop session"
 msgstr "faz parte da sessão gráfica"
 
-#: big-mount/usr/lib/big-mount/lib.sh:658
+#: big-mount/usr/lib/big-mount/lib.sh:656
 msgid "a terminal: type 'cd' in it or close the tab"
 msgstr "é um terminal: digite 'cd' nele ou feche a aba"
 
-#: big-mount/usr/lib/big-mount/lib.sh:661
+#: big-mount/usr/lib/big-mount/lib.sh:659
 msgid "this tool"
 msgstr "esta ferramenta"
 
-#: big-mount/usr/lib/big-mount/lib.sh:666
+#: big-mount/usr/lib/big-mount/lib.sh:664
 msgid "has a file open for writing: finish or cancel the operation in the application"
 msgstr "tem um arquivo aberto para escrita: conclua ou cancele a operação no aplicativo"
 
-#: big-mount/usr/lib/big-mount/lib.sh:931
+#: big-mount/usr/lib/big-mount/lib.sh:929
 msgid "%s is unmounted here, but %s (PID %s) still has it mounted at %s"
 msgstr "%s foi desmontado aqui, mas %s (PID %s) ainda o mantém montado em %s"
 
-#: big-mount/usr/lib/big-mount/lib.sh:935
+#: big-mount/usr/lib/big-mount/lib.sh:933
 msgid "%s is unmounted, but its filesystem driver is still writing to it"
 msgstr "%s foi desmontado, mas o driver do sistema de arquivos ainda está gravando nele"
 
-#: big-mount/usr/lib/big-mount/lib.sh:961
+#: big-mount/usr/lib/big-mount/lib.sh:959
 msgid "%s is still mounted at %s after being unmounted"
 msgstr "%s continua montado em %s depois de ser desmontado"
 
-#: big-mount/usr/lib/big-mount/lib.sh:1305
+#: big-mount/usr/lib/big-mount/lib.sh:1303
 msgid "%s is mounted at %s"
 msgstr "%s está montado em %s"
 
-#: big-mount/usr/lib/big-mount/lib.sh:1308
+#: big-mount/usr/lib/big-mount/lib.sh:1306
 msgid "%s is in use (encryption, LVM or RAID)"
 msgstr "%s está em uso (criptografia, LVM ou RAID)"
 
-#: big-mount/usr/lib/big-mount/lib.sh:1322
+#: big-mount/usr/lib/big-mount/lib.sh:1320
 msgid "%s belongs to a filesystem that spans several drives"
 msgstr "%s faz parte de um sistema de arquivos que ocupa várias unidades"
 
-#: big-mount/usr/lib/big-mount/lib.sh:1328
+#: big-mount/usr/lib/big-mount/lib.sh:1326
 msgid "UDisks2 does not know this drive."
 msgstr "O UDisks2 não conhece esta unidade."
 
