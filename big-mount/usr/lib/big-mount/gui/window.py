@@ -95,6 +95,7 @@ class MainWindow(Adw.ApplicationWindow):
         from gi.repository import Gio
         menu = Gio.Menu()
         menu.append(_("Refresh"), "app.refresh")
+        menu.append(_("Warn when a device cannot be written to"), "app.notifier")
         about = Gio.Menu()
         about.append(_("Welcome screen"), "app.welcome")
         about.append(_("About Big-Mount"), "app.about")

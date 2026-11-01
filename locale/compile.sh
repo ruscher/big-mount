@@ -15,7 +15,7 @@ for po in locale/*.po; do
     msgfmt --check -o "$dir/big-mount.mo" "$po"
 done
 
-mkdir -p "$dest/usr/share/applications" "$dest/etc/xdg/autostart" "$dest/usr/share/kio/servicemenus" \
+mkdir -p "$dest/usr/share/applications" "$dest/usr/share/big-mount" "$dest/usr/share/kio/servicemenus" \
     "$dest/usr/share/polkit-1/actions"
 desktop() { # TEMPLATE OUTPUT
     # Name, GenericName, Comment and Keywords are default keywords; long
@@ -24,7 +24,9 @@ desktop() { # TEMPLATE OUTPUT
         --template "locale/templates/$1" -d locale -o "$dest/$2"
 }
 desktop big-mount.desktop.in usr/share/applications/big-mount.desktop
-desktop big-mount-notifier.desktop.in etc/xdg/autostart/big-mount-notifier.desktop
+# Not started by default: the application copies it to the autostart folder
+# of the person who turns the notifier on
+desktop big-mount-notifier.desktop.in usr/share/big-mount/big-mount-notifier.desktop
 desktop big-mount-servicemenu.desktop.in usr/share/kio/servicemenus/big-mount.desktop
 # msgfmt writes BCP 47 tags (pt-BR); polkit matches POSIX locale names
 # (pt_BR, then pt), which is also what the policy always used

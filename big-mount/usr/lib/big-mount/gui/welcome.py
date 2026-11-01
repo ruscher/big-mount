@@ -24,7 +24,7 @@ def features():
         ("media-eject-symbolic", _("Safe removal"),
          _("Unmounts and powers off a drive without forcing anything.")),
         ("dialog-warning-symbolic", _("Warnings when it matters"),
-         _("When a drive with problems is mounted, you are told, once per boot.")),
+         _("Optional, in the menu: when a drive with problems is mounted, you are told, once per boot.")),
         ("edit-clear-all-symbolic", _("Secure Erase"),
          _("Restores an internal SATA SSD that no longer keeps what is written.")),
         ("utilities-terminal-symbolic", _("Also in the terminal"),

@@ -55,7 +55,7 @@
 | **Safe removal** (`--unmount`, `--safe-remove`, `--gui-remove`) | on request | you | unmounts and powers off the drive through UDisks2, without forcing anything |
 | **Drive check and Secure Erase** (`--diagnose DISK`, `--gui-drive-check`, `--secure-erase`) | on request | you (UDisks2 asks for the administrator password to erase) | tells whether a drive stopped answering or failed to read and write since boot; erases a SATA SSD that no longer keeps what is written, and checks that it keeps it again |
 | **Drive manager and file rescue** (`--drive`, `--gui-drive`) | on request | you (UDisks2 and polkit for what needs more) | explains how a drive is doing, mounts it without changing it, copies files off it with real progress, resumes after a power cut, makes disk images ([6a](#6a-drive-manager-and-file-rescue)) |
-| **Notifier** (`bigmount --notifier`) | when you log in | you | tells you, once per boot, when a device was mounted read-only, and why |
+| **Notifier** (`bigmount --notifier`) | off by default; when turned on in the menu of the application, at every login | you | tells you, once per boot, when a device was mounted read-only, and why |
 
 The priorities of the project, in order: **data integrity**, stability and
 compatibility, correctness, security, performance and user experience.
@@ -225,8 +225,8 @@ sudo pacman -U ./big-mount-*.pkg.tar*
 
 - On the **first** installation a pacman hook enables the service
   (`systemctl enable big-mount`).
-- Nothing is restarted automatically. The new boot code runs at the next
-  boot, and the notifier starts at your next login. The package prints how
+- Nothing is restarted automatically, and nothing runs in your session by
+  default. The new boot code runs at the next boot. The package prints how
   to apply it right away: `sudo systemctl restart big-mount` is safe, and
   mounted NTFS volumes stay mounted (verified on a running system).
 - Your `/etc/big-mount.conf` is kept on updates (`backup=`).
@@ -1271,8 +1271,12 @@ lists the notifications under "Big-Mount" (System Settings →
 Notifications). Successful mounts are never announced, because Plasma
 already does that.
 
-The **notifier** is started by autostart
-(`/etc/xdg/autostart/big-mount-notifier.desktop`). It:
+The **notifier** is off by default: Big-Mount only mounts the partitions and
+watches nothing. **Warn when a device cannot be written to**, in the main menu
+of the application, turns it on: it copies
+`/usr/share/big-mount/big-mount-notifier.desktop` to
+`~/.config/autostart/` and starts it. Turning the option off removes that file
+and stops the running notifier. While on, it:
 
 - waits for mount events with `findmnt --poll`. The kernel wakes it up and
   there is no periodic scan: 2 processes, 9 MB, 0 CPU while idle, 45 ms
@@ -1286,14 +1290,10 @@ The **notifier** is started by autostart
   as the window: kernel log, udev, UDisks2; it reads nothing from the disk), opens a
   window with what was found, **Open Big-Mount** and **Close**, once per boot and
   drive (not per volume);
-- runs as one instance per session (`$XDG_RUNTIME_DIR/big-mount-notifier.lock`).
-
-To disable it: **System Settings → Autostart**, or
-
-```bash
-mkdir -p ~/.config/autostart
-printf '[Desktop Entry]\nHidden=true\n' > ~/.config/autostart/big-mount-notifier.desktop
-```
+- never warns about a read-only state you asked Big-Mount for (a read-only
+  mount, writing blocked on a drive);
+- runs as one instance per session (`$XDG_RUNTIME_DIR/big-mount-notifier.lock`,
+  which also holds its PID).
 
 Why there is no hook into Plasma's own unmount error: Plasma offers no
 extension point for it, and `udisksd` publishes no event when an unmount is
@@ -1330,7 +1330,7 @@ empty target is refused.
 | `bigmount --gui-drive [DISK\|FOLDER\|UUID]` | no | the application: drives, health, file rescue; without a session it points to `--drive` |
 | `bigmount --gui-drive-check [DISK]` | no | the same application, opened on the health of the drive |
 | `bigmount --secure-erase DISK` | no (UDisks2 asks for the administrator password; `sudo` when there is no graphical session) | erases a whole internal SATA drive with its own Secure Erase, after confirmation, then checks it ([5.4](#54-drive-errors-and-secure-erase)) |
-| `bigmount --notifier` | no | session notifier (started by autostart) |
+| `bigmount --notifier` | no | session notifier (off by default; turned on in the menu of the application) |
 | `bigmount --doctor` | no | read-only self-check of the installation, the service, the session and the storage stack; anonymized, for bug reports ([12.2](#122-bigmount---doctor)) |
 | `bigmount -V`, `--version` | no | version, package and source revision |
 | `bigmount -h`, `--help` | no | help |
@@ -1456,7 +1456,7 @@ To mount a partition somewhere else or with other options, put it in
 | `/usr/lib/systemd/system/big-mount.service` | boot service |
 | `/usr/share/libalpm/hooks/big-mount.hook` | enables the service on the first installation |
 | `/etc/big-mount.conf` | configuration ([9.1](#91-etcbig-mountconf)) |
-| `/etc/xdg/autostart/big-mount-notifier.desktop` | starts the notifier in the session |
+| `/usr/share/big-mount/big-mount-notifier.desktop` | the notifier entry, copied to `~/.config/autostart/` only when you turn it on |
 | `/usr/share/applications/big-mount.desktop` | "Big-Mount" launcher |
 | `/usr/share/kio/servicemenus/big-mount.desktop` | Dolphin service menu |
 | `/usr/share/polkit-1/actions/org.biglinux.big-mount.policy` | polkit actions of the two privileged helpers |

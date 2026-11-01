@@ -183,7 +183,7 @@ msgstr ""
 #: big-mount/usr/lib/big-mount/cli.sh:106
 #: big-mount/usr/lib/big-mount/cli.sh:799
 #: big-mount/usr/lib/big-mount/cli.sh:1069
-#: big-mount/usr/lib/big-mount/doctor.sh:444
+#: big-mount/usr/lib/big-mount/doctor.sh:449
 #: big-mount/usr/lib/big-mount/drive.sh:227
 msgid "bigmount: unknown option '%s' (see bigmount --help)"
 msgstr ""
@@ -1161,7 +1161,7 @@ msgstr ""
 #: big-mount/usr/lib/big-mount/cli.sh:1243
 #: big-mount/usr/lib/big-mount/cli.sh:1246
 #: big-mount/usr/lib/big-mount/cli.sh:1248
-#: big-mount/usr/lib/big-mount/cli.sh:1521
+#: big-mount/usr/lib/big-mount/cli.sh:1522
 #: big-mount/usr/lib/big-mount/ui.sh:234
 msgid "Close"
 msgstr ""
@@ -1179,7 +1179,7 @@ msgid "Safely remove…"
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/cli.sh:1272
-#: big-mount/usr/lib/big-mount/cli.sh:1561
+#: big-mount/usr/lib/big-mount/cli.sh:1562
 msgid "How to solve"
 msgstr ""
 
@@ -1343,35 +1343,35 @@ msgstr ""
 msgid "It remains mounted. Nothing was forced."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/cli.sh:1511
+#: big-mount/usr/lib/big-mount/cli.sh:1512
 msgid "%s: %s"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/cli.sh:1514
+#: big-mount/usr/lib/big-mount/cli.sh:1515
 msgid "This drive reported serious problems. Copy your files to another drive before trying any repair."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/cli.sh:1516
+#: big-mount/usr/lib/big-mount/cli.sh:1517
 msgid "This drive reported problems. Copy what matters to another place."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/cli.sh:1519
+#: big-mount/usr/lib/big-mount/cli.sh:1520
 msgid "Big-Mount shows what was found and how to rescue the files without writing to the drive."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/cli.sh:1521
+#: big-mount/usr/lib/big-mount/cli.sh:1522
 msgid "A drive needs attention"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/cli.sh:1521
+#: big-mount/usr/lib/big-mount/cli.sh:1522
 msgid "Open Big-Mount"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/cli.sh:1559
+#: big-mount/usr/lib/big-mount/cli.sh:1560
 msgid "Device: %s\\nFilesystem: %s\\nPossible reason: %s"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/cli.sh:1561
+#: big-mount/usr/lib/big-mount/cli.sh:1562
 msgid "View details"
 msgstr ""
 
@@ -1631,135 +1631,139 @@ msgstr ""
 msgid "No session D-Bus: notifications cannot be shown"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/doctor.sh:318
+#: big-mount/usr/lib/big-mount/doctor.sh:321
+msgid "The read-only notifier is off (it can be turned on in the menu of the application)"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/doctor.sh:323
 msgid "The read-only notifier is running"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/doctor.sh:320
-msgid "The read-only notifier is not running"
+#: big-mount/usr/lib/big-mount/doctor.sh:325
+msgid "The read-only notifier is on but not running"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/doctor.sh:320
-msgid "It starts at login (/etc/xdg/autostart/big-mount-notifier.desktop)."
+#: big-mount/usr/lib/big-mount/doctor.sh:325
+msgid "It starts at the next login."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/doctor.sh:331
+#: big-mount/usr/lib/big-mount/doctor.sh:336
 msgid "Storage stack"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/doctor.sh:342
+#: big-mount/usr/lib/big-mount/doctor.sh:347
 msgid "Missing program: %s"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/doctor.sh:343
+#: big-mount/usr/lib/big-mount/doctor.sh:348
 msgid "Install the dependencies of big-mount (util-linux, udisks2, lsof, glib2)."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/doctor.sh:346
+#: big-mount/usr/lib/big-mount/doctor.sh:351
 msgid "UDisks2 answers on the system D-Bus"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/doctor.sh:348
+#: big-mount/usr/lib/big-mount/doctor.sh:353
 msgid "UDisks2 does not answer on the system D-Bus"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/doctor.sh:348
+#: big-mount/usr/lib/big-mount/doctor.sh:353
 msgid "Plasma and Big-Mount cannot mount or remove devices. Check: systemctl status udisks2"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/doctor.sh:352
+#: big-mount/usr/lib/big-mount/doctor.sh:357
 msgid "Polkit knows the action of Big-Mount"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/doctor.sh:354
+#: big-mount/usr/lib/big-mount/doctor.sh:359
 msgid "Polkit does not know org.biglinux.big-mount.inspect-processes"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/doctor.sh:354
+#: big-mount/usr/lib/big-mount/doctor.sh:359
 msgid "'Show programs of all users' will not work. Reinstall the big-mount package."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/doctor.sh:358
+#: big-mount/usr/lib/big-mount/doctor.sh:363
 msgid "Kernel log readable (needed to explain read-only devices)"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/doctor.sh:360
+#: big-mount/usr/lib/big-mount/doctor.sh:365
 msgid "Kernel log not readable by this user: read-only causes are explained with fewer details"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/doctor.sh:373
+#: big-mount/usr/lib/big-mount/doctor.sh:378
 msgid "%s: %s, %s, removable"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/doctor.sh:375
+#: big-mount/usr/lib/big-mount/doctor.sh:380
 msgid "%s: %s, %s, internal"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/doctor.sh:379
+#: big-mount/usr/lib/big-mount/doctor.sh:384
 msgid "The kernel has no /sys/block entry for it"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/doctor.sh:381
+#: big-mount/usr/lib/big-mount/doctor.sh:386
 msgid "UDisks2 does not know this device: Plasma and Big-Mount cannot manage it"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/doctor.sh:388
+#: big-mount/usr/lib/big-mount/doctor.sh:393
 msgid "%s: the drive reports problems (%s)"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/doctor.sh:389
+#: big-mount/usr/lib/big-mount/doctor.sh:394
 msgid "For details: bigmount --diagnose %s"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/doctor.sh:400
+#: big-mount/usr/lib/big-mount/doctor.sh:405
 msgid "NVMe controller /dev/%s: storage %s"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/doctor.sh:413
+#: big-mount/usr/lib/big-mount/doctor.sh:418
 msgid "Mounted read-only: %s"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/doctor.sh:413
+#: big-mount/usr/lib/big-mount/doctor.sh:418
 msgid "To know why: bigmount --diagnose DEVICE"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/doctor.sh:421
+#: big-mount/usr/lib/big-mount/doctor.sh:426
 msgid "Outside Big-Mount (for reference)"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/doctor.sh:427
+#: big-mount/usr/lib/big-mount/doctor.sh:432
 msgid "Settings files that do not belong to you (Plasma cannot save them, so settings seem to reset)"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/doctor.sh:428
+#: big-mount/usr/lib/big-mount/doctor.sh:433
 msgid "Usually left by a graphical program run with sudo. An administrator can give them back with chown."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/doctor.sh:430
+#: big-mount/usr/lib/big-mount/doctor.sh:435
 msgid "All your settings files belong to you"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/doctor.sh:436
+#: big-mount/usr/lib/big-mount/doctor.sh:441
 msgid "%d packages have newer versions in the last synchronized package list"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/doctor.sh:437
+#: big-mount/usr/lib/big-mount/doctor.sh:442
 msgid "Keep the system consistent: update everything at once (sudo pacman -Syu), never only some packages."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/doctor.sh:450
+#: big-mount/usr/lib/big-mount/doctor.sh:455
 msgid "Big-Mount check (nothing is changed; labels, serial numbers, UUIDs and personal paths are left out)"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/doctor.sh:457
+#: big-mount/usr/lib/big-mount/doctor.sh:462
 msgid "Result: %d problem(s), %d warning(s)."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/doctor.sh:458
+#: big-mount/usr/lib/big-mount/doctor.sh:463
 msgid "Big-Mount and the storage stack look healthy."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/doctor.sh:459
+#: big-mount/usr/lib/big-mount/doctor.sh:464
 msgid "To report a problem, attach this output: bigmount --doctor > big-mount-report.txt"
 msgstr ""
 
@@ -3641,6 +3645,11 @@ msgstr ""
 msgid "More options for %s"
 msgstr ""
 
+#: big-mount/usr/lib/big-mount/gui/application.py:124
+#, python-format
+msgid "The notifier could not be changed: %s"
+msgstr ""
+
 #: big-mount/usr/lib/big-mount/gui/common.py:97
 msgid "less than a minute"
 msgstr ""
@@ -3745,7 +3754,7 @@ msgid "Warnings when it matters"
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/gui/welcome.py:27
-msgid "When a drive with problems is mounted, you are told, once per boot."
+msgid "Optional, in the menu: when a drive with problems is mounted, you are told, once per boot."
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/gui/welcome.py:28
@@ -3809,74 +3818,78 @@ msgstr ""
 msgid "Main menu"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/window.py:99
-msgid "Welcome screen"
+#: big-mount/usr/lib/big-mount/gui/window.py:98
+msgid "Warn when a device cannot be written to"
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/gui/window.py:100
+msgid "Welcome screen"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/gui/window.py:101
 msgid "About Big-Mount"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/window.py:106
+#: big-mount/usr/lib/big-mount/gui/window.py:107
 msgid "Drives"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/window.py:124
+#: big-mount/usr/lib/big-mount/gui/window.py:125
 #, python-format
 msgid "%d running"
 msgid_plural "%d running"
 msgstr[0] ""
 msgstr[1] ""
 
-#: big-mount/usr/lib/big-mount/gui/window.py:201
+#: big-mount/usr/lib/big-mount/gui/window.py:202
 msgid "Home"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/window.py:204
+#: big-mount/usr/lib/big-mount/gui/window.py:205
 #: big-mount/usr/lib/big-mount/gui/pages/job.py:301
 #: big-mount/usr/lib/big-mount/gui/pages/job.py:304
 msgid "Copies and searches"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/window.py:314
+#: big-mount/usr/lib/big-mount/gui/window.py:315
 msgid "Choose a drive to see how it is doing."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/window.py:326
+#: big-mount/usr/lib/big-mount/gui/window.py:327
 msgid "This device was not found."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/window.py:342
-#: big-mount/usr/lib/big-mount/gui/window.py:420
-#: big-mount/usr/lib/big-mount/gui/window.py:427
+#: big-mount/usr/lib/big-mount/gui/window.py:343
+#: big-mount/usr/lib/big-mount/gui/window.py:421
+#: big-mount/usr/lib/big-mount/gui/window.py:428
 msgid "A drive is being erased"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/window.py:428
+#: big-mount/usr/lib/big-mount/gui/window.py:429
 msgid "Do not turn off the computer or disconnect the drive. This window can be closed when it ends."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/window.py:431
+#: big-mount/usr/lib/big-mount/gui/window.py:432
 msgid "Wait a moment"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/window.py:432
+#: big-mount/usr/lib/big-mount/gui/window.py:433
 msgid "An operation on a drive is still running. This window can be closed when it ends."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/window.py:440
+#: big-mount/usr/lib/big-mount/gui/window.py:441
 msgid "It keeps working"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/window.py:441
+#: big-mount/usr/lib/big-mount/gui/window.py:442
 msgid "The work continues in the background, also with this window closed. Open Big-Mount again to follow it."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/window.py:442
+#: big-mount/usr/lib/big-mount/gui/window.py:443
 msgid "Stay here"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/window.py:442
+#: big-mount/usr/lib/big-mount/gui/window.py:443
 msgid "Close the window"
 msgstr ""
 

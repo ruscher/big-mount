@@ -123,7 +123,7 @@ dialogs of 2.6.0 in a real Plasma or GNOME session.
 | File | Role |
 | --- | --- |
 | `usr/share/applications/big-mount.desktop` | "Big-Mount" launcher (action "Storage Diagnostics"), and the `desktop-entry` of the notifications |
-| `etc/xdg/autostart/big-mount-notifier.desktop` | starts the notifier in the session |
+| `usr/share/big-mount/big-mount-notifier.desktop` | the notifier entry; the application copies it to the user's autostart folder only when the notifier is turned on |
 | `usr/share/kio/servicemenus/big-mount.desktop` | Dolphin submenu "Storage device" |
 | `usr/share/polkit-1/actions/org.biglinux.big-mount.policy` | the administrator view |
 
@@ -133,5 +133,5 @@ by `locale/compile.sh` (see 09 and the README for translations).
 ## Idle cost of the notifier
 
 Measured: 2 processes (`bash` and `findmnt --poll`), 9.2 MB RSS in total,
-0 CPU ticks in 10 s of idle time. It can be disabled in System Settings →
-Autostart.
+0 CPU ticks in 10 s of idle time. It is off by default, and turned on or off
+in the main menu of the application.

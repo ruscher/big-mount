@@ -3,13 +3,70 @@ goes to the window that is already open, at what it asked for."""
 
 import argparse
 import os
+import signal
 
 from gi.repository import Adw, Gdk, Gio, GLib, Gtk
 
 from . import welcome
+from .common import BIGMOUNT, PREFIX, _
 from .window import MainWindow
 
 APP_ID = "org.biglinux.big-mount"
+
+# The notifier is off unless the person turns it on: its entry in their own
+# autostart folder is the switch, and nothing else records it
+NOTIFIER_TEMPLATE = os.path.join(PREFIX, "share", "big-mount", "big-mount-notifier.desktop")
+
+
+def notifier_entry():
+    return os.path.join(GLib.get_user_config_dir(), "autostart", "big-mount-notifier.desktop")
+
+
+def notifier_on():
+    """Hidden=true, or GNOME's key, is how desktops turn an autostart entry off."""
+    try:
+        with open(notifier_entry(), encoding="utf-8") as f:
+            lines = f.read().splitlines()
+        return "Hidden=true" not in lines and "X-GNOME-Autostart-enabled=false" not in lines
+    except FileNotFoundError:
+        return False
+
+
+def notifier_pid():
+    """The running notifier of this user, from the lock it holds, or None."""
+    try:
+        with open(os.path.join(GLib.get_user_runtime_dir(), "big-mount-notifier.lock"), encoding="utf-8") as f:
+            pid = int(f.read().strip() or 0)
+        with open(f"/proc/{pid}/cmdline", "rb") as f:
+            args = f.read().split(b"\0")
+        mine = os.stat(f"/proc/{pid}").st_uid == os.getuid()
+    except (OSError, ValueError):
+        return None
+    return pid if pid > 0 and mine and b"--notifier" in args else None
+
+
+def set_notifier(on):
+    """Raises OSError when the autostart entry cannot be written or removed."""
+    entry = notifier_entry()
+    if on:
+        os.makedirs(os.path.dirname(entry), exist_ok=True)
+        with open(NOTIFIER_TEMPLATE, "rb") as f:
+            data = f.read()
+        tmp = f"{entry}.tmp"
+        with open(tmp, "wb") as f:
+            f.write(data)
+        os.replace(tmp, entry)
+        # Now, not only at the next login. setsid -f: it outlives the window
+        proc = Gio.Subprocess.new(["setsid", "-f", BIGMOUNT, "--notifier"], Gio.SubprocessFlags.NONE)
+        proc.wait_async(None, None)
+    else:
+        try:
+            os.unlink(entry)
+        except FileNotFoundError:
+            pass
+        pid = notifier_pid()
+        if pid:
+            os.kill(pid, signal.SIGTERM)
 
 
 def load_style():
@@ -55,6 +112,17 @@ class Application(Adw.Application):
         self._action("jobs", ["<Control>j"], lambda *_a: self.window and self.window.show_jobs())
         self._action("about", [], lambda *_a: self.window and self.window.show_about())
         self._action("welcome", [], lambda *_a: self.window and self.window.show_welcome())
+        notifier = Gio.SimpleAction.new_stateful("notifier", None, GLib.Variant.new_boolean(notifier_on()))
+        notifier.connect("change-state", self._notifier_changed)
+        self.add_action(notifier)
+
+    def _notifier_changed(self, action, value):
+        try:
+            set_notifier(value.get_boolean())
+        except (OSError, GLib.Error) as exc:
+            if self.window:
+                self.window.notify_text(_("The notifier could not be changed: %s") % (getattr(exc, "message", "") or str(exc)))
+        action.set_state(GLib.Variant.new_boolean(notifier_on()))
 
     def _action(self, name, accels, handler):
         action = Gio.SimpleAction.new(name, None)

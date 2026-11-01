@@ -102,7 +102,7 @@ expect=(
     "644 usr/lib/systemd/system/big-mount.service"
     "644 usr/share/libalpm/hooks/big-mount.hook"
     "644 etc/big-mount.conf"
-    "644 etc/xdg/autostart/big-mount-notifier.desktop"
+    "644 usr/share/big-mount/big-mount-notifier.desktop"
     "644 usr/share/applications/big-mount.desktop"
     "644 usr/share/kio/servicemenus/big-mount.desktop"
     "644 usr/share/polkit-1/actions/org.biglinux.big-mount.policy"
@@ -137,7 +137,7 @@ check "dialogs are GTK: no kdialog or zenity, needed or used" bash -c 'source pk
 check "no Markdown file is read at run time" bash -c '! grep -rlE "\.md[\"'"'"' ]" "$1/usr/lib/big-mount/gui" "$1/usr/lib/big-mount/drive-gui.py"' _ "$P"
 if command -v desktop-file-validate >/dev/null; then
     check "launcher .desktop" desktop-file-validate "$P/usr/share/applications/big-mount.desktop"
-    check "autostart .desktop" desktop-file-validate "$P/etc/xdg/autostart/big-mount-notifier.desktop"
+    check "notifier .desktop" desktop-file-validate "$P/usr/share/big-mount/big-mount-notifier.desktop"
 fi
 check "service menu: KIO keys present" bash -c 'grep -q "^Type=Service" "$1" && grep -q "^Actions=" "$1" && grep -q "^MimeType=inode/directory;" "$1"' _ "$P/usr/share/kio/servicemenus/big-mount.desktop"
 command -v xmllint >/dev/null && check "polkit policy is well-formed XML" xmllint --noout "$P/usr/share/polkit-1/actions/org.biglinux.big-mount.policy"

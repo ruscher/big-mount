@@ -314,10 +314,15 @@ bm_dr_session() {
    fi
    if [ -n "${WAYLAND_DISPLAY:-}${DISPLAY:-}" ]; then
       [ -n "${DBUS_SESSION_BUS_ADDRESS:-}" ] || bm_dr warn $"No session D-Bus: notifications cannot be shown"
-      if [ -e "$rundir/big-mount-notifier.lock" ] && ! flock -n "$rundir/big-mount-notifier.lock" true 2>/dev/null; then
+      local running=0
+      [ -e "$rundir/big-mount-notifier.lock" ] && ! flock -n "$rundir/big-mount-notifier.lock" true 2>/dev/null && running=1
+      local entry="${XDG_CONFIG_HOME:-$HOME/.config}/autostart/big-mount-notifier.desktop"
+      if [ ! -e "$entry" ] || grep -qx 'Hidden=true' "$entry"; then
+         bm_dr info $"The read-only notifier is off (it can be turned on in the menu of the application)"
+      elif [ "$running" = 1 ]; then
          bm_dr ok $"The read-only notifier is running"
       else
-         bm_dr warn $"The read-only notifier is not running" $"It starts at login (/etc/xdg/autostart/big-mount-notifier.desktop)."
+         bm_dr warn $"The read-only notifier is on but not running" $"It starts at the next login."
       fi
    fi
    if command -v pacman >/dev/null; then

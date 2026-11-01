@@ -58,7 +58,7 @@ done
 
 begin "generated resources match their templates (run locale/compile.sh)"
 DEST="$WORK/gen" bash locale/compile.sh
-for f in usr/share/applications/big-mount.desktop etc/xdg/autostart/big-mount-notifier.desktop \
+for f in usr/share/applications/big-mount.desktop usr/share/big-mount/big-mount-notifier.desktop \
          usr/share/kio/servicemenus/big-mount.desktop usr/share/polkit-1/actions/org.biglinux.big-mount.policy; do
     check "$f" cmp -s "$WORK/gen/$f" "big-mount/$f"
 done

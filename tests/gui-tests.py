@@ -36,7 +36,7 @@ app = make_app()
 
 import dialog as shell_dialog  # noqa: E402
 from gui import dialogs as shell_dialogs  # noqa: E402
-from gui.application import parse, welcome_at_start  # noqa: E402
+from gui.application import notifier_entry, notifier_on, parse, set_notifier, welcome_at_start  # noqa: E402
 from gui.common import ISSUES, WEBSITE, human_duration, human_size, human_time, save_setting  # noqa: E402
 from gui.engine import Engine  # noqa: E402
 from gui.models import Device, Job, Methods, UiState, find_device  # noqa: E402
@@ -185,6 +185,40 @@ class Words(unittest.TestCase):
         a = parse(["x", "--target", "/dev/sdb", "--section", "health"])
         self.assertEqual((a.target, a.section), ("/dev/sdb", "health"))
         self.assertEqual(parse(["x"]).target, "")
+
+
+class Notifier(unittest.TestCase):
+    def test_off_until_turned_on(self):
+        entry = pathlib.Path(notifier_entry())
+        self.assertFalse(entry.exists())
+        forget_calls()
+        set_notifier(True)
+        self.assertIn("Exec=/usr/bin/bigmount --notifier", entry.read_text(encoding="utf-8"))
+        self.assertTrue(pump(lambda: "--notifier" in calls(), 3), "the notifier was not started")
+        # Off: the entry goes and the running notifier, named by its lock, stops
+        proc = subprocess.Popen(["bash", "-c", "sleep 60", "bigmount", "--notifier"])
+        (WORK / "big-mount-notifier.lock").write_text(f"{proc.pid}\n", encoding="utf-8")
+        set_notifier(False)
+        self.assertFalse(entry.exists())
+        self.assertEqual(proc.wait(5), -signal.SIGTERM)
+
+    def test_hidden_entry_is_off(self):
+        entry = pathlib.Path(notifier_entry())
+        entry.parent.mkdir(parents=True, exist_ok=True)
+        try:
+            for off in ("Hidden=true", "X-GNOME-Autostart-enabled=false"):
+                entry.write_text(f"[Desktop Entry]\n{off}\n", encoding="utf-8")
+                self.assertFalse(notifier_on(), off)
+        finally:
+            entry.unlink()
+
+    def test_never_signals_another_program(self):
+        proc = subprocess.Popen(["sleep", "60"])
+        (WORK / "big-mount-notifier.lock").write_text(f"{proc.pid}\n", encoding="utf-8")
+        set_notifier(False)
+        self.assertIsNone(proc.poll())
+        proc.kill()
+        proc.wait()
 
 
 class Models(unittest.TestCase):

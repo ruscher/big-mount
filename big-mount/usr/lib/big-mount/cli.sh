@@ -1475,7 +1475,8 @@ bm_gui_remove() {
 }
 
 # ---------------------------------------------------------------------------
-# Session notifier (bigmount --notifier, started by XDG autostart)
+# Session notifier (bigmount --notifier). Off by default: the application turns
+# it on by copying its entry to the person's XDG autostart folder
 #
 # Waits for mount events (findmnt --poll: the kernel wakes it up, there is no
 # periodic scan) and warns once per boot and device when a removable or
@@ -1586,8 +1587,11 @@ bm_notifier() {
    fi
    # One notifier per session. Children never get fd 8: one that outlived
    # the notifier would keep the lock, and every later notifier would quit.
-   exec 8> "$rundir/big-mount-notifier.lock" || return 1
+   # Opened without truncating: the lock holds the PID of the notifier, which
+   # the application stops when the person turns it off
+   exec 8>> "$rundir/big-mount-notifier.lock" || return 1
    flock -n 8 || return 0
+   printf '%s\n' "$$" > "$rundir/big-mount-notifier.lock"
 
    # Devices already mounted at login (big-mount mounts them at boot)
    while IFS= read -r line; do

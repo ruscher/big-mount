@@ -190,7 +190,7 @@ msgstr "ALVO é um dispositivo (/dev/sdb1) ou qualquer pasta dentro de um dispos
 #: big-mount/usr/lib/big-mount/cli.sh:106
 #: big-mount/usr/lib/big-mount/cli.sh:799
 #: big-mount/usr/lib/big-mount/cli.sh:1069
-#: big-mount/usr/lib/big-mount/doctor.sh:444
+#: big-mount/usr/lib/big-mount/doctor.sh:449
 #: big-mount/usr/lib/big-mount/drive.sh:227
 msgid "bigmount: unknown option '%s' (see bigmount --help)"
 msgstr "bigmount: opção desconhecida '%s' (veja bigmount --help)"
@@ -1168,7 +1168,7 @@ msgstr "Detalhes técnicos"
 #: big-mount/usr/lib/big-mount/cli.sh:1243
 #: big-mount/usr/lib/big-mount/cli.sh:1246
 #: big-mount/usr/lib/big-mount/cli.sh:1248
-#: big-mount/usr/lib/big-mount/cli.sh:1521
+#: big-mount/usr/lib/big-mount/cli.sh:1522
 #: big-mount/usr/lib/big-mount/ui.sh:234
 msgid "Close"
 msgstr "Fechar"
@@ -1186,7 +1186,7 @@ msgid "Safely remove…"
 msgstr "Remover com segurança…"
 
 #: big-mount/usr/lib/big-mount/cli.sh:1272
-#: big-mount/usr/lib/big-mount/cli.sh:1561
+#: big-mount/usr/lib/big-mount/cli.sh:1562
 msgid "How to solve"
 msgstr "Como resolver"
 
@@ -1350,35 +1350,35 @@ msgstr "O dispositivo foi desconectado antes de a remoção terminar. Se havia a
 msgid "It remains mounted. Nothing was forced."
 msgstr "Ele continua montado. Nada foi forçado."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1511
+#: big-mount/usr/lib/big-mount/cli.sh:1512
 msgid "%s: %s"
 msgstr "%s: %s"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1514
+#: big-mount/usr/lib/big-mount/cli.sh:1515
 msgid "This drive reported serious problems. Copy your files to another drive before trying any repair."
 msgstr "Este disco relatou problemas sérios. Copie seus arquivos para outro disco antes de tentar qualquer reparo."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1516
+#: big-mount/usr/lib/big-mount/cli.sh:1517
 msgid "This drive reported problems. Copy what matters to another place."
 msgstr "Este disco relatou problemas. Copie o que importa para outro lugar."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1519
+#: big-mount/usr/lib/big-mount/cli.sh:1520
 msgid "Big-Mount shows what was found and how to rescue the files without writing to the drive."
 msgstr "O Big-Mount mostra o que foi encontrado e como resgatar os arquivos sem gravar nada no disco."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1521
+#: big-mount/usr/lib/big-mount/cli.sh:1522
 msgid "A drive needs attention"
 msgstr "Um disco precisa de atenção"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1521
+#: big-mount/usr/lib/big-mount/cli.sh:1522
 msgid "Open Big-Mount"
 msgstr "Abrir o Big-Mount"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1559
+#: big-mount/usr/lib/big-mount/cli.sh:1560
 msgid "Device: %s\\nFilesystem: %s\\nPossible reason: %s"
 msgstr "Dispositivo: %s\\nSistema de arquivos: %s\\nPossível motivo: %s"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1561
+#: big-mount/usr/lib/big-mount/cli.sh:1562
 msgid "View details"
 msgstr "Ver detalhes"
 
@@ -1638,135 +1638,139 @@ msgstr "Instale o libnotify."
 msgid "No session D-Bus: notifications cannot be shown"
 msgstr "Sem D-Bus de sessão: as notificações não podem ser exibidas"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:318
+#: big-mount/usr/lib/big-mount/doctor.sh:321
+msgid "The read-only notifier is off (it can be turned on in the menu of the application)"
+msgstr "O notificador de somente leitura está desligado (pode ser ligado no menu do aplicativo)"
+
+#: big-mount/usr/lib/big-mount/doctor.sh:323
 msgid "The read-only notifier is running"
 msgstr "O notificador de somente leitura está em execução"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:320
-msgid "The read-only notifier is not running"
-msgstr "O notificador de somente leitura não está em execução"
+#: big-mount/usr/lib/big-mount/doctor.sh:325
+msgid "The read-only notifier is on but not running"
+msgstr "O notificador de somente leitura está ligado, mas não está em execução"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:320
-msgid "It starts at login (/etc/xdg/autostart/big-mount-notifier.desktop)."
-msgstr "Ele inicia no login (/etc/xdg/autostart/big-mount-notifier.desktop)."
+#: big-mount/usr/lib/big-mount/doctor.sh:325
+msgid "It starts at the next login."
+msgstr "Ele inicia no próximo login."
 
-#: big-mount/usr/lib/big-mount/doctor.sh:331
+#: big-mount/usr/lib/big-mount/doctor.sh:336
 msgid "Storage stack"
 msgstr "Sistema de armazenamento"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:342
+#: big-mount/usr/lib/big-mount/doctor.sh:347
 msgid "Missing program: %s"
 msgstr "Programa ausente: %s"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:343
+#: big-mount/usr/lib/big-mount/doctor.sh:348
 msgid "Install the dependencies of big-mount (util-linux, udisks2, lsof, glib2)."
 msgstr "Instale as dependências do big-mount (util-linux, udisks2, lsof, glib2)."
 
-#: big-mount/usr/lib/big-mount/doctor.sh:346
+#: big-mount/usr/lib/big-mount/doctor.sh:351
 msgid "UDisks2 answers on the system D-Bus"
 msgstr "O UDisks2 responde no D-Bus do sistema"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:348
+#: big-mount/usr/lib/big-mount/doctor.sh:353
 msgid "UDisks2 does not answer on the system D-Bus"
 msgstr "O UDisks2 não responde no D-Bus do sistema"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:348
+#: big-mount/usr/lib/big-mount/doctor.sh:353
 msgid "Plasma and Big-Mount cannot mount or remove devices. Check: systemctl status udisks2"
 msgstr "O Plasma e o Big-Mount não conseguem montar nem remover dispositivos. Verifique: systemctl status udisks2"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:352
+#: big-mount/usr/lib/big-mount/doctor.sh:357
 msgid "Polkit knows the action of Big-Mount"
 msgstr "O polkit conhece a ação do Big-Mount"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:354
+#: big-mount/usr/lib/big-mount/doctor.sh:359
 msgid "Polkit does not know org.biglinux.big-mount.inspect-processes"
 msgstr "O polkit não conhece org.biglinux.big-mount.inspect-processes"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:354
+#: big-mount/usr/lib/big-mount/doctor.sh:359
 msgid "'Show programs of all users' will not work. Reinstall the big-mount package."
 msgstr "'Mostrar programas de todos os usuários' não funcionará. Reinstale o pacote big-mount."
 
-#: big-mount/usr/lib/big-mount/doctor.sh:358
+#: big-mount/usr/lib/big-mount/doctor.sh:363
 msgid "Kernel log readable (needed to explain read-only devices)"
 msgstr "Log do kernel legível (necessário para explicar dispositivos somente leitura)"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:360
+#: big-mount/usr/lib/big-mount/doctor.sh:365
 msgid "Kernel log not readable by this user: read-only causes are explained with fewer details"
 msgstr "Log do kernel não legível por este usuário: as causas de somente leitura são explicadas com menos detalhes"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:373
+#: big-mount/usr/lib/big-mount/doctor.sh:378
 msgid "%s: %s, %s, removable"
 msgstr "%s: %s, %s, removível"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:375
+#: big-mount/usr/lib/big-mount/doctor.sh:380
 msgid "%s: %s, %s, internal"
 msgstr "%s: %s, %s, interno"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:379
+#: big-mount/usr/lib/big-mount/doctor.sh:384
 msgid "The kernel has no /sys/block entry for it"
 msgstr "O kernel não tem uma entrada em /sys/block para ele"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:381
+#: big-mount/usr/lib/big-mount/doctor.sh:386
 msgid "UDisks2 does not know this device: Plasma and Big-Mount cannot manage it"
 msgstr "O UDisks2 não conhece este dispositivo: o Plasma e o Big-Mount não conseguem gerenciá-lo"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:388
+#: big-mount/usr/lib/big-mount/doctor.sh:393
 msgid "%s: the drive reports problems (%s)"
 msgstr "%s: a unidade relata problemas (%s)"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:389
+#: big-mount/usr/lib/big-mount/doctor.sh:394
 msgid "For details: bigmount --diagnose %s"
 msgstr "Para detalhes: bigmount --diagnose %s"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:400
+#: big-mount/usr/lib/big-mount/doctor.sh:405
 msgid "NVMe controller /dev/%s: storage %s"
 msgstr "Controlador NVMe /dev/%s: armazenamento %s"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:413
+#: big-mount/usr/lib/big-mount/doctor.sh:418
 msgid "Mounted read-only: %s"
 msgstr "Montados somente leitura: %s"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:413
+#: big-mount/usr/lib/big-mount/doctor.sh:418
 msgid "To know why: bigmount --diagnose DEVICE"
 msgstr "Para saber o motivo: bigmount --diagnose DISPOSITIVO"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:421
+#: big-mount/usr/lib/big-mount/doctor.sh:426
 msgid "Outside Big-Mount (for reference)"
 msgstr "Fora do Big-Mount (para referência)"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:427
+#: big-mount/usr/lib/big-mount/doctor.sh:432
 msgid "Settings files that do not belong to you (Plasma cannot save them, so settings seem to reset)"
 msgstr "Arquivos de configuração que não pertencem a você (o Plasma não consegue salvá-los, e as configurações parecem voltar ao padrão)"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:428
+#: big-mount/usr/lib/big-mount/doctor.sh:433
 msgid "Usually left by a graphical program run with sudo. An administrator can give them back with chown."
 msgstr "Normalmente deixados por um programa gráfico executado com sudo. Um administrador pode devolvê-los com chown."
 
-#: big-mount/usr/lib/big-mount/doctor.sh:430
+#: big-mount/usr/lib/big-mount/doctor.sh:435
 msgid "All your settings files belong to you"
 msgstr "Todos os seus arquivos de configuração pertencem a você"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:436
+#: big-mount/usr/lib/big-mount/doctor.sh:441
 msgid "%d packages have newer versions in the last synchronized package list"
 msgstr "%d pacotes têm versões mais novas na última lista de pacotes sincronizada"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:437
+#: big-mount/usr/lib/big-mount/doctor.sh:442
 msgid "Keep the system consistent: update everything at once (sudo pacman -Syu), never only some packages."
 msgstr "Mantenha o sistema consistente: atualize tudo de uma vez (sudo pacman -Syu), nunca apenas alguns pacotes."
 
-#: big-mount/usr/lib/big-mount/doctor.sh:450
+#: big-mount/usr/lib/big-mount/doctor.sh:455
 msgid "Big-Mount check (nothing is changed; labels, serial numbers, UUIDs and personal paths are left out)"
 msgstr "Verificação do Big-Mount (nada é alterado; rótulos, números de série, UUIDs e caminhos pessoais ficam de fora)"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:457
+#: big-mount/usr/lib/big-mount/doctor.sh:462
 msgid "Result: %d problem(s), %d warning(s)."
 msgstr "Resultado: %d problema(s), %d aviso(s)."
 
-#: big-mount/usr/lib/big-mount/doctor.sh:458
+#: big-mount/usr/lib/big-mount/doctor.sh:463
 msgid "Big-Mount and the storage stack look healthy."
 msgstr "O Big-Mount e o sistema de armazenamento parecem saudáveis."
 
-#: big-mount/usr/lib/big-mount/doctor.sh:459
+#: big-mount/usr/lib/big-mount/doctor.sh:464
 msgid "To report a problem, attach this output: bigmount --doctor > big-mount-report.txt"
 msgstr "Para relatar um problema, anexe esta saída: bigmount --doctor > relatorio-big-mount.txt"
 
@@ -3651,6 +3655,11 @@ msgstr "Mais opções"
 msgid "More options for %s"
 msgstr "Mais opções para %s"
 
+#: big-mount/usr/lib/big-mount/gui/application.py:124
+#, python-format
+msgid "The notifier could not be changed: %s"
+msgstr "Não foi possível mudar o notificador: %s"
+
 #: big-mount/usr/lib/big-mount/gui/common.py:97
 msgid "less than a minute"
 msgstr "menos de um minuto"
@@ -3755,8 +3764,8 @@ msgid "Warnings when it matters"
 msgstr "Avisos quando importa"
 
 #: big-mount/usr/lib/big-mount/gui/welcome.py:27
-msgid "When a drive with problems is mounted, you are told, once per boot."
-msgstr "Quando um disco com problemas é montado, você é avisado, uma vez por inicialização."
+msgid "Optional, in the menu: when a drive with problems is mounted, you are told, once per boot."
+msgstr "Opcional, no menu: quando um disco com problemas é montado, você é avisado, uma vez por inicialização."
 
 #: big-mount/usr/lib/big-mount/gui/welcome.py:28
 msgid "Secure Erase"
@@ -3819,74 +3828,78 @@ msgstr "Seus discos e dispositivos"
 msgid "Main menu"
 msgstr "Menu principal"
 
-#: big-mount/usr/lib/big-mount/gui/window.py:99
+#: big-mount/usr/lib/big-mount/gui/window.py:98
+msgid "Warn when a device cannot be written to"
+msgstr "Avisar quando um dispositivo não aceitar gravação"
+
+#: big-mount/usr/lib/big-mount/gui/window.py:100
 msgid "Welcome screen"
 msgstr "Tela de boas-vindas"
 
-#: big-mount/usr/lib/big-mount/gui/window.py:100
+#: big-mount/usr/lib/big-mount/gui/window.py:101
 msgid "About Big-Mount"
 msgstr "Sobre o Big-Mount"
 
-#: big-mount/usr/lib/big-mount/gui/window.py:106
+#: big-mount/usr/lib/big-mount/gui/window.py:107
 msgid "Drives"
 msgstr "Discos"
 
-#: big-mount/usr/lib/big-mount/gui/window.py:124
+#: big-mount/usr/lib/big-mount/gui/window.py:125
 #, python-format
 msgid "%d running"
 msgid_plural "%d running"
 msgstr[0] "%d em andamento"
 msgstr[1] "%d em andamento"
 
-#: big-mount/usr/lib/big-mount/gui/window.py:201
+#: big-mount/usr/lib/big-mount/gui/window.py:202
 msgid "Home"
 msgstr "Início"
 
-#: big-mount/usr/lib/big-mount/gui/window.py:204
+#: big-mount/usr/lib/big-mount/gui/window.py:205
 #: big-mount/usr/lib/big-mount/gui/pages/job.py:301
 #: big-mount/usr/lib/big-mount/gui/pages/job.py:304
 msgid "Copies and searches"
 msgstr "Cópias e buscas"
 
-#: big-mount/usr/lib/big-mount/gui/window.py:314
+#: big-mount/usr/lib/big-mount/gui/window.py:315
 msgid "Choose a drive to see how it is doing."
 msgstr "Escolha um disco para ver como ele está."
 
-#: big-mount/usr/lib/big-mount/gui/window.py:326
+#: big-mount/usr/lib/big-mount/gui/window.py:327
 msgid "This device was not found."
 msgstr "Este dispositivo não foi encontrado."
 
-#: big-mount/usr/lib/big-mount/gui/window.py:342
-#: big-mount/usr/lib/big-mount/gui/window.py:420
-#: big-mount/usr/lib/big-mount/gui/window.py:427
+#: big-mount/usr/lib/big-mount/gui/window.py:343
+#: big-mount/usr/lib/big-mount/gui/window.py:421
+#: big-mount/usr/lib/big-mount/gui/window.py:428
 msgid "A drive is being erased"
 msgstr "Um disco está sendo apagado"
 
-#: big-mount/usr/lib/big-mount/gui/window.py:428
+#: big-mount/usr/lib/big-mount/gui/window.py:429
 msgid "Do not turn off the computer or disconnect the drive. This window can be closed when it ends."
 msgstr "Não desligue o computador nem desconecte o disco. Esta janela pode ser fechada quando terminar."
 
-#: big-mount/usr/lib/big-mount/gui/window.py:431
+#: big-mount/usr/lib/big-mount/gui/window.py:432
 msgid "Wait a moment"
 msgstr "Aguarde um momento"
 
-#: big-mount/usr/lib/big-mount/gui/window.py:432
+#: big-mount/usr/lib/big-mount/gui/window.py:433
 msgid "An operation on a drive is still running. This window can be closed when it ends."
 msgstr "Uma operação numa unidade ainda está em andamento. Esta janela pode ser fechada quando ela terminar."
 
-#: big-mount/usr/lib/big-mount/gui/window.py:440
+#: big-mount/usr/lib/big-mount/gui/window.py:441
 msgid "It keeps working"
 msgstr "Ele continua trabalhando"
 
-#: big-mount/usr/lib/big-mount/gui/window.py:441
+#: big-mount/usr/lib/big-mount/gui/window.py:442
 msgid "The work continues in the background, also with this window closed. Open Big-Mount again to follow it."
 msgstr "O trabalho continua em segundo plano, mesmo com esta janela fechada. Abra o Big-Mount de novo para acompanhar."
 
-#: big-mount/usr/lib/big-mount/gui/window.py:442
+#: big-mount/usr/lib/big-mount/gui/window.py:443
 msgid "Stay here"
 msgstr "Ficar aqui"
 
-#: big-mount/usr/lib/big-mount/gui/window.py:442
+#: big-mount/usr/lib/big-mount/gui/window.py:443
 msgid "Close the window"
 msgstr "Fechar a janela"
 
