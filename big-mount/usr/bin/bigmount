@@ -539,8 +539,18 @@ for i in "${CANDIDATES[@]}"; do
    fi
 done
 
-# State for the user session notifier (bigmount --notifier) and --diagnose
+# State for the user session notifier (bigmount --notifier) and --diagnose.
+# A partition an earlier run mounted is skipped in this one: its line is kept
+# while it is still mounted there, so the reason it is read-only is kept too.
 if [ -z "$DRY_RUN" ]; then
+   if [ -r /run/big-mount/status ]; then
+      while IFS=$'\t' read -r dev uuid mp st why; do
+         if [[ $dev != /dev/* ]] || [ "$st" = failed ] || ! mounted_dev_on "$dev" "$mp"; then continue; fi
+         [[ " ${STATUS[*]} " == *" $dev"$'\t'* ]] && continue
+         printf -v line '%s\t%s\t%s\t%s\t%s' "$dev" "$uuid" "$mp" "$st" "$why"
+         STATUS=("$line" "${STATUS[@]}")
+      done < /run/big-mount/status
+   fi
    if [ -d /run/big-mount ] || mkdir -m 0755 /run/big-mount 2>/dev/null; then
       {
          printf '# big-mount status v1: DEVICE UUID MOUNTPOINT STATE REASON\n'

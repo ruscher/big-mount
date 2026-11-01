@@ -570,6 +570,8 @@ test_ntfs_hibernated() {
     ASSERT_MSG="never remove_hiberfile"; assert_false mount_log_grep "$root" "remove_hiberfile"
     ASSERT_MSG="status says ro + hibernated"; assert_true status_has "$root" "ro	ntfs-hibernated"
     ASSERT_MSG="no ntfsfix"; assert_false test -s "$root/ntfsfix.log"
+    run_script "$root" >/dev/null 2>&1
+    ASSERT_MSG="a restart keeps the reason"; assert_true status_has "$root" "ro	ntfs-hibernated"
 }
 
 test_ntfs_silent_readonly_fallback() {
