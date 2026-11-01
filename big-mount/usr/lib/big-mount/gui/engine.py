@@ -1,7 +1,8 @@
 """The one way to the disks: `bigmount --drive ... --json`, without ever blocking
-the window. Commands are lists of arguments, never a line for a shell. A process
-that does not end is only given up on when its command is a question: a job has
-its own supervisor, and nothing here can kill it by closing the window."""
+the window. Commands are lists of arguments, never a line for a shell. Only a
+question is ever given up on, when it does not end or the window closes. An
+operation (mount, unmount, removal, the start of a job) always runs to its end,
+and a job has its own supervisor."""
 
 import json
 import os
@@ -42,10 +43,13 @@ class Result:
 class Engine:
     def __init__(self, program=None):
         self.program = program or os.environ.get("BM_GUI_BIN") or BIGMOUNT
-        self._running = set()
+        self._questions = set()
+        # Changes to a drive in flight: the window stays open until they end
+        self.operations = set()
 
-    def run(self, args, callback=None, json_output=True, limit=ASK_SECONDS, drive=True):
-        """callback(Result). limit: seconds, or None for an operation of any length."""
+    def run(self, args, callback=None, json_output=True, limit=ASK_SECONDS, drive=True, operation=False):
+        """callback(Result). limit: seconds, or None for no limit. operation: it
+        changes something, so it is never given up on."""
         argv = [self.program]
         if drive:
             argv.append("--drive")
@@ -60,9 +64,10 @@ class Engine:
                 failure = Result(None, 127, "", exc.message)
                 GLib.idle_add(lambda: callback(failure) and False)
             return None
-        self._running.add(proc)
+        running = self.operations if operation else self._questions
+        running.add(proc)
         timer = None
-        if limit:
+        if limit and not operation:
             timer = GLib.timeout_add_seconds(limit, self._give_up, proc)
 
         def finished(p, res):
@@ -70,7 +75,7 @@ class Engine:
             if timer:
                 GLib.source_remove(timer)
                 timer = None
-            self._running.discard(p)
+            running.discard(p)
             out, err = b"", b""
             try:
                 _ok, stdout, stderr = p.communicate_finish(res)
@@ -98,9 +103,9 @@ class Engine:
 
     def shutdown(self):
         """Questions still being asked have nobody left to answer to."""
-        for proc in list(self._running):
+        for proc in list(self._questions):
             proc.send_signal(signal.SIGTERM)
-        self._running.clear()
+        self._questions.clear()
 
     # ----- questions
     def list_devices(self, cb):
@@ -141,7 +146,8 @@ class Engine:
         self.run(["report", target], cb, json_output=False)
 
     def report_file(self, target, path, anonymize, cb):
-        self.run(["report", target, "--output", path, "--replace", *(["--anonymize"] if anonymize else [])], cb, json_output=False)
+        self.run(["report", target, "--output", path, "--replace", *(["--anonymize"] if anonymize else [])],
+                 cb, json_output=False, operation=True)
 
     # ----- operations
     def mount(self, device, cb, protect=False, remount=False, diskseq=None):
@@ -152,22 +158,22 @@ class Engine:
             args.append("--remount")
         if diskseq is not None:
             args += ["--expect-diskseq", str(diskseq)]
-        self.run(args, cb, limit=None)
+        self.run(args, cb, operation=True)
 
     def unmount(self, device, cb, allow_services=False):
-        self.run(["unmount", device, *(["--allow-services"] if allow_services else [])], cb, limit=None)
+        self.run(["unmount", device, *(["--allow-services"] if allow_services else [])], cb, operation=True)
 
     def safe_remove(self, device, cb, allow_services=False):
-        self.run(["safe-remove", device, *(["--allow-services"] if allow_services else [])], cb, limit=None)
+        self.run(["safe-remove", device, *(["--allow-services"] if allow_services else [])], cb, operation=True)
 
     def busy(self, device, cb):
         self.run(["busy", device], cb)
 
     def close_apps(self, device, cb):
-        self.run(["close-apps", device], cb, limit=None)
+        self.run(["close-apps", device], cb, operation=True)
 
     def protect(self, device, cb, on=True):
-        self.run(["protect" if on else "unprotect", device], cb, json_output=False, limit=None)
+        self.run(["protect" if on else "unprotect", device], cb, json_output=False, operation=True)
 
     def partitions(self, target, cb, search=False):
         self.run(["partitions", target, *(["--search"] if search else [])], cb, limit=None)
@@ -207,19 +213,19 @@ class Engine:
                     pass
             if cb:
                 cb(res)
-        self.run(args, done, limit=None)
+        self.run(args, done, limit=None, operation=not dry_run)
 
     def scan(self, cb, source, categories="all", copy_to="", dry_run=False):
         args = ["scan", "--source", source, "--categories", categories]
         if copy_to:
             args += ["--copy-to", copy_to]
         args.append("--dry-run" if dry_run else "--no-wait")
-        self.run(args, cb)
+        self.run(args, cb, operation=not dry_run)
 
     def carve(self, cb, source, destination, categories="all", dry_run=False):
         args = ["carve", "--source", source, "--destination", destination, "--categories", categories]
         args.append("--dry-run" if dry_run else "--no-wait")
-        self.run(args, cb)
+        self.run(args, cb, operation=not dry_run)
 
     def image(self, cb, source, image, diskseq=None, then_carve="", categories="", dry_run=False):
         args = ["image", "--source", source, "--image", image]
@@ -230,16 +236,16 @@ class Engine:
         if categories:
             args += ["--categories", categories]
         args.append("--dry-run" if dry_run else "--no-wait")
-        self.run(args, cb)
+        self.run(args, cb, operation=not dry_run)
 
     def pause(self, job_id, cb):
-        self.run(["pause", job_id], cb, json_output=False)
+        self.run(["pause", job_id], cb, json_output=False, operation=True)
 
     def cancel(self, job_id, cb):
-        self.run(["cancel", job_id], cb, json_output=False)
+        self.run(["cancel", job_id], cb, json_output=False, operation=True)
 
     def resume(self, job_id, cb, retry=False):
-        self.run(["resume", job_id, "--no-wait", *(["--retry-deferred"] if retry else [])], cb, json_output=False)
+        self.run(["resume", job_id, "--no-wait", *(["--retry-deferred"] if retry else [])], cb, json_output=False, operation=True)
 
     # ----- Secure Erase: asks, a ticket, and the erase. See drive-erase.sh
     def erase_check(self, device, cb):
@@ -254,7 +260,7 @@ class Engine:
             args.append("--allow-services")
         if unfreeze:
             args.append("--unfreeze")
-        self.run(args, cb, limit=None)
+        self.run(args, cb, operation=True)
 
 
 def write_items(items):

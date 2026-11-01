@@ -408,6 +408,10 @@ class MainWindow(Adw.ApplicationWindow):
             w.alert(self, _("A drive is being erased"),
                     _("Do not turn off the computer or disconnect the drive. This window can be closed when it ends."))
             return True
+        if self.engine.operations:
+            w.alert(self, _("Wait a moment"),
+                    _("An operation on a drive is still running. This window can be closed when it ends."))
+            return True
         running = [j for j in self.jobs if j.running]
         if running and not self._closing:
             def answered(rid):

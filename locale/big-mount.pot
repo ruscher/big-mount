@@ -3832,19 +3832,27 @@ msgstr ""
 msgid "Do not turn off the computer or disconnect the drive. This window can be closed when it ends."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/window.py:417
+#: big-mount/usr/lib/big-mount/gui/window.py:412
+msgid "Wait a moment"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/gui/window.py:413
+msgid "An operation on a drive is still running. This window can be closed when it ends."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/gui/window.py:421
 msgid "It keeps working"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/window.py:418
+#: big-mount/usr/lib/big-mount/gui/window.py:422
 msgid "The work continues in the background, also with this window closed. Open Big-Mount again to follow it."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/window.py:419
+#: big-mount/usr/lib/big-mount/gui/window.py:423
 msgid "Stay here"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/window.py:419
+#: big-mount/usr/lib/big-mount/gui/window.py:423
 msgid "Close the window"
 msgstr ""
 

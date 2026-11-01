@@ -3842,19 +3842,27 @@ msgstr "Um disco está sendo apagado"
 msgid "Do not turn off the computer or disconnect the drive. This window can be closed when it ends."
 msgstr "Não desligue o computador nem desconecte o disco. Esta janela pode ser fechada quando terminar."
 
-#: big-mount/usr/lib/big-mount/gui/window.py:417
+#: big-mount/usr/lib/big-mount/gui/window.py:412
+msgid "Wait a moment"
+msgstr "Aguarde um momento"
+
+#: big-mount/usr/lib/big-mount/gui/window.py:413
+msgid "An operation on a drive is still running. This window can be closed when it ends."
+msgstr "Uma operação numa unidade ainda está em andamento. Esta janela pode ser fechada quando ela terminar."
+
+#: big-mount/usr/lib/big-mount/gui/window.py:421
 msgid "It keeps working"
 msgstr "Ele continua trabalhando"
 
-#: big-mount/usr/lib/big-mount/gui/window.py:418
+#: big-mount/usr/lib/big-mount/gui/window.py:422
 msgid "The work continues in the background, also with this window closed. Open Big-Mount again to follow it."
 msgstr "O trabalho continua em segundo plano, mesmo com esta janela fechada. Abra o Big-Mount de novo para acompanhar."
 
-#: big-mount/usr/lib/big-mount/gui/window.py:419
+#: big-mount/usr/lib/big-mount/gui/window.py:423
 msgid "Stay here"
 msgstr "Ficar aqui"
 
-#: big-mount/usr/lib/big-mount/gui/window.py:419
+#: big-mount/usr/lib/big-mount/gui/window.py:423
 msgid "Close the window"
 msgstr "Fechar a janela"
 
