@@ -103,11 +103,11 @@ msgstr "%s: προσαρτήθηκε ως %s στο %s (%s)"
 msgid "Usage: bigmount [OPTION] [DEVICE|FOLDER]"
 msgstr "Χρήση: bigmount [ΕΠΙΛΟΓΗ] [ΣΥΣΚΕΥΗ|ΦΑΚΕΛΟΣ]"
 
-#: big-mount/usr/lib/big-mount/cli.sh:27
+#: big-mount/usr/lib/big-mount/cli.sh:26
 msgid "(none)"
 msgstr "(καμία)"
 
-#: big-mount/usr/lib/big-mount/cli.sh:27
+#: big-mount/usr/lib/big-mount/cli.sh:26
 msgid "mount internal partitions (run at boot by big-mount.service)"
 msgstr "προσάρτηση των εσωτερικών κατατμήσεων (εκτελείται στην εκκίνηση από το big-mount.service)"
 
@@ -678,10 +678,6 @@ msgstr "Κλείστε εκείνο το πρόγραμμα και δοκιμά�
 msgid "%s is using files on this device."
 msgstr "Το %s χρησιμοποιεί αρχεία σε αυτή τη συσκευή."
 
-#: big-mount/usr/lib/big-mount/cli.sh:530
-msgid "In total, %d programs are using it."
-msgstr "Προγράμματα που τη χρησιμοποιούν συνολικά: %d."
-
 #: big-mount/usr/lib/big-mount/cli.sh:543
 msgid "In use"
 msgstr "Σε χρήση"
@@ -863,10 +859,6 @@ msgstr "δεν αναφέρθηκε κανένα πρόβλημα"
 msgid "the drive predicts its own failure"
 msgstr "ο δίσκος προβλέπει τη δική του αστοχία"
 
-#: big-mount/usr/lib/big-mount/cli.sh:898
-msgid "no failure predicted (%s damaged sectors were replaced by spare ones)"
-msgstr "δεν προβλέπεται αστοχία (κατεστραμμένοι τομείς που αντικαταστάθηκαν από εφεδρικούς: %s)"
-
 #: big-mount/usr/lib/big-mount/cli.sh:900
 msgid "SMART status"
 msgstr "Κατάσταση SMART"
@@ -888,25 +880,10 @@ msgstr "Προβλήματα που βρέθηκαν:"
 msgid "The drive itself reports that it is failing (SMART)."
 msgstr "Ο ίδιος ο δίσκος αναφέρει ότι αστοχεί (SMART)."
 
-#: big-mount/usr/lib/big-mount/cli.sh:913
-#: big-mount/usr/lib/big-mount/drive-diag.sh:233
-msgid "Since the computer was started, it stopped answering and the connection had to be reset (%s kernel messages)."
-msgstr "Από την εκκίνηση του υπολογιστή, σταμάτησε να αποκρίνεται και η σύνδεση χρειάστηκε επαναφορά (μηνύματα πυρήνα: %s)."
-
-#: big-mount/usr/lib/big-mount/cli.sh:914
-#: big-mount/usr/lib/big-mount/drive-diag.sh:232
-msgid "Since the computer was started, reading or writing failed (%s kernel messages)."
-msgstr "Από την εκκίνηση του υπολογιστή, η ανάγνωση ή η εγγραφή απέτυχε (μηνύματα πυρήνα: %s)."
-
 #: big-mount/usr/lib/big-mount/cli.sh:915
 #: big-mount/usr/lib/big-mount/drive-diag.sh:235
 msgid "Since the computer was started, the connection was slowed down after errors."
 msgstr "Από την εκκίνηση του υπολογιστή, η σύνδεση επιβραδύνθηκε μετά από σφάλματα."
-
-#: big-mount/usr/lib/big-mount/cli.sh:916
-#: big-mount/usr/lib/big-mount/drive-diag.sh:234
-msgid "Since the computer was started, the USB connection was reset or lost %s times."
-msgstr "Από την εκκίνηση του υπολογιστή, η σύνδεση USB επαναφέρθηκε ή χάθηκε (φορές: %s)."
 
 #: big-mount/usr/lib/big-mount/cli.sh:921
 msgid "Check the data and power cables of the drive, or try another SATA port."
@@ -971,10 +948,6 @@ msgstr "Αυτές οι κατατμήσεις θα χαθούν:"
 #: big-mount/usr/lib/big-mount/cli.sh:986
 msgid "The drive announces that erasing takes more than 8 hours."
 msgstr "Ο δίσκος δηλώνει ότι η διαγραφή διαρκεί περισσότερο από 8 ώρες."
-
-#: big-mount/usr/lib/big-mount/cli.sh:988
-msgid "The drive announces that erasing takes about %d minutes."
-msgstr "Ο δίσκος δηλώνει ότι η διαγραφή διαρκεί περίπου %d λεπτά."
 
 #: big-mount/usr/lib/big-mount/cli.sh:992
 msgid "Afterwards an empty %s partition table is written and read back, to check that the drive keeps what is written again."
@@ -1111,7 +1084,7 @@ msgstr "Δεν διαγράφηκε τίποτα."
 #: big-mount/usr/lib/big-mount/drive-erase.sh:201
 #: big-mount/usr/lib/big-mount/drive-erase.sh:204
 #: big-mount/usr/lib/big-mount/drive-erase.sh:221
-#: big-mount/usr/lib/big-mount/lib.sh:1295
+#: big-mount/usr/lib/big-mount/lib.sh:1331
 msgid "The drive was disconnected or replaced. Nothing was erased."
 msgstr "Ο δίσκος αποσυνδέθηκε ή αντικαταστάθηκε. Δεν διαγράφηκε τίποτα."
 
@@ -1183,7 +1156,7 @@ msgstr "Τεχνικές λεπτομέρειες"
 #: big-mount/usr/lib/big-mount/cli.sh:1257
 #: big-mount/usr/lib/big-mount/cli.sh:1259
 #: big-mount/usr/lib/big-mount/cli.sh:1533
-#: big-mount/usr/lib/big-mount/ui.sh:234
+#: big-mount/usr/lib/big-mount/ui.sh:241
 msgid "Close"
 msgstr "Κλείσιμο"
 
@@ -1764,10 +1737,6 @@ msgstr "Συνήθως προκύπτουν από γραφικό πρόγραμ
 msgid "All your settings files belong to you"
 msgstr "Όλα τα αρχεία ρυθμίσεών σας ανήκουν σε εσάς"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:441
-msgid "%d packages have newer versions in the last synchronized package list"
-msgstr "Πακέτα με νεότερες εκδόσεις στην τελευταία συγχρονισμένη λίστα πακέτων: %d"
-
 #: big-mount/usr/lib/big-mount/doctor.sh:442
 msgid "Keep the system consistent: update everything at once (sudo pacman -Syu), never only some packages."
 msgstr "Διατηρήστε το σύστημα συνεπές: ενημερώστε τα πάντα μαζί (sudo pacman -Syu), ποτέ μόνο ορισμένα πακέτα."
@@ -1776,15 +1745,15 @@ msgstr "Διατηρήστε το σύστημα συνεπές: ενημερώ�
 msgid "Big-Mount check (nothing is changed; labels, serial numbers, UUIDs and personal paths are left out)"
 msgstr "Έλεγχος του Big-Mount (δεν αλλάζει τίποτα· ετικέτες, σειριακοί αριθμοί, UUID και προσωπικές διαδρομές παραλείπονται)"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:462
-msgid "Result: %d problem(s), %d warning(s)."
-msgstr "Αποτέλεσμα: προβλήματα %d, προειδοποιήσεις %d."
+#: big-mount/usr/lib/big-mount/doctor.sh:465
+msgid "Result: %s, %s."
+msgstr "Αποτέλεσμα: %s, %s."
 
-#: big-mount/usr/lib/big-mount/doctor.sh:463
+#: big-mount/usr/lib/big-mount/doctor.sh:466
 msgid "Big-Mount and the storage stack look healthy."
 msgstr "Το Big-Mount και το σύστημα αποθήκευσης φαίνονται σε καλή κατάσταση."
 
-#: big-mount/usr/lib/big-mount/doctor.sh:464
+#: big-mount/usr/lib/big-mount/doctor.sh:467
 msgid "To report a problem, attach this output: bigmount --doctor > big-mount-report.txt"
 msgstr "Για να αναφέρετε ένα πρόβλημα, επισυνάψτε αυτή την έξοδο: bigmount --doctor > big-mount-report.txt"
 
@@ -2066,10 +2035,6 @@ msgstr "Ο προορισμός αποσυνδέθηκε ή αποπροσαρτ
 msgid "The destination ran out of space. Free some space or choose another place, then resume."
 msgstr "Ο χώρος στον προορισμό εξαντλήθηκε. Ελευθερώστε χώρο ή επιλέξτε άλλο σημείο και, στη συνέχεια, συνεχίστε."
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:428
-msgid "%s files were set aside because they did not advance. The drive may be getting worse, so the copy stopped."
-msgstr "Αρχεία που παραμερίστηκαν επειδή δεν προχωρούσαν: %s. Ο δίσκος μπορεί να χειροτερεύει, οπότε η αντιγραφή σταμάτησε."
-
 #: big-mount/usr/lib/big-mount/drive-copy.sh:429
 msgid "Some files were not copied. See the list below."
 msgstr "Ορισμένα αρχεία δεν αντιγράφηκαν. Δείτε τη λίστα παρακάτω."
@@ -2115,228 +2080,216 @@ msgstr "δεν ήταν δυνατή η ανάγνωση του περιεχομ
 msgid "Source:"
 msgstr "Πηγή:"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:999
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1000
 #: big-mount/usr/lib/big-mount/drive-recovery.sh:940
 msgid "Destination:"
 msgstr "Προορισμός:"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1001
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1003
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1002
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1004
 msgid "Files:"
 msgstr "Αρχεία:"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1013
 #: big-mount/usr/lib/big-mount/drive-copy.sh:1014
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1015
 msgid "Copied:"
 msgstr "Αντιγράφηκαν:"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1018
-msgid "Speed:"
-msgstr "Ταχύτητα:"
-
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1018
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1019
 msgid "average"
 msgstr "μέση"
 
 #: big-mount/usr/lib/big-mount/drive-copy.sh:1019
+msgid "Speed:"
+msgstr "Ταχύτητα:"
+
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1020
 #: big-mount/usr/lib/big-mount/drive-recovery.sh:948
 msgid "Elapsed:"
 msgstr "Χρόνος που πέρασε:"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1020
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1021
 msgid "Remaining:"
 msgstr "Απομένουν:"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1021
-msgid "Waiting for the disk to answer, for %s seconds"
-msgstr "Αναμονή απόκρισης του δίσκου, δευτερόλεπτα: %s"
-
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1022
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1025
 msgid "Current file:"
 msgstr "Τρέχον αρχείο:"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1023
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1026
 msgid "Set aside:"
 msgstr "Παραμερίστηκαν:"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1024
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1027
 msgid "Failed:"
 msgstr "Απέτυχαν:"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1064
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1067
 msgid "Cancelled. Files already copied stay at the destination, and the copy can be resumed."
 msgstr "Ακυρώθηκε. Τα αρχεία που έχουν ήδη αντιγραφεί παραμένουν στον προορισμό και η αντιγραφή μπορεί να συνεχιστεί."
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1080
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1083
 msgid "Source"
 msgstr "Πηγή"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1085
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1088
 #: big-mount/usr/lib/big-mount/drive-recovery.sh:962
 msgid "Destination"
 msgstr "Προορισμός"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1086
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1089
 msgid "Files copied"
 msgstr "Αρχεία που αντιγράφηκαν"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1087
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1090
 msgid "Data copied"
 msgstr "Δεδομένα που αντιγράφηκαν"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1088
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1091
 #: big-mount/usr/lib/big-mount/drive-recovery.sh:966
 msgid "Elapsed"
 msgstr "Χρόνος που πέρασε"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1090
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1091
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1092
 #: big-mount/usr/lib/big-mount/drive-copy.sh:1093
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1094
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1095
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1096
 msgid "Check"
 msgstr "Έλεγχος"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1090
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1093
 msgid "source and destination match"
 msgstr "η πηγή και ο προορισμός ταιριάζουν"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1091
-msgid "%s files differ"
-msgstr "αρχεία που διαφέρουν: %s"
-
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1092
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1095
 msgid "did not finish"
 msgstr "δεν ολοκληρώθηκε"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1093
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1096
 msgid "rsync confirmed each file as it was copied; no second comparison was made"
 msgstr "το rsync επιβεβαίωσε κάθε αρχείο κατά την αντιγραφή του· δεν έγινε δεύτερη σύγκριση"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1095
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1098
 msgid "Already at the destination, with different content"
 msgstr "Υπάρχουν ήδη στον προορισμό, με διαφορετικό περιεχόμενο"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1099
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1102
 msgid "Set aside because they did not advance (damaged area of the disk):"
 msgstr "Παραμερίστηκαν επειδή δεν προχωρούσαν (κατεστραμμένη περιοχή του δίσκου):"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1102
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1105
 msgid "To try them again, which puts more strain on the disk: bigmount --drive resume %s --retry-deferred"
 msgstr "Για να τα δοκιμάσετε ξανά, κάτι που επιβαρύνει περισσότερο τον δίσκο: bigmount --drive resume %s --retry-deferred"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1106
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1109
 msgid "Not copied:"
 msgstr "Δεν αντιγράφηκαν:"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1111
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1114
 msgid "Different at the destination:"
 msgstr "Διαφορετικά στον προορισμό:"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1114
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1117
 msgid "Log:"
 msgstr "Αρχείο καταγραφής:"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1138
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1141
 #: big-mount/usr/lib/big-mount/drive.sh:239
 msgid "Serial number"
 msgstr "Σειριακός αριθμός"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1138
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1141
 #: big-mount/usr/lib/big-mount/drive.sh:255
 msgid "Label"
 msgstr "Ετικέτα"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1170
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1173
 msgid "'%s' already exists. Nothing was written."
 msgstr "Το '%s' υπάρχει ήδη. Δεν γράφτηκε τίποτα."
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1186
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1189
 msgid "Kernel messages:"
 msgstr "Μηνύματα πυρήνα:"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1194
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1197
 msgid "'%s' is a folder. Nothing was written."
 msgstr "Το '%s' είναι φάκελος. Δεν γράφτηκε τίποτα."
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1202
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1205
 msgid "Report written to %s"
 msgstr "Η αναφορά γράφτηκε στο %s"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1255
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1262
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1258
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1265
 msgid "free"
 msgstr "ελεύθερα"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1258
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1261
 msgid "drive with critical alerts"
 msgstr "δίσκος με κρίσιμες ειδοποιήσεις"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1259
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1262
 msgid "same physical disk as the source"
 msgstr "ίδιος φυσικός δίσκος με την πηγή"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1260
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1263
 msgid "not enough space"
 msgstr "δεν υπάρχει αρκετός χώρος"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1276
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1279
 msgid "Home folder"
 msgstr "Προσωπικός φάκελος"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1323
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1476
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1488
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1533
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1326
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1482
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1494
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1539
 #: big-mount/usr/lib/big-mount/drive-recovery.sh:986
 msgid "There is no job '%s'."
 msgstr "Δεν υπάρχει εργασία '%s'."
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1326
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1329
 msgid "Only the results of a search by content can be copied this way."
 msgstr "Με αυτόν τον τρόπο μπορούν να αντιγραφούν μόνο τα αποτελέσματα αναζήτησης βάσει περιεχομένου."
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1333
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1336
 #: big-mount/usr/lib/big-mount/drive-recovery.sh:521
 #: big-mount/usr/lib/big-mount/drive-recovery.sh:847
 msgid "Both --source and --destination are needed."
 msgstr "Χρειάζονται και το --source και το --destination."
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1401
-msgid "%s files, %s to copy; %s already exist with different content."
-msgstr "Αρχεία: %s, για αντιγραφή: %s· υπάρχουν ήδη με διαφορετικό περιεχόμενο: %s."
-
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1424
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1430
 msgid "The copy could not be started."
 msgstr "Δεν ήταν δυνατή η έναρξη της αντιγραφής."
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1429
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1560
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1435
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1566
 #: big-mount/usr/lib/big-mount/drive-recovery.sh:291
 msgid "Copy started: %s"
 msgstr "Η αντιγραφή ξεκίνησε: %s"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1431
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1437
 #: big-mount/usr/lib/big-mount/drive-recovery.sh:293
 msgid "To follow it: bigmount --drive status %s --watch"
 msgstr "Για να την παρακολουθήσετε: bigmount --drive status %s --watch"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1462
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1468
 msgid "No copies or images yet."
 msgstr "Δεν υπάρχουν ακόμη αντιγραφές ή εικόνες."
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1496
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1502
 msgid "A search cannot be paused, only cancelled. What was found stays."
 msgstr "Μια αναζήτηση δεν μπορεί να τεθεί σε παύση, μόνο να ακυρωθεί. Ό,τι βρέθηκε παραμένει."
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1516
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1522
 msgid "It is not running."
 msgstr "Δεν εκτελείται."
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1539
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1545
 msgid "It is already running."
 msgstr "Εκτελείται ήδη."
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1543
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1549
 msgid "It is already complete."
 msgstr "Έχει ήδη ολοκληρωθεί."
 
@@ -2467,20 +2420,21 @@ msgid "Only the system log was consulted. Without the drive's own report (SMART)
 msgstr "Ελέγχθηκε μόνο το αρχείο καταγραφής συστήματος. Χωρίς την αναφορά του ίδιου του δίσκου (SMART) η υγεία του δεν μπορεί να χαρακτηριστεί άριστη."
 
 #: big-mount/usr/lib/big-mount/drive-diag.sh:198
-msgid "It has used %s%% of the life its maker rates it for: it is near or past its end."
-msgstr "Έχει χρησιμοποιήσει το %s%% της διάρκειας ζωής που ορίζει ο κατασκευαστής του: είναι κοντά στο τέλος της ή την έχει ξεπεράσει."
+#: big-mount/usr/lib/big-mount/drive-diag.sh:199
+msgid "%s%%"
+msgstr "%s%%"
+
+#: big-mount/usr/lib/big-mount/drive-diag.sh:198
+msgid "It has used %s of the life its maker rates it for: it is near or past its end."
+msgstr "Έχει χρησιμοποιήσει το %s της διάρκειας ζωής που ορίζει ο κατασκευαστής του: είναι κοντά στο τέλος της ή την έχει ξεπεράσει."
 
 #: big-mount/usr/lib/big-mount/drive-diag.sh:199
-msgid "It has used %s%% of the life its maker rates it for."
-msgstr "Έχει χρησιμοποιήσει το %s%% της διάρκειας ζωής που ορίζει ο κατασκευαστής του."
+msgid "It has used %s of the life its maker rates it for."
+msgstr "Έχει χρησιμοποιήσει το %s της διάρκειας ζωής που ορίζει ο κατασκευαστής του."
 
 #: big-mount/usr/lib/big-mount/drive-diag.sh:200
 msgid "Some of its SMART values were below their safe limit in the past."
 msgstr "Ορισμένες από τις τιμές SMART του ήταν στο παρελθόν κάτω από το όριο ασφαλείας τους."
-
-#: big-mount/usr/lib/big-mount/drive-diag.sh:203
-msgid "Powered on for %s hours, about %s years of use: failures become more likely."
-msgstr "Σε λειτουργία για %s ώρες, περίπου %s χρόνια χρήσης: οι αστοχίες γίνονται πιθανότερες."
 
 #: big-mount/usr/lib/big-mount/drive-diag.sh:205
 msgid "It is hot now (%s °C). Heat shortens its life: give it air."
@@ -2522,25 +2476,9 @@ msgstr "Ο δίσκος έχει τομείς που δεν μπορεί πλέ�
 msgid "The NVMe drive raised a critical warning (%s)."
 msgstr "Ο δίσκος NVMe εξέδωσε κρίσιμη προειδοποίηση (%s)."
 
-#: big-mount/usr/lib/big-mount/drive-diag.sh:231
-msgid "The NVMe drive recorded %s media or data integrity errors."
-msgstr "Ο δίσκος NVMe κατέγραψε σφάλματα μέσου ή ακεραιότητας δεδομένων: %s."
-
 #: big-mount/usr/lib/big-mount/drive-diag.sh:236
 msgid "The drive already replaced damaged sectors with spare ones."
 msgstr "Ο δίσκος έχει ήδη αντικαταστήσει κατεστραμμένους τομείς με εφεδρικούς."
-
-#: big-mount/usr/lib/big-mount/drive-diag.sh:237
-msgid "The drive reported %s errors it could not correct."
-msgstr "Ο δίσκος ανέφερε σφάλματα που δεν μπόρεσε να διορθώσει: %s."
-
-#: big-mount/usr/lib/big-mount/drive-diag.sh:238
-msgid "The cable or adapter corrupted data in transit %s times (CRC errors)."
-msgstr "Το καλώδιο ή ο προσαρμογέας αλλοίωσε δεδομένα κατά τη μεταφορά (σφάλματα CRC: %s)."
-
-#: big-mount/usr/lib/big-mount/drive-diag.sh:239
-msgid "%s of its SMART values are below their safe limit now."
-msgstr "Τιμές SMART κάτω από το όριο ασφαλείας τους αυτή τη στιγμή: %s."
 
 #: big-mount/usr/lib/big-mount/drive-diag.sh:286
 #: big-mount/usr/lib/big-mount/drive.sh:236
@@ -2738,7 +2676,6 @@ msgstr "Αρχεία Word, Excel και LibreOffice μπορεί να εμφαν
 msgid "Search started: %s"
 msgstr "Η αναζήτηση ξεκίνησε: %s"
 
-#: big-mount/usr/lib/big-mount/drive-recovery.sh:889
 #: big-mount/usr/lib/big-mount/drive-recovery.sh:928
 msgid "%s files found by content in %s. Their original names and folders could not be kept."
 msgstr "Αρχεία που βρέθηκαν βάσει περιεχομένου: %s, στο %s. Τα αρχικά τους ονόματα και φάκελοι δεν ήταν δυνατό να διατηρηθούν."
@@ -3122,6 +3059,16 @@ msgstr "Η εφαρμογή χρειάζεται GTK 4, libadwaita 1.5 ή νεό
 msgid "Press Enter to continue."
 msgstr "Πατήστε Enter για να συνεχίσετε."
 
+#: big-mount/usr/lib/big-mount/drive-tui.sh:42
+#: big-mount/usr/lib/big-mount/ui.sh:131 big-mount/usr/lib/big-mount/ui.sh:146
+msgid "y"
+msgstr "ν"
+
+#: big-mount/usr/lib/big-mount/drive-tui.sh:42
+#: big-mount/usr/lib/big-mount/ui.sh:146
+msgid "N"
+msgstr "Ο"
+
 #: big-mount/usr/lib/big-mount/drive-tui.sh:49
 msgid "The interactive manager needs a terminal. For scripts, see bigmount --drive --help."
 msgstr "Η διαδραστική διαχείριση χρειάζεται τερματικό. Για σενάρια, δείτε bigmount --drive --help."
@@ -3331,189 +3278,332 @@ msgstr "Παρακολούθηση της προόδου του;"
 msgid "Resume it?"
 msgstr "Συνέχισή του;"
 
-#: big-mount/usr/lib/big-mount/lib.sh:140
+#: big-mount/usr/lib/big-mount/lib.sh:176
 msgid "No device or folder was given."
 msgstr "Δεν δόθηκε συσκευή ή φάκελος."
 
-#: big-mount/usr/lib/big-mount/lib.sh:141
+#: big-mount/usr/lib/big-mount/lib.sh:177
 msgid "'%s' does not exist. If it is a removable device, it may have been disconnected."
 msgstr "Το '%s' δεν υπάρχει. Αν είναι αφαιρούμενη συσκευή, μπορεί να έχει αποσυνδεθεί."
 
-#: big-mount/usr/lib/big-mount/lib.sh:142
+#: big-mount/usr/lib/big-mount/lib.sh:178
 msgid "'%s' is not available. If it is a removable device, it may have been disconnected."
 msgstr "Το '%s' δεν είναι διαθέσιμο. Αν είναι αφαιρούμενη συσκευή, μπορεί να έχει αποσυνδεθεί."
 
-#: big-mount/usr/lib/big-mount/lib.sh:149
+#: big-mount/usr/lib/big-mount/lib.sh:185
 msgid "'%s' is an NVMe controller, not a storage device. Its storage is: %s"
 msgstr "Το '%s' είναι ελεγκτής NVMe, όχι συσκευή αποθήκευσης. Η αποθήκευσή του είναι: %s"
 
-#: big-mount/usr/lib/big-mount/lib.sh:151
+#: big-mount/usr/lib/big-mount/lib.sh:187
 msgid "'%s' is not a storage device."
 msgstr "Το '%s' δεν είναι συσκευή αποθήκευσης."
 
-#: big-mount/usr/lib/big-mount/lib.sh:152
+#: big-mount/usr/lib/big-mount/lib.sh:188
 msgid "'%s' is not on a local storage device (it may be a network share or a memory filesystem)."
 msgstr "Το '%s' δεν βρίσκεται σε τοπική συσκευή αποθήκευσης (μπορεί να είναι κοινόχρηστος πόρος δικτύου ή σύστημα αρχείων στη μνήμη)."
 
-#: big-mount/usr/lib/big-mount/lib.sh:153
+#: big-mount/usr/lib/big-mount/lib.sh:189
 msgid "'%s' is not a local storage device or a folder on one"
 msgstr "Το '%s' δεν είναι τοπική συσκευή αποθήκευσης ούτε φάκελος σε τέτοια συσκευή"
 
-#: big-mount/usr/lib/big-mount/lib.sh:498
+#: big-mount/usr/lib/big-mount/lib.sh:534
 msgid "Dolphin (file manager)"
 msgstr "Dolphin (διαχείριση αρχείων)"
 
-#: big-mount/usr/lib/big-mount/lib.sh:501
+#: big-mount/usr/lib/big-mount/lib.sh:537
 msgid "KDE thumbnail generator"
 msgstr "Δημιουργία μικρογραφιών του KDE"
 
-#: big-mount/usr/lib/big-mount/lib.sh:502
+#: big-mount/usr/lib/big-mount/lib.sh:538
 msgid "KDE trash"
 msgstr "Απορρίμματα του KDE"
 
-#: big-mount/usr/lib/big-mount/lib.sh:503
+#: big-mount/usr/lib/big-mount/lib.sh:539
 msgid "KDE file service (kioworker)"
 msgstr "Υπηρεσία αρχείων του KDE (kioworker)"
 
-#: big-mount/usr/lib/big-mount/lib.sh:504
+#: big-mount/usr/lib/big-mount/lib.sh:540
 msgid "KDE file service (%s)"
 msgstr "Υπηρεσία αρχείων του KDE (%s)"
 
-#: big-mount/usr/lib/big-mount/lib.sh:507
+#: big-mount/usr/lib/big-mount/lib.sh:543
 msgid "Baloo file indexer"
 msgstr "Ευρετηρίαση αρχείων Baloo"
 
-#: big-mount/usr/lib/big-mount/lib.sh:508
+#: big-mount/usr/lib/big-mount/lib.sh:544
 msgid "File indexer (Tracker)"
 msgstr "Ευρετηρίαση αρχείων (Tracker)"
 
-#: big-mount/usr/lib/big-mount/lib.sh:510
+#: big-mount/usr/lib/big-mount/lib.sh:546
 msgid "Terminal"
 msgstr "Τερματικό"
 
-#: big-mount/usr/lib/big-mount/lib.sh:512
+#: big-mount/usr/lib/big-mount/lib.sh:548
 msgid "Command shell (terminal)"
 msgstr "Κέλυφος εντολών (τερματικό)"
 
-#: big-mount/usr/lib/big-mount/lib.sh:514
+#: big-mount/usr/lib/big-mount/lib.sh:550
 msgid "Media player"
 msgstr "Αναπαραγωγή πολυμέσων"
 
-#: big-mount/usr/lib/big-mount/lib.sh:515
+#: big-mount/usr/lib/big-mount/lib.sh:551
 msgid "Thumbnail generator"
 msgstr "Δημιουργία μικρογραφιών"
 
-#: big-mount/usr/lib/big-mount/lib.sh:516
+#: big-mount/usr/lib/big-mount/lib.sh:552
 msgid "Document viewer"
 msgstr "Προβολή εγγράφων"
 
-#: big-mount/usr/lib/big-mount/lib.sh:517
+#: big-mount/usr/lib/big-mount/lib.sh:553
 msgid "Image viewer"
 msgstr "Προβολή εικόνων"
 
-#: big-mount/usr/lib/big-mount/lib.sh:518
+#: big-mount/usr/lib/big-mount/lib.sh:554
 msgid "Text editor"
 msgstr "Επεξεργαστής κειμένου"
 
-#: big-mount/usr/lib/big-mount/lib.sh:520
+#: big-mount/usr/lib/big-mount/lib.sh:556
 msgid "Web browser"
 msgstr "Περιηγητής ιστού"
 
-#: big-mount/usr/lib/big-mount/lib.sh:521
+#: big-mount/usr/lib/big-mount/lib.sh:557
 msgid "File manager"
 msgstr "Διαχείριση αρχείων"
 
-#: big-mount/usr/lib/big-mount/lib.sh:523
+#: big-mount/usr/lib/big-mount/lib.sh:559
 msgid "Copy or archive operation"
 msgstr "Λειτουργία αντιγραφής ή αρχειοθέτησης"
 
-#: big-mount/usr/lib/big-mount/lib.sh:524
+#: big-mount/usr/lib/big-mount/lib.sh:560
 msgid "Synchronization service"
 msgstr "Υπηρεσία συγχρονισμού"
 
-#: big-mount/usr/lib/big-mount/lib.sh:525
+#: big-mount/usr/lib/big-mount/lib.sh:561
 msgid "Backup"
 msgstr "Αντίγραφο ασφαλείας"
 
-#: big-mount/usr/lib/big-mount/lib.sh:535
+#: big-mount/usr/lib/big-mount/lib.sh:571
 msgid "Current folder is on the device"
 msgstr "Ο τρέχων φάκελος βρίσκεται στη συσκευή"
 
-#: big-mount/usr/lib/big-mount/lib.sh:536
+#: big-mount/usr/lib/big-mount/lib.sh:572
 msgid "Root folder (chroot) is on the device"
 msgstr "Ο ριζικός φάκελος (chroot) βρίσκεται στη συσκευή"
 
-#: big-mount/usr/lib/big-mount/lib.sh:537
+#: big-mount/usr/lib/big-mount/lib.sh:573
 msgid "Program running from the device"
 msgstr "Πρόγραμμα που εκτελείται από τη συσκευή"
 
-#: big-mount/usr/lib/big-mount/lib.sh:538
+#: big-mount/usr/lib/big-mount/lib.sh:574
 msgid "File mapped in memory"
 msgstr "Αρχείο αντιστοιχισμένο στη μνήμη"
 
-#: big-mount/usr/lib/big-mount/lib.sh:541
+#: big-mount/usr/lib/big-mount/lib.sh:577
 msgid "Open for writing"
 msgstr "Ανοιχτό για εγγραφή"
 
-#: big-mount/usr/lib/big-mount/lib.sh:542
+#: big-mount/usr/lib/big-mount/lib.sh:578
 msgid "Open for reading and writing"
 msgstr "Ανοιχτό για ανάγνωση και εγγραφή"
 
-#: big-mount/usr/lib/big-mount/lib.sh:543
+#: big-mount/usr/lib/big-mount/lib.sh:579
 msgid "Folder open"
 msgstr "Ανοιχτός φάκελος"
 
-#: big-mount/usr/lib/big-mount/lib.sh:543
+#: big-mount/usr/lib/big-mount/lib.sh:579
 msgid "Open for reading"
 msgstr "Ανοιχτό για ανάγνωση"
 
-#: big-mount/usr/lib/big-mount/lib.sh:650
+#: big-mount/usr/lib/big-mount/lib.sh:686
 msgid "belongs to another user or to the system"
 msgstr "ανήκει σε άλλον χρήστη ή στο σύστημα"
 
-#: big-mount/usr/lib/big-mount/lib.sh:653
+#: big-mount/usr/lib/big-mount/lib.sh:689
 msgid "part of the desktop session"
 msgstr "μέρος της συνεδρίας επιφάνειας εργασίας"
 
-#: big-mount/usr/lib/big-mount/lib.sh:656
+#: big-mount/usr/lib/big-mount/lib.sh:692
 msgid "a terminal: type 'cd' in it or close the tab"
 msgstr "τερματικό: πληκτρολογήστε 'cd' σε αυτό ή κλείστε την καρτέλα"
 
-#: big-mount/usr/lib/big-mount/lib.sh:659
+#: big-mount/usr/lib/big-mount/lib.sh:695
 msgid "this tool"
 msgstr "αυτό το εργαλείο"
 
-#: big-mount/usr/lib/big-mount/lib.sh:664
+#: big-mount/usr/lib/big-mount/lib.sh:700
 msgid "has a file open for writing: finish or cancel the operation in the application"
 msgstr "έχει ανοιχτό αρχείο για εγγραφή: ολοκληρώστε ή ακυρώστε τη λειτουργία στην εφαρμογή"
 
-#: big-mount/usr/lib/big-mount/lib.sh:929
+#: big-mount/usr/lib/big-mount/lib.sh:965
 msgid "%s is unmounted here, but %s (PID %s) still has it mounted at %s"
 msgstr "Το %s αποπροσαρτήθηκε εδώ, αλλά το %s (PID %s) το έχει ακόμη προσαρτημένο στο %s"
 
-#: big-mount/usr/lib/big-mount/lib.sh:933
+#: big-mount/usr/lib/big-mount/lib.sh:969
 msgid "%s is unmounted, but its filesystem driver is still writing to it"
 msgstr "Το %s αποπροσαρτήθηκε, αλλά το πρόγραμμα οδήγησης του συστήματος αρχείων του γράφει ακόμη σε αυτό"
 
-#: big-mount/usr/lib/big-mount/lib.sh:959
+#: big-mount/usr/lib/big-mount/lib.sh:995
 msgid "%s is still mounted at %s after being unmounted"
 msgstr "Το %s είναι ακόμη προσαρτημένο στο %s μετά την αποπροσάρτηση"
 
-#: big-mount/usr/lib/big-mount/lib.sh:1303
+#: big-mount/usr/lib/big-mount/lib.sh:1339
 msgid "%s is mounted at %s"
 msgstr "Το %s είναι προσαρτημένο στο %s"
 
-#: big-mount/usr/lib/big-mount/lib.sh:1306
+#: big-mount/usr/lib/big-mount/lib.sh:1342
 msgid "%s is in use (encryption, LVM or RAID)"
 msgstr "Το %s είναι σε χρήση (κρυπτογράφηση, LVM ή RAID)"
 
-#: big-mount/usr/lib/big-mount/lib.sh:1320
+#: big-mount/usr/lib/big-mount/lib.sh:1356
 msgid "%s belongs to a filesystem that spans several drives"
 msgstr "Το %s ανήκει σε σύστημα αρχείων που εκτείνεται σε πολλούς δίσκους"
 
-#: big-mount/usr/lib/big-mount/lib.sh:1326
+#: big-mount/usr/lib/big-mount/lib.sh:1362
 msgid "UDisks2 does not know this drive."
 msgstr "Το UDisks2 δεν γνωρίζει αυτόν τον δίσκο."
+
+#: big-mount/usr/lib/big-mount/cli.sh:530
+#, sh-printf-format
+msgid "In total, %d program is using it."
+msgid_plural "In total, %d programs are using it."
+msgstr[0] "Συνολικά, %d πρόγραμμα τη χρησιμοποιεί."
+msgstr[1] "Συνολικά, %d προγράμματα τη χρησιμοποιούν."
+
+#: big-mount/usr/lib/big-mount/cli.sh:898
+#, sh-printf-format
+msgid "no failure predicted (%s damaged sector was replaced by a spare one)"
+msgid_plural "no failure predicted (%s damaged sectors were replaced by spare ones)"
+msgstr[0] "δεν προβλέπεται αστοχία (%s κατεστραμμένος τομέας αντικαταστάθηκε από εφεδρικό)"
+msgstr[1] "δεν προβλέπεται αστοχία (%s κατεστραμμένοι τομείς αντικαταστάθηκαν από εφεδρικούς)"
+
+#: big-mount/usr/lib/big-mount/cli.sh:913
+#: big-mount/usr/lib/big-mount/drive-diag.sh:233
+#, sh-printf-format
+msgid "Since the computer was started, it stopped answering and the connection had to be reset (%s kernel message)."
+msgid_plural "Since the computer was started, it stopped answering and the connection had to be reset (%s kernel messages)."
+msgstr[0] "Από την εκκίνηση του υπολογιστή, σταμάτησε να αποκρίνεται και η σύνδεση χρειάστηκε επαναφορά (%s μήνυμα πυρήνα)."
+msgstr[1] "Από την εκκίνηση του υπολογιστή, σταμάτησε να αποκρίνεται και η σύνδεση χρειάστηκε επαναφορά (%s μηνύματα πυρήνα)."
+
+#: big-mount/usr/lib/big-mount/cli.sh:914
+#: big-mount/usr/lib/big-mount/drive-diag.sh:232
+#, sh-printf-format
+msgid "Since the computer was started, reading or writing failed (%s kernel message)."
+msgid_plural "Since the computer was started, reading or writing failed (%s kernel messages)."
+msgstr[0] "Από την εκκίνηση του υπολογιστή, η ανάγνωση ή η εγγραφή απέτυχε (%s μήνυμα πυρήνα)."
+msgstr[1] "Από την εκκίνηση του υπολογιστή, η ανάγνωση ή η εγγραφή απέτυχε (%s μηνύματα πυρήνα)."
+
+#: big-mount/usr/lib/big-mount/cli.sh:916
+#: big-mount/usr/lib/big-mount/drive-diag.sh:234
+#, sh-printf-format
+msgid "Since the computer was started, the USB connection was reset or lost %s time."
+msgid_plural "Since the computer was started, the USB connection was reset or lost %s times."
+msgstr[0] "Από την εκκίνηση του υπολογιστή, η σύνδεση USB επαναφέρθηκε ή χάθηκε %s φορά."
+msgstr[1] "Από την εκκίνηση του υπολογιστή, η σύνδεση USB επαναφέρθηκε ή χάθηκε %s φορές."
+
+#: big-mount/usr/lib/big-mount/cli.sh:988
+#, sh-printf-format
+msgid "The drive announces that erasing takes about %d minute."
+msgid_plural "The drive announces that erasing takes about %d minutes."
+msgstr[0] "Ο δίσκος δηλώνει ότι η διαγραφή διαρκεί περίπου %d λεπτό."
+msgstr[1] "Ο δίσκος δηλώνει ότι η διαγραφή διαρκεί περίπου %d λεπτά."
+
+#: big-mount/usr/lib/big-mount/doctor.sh:441
+#, sh-printf-format
+msgid "%d package has a newer version in the last synchronized package list"
+msgid_plural "%d packages have newer versions in the last synchronized package list"
+msgstr[0] "%d πακέτο έχει νεότερη έκδοση στην τελευταία συγχρονισμένη λίστα πακέτων"
+msgstr[1] "%d πακέτα έχουν νεότερες εκδόσεις στην τελευταία συγχρονισμένη λίστα πακέτων"
+
+#: big-mount/usr/lib/big-mount/doctor.sh:463
+#, sh-printf-format
+msgid "%d problem"
+msgid_plural "%d problems"
+msgstr[0] "%d πρόβλημα"
+msgstr[1] "%d προβλήματα"
+
+#: big-mount/usr/lib/big-mount/doctor.sh:464
+#, sh-printf-format
+msgid "%d warning"
+msgid_plural "%d warnings"
+msgstr[0] "%d προειδοποίηση"
+msgstr[1] "%d προειδοποιήσεις"
+
+#: big-mount/usr/lib/big-mount/drive-copy.sh:428
+#, sh-printf-format
+msgid "%s file was set aside because it did not advance. The drive may be getting worse, so the copy stopped."
+msgid_plural "%s files were set aside because they did not advance. The drive may be getting worse, so the copy stopped."
+msgstr[0] "%s αρχείο παραμερίστηκε επειδή δεν προχωρούσε. Ο δίσκος μπορεί να χειροτερεύει, οπότε η αντιγραφή σταμάτησε."
+msgstr[1] "%s αρχεία παραμερίστηκαν επειδή δεν προχωρούσαν. Ο δίσκος μπορεί να χειροτερεύει, οπότε η αντιγραφή σταμάτησε."
+
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1023
+#, sh-printf-format
+msgid "Waiting for the disk to answer, for %s second"
+msgid_plural "Waiting for the disk to answer, for %s seconds"
+msgstr[0] "Αναμονή απόκρισης του δίσκου για %s δευτερόλεπτο"
+msgstr[1] "Αναμονή απόκρισης του δίσκου για %s δευτερόλεπτα"
+
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1094
+#, sh-printf-format
+msgid "%s file differs"
+msgid_plural "%s files differ"
+msgstr[0] "%s αρχείο διαφέρει"
+msgstr[1] "%s αρχεία διαφέρουν"
+
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1405
+#, sh-printf-format
+msgid "%s file, %s to copy"
+msgid_plural "%s files, %s to copy"
+msgstr[0] "%s αρχείο, %s για αντιγραφή"
+msgstr[1] "%s αρχεία, %s για αντιγραφή"
+
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1406
+#, sh-printf-format
+msgid "%s already exists with different content."
+msgid_plural "%s already exist with different content."
+msgstr[0] "%s υπάρχει ήδη με διαφορετικό περιεχόμενο."
+msgstr[1] "%s υπάρχουν ήδη με διαφορετικό περιεχόμενο."
+
+#: big-mount/usr/lib/big-mount/drive-diag.sh:203
+#, sh-printf-format
+msgid "Powered on for %s hours, about %s year of use: failures become more likely."
+msgid_plural "Powered on for %s hours, about %s years of use: failures become more likely."
+msgstr[0] "Σε λειτουργία για %s ώρες, περίπου %s έτος χρήσης: οι αστοχίες γίνονται πιθανότερες."
+msgstr[1] "Σε λειτουργία για %s ώρες, περίπου %s χρόνια χρήσης: οι αστοχίες γίνονται πιθανότερες."
+
+#: big-mount/usr/lib/big-mount/drive-diag.sh:231
+#, sh-printf-format
+msgid "The NVMe drive recorded %s media or data integrity error."
+msgid_plural "The NVMe drive recorded %s media or data integrity errors."
+msgstr[0] "Ο δίσκος NVMe κατέγραψε %s σφάλμα μέσου ή ακεραιότητας δεδομένων."
+msgstr[1] "Ο δίσκος NVMe κατέγραψε %s σφάλματα μέσου ή ακεραιότητας δεδομένων."
+
+#: big-mount/usr/lib/big-mount/drive-diag.sh:237
+#, sh-printf-format
+msgid "The drive reported %s error it could not correct."
+msgid_plural "The drive reported %s errors it could not correct."
+msgstr[0] "Ο δίσκος ανέφερε %s σφάλμα που δεν μπόρεσε να διορθώσει."
+msgstr[1] "Ο δίσκος ανέφερε %s σφάλματα που δεν μπόρεσε να διορθώσει."
+
+#: big-mount/usr/lib/big-mount/drive-diag.sh:238
+#, sh-printf-format
+msgid "The cable or adapter corrupted data in transit %s time (CRC errors)."
+msgid_plural "The cable or adapter corrupted data in transit %s times (CRC errors)."
+msgstr[0] "Το καλώδιο ή ο προσαρμογέας αλλοίωσε δεδομένα κατά τη μεταφορά %s φορά (σφάλματα CRC)."
+msgstr[1] "Το καλώδιο ή ο προσαρμογέας αλλοίωσε δεδομένα κατά τη μεταφορά %s φορές (σφάλματα CRC)."
+
+#: big-mount/usr/lib/big-mount/drive-diag.sh:239
+#, sh-printf-format
+msgid "%s of its SMART values is below its safe limit now."
+msgid_plural "%s of its SMART values are below their safe limit now."
+msgstr[0] "%s τιμή SMART είναι κάτω από το όριο ασφαλείας της αυτή τη στιγμή."
+msgstr[1] "%s τιμές SMART είναι κάτω από το όριο ασφαλείας τους αυτή τη στιγμή."
+
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:889
+#, sh-printf-format
+msgid "%s file found by content in %s. Its original name and folder could not be kept."
+msgid_plural "%s files found by content in %s. Their original names and folders could not be kept."
+msgstr[0] "%s αρχείο βρέθηκε βάσει περιεχομένου στο %s. Το αρχικό του όνομα και ο φάκελός του δεν ήταν δυνατό να διατηρηθούν."
+msgstr[1] "%s αρχεία βρέθηκαν βάσει περιεχομένου στο %s. Τα αρχικά τους ονόματα και φάκελοι δεν ήταν δυνατό να διατηρηθούν."
 
 #: big-mount/usr/lib/big-mount/gui/about.py:16
 msgid "Big-Mount takes care of the drives of your computer:"
@@ -3636,25 +3726,25 @@ msgid "Recover files…"
 msgstr "Ανάκτηση αρχείων…"
 
 #: big-mount/usr/lib/big-mount/gui/actions.py:166
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:374
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:491
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:372
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:489
 msgid "Unmount"
 msgstr "Αποπροσάρτηση"
 
 #: big-mount/usr/lib/big-mount/gui/actions.py:167
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:375
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:373
 msgid "Force unmount (close the programs using it)…"
 msgstr "Εξαναγκασμένη αποπροσάρτηση (κλείσιμο των προγραμμάτων που τη χρησιμοποιούν)…"
 
 #: big-mount/usr/lib/big-mount/gui/actions.py:172
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:379
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:377
 msgid "Erase data permanently…"
 msgstr "Οριστική διαγραφή δεδομένων…"
 
 #: big-mount/usr/lib/big-mount/gui/actions.py:187
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:336
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:337
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1013
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:334
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:335
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1014
 msgid "More options"
 msgstr "Περισσότερες επιλογές"
 
@@ -3702,7 +3792,7 @@ msgid "List of files"
 msgstr "Λίστα αρχείων"
 
 #: big-mount/usr/lib/big-mount/gui/models.py:334
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:519
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:517
 msgid "Search by content"
 msgstr "Αναζήτηση βάσει περιεχομένου"
 
@@ -3963,7 +4053,7 @@ msgstr "Προσάρτηση του «%s» μόνο για ανάγνωση"
 
 #: big-mount/usr/lib/big-mount/gui/pages/device.py:65
 #: big-mount/usr/lib/big-mount/gui/pages/device.py:85
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:486
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:484
 msgid "Mount read-only"
 msgstr "Προσάρτηση μόνο για ανάγνωση"
 
@@ -3977,8 +4067,8 @@ msgid "Unmount and mount read-only"
 msgstr "Αποπροσάρτηση και προσάρτηση μόνο για ανάγνωση"
 
 #: big-mount/usr/lib/big-mount/gui/pages/device.py:89
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1054
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:618
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1055
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:621
 msgid "The reason could not be determined."
 msgstr "Δεν ήταν δυνατό να προσδιοριστεί η αιτία."
 
@@ -4028,7 +4118,7 @@ msgid "Rescue my files"
 msgstr "Διάσωση των αρχείων μου"
 
 #: big-mount/usr/lib/big-mount/gui/pages/device.py:166
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:370
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:368
 msgid "Export diagnosis…"
 msgstr "Εξαγωγή διάγνωσης…"
 
@@ -4127,179 +4217,176 @@ msgstr "Νέα ανάγνωση SMART…"
 msgid "Asks for the administrator password. It only reads: no test is started."
 msgstr "Ζητά τον κωδικό πρόσβασης διαχειριστή. Μόνο διαβάζει: δεν ξεκινά κανένας έλεγχος."
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:243
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:242
 #, python-format
-msgid "%s (about a year of use)"
-msgstr "%s (περίπου ένας χρόνος χρήσης)"
+msgid "%(h)s (about %(y)d year of use)"
+msgid_plural "%(h)s (about %(y)d years of use)"
+msgstr[0] "%(h)s (περίπου %(y)d έτος χρήσης)"
+msgstr[1] "%(h)s (περίπου %(y)d χρόνια χρήσης)"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:244
-#, python-format
-msgid "%(h)s (about %(y)d years of use)"
-msgstr "%(h)s (περίπου %(y)d χρόνια χρήσης)"
-
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:250
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:248
 msgid "Reading SMART. Through USB it can take a minute."
 msgstr "Ανάγνωση SMART. Μέσω USB μπορεί να διαρκέσει ένα λεπτό."
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:265
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:263
 msgid "Details"
 msgstr "Λεπτομέρειες"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:275
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:273
 msgid "Hidden. It identifies this drive: it is also left out of shared reports."
 msgstr "Κρυφός. Ταυτοποιεί αυτόν τον δίσκο: παραλείπεται επίσης από τις κοινοποιούμενες αναφορές."
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:284
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:285
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:282
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:283
 msgid "Show the serial number"
 msgstr "Εμφάνιση του σειριακού αριθμού"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:291
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:294
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:289
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:292
 msgid "Messages from the system log"
 msgstr "Μηνύματα από το αρχείο καταγραφής συστήματος"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:292
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:290
 #, python-format
 msgid "%d recent message about this drive"
 msgid_plural "%d recent messages about this drive"
 msgstr[0] "%d πρόσφατο μήνυμα για αυτόν τον δίσκο"
 msgstr[1] "%d πρόσφατα μηνύματα για αυτόν τον δίσκο"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:303
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:301
 #: big-mount/usr/lib/big-mount/gui/pages/maintenance.py:13
 msgid "Advanced maintenance"
 msgstr "Προηγμένη συντήρηση"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:304
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:302
 #: big-mount/usr/lib/big-mount/gui/pages/maintenance.py:38
 msgid "Erase data permanently"
 msgstr "Οριστική διαγραφή δεδομένων"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:304
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:302
 msgid "Separate from recovery. Warns first, then checks the drive and asks twice more."
 msgstr "Ξεχωριστή από την ανάκτηση. Προειδοποιεί πρώτα, έπειτα ελέγχει τον δίσκο και ζητά επιβεβαίωση άλλες δύο φορές."
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:329
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:327
 msgid "Overview"
 msgstr "Επισκόπηση"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:330
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:328
 msgid "Recover"
 msgstr "Ανάκτηση"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:332
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:330
 msgid "History"
 msgstr "Ιστορικό"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:343
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:408
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:341
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:406
 msgid "The drive was disconnected"
 msgstr "Ο δίσκος αποσυνδέθηκε"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:344
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:342
 msgid "Nothing else was done. Connect it again and it comes back here."
 msgstr "Δεν έγινε τίποτε άλλο. Συνδέστε τον ξανά και θα επανεμφανιστεί εδώ."
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:345
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:343
 msgid "Back to my drives"
 msgstr "Πίσω στους δίσκους μου"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:373
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:371
 msgid "Block writing on the device…"
 msgstr "Αποκλεισμός της εγγραφής στη συσκευή…"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:446
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:444
 #: big-mount/usr/lib/big-mount/gui/pages/overview.py:69
 #: big-mount/usr/lib/big-mount/gui/pages/rescue.py:277
 msgid "Recover files"
 msgstr "Ανάκτηση αρχείων"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:449
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:447
 msgid "Check drive"
 msgstr "Έλεγχος δίσκου"
 
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:452
 #: big-mount/usr/lib/big-mount/gui/pages/device.py:454
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:456
 msgid "Volumes"
 msgstr "Τόμοι"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:479
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:477
 msgid "This volume spans more than one device. All of them must be connected."
 msgstr "Αυτός ο τόμος εκτείνεται σε περισσότερες από μία συσκευές. Πρέπει να είναι όλες συνδεδεμένες."
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:490
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:493
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:488
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:491
 #: big-mount/usr/lib/big-mount/gui/pages/overview.py:66
 msgid "Open files"
 msgstr "Άνοιγμα αρχείων"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:495
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:493
 msgid "Unlock…"
 msgstr "Ξεκλείδωμα…"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:512
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:510
 msgid "Copy your files to another place, step by step. This never writes to this drive."
 msgstr "Αντιγράψτε τα αρχεία σας σε άλλο σημείο, βήμα προς βήμα. Αυτό δεν γράφει ποτέ σε αυτόν τον δίσκο."
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:513
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:511
 msgid "Start recovering files"
 msgstr "Έναρξη ανάκτησης αρχείων"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:516
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:514
 msgid "What can be done"
 msgstr "Τι μπορεί να γίνει"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:517
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:515
 msgid "Copy files that can still be read"
 msgstr "Αντιγραφή αρχείων που διαβάζονται ακόμη"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:517
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:515
 msgid "The quickest and safest: names and folders are kept."
 msgstr "Ο πιο γρήγορος και ασφαλής τρόπος: τα ονόματα και οι φάκελοι διατηρούνται."
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:518
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:516
 msgid "List what exists, by type"
 msgstr "Λίστα όσων υπάρχουν, ανά τύπο"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:518
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:516
 msgid "Goes through the folders. Then you choose what to copy."
 msgstr "Διατρέχει τους φακέλους. Έπειτα επιλέγετε τι θα αντιγραφεί."
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:519
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:517
 msgid "For when files cannot be opened. Names and folders are lost, and nothing is guaranteed."
 msgstr "Για όταν τα αρχεία δεν ανοίγουν. Τα ονόματα και οι φάκελοι χάνονται και τίποτα δεν είναι εγγυημένο."
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:536
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:534
 msgid "Copies and searches of this drive"
 msgstr "Αντιγραφές και αναζητήσεις αυτού του δίσκου"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:540
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:538
 msgid "Nothing yet"
 msgstr "Τίποτα ακόμη"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:541
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:539
 msgid "What you copy from this drive is listed here."
 msgstr "Ό,τι αντιγράφετε από αυτόν τον δίσκο εμφανίζεται εδώ."
 
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:559
 #: big-mount/usr/lib/big-mount/gui/pages/device.py:561
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:563
 msgid "Export diagnosis"
 msgstr "Εξαγωγή διάγνωσης"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:564
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:562
 msgid "Keep them"
 msgstr "Διατήρηση"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:564
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:562
 msgid "Hide them"
 msgstr "Απόκρυψη"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:596
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:594
 msgid "Whatever a driver or another program tries, the disk does not change. It lasts until the drive is disconnected. It asks for the administrator password."
 msgstr "Ό,τι κι αν επιχειρήσει ένα πρόγραμμα οδήγησης ή άλλο πρόγραμμα, ο δίσκος δεν αλλάζει. Ισχύει μέχρι να αποσυνδεθεί ο δίσκος. Ζητά τον κωδικό πρόσβασης διαχειριστή."
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:597
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:595
 msgid "Block writing"
 msgstr "Αποκλεισμός εγγραφής"
 
@@ -4391,6 +4478,11 @@ msgstr "Το σύνολο δεν μετράται σε δίσκο που κιν�
 msgid "%s could not be read."
 msgstr "Δεν ήταν δυνατή η ανάγνωση του %s."
 
+#: big-mount/usr/lib/big-mount/gui/pages/job.py:205
+#, python-format
+msgid "Waiting for the disk to answer, for %s seconds"
+msgstr "Αναμονή απόκρισης του δίσκου, δευτερόλεπτα: %s"
+
 #: big-mount/usr/lib/big-mount/gui/pages/job.py:219
 msgid "Search again"
 msgstr "Νέα αναζήτηση"
@@ -4412,7 +4504,7 @@ msgid "Keep working"
 msgstr "Συνέχεια εργασίας"
 
 #: big-mount/usr/lib/big-mount/gui/pages/job.py:254
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1142
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1143
 msgid "Stop"
 msgstr "Διακοπή"
 
@@ -4618,12 +4710,12 @@ msgid "Copies the whole device to a file on another disk with GNU ddrescue, keep
 msgstr "Αντιγράφει ολόκληρη τη συσκευή σε αρχείο σε άλλον δίσκο με το GNU ddrescue, κρατώντας έναν χάρτη ώστε να μπορεί να συνεχίσει και να μη διαβάζει ποτέ δύο φορές μια καλή περιοχή."
 
 #: big-mount/usr/lib/big-mount/gui/pages/rescue.py:40
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1076
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1077
 msgid "Look for lost partitions"
 msgstr "Αναζήτηση χαμένων κατατμήσεων"
 
 #: big-mount/usr/lib/big-mount/gui/pages/rescue.py:41
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1083
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1084
 msgid "TestDisk reads the partition table and analyzes the disk. It only shows what it finds: nothing is written."
 msgstr "Το TestDisk διαβάζει τον πίνακα κατατμήσεων και αναλύει τον δίσκο. Μόνο εμφανίζει ό,τι βρίσκει: δεν γράφεται τίποτα."
 
@@ -4718,7 +4810,7 @@ msgid "You can choose more than one. If you are not sure, leave All."
 msgstr "Μπορείτε να επιλέξετε περισσότερους από έναν. Αν δεν είστε σίγουροι, αφήστε την επιλογή «Όλοι οι τύποι»."
 
 #: big-mount/usr/lib/big-mount/gui/pages/rescue.py:552
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1006
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1007
 msgid "All types"
 msgstr "Όλοι οι τύποι"
 
@@ -4748,7 +4840,7 @@ msgid "What to copy"
 msgstr "Τι θα αντιγραφεί"
 
 #: big-mount/usr/lib/big-mount/gui/pages/rescue.py:636
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1004
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1005
 msgid "Everything"
 msgstr "Όλα"
 
@@ -4814,7 +4906,7 @@ msgid "Looking for places…"
 msgstr "Αναζήτηση θέσεων…"
 
 #: big-mount/usr/lib/big-mount/gui/pages/rescue.py:795
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:627
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:630
 msgid "Choose another folder…"
 msgstr "Επιλογή άλλου φακέλου…"
 
@@ -4863,162 +4955,164 @@ msgstr "Τι"
 msgid "Space it will use"
 msgstr "Χώρος που θα χρησιμοποιήσει"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:975
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:977
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:976
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:978
 msgid "To copy"
 msgstr "Για αντιγραφή"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:975
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:976
 #, python-format
-msgid "%(files)s files, %(size)s"
-msgstr "Αρχεία: %(files)s, %(size)s"
+msgid "%(files)s file, %(size)s"
+msgid_plural "%(files)s files, %(size)s"
+msgstr[0] "%(files)s αρχείο, %(size)s"
+msgstr[1] "%(files)s αρχεία, %(size)s"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:979
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:980
 msgid "Free at the destination"
 msgstr "Ελεύθερα στον προορισμό"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:981
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:982
 msgid "Already there, with different content"
 msgstr "Υπάρχουν ήδη, με διαφορετικό περιεχόμενο"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:984
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:985
 msgid "Your files will be copied with their names. Nothing is written to the source."
 msgstr "Τα αρχεία σας θα αντιγραφούν με τα ονόματά τους. Δεν γράφεται τίποτα στην πηγή."
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:985
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:986
 msgid "First a list of what exists is made. Then you choose what to copy. Nothing is written to the source."
 msgstr "Πρώτα δημιουργείται μια λίστα όσων υπάρχουν. Έπειτα επιλέγετε τι θα αντιγραφεί. Δεν γράφεται τίποτα στην πηγή."
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:986
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:987
 msgid "Files will be searched for by their content. Names and folders are lost, some files may come out incomplete, and finding nothing is possible. Nothing is written to the source."
 msgstr "Τα αρχεία θα αναζητηθούν βάσει του περιεχομένου τους. Τα ονόματα και οι φάκελοι χάνονται, ορισμένα αρχεία μπορεί να προκύψουν ελλιπή και είναι πιθανό να μη βρεθεί τίποτα. Δεν γράφεται τίποτα στην πηγή."
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:987
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:988
 msgid "The disk is read once, into a file. Nothing is written to it."
 msgstr "Ο δίσκος διαβάζεται μία φορά, σε ένα αρχείο. Δεν γράφεται τίποτα σε αυτόν."
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:992
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:993
 msgid "After the image, the search needs your confirmation. It can also be started later."
 msgstr "Μετά την εικόνα, η αναζήτηση χρειάζεται την επιβεβαίωσή σας. Μπορεί επίσης να ξεκινήσει αργότερα."
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:994
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:995
 msgid "Good to know"
 msgstr "Καλό να γνωρίζετε"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1004
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1005
 #, python-format
 msgid "%d item you marked"
 msgid_plural "%d items you marked"
 msgstr[0] "%d στοιχείο που σημειώσατε"
 msgstr[1] "%d στοιχεία που σημειώσατε"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1014
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1015
 msgid "If a file already exists"
 msgstr "Αν ένα αρχείο υπάρχει ήδη"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1019
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1020
 msgid "Check the result"
 msgstr "Έλεγχος του αποτελέσματος"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1021
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1022
 msgid "Basic: rsync confirms each file as it is copied"
 msgstr "Βασικός: το rsync επιβεβαιώνει κάθε αρχείο κατά την αντιγραφή του"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1021
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1022
 msgid "Names, sizes and dates compared at the end"
 msgstr "Σύγκριση ονομάτων, μεγεθών και ημερομηνιών στο τέλος"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1022
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1023
 msgid "Content compared at the end (reads the source again)"
 msgstr "Σύγκριση περιεχομένου στο τέλος (διαβάζει ξανά την πηγή)"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1026
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1027
 msgid "Set aside a stuck file after (seconds)"
 msgstr "Παραμερισμός κολλημένου αρχείου μετά από (δευτερόλεπτα)"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1028
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1029
 msgid "A file that does not advance for this long is set aside, so that the others are saved first. 0: never."
 msgstr "Ένα αρχείο που δεν προχωρά για τόσο διάστημα παραμερίζεται, ώστε να σωθούν πρώτα τα υπόλοιπα. 0: ποτέ."
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1032
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1033
 msgid "Limit the reading speed (kB/s)"
 msgstr "Περιορισμός της ταχύτητας ανάγνωσης (kB/s)"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1034
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1035
 msgid "0: no limit"
 msgstr "0: χωρίς όριο"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1045
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1046
 msgid "Starting…"
 msgstr "Έναρξη…"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1054
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:618
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1055
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:621
 msgid "It did not start"
 msgstr "Δεν ξεκίνησε"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1084
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1085
 msgid "Read the partition table"
 msgstr "Ανάγνωση του πίνακα κατατμήσεων"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1085
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1086
 msgid "Analyze the whole disk"
 msgstr "Ανάλυση ολόκληρου του δίσκου"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1086
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1087
 msgid "It reads all of the disk. On a drive with problems this is extra wear."
 msgstr "Διαβάζει ολόκληρο τον δίσκο. Σε δίσκο με προβλήματα αυτό σημαίνει επιπλέον φθορά."
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1089
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1090
 msgid "This drive reported problems: analyzing all of it is extra wear. A disk image first spares it."
 msgstr "Αυτός ο δίσκος ανέφερε προβλήματα: η ανάλυση ολόκληρου του δίσκου σημαίνει επιπλέον φθορά. Μια εικόνα δίσκου πρώτα τον προφυλάσσει."
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1111
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1112
 msgid "Stopping…"
 msgstr "Διακοπή…"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1118
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1119
 msgid "Volumes this drive already has"
 msgstr "Τόμοι που έχει ήδη αυτός ο δίσκος"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1119
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1120
 msgid "They are not lost. To recover their files, copying them is faster and reads the disk less than any analysis."
 msgstr "Δεν έχουν χαθεί. Για να ανακτήσετε τα αρχεία τους, η αντιγραφή τους είναι ταχύτερη και διαβάζει τον δίσκο λιγότερο από οποιαδήποτε ανάλυση."
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1124
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1125
 msgid "Recover its files"
 msgstr "Ανάκτηση των αρχείων του"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1136
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1137
 msgid "Looking for partitions…"
 msgstr "Αναζήτηση κατατμήσεων…"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1140
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1141
 msgid "TestDisk does not say how far it has gone, so there is no percentage. Analyzing a whole disk reads all of it and can take hours; the drive can be used for nothing else meanwhile."
 msgstr "Το TestDisk δεν δείχνει πόσο έχει προχωρήσει, οπότε δεν υπάρχει ποσοστό. Η ανάλυση ολόκληρου δίσκου τον διαβάζει ολόκληρο και μπορεί να διαρκέσει ώρες· στο μεταξύ ο δίσκος δεν μπορεί να χρησιμοποιηθεί για τίποτε άλλο."
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1151
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1152
 #, python-format
 msgid "Elapsed: %s"
 msgstr "Χρόνος που πέρασε: %s"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1171
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1172
 msgid "The search failed."
 msgstr "Η αναζήτηση απέτυχε."
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1174
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1175
 msgid "What TestDisk found"
 msgstr "Τι βρήκε το TestDisk"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1180
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1181
 msgid "Big-Mount does not rewrite partition tables, on purpose: a mistake there can lose everything. A disk image, or a search by content, recovers files without that risk."
 msgstr "Το Big-Mount σκόπιμα δεν ξαναγράφει πίνακες κατατμήσεων: ένα λάθος εκεί μπορεί να χάσει τα πάντα. Μια εικόνα δίσκου ή μια αναζήτηση βάσει περιεχομένου ανακτά αρχεία χωρίς αυτόν τον κίνδυνο."
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1182
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1183
 msgid "The analysis did not recognize any partition. That does not prove there is no data: a search by content may still find files."
 msgstr "Η ανάλυση δεν αναγνώρισε καμία κατάτμηση. Αυτό δεν αποδεικνύει ότι δεν υπάρχουν δεδομένα: μια αναζήτηση βάσει περιεχομένου μπορεί ακόμη να βρει αρχεία."
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1184
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1185
 msgid "The partition table is empty or unreadable. Analyzing the whole disk may find what it no longer lists."
 msgstr "Ο πίνακας κατατμήσεων είναι κενός ή μη αναγνώσιμος. Η ανάλυση ολόκληρου του δίσκου μπορεί να βρει ό,τι δεν καταγράφει πλέον."
 
@@ -5084,7 +5178,7 @@ msgid "Clear selection"
 msgstr "Απαλοιφή επιλογής"
 
 #: big-mount/usr/lib/big-mount/gui/pages/results.py:321
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:639
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:642
 msgid "Save report"
 msgstr "Αποθήκευση αναφοράς"
 
@@ -5113,31 +5207,45 @@ msgstr "Όλα (%d)"
 msgid "The list could not be read."
 msgstr "Δεν ήταν δυνατή η ανάγνωση της λίστας."
 
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:492
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:493
 #, python-format
-msgid "%(shown)d shown, %(sel)d selected (%(size)s)"
-msgstr "Εμφανίζονται: %(shown)d, επιλεγμένα: %(sel)d (%(size)s)"
+msgid "%(shown)s, %(sel)s (%(size)s)"
+msgstr "%(shown)s, %(sel)s (%(size)s)"
 
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:509
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:493
+#, python-format
+msgid "%d shown"
+msgid_plural "%d shown"
+msgstr[0] "%d εμφανίζεται"
+msgstr[1] "%d εμφανίζονται"
+
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:494
+#, python-format
+msgid "%d selected"
+msgid_plural "%d selected"
+msgstr[0] "%d επιλεγμένο"
+msgstr[1] "%d επιλεγμένα"
+
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:512
 msgid "Select"
 msgstr "Επιλογή"
 
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:531
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:534
 msgid "Preview"
 msgstr "Προεπισκόπηση"
 
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:597
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:600
 msgid "It cannot be copied"
 msgstr "Δεν μπορεί να αντιγραφεί"
 
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:600
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:603
 #, python-format
 msgid "%d file with a line break in its name was left out. It cannot be handled safely."
 msgid_plural "%d files with a line break in their names were left out. They cannot be handled safely."
 msgstr[0] "%d αρχείο με αλλαγή γραμμής στο όνομά του παραλείφθηκε. Δεν είναι δυνατός ο ασφαλής χειρισμός του."
 msgstr[1] "%d αρχεία με αλλαγή γραμμής στα ονόματά τους παραλείφθηκαν. Δεν είναι δυνατός ο ασφαλής χειρισμός τους."
 
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:626
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:629
 msgid "It cannot be saved here"
 msgstr "Δεν μπορεί να αποθηκευτεί εδώ"
 

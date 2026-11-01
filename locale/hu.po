@@ -103,11 +103,11 @@ msgstr "%s: csatolva, fájlrendszer: %s, csatolási pont: %s (%s)"
 msgid "Usage: bigmount [OPTION] [DEVICE|FOLDER]"
 msgstr "Használat: bigmount [KAPCSOLÓ] [ESZKÖZ|MAPPA]"
 
-#: big-mount/usr/lib/big-mount/cli.sh:27
+#: big-mount/usr/lib/big-mount/cli.sh:26
 msgid "(none)"
 msgstr "(nincs)"
 
-#: big-mount/usr/lib/big-mount/cli.sh:27
+#: big-mount/usr/lib/big-mount/cli.sh:26
 msgid "mount internal partitions (run at boot by big-mount.service)"
 msgstr "a belső partíciók csatolása (rendszerindításkor a big-mount.service futtatja)"
 
@@ -678,10 +678,6 @@ msgstr "Zárja be azt a programot, majd próbálja újra."
 msgid "%s is using files on this device."
 msgstr "Fájlokat használ ezen az eszközön: %s."
 
-#: big-mount/usr/lib/big-mount/cli.sh:530
-msgid "In total, %d programs are using it."
-msgstr "Összesen ennyi program használja: %d."
-
 #: big-mount/usr/lib/big-mount/cli.sh:543
 msgid "In use"
 msgstr "Használatban"
@@ -863,10 +859,6 @@ msgstr "nincs jelzett probléma"
 msgid "the drive predicts its own failure"
 msgstr "a meghajtó előre jelzi a saját meghibásodását"
 
-#: big-mount/usr/lib/big-mount/cli.sh:898
-msgid "no failure predicted (%s damaged sectors were replaced by spare ones)"
-msgstr "nincs előre jelzett meghibásodás (sérült szektorok tartalékra cserélve: %s)"
-
 #: big-mount/usr/lib/big-mount/cli.sh:900
 msgid "SMART status"
 msgstr "SMART-állapot"
@@ -888,25 +880,10 @@ msgstr "Talált problémák:"
 msgid "The drive itself reports that it is failing (SMART)."
 msgstr "Maga a meghajtó jelzi, hogy meghibásodóban van (SMART)."
 
-#: big-mount/usr/lib/big-mount/cli.sh:913
-#: big-mount/usr/lib/big-mount/drive-diag.sh:233
-msgid "Since the computer was started, it stopped answering and the connection had to be reset (%s kernel messages)."
-msgstr "A számítógép indítása óta a meghajtó nem válaszolt, és a kapcsolatot alaphelyzetbe kellett állítani (kernelüzenetek: %s)."
-
-#: big-mount/usr/lib/big-mount/cli.sh:914
-#: big-mount/usr/lib/big-mount/drive-diag.sh:232
-msgid "Since the computer was started, reading or writing failed (%s kernel messages)."
-msgstr "A számítógép indítása óta az olvasás vagy az írás nem sikerült (kernelüzenetek: %s)."
-
 #: big-mount/usr/lib/big-mount/cli.sh:915
 #: big-mount/usr/lib/big-mount/drive-diag.sh:235
 msgid "Since the computer was started, the connection was slowed down after errors."
 msgstr "A számítógép indítása óta a kapcsolat hibák után lelassult."
-
-#: big-mount/usr/lib/big-mount/cli.sh:916
-#: big-mount/usr/lib/big-mount/drive-diag.sh:234
-msgid "Since the computer was started, the USB connection was reset or lost %s times."
-msgstr "A számítógép indítása óta az USB-kapcsolat %s alkalommal állt alaphelyzetbe vagy szakadt meg."
 
 #: big-mount/usr/lib/big-mount/cli.sh:921
 msgid "Check the data and power cables of the drive, or try another SATA port."
@@ -971,10 +948,6 @@ msgstr "Ezek a partíciók elvesznek:"
 #: big-mount/usr/lib/big-mount/cli.sh:986
 msgid "The drive announces that erasing takes more than 8 hours."
 msgstr "A meghajtó szerint a törlés több mint 8 órát vesz igénybe."
-
-#: big-mount/usr/lib/big-mount/cli.sh:988
-msgid "The drive announces that erasing takes about %d minutes."
-msgstr "A meghajtó szerint a törlés körülbelül %d percet vesz igénybe."
 
 #: big-mount/usr/lib/big-mount/cli.sh:992
 msgid "Afterwards an empty %s partition table is written and read back, to check that the drive keeps what is written again."
@@ -1111,7 +1084,7 @@ msgstr "Semmi sem lett törölve."
 #: big-mount/usr/lib/big-mount/drive-erase.sh:201
 #: big-mount/usr/lib/big-mount/drive-erase.sh:204
 #: big-mount/usr/lib/big-mount/drive-erase.sh:221
-#: big-mount/usr/lib/big-mount/lib.sh:1295
+#: big-mount/usr/lib/big-mount/lib.sh:1331
 msgid "The drive was disconnected or replaced. Nothing was erased."
 msgstr "A meghajtót kihúzták vagy kicserélték. Semmi sem lett törölve."
 
@@ -1183,7 +1156,7 @@ msgstr "Műszaki részletek"
 #: big-mount/usr/lib/big-mount/cli.sh:1257
 #: big-mount/usr/lib/big-mount/cli.sh:1259
 #: big-mount/usr/lib/big-mount/cli.sh:1533
-#: big-mount/usr/lib/big-mount/ui.sh:234
+#: big-mount/usr/lib/big-mount/ui.sh:241
 msgid "Close"
 msgstr "Bezárás"
 
@@ -1764,10 +1737,6 @@ msgstr "Általában egy sudo-val futtatott grafikus program hagyja hátra őket.
 msgid "All your settings files belong to you"
 msgstr "Minden beállításfájlja az Ön tulajdonában van"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:441
-msgid "%d packages have newer versions in the last synchronized package list"
-msgstr "Újabb verzióval rendelkező csomagok a legutóbb szinkronizált csomaglistában: %d"
-
 #: big-mount/usr/lib/big-mount/doctor.sh:442
 msgid "Keep the system consistent: update everything at once (sudo pacman -Syu), never only some packages."
 msgstr "Tartsa összhangban a rendszert: mindent egyszerre frissítsen (sudo pacman -Syu), soha ne csak egyes csomagokat."
@@ -1776,15 +1745,15 @@ msgstr "Tartsa összhangban a rendszert: mindent egyszerre frissítsen (sudo pac
 msgid "Big-Mount check (nothing is changed; labels, serial numbers, UUIDs and personal paths are left out)"
 msgstr "Big-Mount ellenőrzés (semmi sem változik; a címkék, sorozatszámok, UUID-k és személyes útvonalak kimaradnak)"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:462
-msgid "Result: %d problem(s), %d warning(s)."
-msgstr "Eredmény: %d probléma, %d figyelmeztetés."
+#: big-mount/usr/lib/big-mount/doctor.sh:465
+msgid "Result: %s, %s."
+msgstr "Eredmény: %s, %s."
 
-#: big-mount/usr/lib/big-mount/doctor.sh:463
+#: big-mount/usr/lib/big-mount/doctor.sh:466
 msgid "Big-Mount and the storage stack look healthy."
 msgstr "A Big-Mount és a tárolási rendszer rendben lévőnek tűnik."
 
-#: big-mount/usr/lib/big-mount/doctor.sh:464
+#: big-mount/usr/lib/big-mount/doctor.sh:467
 msgid "To report a problem, attach this output: bigmount --doctor > big-mount-report.txt"
 msgstr "Probléma bejelentésekor csatolja ezt a kimenetet: bigmount --doctor > big-mount-report.txt"
 
@@ -2066,10 +2035,6 @@ msgstr "A célt kihúzták vagy leválasztották. Csatlakoztassa és csatolja ú
 msgid "The destination ran out of space. Free some space or choose another place, then resume."
 msgstr "A célon elfogyott a hely. Szabadítson fel helyet, vagy válasszon másik helyet, majd folytassa."
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:428
-msgid "%s files were set aside because they did not advance. The drive may be getting worse, so the copy stopped."
-msgstr "%s fájl félrekerült, mert nem haladt előre. Lehet, hogy a meghajtó állapota romlik, ezért a másolás leállt."
-
 #: big-mount/usr/lib/big-mount/drive-copy.sh:429
 msgid "Some files were not copied. See the list below."
 msgstr "Néhány fájl nem lett átmásolva. Lásd a lenti listát."
@@ -2115,228 +2080,216 @@ msgstr "a tartalma nem volt olvasható"
 msgid "Source:"
 msgstr "Forrás:"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:999
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1000
 #: big-mount/usr/lib/big-mount/drive-recovery.sh:940
 msgid "Destination:"
 msgstr "Cél:"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1001
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1003
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1002
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1004
 msgid "Files:"
 msgstr "Fájlok:"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1013
 #: big-mount/usr/lib/big-mount/drive-copy.sh:1014
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1015
 msgid "Copied:"
 msgstr "Átmásolva:"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1018
-msgid "Speed:"
-msgstr "Sebesség:"
-
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1018
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1019
 msgid "average"
 msgstr "átlag"
 
 #: big-mount/usr/lib/big-mount/drive-copy.sh:1019
+msgid "Speed:"
+msgstr "Sebesség:"
+
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1020
 #: big-mount/usr/lib/big-mount/drive-recovery.sh:948
 msgid "Elapsed:"
 msgstr "Eltelt idő:"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1020
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1021
 msgid "Remaining:"
 msgstr "Hátralévő idő:"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1021
-msgid "Waiting for the disk to answer, for %s seconds"
-msgstr "Várakozás a lemez válaszára, %s másodperce"
-
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1022
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1025
 msgid "Current file:"
 msgstr "Jelenlegi fájl:"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1023
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1026
 msgid "Set aside:"
 msgstr "Félretéve:"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1024
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1027
 msgid "Failed:"
 msgstr "Sikertelen:"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1064
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1067
 msgid "Cancelled. Files already copied stay at the destination, and the copy can be resumed."
 msgstr "Megszakítva. A már átmásolt fájlok a célon maradnak, és a másolás folytatható."
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1080
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1083
 msgid "Source"
 msgstr "Forrás"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1085
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1088
 #: big-mount/usr/lib/big-mount/drive-recovery.sh:962
 msgid "Destination"
 msgstr "Cél"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1086
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1089
 msgid "Files copied"
 msgstr "Átmásolt fájlok"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1087
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1090
 msgid "Data copied"
 msgstr "Átmásolt adatok"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1088
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1091
 #: big-mount/usr/lib/big-mount/drive-recovery.sh:966
 msgid "Elapsed"
 msgstr "Eltelt idő"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1090
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1091
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1092
 #: big-mount/usr/lib/big-mount/drive-copy.sh:1093
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1094
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1095
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1096
 msgid "Check"
 msgstr "Ellenőrzés"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1090
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1093
 msgid "source and destination match"
 msgstr "a forrás és a cél egyezik"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1091
-msgid "%s files differ"
-msgstr "%s fájl eltér"
-
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1092
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1095
 msgid "did not finish"
 msgstr "nem fejeződött be"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1093
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1096
 msgid "rsync confirmed each file as it was copied; no second comparison was made"
 msgstr "az rsync minden fájlt a másoláskor megerősített; második összehasonlítás nem történt"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1095
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1098
 msgid "Already at the destination, with different content"
 msgstr "Már megvan a célon, eltérő tartalommal"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1099
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1102
 msgid "Set aside because they did not advance (damaged area of the disk):"
 msgstr "Félretéve, mert nem haladtak előre (a lemez sérült területe):"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1102
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1105
 msgid "To try them again, which puts more strain on the disk: bigmount --drive resume %s --retry-deferred"
 msgstr "Újbóli próbálkozás (ez jobban megterheli a lemezt): bigmount --drive resume %s --retry-deferred"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1106
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1109
 msgid "Not copied:"
 msgstr "Nincs átmásolva:"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1111
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1114
 msgid "Different at the destination:"
 msgstr "Eltér a célon:"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1114
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1117
 msgid "Log:"
 msgstr "Napló:"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1138
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1141
 #: big-mount/usr/lib/big-mount/drive.sh:239
 msgid "Serial number"
 msgstr "Sorozatszám"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1138
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1141
 #: big-mount/usr/lib/big-mount/drive.sh:255
 msgid "Label"
 msgstr "Címke"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1170
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1173
 msgid "'%s' already exists. Nothing was written."
 msgstr "Már létezik: „%s”. Semmi sem lett kiírva."
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1186
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1189
 msgid "Kernel messages:"
 msgstr "Kernelüzenetek:"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1194
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1197
 msgid "'%s' is a folder. Nothing was written."
 msgstr "Ez egy mappa: „%s”. Semmi sem lett kiírva."
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1202
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1205
 msgid "Report written to %s"
 msgstr "A jelentés kiírva ide: %s"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1255
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1262
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1258
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1265
 msgid "free"
 msgstr "szabad"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1258
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1261
 msgid "drive with critical alerts"
 msgstr "kritikus riasztásokat jelző meghajtó"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1259
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1262
 msgid "same physical disk as the source"
 msgstr "ugyanaz a fizikai lemez, mint a forrás"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1260
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1263
 msgid "not enough space"
 msgstr "nincs elég hely"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1276
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1279
 msgid "Home folder"
 msgstr "Saját mappa"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1323
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1476
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1488
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1533
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1326
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1482
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1494
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1539
 #: big-mount/usr/lib/big-mount/drive-recovery.sh:986
 msgid "There is no job '%s'."
 msgstr "Nincs ilyen feladat: „%s”."
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1326
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1329
 msgid "Only the results of a search by content can be copied this way."
 msgstr "Így csak a tartalom alapján végzett keresés eredményei másolhatók."
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1333
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1336
 #: big-mount/usr/lib/big-mount/drive-recovery.sh:521
 #: big-mount/usr/lib/big-mount/drive-recovery.sh:847
 msgid "Both --source and --destination are needed."
 msgstr "A --source és a --destination is szükséges."
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1401
-msgid "%s files, %s to copy; %s already exist with different content."
-msgstr "%s fájl, másolandó: %s; %s fájl már létezik eltérő tartalommal."
-
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1424
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1430
 msgid "The copy could not be started."
 msgstr "A másolást nem sikerült elindítani."
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1429
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1560
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1435
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1566
 #: big-mount/usr/lib/big-mount/drive-recovery.sh:291
 msgid "Copy started: %s"
 msgstr "A másolás elindult: %s"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1431
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1437
 #: big-mount/usr/lib/big-mount/drive-recovery.sh:293
 msgid "To follow it: bigmount --drive status %s --watch"
 msgstr "A követéséhez: bigmount --drive status %s --watch"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1462
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1468
 msgid "No copies or images yet."
 msgstr "Még nincs másolat vagy lemezkép."
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1496
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1502
 msgid "A search cannot be paused, only cancelled. What was found stays."
 msgstr "A keresés nem szüneteltethető, csak megszakítható. Az eddig talált fájlok megmaradnak."
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1516
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1522
 msgid "It is not running."
 msgstr "Nem fut."
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1539
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1545
 msgid "It is already running."
 msgstr "Már fut."
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1543
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1549
 msgid "It is already complete."
 msgstr "Már befejeződött."
 
@@ -2467,20 +2420,21 @@ msgid "Only the system log was consulted. Without the drive's own report (SMART)
 msgstr "Csak a rendszernapló lett megvizsgálva. A meghajtó saját jelentése (SMART) nélkül nem nevezhető egészségesnek."
 
 #: big-mount/usr/lib/big-mount/drive-diag.sh:198
-msgid "It has used %s%% of the life its maker rates it for: it is near or past its end."
-msgstr "A gyártó által megadott élettartamának %s%%-át már elhasználta: a végéhez közeledik, vagy már túl is lépte."
+#: big-mount/usr/lib/big-mount/drive-diag.sh:199
+msgid "%s%%"
+msgstr "%s%%"
+
+#: big-mount/usr/lib/big-mount/drive-diag.sh:198
+msgid "It has used %s of the life its maker rates it for: it is near or past its end."
+msgstr "A gyártó által megadott élettartamának %s-át már elhasználta: a végéhez közeledik, vagy már túl is lépte."
 
 #: big-mount/usr/lib/big-mount/drive-diag.sh:199
-msgid "It has used %s%% of the life its maker rates it for."
-msgstr "A gyártó által megadott élettartamának %s%%-át már elhasználta."
+msgid "It has used %s of the life its maker rates it for."
+msgstr "A gyártó által megadott élettartamának %s-át már elhasználta."
 
 #: big-mount/usr/lib/big-mount/drive-diag.sh:200
 msgid "Some of its SMART values were below their safe limit in the past."
 msgstr "Egyes SMART-értékei a múltban a biztonságos határ alá estek."
-
-#: big-mount/usr/lib/big-mount/drive-diag.sh:203
-msgid "Powered on for %s hours, about %s years of use: failures become more likely."
-msgstr "Bekapcsolt állapotban töltött órák: %s, ez kb. %s év használat: a meghibásodás egyre valószínűbb."
 
 #: big-mount/usr/lib/big-mount/drive-diag.sh:205
 msgid "It is hot now (%s °C). Heat shortens its life: give it air."
@@ -2522,25 +2476,9 @@ msgstr "A meghajtón vannak olyan szektorok, amelyeket már nem tud olvasni (fü
 msgid "The NVMe drive raised a critical warning (%s)."
 msgstr "Az NVMe-meghajtó kritikus figyelmeztetést adott (%s)."
 
-#: big-mount/usr/lib/big-mount/drive-diag.sh:231
-msgid "The NVMe drive recorded %s media or data integrity errors."
-msgstr "Az NVMe-meghajtó adathordozó- vagy adatintegritási hibákat rögzített (darabszám: %s)."
-
 #: big-mount/usr/lib/big-mount/drive-diag.sh:236
 msgid "The drive already replaced damaged sectors with spare ones."
 msgstr "A meghajtó már tartalék szektorokra cserélte a sérült szektorokat."
-
-#: big-mount/usr/lib/big-mount/drive-diag.sh:237
-msgid "The drive reported %s errors it could not correct."
-msgstr "A meghajtó %s olyan hibát jelzett, amelyet nem tudott kijavítani."
-
-#: big-mount/usr/lib/big-mount/drive-diag.sh:238
-msgid "The cable or adapter corrupted data in transit %s times (CRC errors)."
-msgstr "A kábel vagy az átalakító %s alkalommal rontotta el az adatokat átvitel közben (CRC-hibák)."
-
-#: big-mount/usr/lib/big-mount/drive-diag.sh:239
-msgid "%s of its SMART values are below their safe limit now."
-msgstr "Jelenleg ennyi SMART-értéke van a biztonságos határ alatt: %s."
 
 #: big-mount/usr/lib/big-mount/drive-diag.sh:286
 #: big-mount/usr/lib/big-mount/drive.sh:236
@@ -2738,7 +2676,6 @@ msgstr "Az eredmények között Word-, Excel- és LibreOffice-fájlok is megjele
 msgid "Search started: %s"
 msgstr "A keresés elindult: %s"
 
-#: big-mount/usr/lib/big-mount/drive-recovery.sh:889
 #: big-mount/usr/lib/big-mount/drive-recovery.sh:928
 msgid "%s files found by content in %s. Their original names and folders could not be kept."
 msgstr "Tartalom alapján talált fájlok: %s, itt: %s. Az eredeti nevüket és mappájukat nem lehetett megőrizni."
@@ -3122,6 +3059,16 @@ msgstr "Az alkalmazáshoz GTK 4, libadwaita 1.5 vagy újabb és PyGObject szüks
 msgid "Press Enter to continue."
 msgstr "A folytatáshoz nyomja meg az Entert."
 
+#: big-mount/usr/lib/big-mount/drive-tui.sh:42
+#: big-mount/usr/lib/big-mount/ui.sh:131 big-mount/usr/lib/big-mount/ui.sh:146
+msgid "y"
+msgstr "i"
+
+#: big-mount/usr/lib/big-mount/drive-tui.sh:42
+#: big-mount/usr/lib/big-mount/ui.sh:146
+msgid "N"
+msgstr "N"
+
 #: big-mount/usr/lib/big-mount/drive-tui.sh:49
 msgid "The interactive manager needs a terminal. For scripts, see bigmount --drive --help."
 msgstr "Az interaktív kezelőhöz terminál szükséges. Szkriptekhez lásd: bigmount --drive --help."
@@ -3331,189 +3278,332 @@ msgstr "Követi az előrehaladását?"
 msgid "Resume it?"
 msgstr "Folytatja?"
 
-#: big-mount/usr/lib/big-mount/lib.sh:140
+#: big-mount/usr/lib/big-mount/lib.sh:176
 msgid "No device or folder was given."
 msgstr "Nem adott meg eszközt vagy mappát."
 
-#: big-mount/usr/lib/big-mount/lib.sh:141
+#: big-mount/usr/lib/big-mount/lib.sh:177
 msgid "'%s' does not exist. If it is a removable device, it may have been disconnected."
 msgstr "Nem létezik: „%s”. Ha cserélhető eszköz, lehet, hogy kihúzták."
 
-#: big-mount/usr/lib/big-mount/lib.sh:142
+#: big-mount/usr/lib/big-mount/lib.sh:178
 msgid "'%s' is not available. If it is a removable device, it may have been disconnected."
 msgstr "Nem érhető el: „%s”. Ha cserélhető eszköz, lehet, hogy kihúzták."
 
-#: big-mount/usr/lib/big-mount/lib.sh:149
+#: big-mount/usr/lib/big-mount/lib.sh:185
 msgid "'%s' is an NVMe controller, not a storage device. Its storage is: %s"
 msgstr "„%s”: ez egy NVMe-vezérlő, nem tárolóeszköz. A tárolói: %s"
 
-#: big-mount/usr/lib/big-mount/lib.sh:151
+#: big-mount/usr/lib/big-mount/lib.sh:187
 msgid "'%s' is not a storage device."
 msgstr "„%s”: ez nem tárolóeszköz."
 
-#: big-mount/usr/lib/big-mount/lib.sh:152
+#: big-mount/usr/lib/big-mount/lib.sh:188
 msgid "'%s' is not on a local storage device (it may be a network share or a memory filesystem)."
 msgstr "„%s”: nem helyi tárolóeszközön van (lehet hálózati megosztás vagy memóriában lévő fájlrendszer)."
 
-#: big-mount/usr/lib/big-mount/lib.sh:153
+#: big-mount/usr/lib/big-mount/lib.sh:189
 msgid "'%s' is not a local storage device or a folder on one"
 msgstr "„%s”: nem helyi tárolóeszköz, és nem is ilyenen lévő mappa"
 
-#: big-mount/usr/lib/big-mount/lib.sh:498
+#: big-mount/usr/lib/big-mount/lib.sh:534
 msgid "Dolphin (file manager)"
 msgstr "Dolphin (fájlkezelő)"
 
-#: big-mount/usr/lib/big-mount/lib.sh:501
+#: big-mount/usr/lib/big-mount/lib.sh:537
 msgid "KDE thumbnail generator"
 msgstr "KDE bélyegkép-készítő"
 
-#: big-mount/usr/lib/big-mount/lib.sh:502
+#: big-mount/usr/lib/big-mount/lib.sh:538
 msgid "KDE trash"
 msgstr "KDE kuka"
 
-#: big-mount/usr/lib/big-mount/lib.sh:503
+#: big-mount/usr/lib/big-mount/lib.sh:539
 msgid "KDE file service (kioworker)"
 msgstr "KDE fájlszolgáltatás (kioworker)"
 
-#: big-mount/usr/lib/big-mount/lib.sh:504
+#: big-mount/usr/lib/big-mount/lib.sh:540
 msgid "KDE file service (%s)"
 msgstr "KDE fájlszolgáltatás (%s)"
 
-#: big-mount/usr/lib/big-mount/lib.sh:507
+#: big-mount/usr/lib/big-mount/lib.sh:543
 msgid "Baloo file indexer"
 msgstr "Baloo fájlindexelő"
 
-#: big-mount/usr/lib/big-mount/lib.sh:508
+#: big-mount/usr/lib/big-mount/lib.sh:544
 msgid "File indexer (Tracker)"
 msgstr "Fájlindexelő (Tracker)"
 
-#: big-mount/usr/lib/big-mount/lib.sh:510
+#: big-mount/usr/lib/big-mount/lib.sh:546
 msgid "Terminal"
 msgstr "Terminál"
 
-#: big-mount/usr/lib/big-mount/lib.sh:512
+#: big-mount/usr/lib/big-mount/lib.sh:548
 msgid "Command shell (terminal)"
 msgstr "Parancsértelmező (terminál)"
 
-#: big-mount/usr/lib/big-mount/lib.sh:514
+#: big-mount/usr/lib/big-mount/lib.sh:550
 msgid "Media player"
 msgstr "Médialejátszó"
 
-#: big-mount/usr/lib/big-mount/lib.sh:515
+#: big-mount/usr/lib/big-mount/lib.sh:551
 msgid "Thumbnail generator"
 msgstr "Bélyegkép-készítő"
 
-#: big-mount/usr/lib/big-mount/lib.sh:516
+#: big-mount/usr/lib/big-mount/lib.sh:552
 msgid "Document viewer"
 msgstr "Dokumentummegjelenítő"
 
-#: big-mount/usr/lib/big-mount/lib.sh:517
+#: big-mount/usr/lib/big-mount/lib.sh:553
 msgid "Image viewer"
 msgstr "Képnézegető"
 
-#: big-mount/usr/lib/big-mount/lib.sh:518
+#: big-mount/usr/lib/big-mount/lib.sh:554
 msgid "Text editor"
 msgstr "Szövegszerkesztő"
 
-#: big-mount/usr/lib/big-mount/lib.sh:520
+#: big-mount/usr/lib/big-mount/lib.sh:556
 msgid "Web browser"
 msgstr "Webböngésző"
 
-#: big-mount/usr/lib/big-mount/lib.sh:521
+#: big-mount/usr/lib/big-mount/lib.sh:557
 msgid "File manager"
 msgstr "Fájlkezelő"
 
-#: big-mount/usr/lib/big-mount/lib.sh:523
+#: big-mount/usr/lib/big-mount/lib.sh:559
 msgid "Copy or archive operation"
 msgstr "Másolási vagy archiválási művelet"
 
-#: big-mount/usr/lib/big-mount/lib.sh:524
+#: big-mount/usr/lib/big-mount/lib.sh:560
 msgid "Synchronization service"
 msgstr "Szinkronizálási szolgáltatás"
 
-#: big-mount/usr/lib/big-mount/lib.sh:525
+#: big-mount/usr/lib/big-mount/lib.sh:561
 msgid "Backup"
 msgstr "Biztonsági mentés"
 
-#: big-mount/usr/lib/big-mount/lib.sh:535
+#: big-mount/usr/lib/big-mount/lib.sh:571
 msgid "Current folder is on the device"
 msgstr "Az aktuális mappa az eszközön van"
 
-#: big-mount/usr/lib/big-mount/lib.sh:536
+#: big-mount/usr/lib/big-mount/lib.sh:572
 msgid "Root folder (chroot) is on the device"
 msgstr "A gyökérmappa (chroot) az eszközön van"
 
-#: big-mount/usr/lib/big-mount/lib.sh:537
+#: big-mount/usr/lib/big-mount/lib.sh:573
 msgid "Program running from the device"
 msgstr "Az eszközről futó program"
 
-#: big-mount/usr/lib/big-mount/lib.sh:538
+#: big-mount/usr/lib/big-mount/lib.sh:574
 msgid "File mapped in memory"
 msgstr "Memóriába leképezett fájl"
 
-#: big-mount/usr/lib/big-mount/lib.sh:541
+#: big-mount/usr/lib/big-mount/lib.sh:577
 msgid "Open for writing"
 msgstr "Írásra megnyitva"
 
-#: big-mount/usr/lib/big-mount/lib.sh:542
+#: big-mount/usr/lib/big-mount/lib.sh:578
 msgid "Open for reading and writing"
 msgstr "Olvasásra és írásra megnyitva"
 
-#: big-mount/usr/lib/big-mount/lib.sh:543
+#: big-mount/usr/lib/big-mount/lib.sh:579
 msgid "Folder open"
 msgstr "Megnyitott mappa"
 
-#: big-mount/usr/lib/big-mount/lib.sh:543
+#: big-mount/usr/lib/big-mount/lib.sh:579
 msgid "Open for reading"
 msgstr "Olvasásra megnyitva"
 
-#: big-mount/usr/lib/big-mount/lib.sh:650
+#: big-mount/usr/lib/big-mount/lib.sh:686
 msgid "belongs to another user or to the system"
 msgstr "egy másik felhasználóé vagy a rendszeré"
 
-#: big-mount/usr/lib/big-mount/lib.sh:653
+#: big-mount/usr/lib/big-mount/lib.sh:689
 msgid "part of the desktop session"
 msgstr "az asztali munkamenet része"
 
-#: big-mount/usr/lib/big-mount/lib.sh:656
+#: big-mount/usr/lib/big-mount/lib.sh:692
 msgid "a terminal: type 'cd' in it or close the tab"
 msgstr "egy terminál: írja be a „cd” parancsot, vagy zárja be a lapot"
 
-#: big-mount/usr/lib/big-mount/lib.sh:659
+#: big-mount/usr/lib/big-mount/lib.sh:695
 msgid "this tool"
 msgstr "ez a program"
 
-#: big-mount/usr/lib/big-mount/lib.sh:664
+#: big-mount/usr/lib/big-mount/lib.sh:700
 msgid "has a file open for writing: finish or cancel the operation in the application"
 msgstr "írásra megnyitott fájlja van: fejezze be vagy szakítsa meg a műveletet az alkalmazásban"
 
-#: big-mount/usr/lib/big-mount/lib.sh:929
+#: big-mount/usr/lib/big-mount/lib.sh:965
 msgid "%s is unmounted here, but %s (PID %s) still has it mounted at %s"
 msgstr "%s: itt le van választva, de egy folyamat (%s, PID: %s) még csatolva tartja itt: %s"
 
-#: big-mount/usr/lib/big-mount/lib.sh:933
+#: big-mount/usr/lib/big-mount/lib.sh:969
 msgid "%s is unmounted, but its filesystem driver is still writing to it"
 msgstr "%s: le van választva, de a fájlrendszer-illesztőprogramja még ír rá"
 
-#: big-mount/usr/lib/big-mount/lib.sh:959
+#: big-mount/usr/lib/big-mount/lib.sh:995
 msgid "%s is still mounted at %s after being unmounted"
 msgstr "%s: a leválasztás után is csatolva van itt: %s"
 
-#: big-mount/usr/lib/big-mount/lib.sh:1303
+#: big-mount/usr/lib/big-mount/lib.sh:1339
 msgid "%s is mounted at %s"
 msgstr "%s: csatolva van itt: %s"
 
-#: big-mount/usr/lib/big-mount/lib.sh:1306
+#: big-mount/usr/lib/big-mount/lib.sh:1342
 msgid "%s is in use (encryption, LVM or RAID)"
 msgstr "%s: használatban van (titkosítás, LVM vagy RAID)"
 
-#: big-mount/usr/lib/big-mount/lib.sh:1320
+#: big-mount/usr/lib/big-mount/lib.sh:1356
 msgid "%s belongs to a filesystem that spans several drives"
 msgstr "%s: több meghajtóra kiterjedő fájlrendszer része"
 
-#: big-mount/usr/lib/big-mount/lib.sh:1326
+#: big-mount/usr/lib/big-mount/lib.sh:1362
 msgid "UDisks2 does not know this drive."
 msgstr "Az UDisks2 nem ismeri ezt a meghajtót."
+
+#: big-mount/usr/lib/big-mount/cli.sh:530
+#, sh-printf-format
+msgid "In total, %d program is using it."
+msgid_plural "In total, %d programs are using it."
+msgstr[0] "Összesen %d program használja."
+msgstr[1] "Összesen %d program használja."
+
+#: big-mount/usr/lib/big-mount/cli.sh:898
+#, sh-printf-format
+msgid "no failure predicted (%s damaged sector was replaced by a spare one)"
+msgid_plural "no failure predicted (%s damaged sectors were replaced by spare ones)"
+msgstr[0] "nincs előre jelzett meghibásodás (%s sérült szektor tartalékra cserélve)"
+msgstr[1] "nincs előre jelzett meghibásodás (%s sérült szektor tartalékra cserélve)"
+
+#: big-mount/usr/lib/big-mount/cli.sh:913
+#: big-mount/usr/lib/big-mount/drive-diag.sh:233
+#, sh-printf-format
+msgid "Since the computer was started, it stopped answering and the connection had to be reset (%s kernel message)."
+msgid_plural "Since the computer was started, it stopped answering and the connection had to be reset (%s kernel messages)."
+msgstr[0] "A számítógép indítása óta a meghajtó nem válaszolt, és a kapcsolatot alaphelyzetbe kellett állítani (%s kernelüzenet)."
+msgstr[1] "A számítógép indítása óta a meghajtó nem válaszolt, és a kapcsolatot alaphelyzetbe kellett állítani (%s kernelüzenet)."
+
+#: big-mount/usr/lib/big-mount/cli.sh:914
+#: big-mount/usr/lib/big-mount/drive-diag.sh:232
+#, sh-printf-format
+msgid "Since the computer was started, reading or writing failed (%s kernel message)."
+msgid_plural "Since the computer was started, reading or writing failed (%s kernel messages)."
+msgstr[0] "A számítógép indítása óta az olvasás vagy az írás nem sikerült (%s kernelüzenet)."
+msgstr[1] "A számítógép indítása óta az olvasás vagy az írás nem sikerült (%s kernelüzenet)."
+
+#: big-mount/usr/lib/big-mount/cli.sh:916
+#: big-mount/usr/lib/big-mount/drive-diag.sh:234
+#, sh-printf-format
+msgid "Since the computer was started, the USB connection was reset or lost %s time."
+msgid_plural "Since the computer was started, the USB connection was reset or lost %s times."
+msgstr[0] "A számítógép indítása óta az USB-kapcsolat %s alkalommal állt alaphelyzetbe vagy szakadt meg."
+msgstr[1] "A számítógép indítása óta az USB-kapcsolat %s alkalommal állt alaphelyzetbe vagy szakadt meg."
+
+#: big-mount/usr/lib/big-mount/cli.sh:988
+#, sh-printf-format
+msgid "The drive announces that erasing takes about %d minute."
+msgid_plural "The drive announces that erasing takes about %d minutes."
+msgstr[0] "A meghajtó szerint a törlés körülbelül %d percet vesz igénybe."
+msgstr[1] "A meghajtó szerint a törlés körülbelül %d percet vesz igénybe."
+
+#: big-mount/usr/lib/big-mount/doctor.sh:441
+#, sh-printf-format
+msgid "%d package has a newer version in the last synchronized package list"
+msgid_plural "%d packages have newer versions in the last synchronized package list"
+msgstr[0] "%d csomagnak van újabb verziója a legutóbb szinkronizált csomaglistában"
+msgstr[1] "%d csomagnak van újabb verziója a legutóbb szinkronizált csomaglistában"
+
+#: big-mount/usr/lib/big-mount/doctor.sh:463
+#, sh-printf-format
+msgid "%d problem"
+msgid_plural "%d problems"
+msgstr[0] "%d probléma"
+msgstr[1] "%d probléma"
+
+#: big-mount/usr/lib/big-mount/doctor.sh:464
+#, sh-printf-format
+msgid "%d warning"
+msgid_plural "%d warnings"
+msgstr[0] "%d figyelmeztetés"
+msgstr[1] "%d figyelmeztetés"
+
+#: big-mount/usr/lib/big-mount/drive-copy.sh:428
+#, sh-printf-format
+msgid "%s file was set aside because it did not advance. The drive may be getting worse, so the copy stopped."
+msgid_plural "%s files were set aside because they did not advance. The drive may be getting worse, so the copy stopped."
+msgstr[0] "%s fájl félrekerült, mert nem haladt előre. Lehet, hogy a meghajtó állapota romlik, ezért a másolás leállt."
+msgstr[1] "%s fájl félrekerült, mert nem haladt előre. Lehet, hogy a meghajtó állapota romlik, ezért a másolás leállt."
+
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1023
+#, sh-printf-format
+msgid "Waiting for the disk to answer, for %s second"
+msgid_plural "Waiting for the disk to answer, for %s seconds"
+msgstr[0] "Várakozás a lemez válaszára, %s másodperce"
+msgstr[1] "Várakozás a lemez válaszára, %s másodperce"
+
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1094
+#, sh-printf-format
+msgid "%s file differs"
+msgid_plural "%s files differ"
+msgstr[0] "%s fájl eltér"
+msgstr[1] "%s fájl eltér"
+
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1405
+#, sh-printf-format
+msgid "%s file, %s to copy"
+msgid_plural "%s files, %s to copy"
+msgstr[0] "%s fájl, %s másolandó"
+msgstr[1] "%s fájl, %s másolandó"
+
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1406
+#, sh-printf-format
+msgid "%s already exists with different content."
+msgid_plural "%s already exist with different content."
+msgstr[0] "%s már létezik eltérő tartalommal."
+msgstr[1] "%s már létezik eltérő tartalommal."
+
+#: big-mount/usr/lib/big-mount/drive-diag.sh:203
+#, sh-printf-format
+msgid "Powered on for %s hours, about %s year of use: failures become more likely."
+msgid_plural "Powered on for %s hours, about %s years of use: failures become more likely."
+msgstr[0] "%s órát töltött bekapcsolva, ez kb. %s év használat: a meghibásodás egyre valószínűbb."
+msgstr[1] "%s órát töltött bekapcsolva, ez kb. %s év használat: a meghibásodás egyre valószínűbb."
+
+#: big-mount/usr/lib/big-mount/drive-diag.sh:231
+#, sh-printf-format
+msgid "The NVMe drive recorded %s media or data integrity error."
+msgid_plural "The NVMe drive recorded %s media or data integrity errors."
+msgstr[0] "Az NVMe-meghajtó %s adathordozó- vagy adatintegritási hibát rögzített."
+msgstr[1] "Az NVMe-meghajtó %s adathordozó- vagy adatintegritási hibát rögzített."
+
+#: big-mount/usr/lib/big-mount/drive-diag.sh:237
+#, sh-printf-format
+msgid "The drive reported %s error it could not correct."
+msgid_plural "The drive reported %s errors it could not correct."
+msgstr[0] "A meghajtó %s olyan hibát jelzett, amelyet nem tudott kijavítani."
+msgstr[1] "A meghajtó %s olyan hibát jelzett, amelyet nem tudott kijavítani."
+
+#: big-mount/usr/lib/big-mount/drive-diag.sh:238
+#, sh-printf-format
+msgid "The cable or adapter corrupted data in transit %s time (CRC errors)."
+msgid_plural "The cable or adapter corrupted data in transit %s times (CRC errors)."
+msgstr[0] "A kábel vagy az átalakító %s alkalommal rontotta el az adatokat átvitel közben (CRC-hiba)."
+msgstr[1] "A kábel vagy az átalakító %s alkalommal rontotta el az adatokat átvitel közben (CRC-hibák)."
+
+#: big-mount/usr/lib/big-mount/drive-diag.sh:239
+#, sh-printf-format
+msgid "%s of its SMART values is below its safe limit now."
+msgid_plural "%s of its SMART values are below their safe limit now."
+msgstr[0] "%s SMART-értéke jelenleg a biztonságos határ alatt van."
+msgstr[1] "%s SMART-értéke jelenleg a biztonságos határ alatt van."
+
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:889
+#, sh-printf-format
+msgid "%s file found by content in %s. Its original name and folder could not be kept."
+msgid_plural "%s files found by content in %s. Their original names and folders could not be kept."
+msgstr[0] "Tartalom alapján %s fájl került elő itt: %s. Az eredeti nevét és mappáját nem lehetett megőrizni."
+msgstr[1] "Tartalom alapján %s fájl került elő itt: %s. Az eredeti nevüket és mappájukat nem lehetett megőrizni."
 
 #: big-mount/usr/lib/big-mount/gui/about.py:16
 msgid "Big-Mount takes care of the drives of your computer:"
@@ -3636,25 +3726,25 @@ msgid "Recover files…"
 msgstr "Fájlok helyreállítása…"
 
 #: big-mount/usr/lib/big-mount/gui/actions.py:166
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:374
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:491
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:372
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:489
 msgid "Unmount"
 msgstr "Leválasztás"
 
 #: big-mount/usr/lib/big-mount/gui/actions.py:167
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:375
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:373
 msgid "Force unmount (close the programs using it)…"
 msgstr "Kényszerített leválasztás (az azt használó programok bezárása)…"
 
 #: big-mount/usr/lib/big-mount/gui/actions.py:172
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:379
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:377
 msgid "Erase data permanently…"
 msgstr "Adatok végleges törlése…"
 
 #: big-mount/usr/lib/big-mount/gui/actions.py:187
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:336
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:337
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1013
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:334
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:335
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1014
 msgid "More options"
 msgstr "További lehetőségek"
 
@@ -3702,7 +3792,7 @@ msgid "List of files"
 msgstr "Fájllista"
 
 #: big-mount/usr/lib/big-mount/gui/models.py:334
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:519
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:517
 msgid "Search by content"
 msgstr "Keresés tartalom alapján"
 
@@ -3963,7 +4053,7 @@ msgstr "„%s” csatolása csak olvashatóként"
 
 #: big-mount/usr/lib/big-mount/gui/pages/device.py:65
 #: big-mount/usr/lib/big-mount/gui/pages/device.py:85
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:486
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:484
 msgid "Mount read-only"
 msgstr "Csatolás csak olvashatóként"
 
@@ -3977,8 +4067,8 @@ msgid "Unmount and mount read-only"
 msgstr "Leválasztás és csatolás csak olvashatóként"
 
 #: big-mount/usr/lib/big-mount/gui/pages/device.py:89
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1054
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:618
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1055
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:621
 msgid "The reason could not be determined."
 msgstr "Az ok nem állapítható meg."
 
@@ -4028,7 +4118,7 @@ msgid "Rescue my files"
 msgstr "Fájljaim kimentése"
 
 #: big-mount/usr/lib/big-mount/gui/pages/device.py:166
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:370
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:368
 msgid "Export diagnosis…"
 msgstr "Diagnosztika exportálása…"
 
@@ -4127,179 +4217,176 @@ msgstr "SMART újbóli beolvasása…"
 msgid "Asks for the administrator password. It only reads: no test is started."
 msgstr "A rendszergazdai jelszót kéri. Csak olvas: nem indít tesztet."
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:243
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:242
 #, python-format
-msgid "%s (about a year of use)"
-msgstr "%s (kb. egy év használat)"
+msgid "%(h)s (about %(y)d year of use)"
+msgid_plural "%(h)s (about %(y)d years of use)"
+msgstr[0] "%(h)s (kb. %(y)d év használat)"
+msgstr[1] "%(h)s (kb. %(y)d év használat)"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:244
-#, python-format
-msgid "%(h)s (about %(y)d years of use)"
-msgstr "%(h)s (kb. %(y)d év használat)"
-
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:250
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:248
 msgid "Reading SMART. Through USB it can take a minute."
 msgstr "A SMART beolvasása. USB-n keresztül egy percig is eltarthat."
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:265
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:263
 msgid "Details"
 msgstr "Részletek"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:275
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:273
 msgid "Hidden. It identifies this drive: it is also left out of shared reports."
 msgstr "Rejtett. Azonosítja ezt a meghajtót: a megosztott jelentésekből is kimarad."
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:284
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:285
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:282
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:283
 msgid "Show the serial number"
 msgstr "A sorozatszám megjelenítése"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:291
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:294
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:289
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:292
 msgid "Messages from the system log"
 msgstr "A rendszernapló üzenetei"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:292
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:290
 #, python-format
 msgid "%d recent message about this drive"
 msgid_plural "%d recent messages about this drive"
 msgstr[0] "%d friss üzenet erről a meghajtóról"
 msgstr[1] "%d friss üzenet erről a meghajtóról"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:303
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:301
 #: big-mount/usr/lib/big-mount/gui/pages/maintenance.py:13
 msgid "Advanced maintenance"
 msgstr "Speciális karbantartás"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:304
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:302
 #: big-mount/usr/lib/big-mount/gui/pages/maintenance.py:38
 msgid "Erase data permanently"
 msgstr "Adatok végleges törlése"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:304
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:302
 msgid "Separate from recovery. Warns first, then checks the drive and asks twice more."
 msgstr "Független a helyreállítástól. Előbb figyelmeztet, majd ellenőrzi a meghajtót, és még kétszer rákérdez."
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:329
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:327
 msgid "Overview"
 msgstr "Áttekintés"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:330
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:328
 msgid "Recover"
 msgstr "Helyreállítás"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:332
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:330
 msgid "History"
 msgstr "Előzmények"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:343
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:408
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:341
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:406
 msgid "The drive was disconnected"
 msgstr "A meghajtót kihúzták"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:344
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:342
 msgid "Nothing else was done. Connect it again and it comes back here."
 msgstr "Semmi más nem történt. Csatlakoztassa újra, és ismét itt jelenik meg."
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:345
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:343
 msgid "Back to my drives"
 msgstr "Vissza a meghajtóimhoz"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:373
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:371
 msgid "Block writing on the device…"
 msgstr "Az írás letiltása az eszközön…"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:446
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:444
 #: big-mount/usr/lib/big-mount/gui/pages/overview.py:69
 #: big-mount/usr/lib/big-mount/gui/pages/rescue.py:277
 msgid "Recover files"
 msgstr "Fájlok helyreállítása"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:449
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:447
 msgid "Check drive"
 msgstr "A meghajtó ellenőrzése"
 
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:452
 #: big-mount/usr/lib/big-mount/gui/pages/device.py:454
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:456
 msgid "Volumes"
 msgstr "Kötetek"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:479
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:477
 msgid "This volume spans more than one device. All of them must be connected."
 msgstr "Ez a kötet több eszközre kiterjed. Mindegyiknek csatlakoztatva kell lennie."
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:490
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:493
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:488
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:491
 #: big-mount/usr/lib/big-mount/gui/pages/overview.py:66
 msgid "Open files"
 msgstr "Fájlok megnyitása"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:495
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:493
 msgid "Unlock…"
 msgstr "Feloldás…"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:512
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:510
 msgid "Copy your files to another place, step by step. This never writes to this drive."
 msgstr "Másolja át a fájljait máshová, lépésről lépésre. Erre a meghajtóra soha nem ír."
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:513
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:511
 msgid "Start recovering files"
 msgstr "Fájlok helyreállításának indítása"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:516
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:514
 msgid "What can be done"
 msgstr "Lehetőségek"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:517
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:515
 msgid "Copy files that can still be read"
 msgstr "A még olvasható fájlok másolása"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:517
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:515
 msgid "The quickest and safest: names and folders are kept."
 msgstr "A leggyorsabb és legbiztonságosabb: a nevek és a mappák megmaradnak."
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:518
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:516
 msgid "List what exists, by type"
 msgstr "A meglévő fájlok listázása típus szerint"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:518
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:516
 msgid "Goes through the folders. Then you choose what to copy."
 msgstr "Bejárja a mappákat. Utána Ön választja ki, mit másol."
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:519
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:517
 msgid "For when files cannot be opened. Names and folders are lost, and nothing is guaranteed."
 msgstr "Arra az esetre, ha a fájlok nem nyithatók meg. A nevek és a mappák elvesznek, és semmi sem garantált."
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:536
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:534
 msgid "Copies and searches of this drive"
 msgstr "A meghajtó másolatai és keresései"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:540
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:538
 msgid "Nothing yet"
 msgstr "Még nincs semmi"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:541
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:539
 msgid "What you copy from this drive is listed here."
 msgstr "Amit erről a meghajtóról másol, itt jelenik meg."
 
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:559
 #: big-mount/usr/lib/big-mount/gui/pages/device.py:561
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:563
 msgid "Export diagnosis"
 msgstr "Diagnosztika exportálása"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:564
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:562
 msgid "Keep them"
 msgstr "Megtartás"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:564
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:562
 msgid "Hide them"
 msgstr "Elrejtés"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:596
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:594
 msgid "Whatever a driver or another program tries, the disk does not change. It lasts until the drive is disconnected. It asks for the administrator password."
 msgstr "Bármivel próbálkozik is egy illesztőprogram vagy egy másik program, a lemez nem változik. A meghajtó kihúzásáig érvényes. A rendszergazdai jelszót kéri."
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:597
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:595
 msgid "Block writing"
 msgstr "Írás letiltása"
 
@@ -4391,6 +4478,11 @@ msgstr "Veszélyeztetett meghajtón a teljes méret a felesleges olvasások elke
 msgid "%s could not be read."
 msgstr "Nem olvasható adat: %s."
 
+#: big-mount/usr/lib/big-mount/gui/pages/job.py:205
+#, python-format
+msgid "Waiting for the disk to answer, for %s seconds"
+msgstr "Várakozás a lemez válaszára, %s másodperce"
+
 #: big-mount/usr/lib/big-mount/gui/pages/job.py:219
 msgid "Search again"
 msgstr "Újbóli keresés"
@@ -4412,7 +4504,7 @@ msgid "Keep working"
 msgstr "Munka folytatása"
 
 #: big-mount/usr/lib/big-mount/gui/pages/job.py:254
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1142
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1143
 msgid "Stop"
 msgstr "Leállítás"
 
@@ -4618,12 +4710,12 @@ msgid "Copies the whole device to a file on another disk with GNU ddrescue, keep
 msgstr "A GNU ddrescue segítségével a teljes eszközt egy másik lemezen lévő fájlba másolja, és térképet vezet, így folytatható, és egy jó területet soha nem olvas be kétszer."
 
 #: big-mount/usr/lib/big-mount/gui/pages/rescue.py:40
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1076
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1077
 msgid "Look for lost partitions"
 msgstr "Elveszett partíciók keresése"
 
 #: big-mount/usr/lib/big-mount/gui/pages/rescue.py:41
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1083
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1084
 msgid "TestDisk reads the partition table and analyzes the disk. It only shows what it finds: nothing is written."
 msgstr "A TestDisk beolvassa a partíciós táblát, és elemzi a lemezt. Csak megmutatja, amit talál: semmit sem ír."
 
@@ -4718,7 +4810,7 @@ msgid "You can choose more than one. If you are not sure, leave All."
 msgstr "Többet is választhat. Ha nem biztos benne, hagyja a Minden típus lehetőséget."
 
 #: big-mount/usr/lib/big-mount/gui/pages/rescue.py:552
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1006
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1007
 msgid "All types"
 msgstr "Minden típus"
 
@@ -4748,7 +4840,7 @@ msgid "What to copy"
 msgstr "Mit másol"
 
 #: big-mount/usr/lib/big-mount/gui/pages/rescue.py:636
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1004
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1005
 msgid "Everything"
 msgstr "Mindent"
 
@@ -4814,7 +4906,7 @@ msgid "Looking for places…"
 msgstr "Helyek keresése…"
 
 #: big-mount/usr/lib/big-mount/gui/pages/rescue.py:795
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:627
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:630
 msgid "Choose another folder…"
 msgstr "Másik mappa választása…"
 
@@ -4863,162 +4955,164 @@ msgstr "Kiválasztva"
 msgid "Space it will use"
 msgstr "Szükséges hely"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:975
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:977
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:976
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:978
 msgid "To copy"
 msgstr "Másolandó"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:975
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:976
 #, python-format
-msgid "%(files)s files, %(size)s"
-msgstr "%(files)s fájl, %(size)s"
+msgid "%(files)s file, %(size)s"
+msgid_plural "%(files)s files, %(size)s"
+msgstr[0] "%(files)s fájl, %(size)s"
+msgstr[1] "%(files)s fájl, %(size)s"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:979
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:980
 msgid "Free at the destination"
 msgstr "Szabad hely a célon"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:981
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:982
 msgid "Already there, with different content"
 msgstr "Már megvan, eltérő tartalommal"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:984
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:985
 msgid "Your files will be copied with their names. Nothing is written to the source."
 msgstr "A fájljai a nevükkel együtt lesznek átmásolva. A forrásra semmi sem lesz írva."
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:985
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:986
 msgid "First a list of what exists is made. Then you choose what to copy. Nothing is written to the source."
 msgstr "Előbb elkészül a meglévő fájlok listája. Utána Ön választja ki, mit másol. A forrásra semmi sem lesz írva."
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:986
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:987
 msgid "Files will be searched for by their content. Names and folders are lost, some files may come out incomplete, and finding nothing is possible. Nothing is written to the source."
 msgstr "A fájlok keresése a tartalmuk alapján történik. A nevek és a mappák elvesznek, egyes fájlok hiányosak lehetnek, és az is lehet, hogy semmi sem kerül elő. A forrásra semmi sem lesz írva."
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:987
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:988
 msgid "The disk is read once, into a file. Nothing is written to it."
 msgstr "A lemez egyszer, egy fájlba lesz beolvasva. Semmi sem lesz ráírva."
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:992
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:993
 msgid "After the image, the search needs your confirmation. It can also be started later."
 msgstr "A lemezkép után a kereséshez az Ön megerősítése szükséges. Később is elindítható."
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:994
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:995
 msgid "Good to know"
 msgstr "Jó tudni"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1004
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1005
 #, python-format
 msgid "%d item you marked"
 msgid_plural "%d items you marked"
 msgstr[0] "%d kijelölt elem"
 msgstr[1] "%d kijelölt elem"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1014
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1015
 msgid "If a file already exists"
 msgstr "Ha egy fájl már létezik"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1019
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1020
 msgid "Check the result"
 msgstr "Az eredmény ellenőrzése"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1021
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1022
 msgid "Basic: rsync confirms each file as it is copied"
 msgstr "Alap: az rsync minden fájlt a másoláskor megerősít"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1021
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1022
 msgid "Names, sizes and dates compared at the end"
 msgstr "Nevek, méretek és dátumok összehasonlítása a végén"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1022
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1023
 msgid "Content compared at the end (reads the source again)"
 msgstr "Tartalom összehasonlítása a végén (újra beolvassa a forrást)"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1026
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1027
 msgid "Set aside a stuck file after (seconds)"
 msgstr "Elakadt fájl félretétele ennyi idő után (másodperc)"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1028
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1029
 msgid "A file that does not advance for this long is set aside, so that the others are saved first. 0: never."
 msgstr "Az ennyi ideig előre nem haladó fájl félrekerül, így előbb a többi fájl kerül sorra. 0: soha."
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1032
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1033
 msgid "Limit the reading speed (kB/s)"
 msgstr "Olvasási sebesség korlátozása (kB/s)"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1034
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1035
 msgid "0: no limit"
 msgstr "0: nincs korlát"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1045
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1046
 msgid "Starting…"
 msgstr "Indítás…"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1054
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:618
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1055
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:621
 msgid "It did not start"
 msgstr "Nem indult el"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1084
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1085
 msgid "Read the partition table"
 msgstr "A partíciós tábla beolvasása"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1085
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1086
 msgid "Analyze the whole disk"
 msgstr "A teljes lemez elemzése"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1086
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1087
 msgid "It reads all of the disk. On a drive with problems this is extra wear."
 msgstr "A teljes lemezt beolvassa. Problémás meghajtón ez további kopást jelent."
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1089
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1090
 msgid "This drive reported problems: analyzing all of it is extra wear. A disk image first spares it."
 msgstr "Ez a meghajtó problémákat jelzett: a teljes elemzése további kopást jelent. Egy előzetes lemezkép kíméli."
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1111
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1112
 msgid "Stopping…"
 msgstr "Leállítás…"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1118
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1119
 msgid "Volumes this drive already has"
 msgstr "A meghajtón már meglévő kötetek"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1119
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1120
 msgid "They are not lost. To recover their files, copying them is faster and reads the disk less than any analysis."
 msgstr "Ezek nem vesztek el. A fájljaik helyreállításához a másolás gyorsabb, és kevesebbet olvas a lemezről, mint bármilyen elemzés."
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1124
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1125
 msgid "Recover its files"
 msgstr "A fájljainak helyreállítása"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1136
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1137
 msgid "Looking for partitions…"
 msgstr "Partíciók keresése…"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1140
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1141
 msgid "TestDisk does not say how far it has gone, so there is no percentage. Analyzing a whole disk reads all of it and can take hours; the drive can be used for nothing else meanwhile."
 msgstr "A TestDisk nem jelzi, hol tart, ezért nincs százalékérték. A teljes lemez elemzése az egészet beolvassa, és órákig tarthat; ezalatt a meghajtó semmi másra nem használható."
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1151
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1152
 #, python-format
 msgid "Elapsed: %s"
 msgstr "Eltelt idő: %s"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1171
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1172
 msgid "The search failed."
 msgstr "A keresés sikertelen volt."
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1174
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1175
 msgid "What TestDisk found"
 msgstr "Amit a TestDisk talált"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1180
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1181
 msgid "Big-Mount does not rewrite partition tables, on purpose: a mistake there can lose everything. A disk image, or a search by content, recovers files without that risk."
 msgstr "A Big-Mount szándékosan nem írja újra a partíciós táblákat: egy ottani hiba miatt minden elveszhet. Egy lemezkép vagy egy tartalom alapján végzett keresés e kockázat nélkül állítja helyre a fájlokat."
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1182
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1183
 msgid "The analysis did not recognize any partition. That does not prove there is no data: a search by content may still find files."
 msgstr "Az elemzés nem ismert fel partíciót. Ez nem bizonyítja, hogy nincs adat: a tartalom alapján végzett keresés még találhat fájlokat."
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1184
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1185
 msgid "The partition table is empty or unreadable. Analyzing the whole disk may find what it no longer lists."
 msgstr "A partíciós tábla üres vagy olvashatatlan. A teljes lemez elemzése megtalálhatja azt, amit már nem tartalmaz."
 
@@ -5084,7 +5178,7 @@ msgid "Clear selection"
 msgstr "Kijelölés törlése"
 
 #: big-mount/usr/lib/big-mount/gui/pages/results.py:321
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:639
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:642
 msgid "Save report"
 msgstr "Jelentés mentése"
 
@@ -5113,31 +5207,45 @@ msgstr "Mind (%d)"
 msgid "The list could not be read."
 msgstr "A listát nem sikerült beolvasni."
 
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:492
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:493
 #, python-format
-msgid "%(shown)d shown, %(sel)d selected (%(size)s)"
-msgstr "%(shown)d látható, %(sel)d kijelölve (%(size)s)"
+msgid "%(shown)s, %(sel)s (%(size)s)"
+msgstr "%(shown)s, %(sel)s (%(size)s)"
 
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:509
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:493
+#, python-format
+msgid "%d shown"
+msgid_plural "%d shown"
+msgstr[0] "%d látható"
+msgstr[1] "%d látható"
+
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:494
+#, python-format
+msgid "%d selected"
+msgid_plural "%d selected"
+msgstr[0] "%d kijelölve"
+msgstr[1] "%d kijelölve"
+
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:512
 msgid "Select"
 msgstr "Kijelölés"
 
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:531
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:534
 msgid "Preview"
 msgstr "Előnézet"
 
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:597
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:600
 msgid "It cannot be copied"
 msgstr "Nem másolható"
 
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:600
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:603
 #, python-format
 msgid "%d file with a line break in its name was left out. It cannot be handled safely."
 msgid_plural "%d files with a line break in their names were left out. They cannot be handled safely."
 msgstr[0] "%d fájl kimaradt, mert sortörés van a nevében. Ez nem kezelhető biztonságosan."
 msgstr[1] "%d fájl kimaradt, mert sortörés van a nevükben. Ezek nem kezelhetők biztonságosan."
 
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:626
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:629
 msgid "It cannot be saved here"
 msgstr "Ide nem menthető"
 

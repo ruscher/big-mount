@@ -103,11 +103,11 @@ msgstr "%s: %s を %s にマウントしました (%s)"
 msgid "Usage: bigmount [OPTION] [DEVICE|FOLDER]"
 msgstr "使い方: bigmount [オプション] [デバイス|フォルダー]"
 
-#: big-mount/usr/lib/big-mount/cli.sh:27
+#: big-mount/usr/lib/big-mount/cli.sh:26
 msgid "(none)"
 msgstr "(なし)"
 
-#: big-mount/usr/lib/big-mount/cli.sh:27
+#: big-mount/usr/lib/big-mount/cli.sh:26
 msgid "mount internal partitions (run at boot by big-mount.service)"
 msgstr "内部パーティションをマウントします (起動時に big-mount.service が実行します)"
 
@@ -678,10 +678,6 @@ msgstr "そのプログラムを終了してから、もう一度お試しくだ
 msgid "%s is using files on this device."
 msgstr "%s がこのデバイス上のファイルを使用しています。"
 
-#: big-mount/usr/lib/big-mount/cli.sh:530
-msgid "In total, %d programs are using it."
-msgstr "使用中のプログラムの数: %d"
-
 #: big-mount/usr/lib/big-mount/cli.sh:543
 msgid "In use"
 msgstr "使用中"
@@ -863,10 +859,6 @@ msgstr "問題は報告されていません"
 msgid "the drive predicts its own failure"
 msgstr "ドライブ自身が故障を予測しています"
 
-#: big-mount/usr/lib/big-mount/cli.sh:898
-msgid "no failure predicted (%s damaged sectors were replaced by spare ones)"
-msgstr "故障は予測されていません (損傷したセクター %s 個が代替セクターに置き換えられました)"
-
 #: big-mount/usr/lib/big-mount/cli.sh:900
 msgid "SMART status"
 msgstr "SMART ステータス"
@@ -888,25 +880,10 @@ msgstr "見つかった問題:"
 msgid "The drive itself reports that it is failing (SMART)."
 msgstr "ドライブ自身が故障しつつあると報告しています (SMART)。"
 
-#: big-mount/usr/lib/big-mount/cli.sh:913
-#: big-mount/usr/lib/big-mount/drive-diag.sh:233
-msgid "Since the computer was started, it stopped answering and the connection had to be reset (%s kernel messages)."
-msgstr "コンピューターの起動後、応答が止まり、接続のリセットが必要になりました (カーネルメッセージ: %s 件)。"
-
-#: big-mount/usr/lib/big-mount/cli.sh:914
-#: big-mount/usr/lib/big-mount/drive-diag.sh:232
-msgid "Since the computer was started, reading or writing failed (%s kernel messages)."
-msgstr "コンピューターの起動後、読み取りまたは書き込みに失敗しました (カーネルメッセージ: %s 件)。"
-
 #: big-mount/usr/lib/big-mount/cli.sh:915
 #: big-mount/usr/lib/big-mount/drive-diag.sh:235
 msgid "Since the computer was started, the connection was slowed down after errors."
 msgstr "コンピューターの起動後、エラーのために接続速度が落とされました。"
-
-#: big-mount/usr/lib/big-mount/cli.sh:916
-#: big-mount/usr/lib/big-mount/drive-diag.sh:234
-msgid "Since the computer was started, the USB connection was reset or lost %s times."
-msgstr "コンピューターの起動後、USB 接続がリセットまたは切断されました (回数: %s)。"
 
 #: big-mount/usr/lib/big-mount/cli.sh:921
 msgid "Check the data and power cables of the drive, or try another SATA port."
@@ -971,10 +948,6 @@ msgstr "次のパーティションが失われます:"
 #: big-mount/usr/lib/big-mount/cli.sh:986
 msgid "The drive announces that erasing takes more than 8 hours."
 msgstr "ドライブによると、消去には 8 時間以上かかります。"
-
-#: big-mount/usr/lib/big-mount/cli.sh:988
-msgid "The drive announces that erasing takes about %d minutes."
-msgstr "ドライブによると、消去にはおよそ %d 分かかります。"
 
 #: big-mount/usr/lib/big-mount/cli.sh:992
 msgid "Afterwards an empty %s partition table is written and read back, to check that the drive keeps what is written again."
@@ -1111,7 +1084,7 @@ msgstr "何も消去されていません。"
 #: big-mount/usr/lib/big-mount/drive-erase.sh:201
 #: big-mount/usr/lib/big-mount/drive-erase.sh:204
 #: big-mount/usr/lib/big-mount/drive-erase.sh:221
-#: big-mount/usr/lib/big-mount/lib.sh:1295
+#: big-mount/usr/lib/big-mount/lib.sh:1331
 msgid "The drive was disconnected or replaced. Nothing was erased."
 msgstr "ドライブが取り外されたか、置き換えられました。何も消去されていません。"
 
@@ -1183,7 +1156,7 @@ msgstr "技術的な詳細"
 #: big-mount/usr/lib/big-mount/cli.sh:1257
 #: big-mount/usr/lib/big-mount/cli.sh:1259
 #: big-mount/usr/lib/big-mount/cli.sh:1533
-#: big-mount/usr/lib/big-mount/ui.sh:234
+#: big-mount/usr/lib/big-mount/ui.sh:241
 msgid "Close"
 msgstr "閉じる"
 
@@ -1764,10 +1737,6 @@ msgstr "通常は、sudo で実行したグラフィカルなプログラムが�
 msgid "All your settings files belong to you"
 msgstr "設定ファイルはすべてあなたの所有です"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:441
-msgid "%d packages have newer versions in the last synchronized package list"
-msgstr "最後に同期したパッケージリストで新しいバージョンがあるパッケージ: %d"
-
 #: big-mount/usr/lib/big-mount/doctor.sh:442
 msgid "Keep the system consistent: update everything at once (sudo pacman -Syu), never only some packages."
 msgstr "システムの整合性を保つため、一部のパッケージだけでなく、すべてを一度に更新してください (sudo pacman -Syu)。"
@@ -1776,15 +1745,15 @@ msgstr "システムの整合性を保つため、一部のパッケージだけ
 msgid "Big-Mount check (nothing is changed; labels, serial numbers, UUIDs and personal paths are left out)"
 msgstr "Big-Mount のチェック (何も変更しません。ラベル、シリアル番号、UUID、個人的なパスは省略しています)"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:462
-msgid "Result: %d problem(s), %d warning(s)."
-msgstr "結果: 問題 %d 件、警告 %d 件。"
+#: big-mount/usr/lib/big-mount/doctor.sh:465
+msgid "Result: %s, %s."
+msgstr "結果: %s、%s。"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:463
+#: big-mount/usr/lib/big-mount/doctor.sh:466
 msgid "Big-Mount and the storage stack look healthy."
 msgstr "Big-Mount とストレージスタックは正常なようです。"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:464
+#: big-mount/usr/lib/big-mount/doctor.sh:467
 msgid "To report a problem, attach this output: bigmount --doctor > big-mount-report.txt"
 msgstr "問題を報告するには、この出力を添付してください: bigmount --doctor > big-mount-report.txt"
 
@@ -2066,10 +2035,6 @@ msgstr "コピー先の接続が外れたか、アンマウントされました
 msgid "The destination ran out of space. Free some space or choose another place, then resume."
 msgstr "コピー先の空き容量がなくなりました。空き容量を確保するか、別の場所を選択してから、再開してください。"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:428
-msgid "%s files were set aside because they did not advance. The drive may be getting worse, so the copy stopped."
-msgstr "進まなかったため保留にしたファイル: %s。ドライブの状態が悪化している可能性があるため、コピーを停止しました。"
-
 #: big-mount/usr/lib/big-mount/drive-copy.sh:429
 msgid "Some files were not copied. See the list below."
 msgstr "一部のファイルはコピーされませんでした。下の一覧を参照してください。"
@@ -2115,228 +2080,216 @@ msgstr "内容を読み取れませんでした"
 msgid "Source:"
 msgstr "コピー元:"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:999
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1000
 #: big-mount/usr/lib/big-mount/drive-recovery.sh:940
 msgid "Destination:"
 msgstr "コピー先:"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1001
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1003
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1002
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1004
 msgid "Files:"
 msgstr "ファイル:"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1013
 #: big-mount/usr/lib/big-mount/drive-copy.sh:1014
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1015
 msgid "Copied:"
 msgstr "コピー済み:"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1018
-msgid "Speed:"
-msgstr "速度:"
-
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1018
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1019
 msgid "average"
 msgstr "平均"
 
 #: big-mount/usr/lib/big-mount/drive-copy.sh:1019
+msgid "Speed:"
+msgstr "速度:"
+
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1020
 #: big-mount/usr/lib/big-mount/drive-recovery.sh:948
 msgid "Elapsed:"
 msgstr "経過時間:"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1020
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1021
 msgid "Remaining:"
 msgstr "残り時間:"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1021
-msgid "Waiting for the disk to answer, for %s seconds"
-msgstr "ディスクの応答を待っています (%s 秒経過)"
-
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1022
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1025
 msgid "Current file:"
 msgstr "現在のファイル:"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1023
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1026
 msgid "Set aside:"
 msgstr "保留:"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1024
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1027
 msgid "Failed:"
 msgstr "失敗:"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1064
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1067
 msgid "Cancelled. Files already copied stay at the destination, and the copy can be resumed."
 msgstr "キャンセルしました。コピー済みのファイルはコピー先に残り、コピーは再開できます。"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1080
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1083
 msgid "Source"
 msgstr "コピー元"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1085
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1088
 #: big-mount/usr/lib/big-mount/drive-recovery.sh:962
 msgid "Destination"
 msgstr "コピー先"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1086
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1089
 msgid "Files copied"
 msgstr "コピーしたファイル"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1087
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1090
 msgid "Data copied"
 msgstr "コピーしたデータ"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1088
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1091
 #: big-mount/usr/lib/big-mount/drive-recovery.sh:966
 msgid "Elapsed"
 msgstr "経過時間"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1090
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1091
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1092
 #: big-mount/usr/lib/big-mount/drive-copy.sh:1093
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1094
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1095
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1096
 msgid "Check"
 msgstr "チェック"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1090
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1093
 msgid "source and destination match"
 msgstr "コピー元とコピー先は一致しています"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1091
-msgid "%s files differ"
-msgstr "異なるファイル: %s"
-
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1092
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1095
 msgid "did not finish"
 msgstr "完了しませんでした"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1093
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1096
 msgid "rsync confirmed each file as it was copied; no second comparison was made"
 msgstr "rsync がコピー時に各ファイルを確認しました。2 回目の比較は行っていません"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1095
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1098
 msgid "Already at the destination, with different content"
 msgstr "コピー先に既にあり、内容が異なるもの"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1099
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1102
 msgid "Set aside because they did not advance (damaged area of the disk):"
 msgstr "進まなかったため保留にしたもの (ディスクの損傷した領域):"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1102
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1105
 msgid "To try them again, which puts more strain on the disk: bigmount --drive resume %s --retry-deferred"
 msgstr "これらをもう一度試すには (ディスクへの負担が増えます): bigmount --drive resume %s --retry-deferred"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1106
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1109
 msgid "Not copied:"
 msgstr "コピーされなかったもの:"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1111
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1114
 msgid "Different at the destination:"
 msgstr "コピー先で異なるもの:"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1114
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1117
 msgid "Log:"
 msgstr "ログ:"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1138
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1141
 #: big-mount/usr/lib/big-mount/drive.sh:239
 msgid "Serial number"
 msgstr "シリアル番号"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1138
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1141
 #: big-mount/usr/lib/big-mount/drive.sh:255
 msgid "Label"
 msgstr "ラベル"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1170
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1173
 msgid "'%s' already exists. Nothing was written."
 msgstr "「%s」は既に存在します。何も書き込んでいません。"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1186
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1189
 msgid "Kernel messages:"
 msgstr "カーネルメッセージ:"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1194
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1197
 msgid "'%s' is a folder. Nothing was written."
 msgstr "「%s」はフォルダーです。何も書き込んでいません。"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1202
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1205
 msgid "Report written to %s"
 msgstr "レポートを %s に書き込みました"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1255
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1262
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1258
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1265
 msgid "free"
 msgstr "空き"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1258
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1261
 msgid "drive with critical alerts"
 msgstr "重大な警告が出ているドライブ"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1259
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1262
 msgid "same physical disk as the source"
 msgstr "コピー元と同じ物理ディスク"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1260
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1263
 msgid "not enough space"
 msgstr "空き容量不足"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1276
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1279
 msgid "Home folder"
 msgstr "ホームフォルダー"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1323
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1476
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1488
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1533
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1326
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1482
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1494
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1539
 #: big-mount/usr/lib/big-mount/drive-recovery.sh:986
 msgid "There is no job '%s'."
 msgstr "ジョブ「%s」はありません。"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1326
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1329
 msgid "Only the results of a search by content can be copied this way."
 msgstr "この方法でコピーできるのは、内容による検索の結果だけです。"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1333
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1336
 #: big-mount/usr/lib/big-mount/drive-recovery.sh:521
 #: big-mount/usr/lib/big-mount/drive-recovery.sh:847
 msgid "Both --source and --destination are needed."
 msgstr "--source と --destination の両方が必要です。"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1401
-msgid "%s files, %s to copy; %s already exist with different content."
-msgstr "ファイル: %s、コピーする量: %s。内容が異なる既存のファイル: %s。"
-
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1424
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1430
 msgid "The copy could not be started."
 msgstr "コピーを開始できませんでした。"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1429
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1560
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1435
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1566
 #: big-mount/usr/lib/big-mount/drive-recovery.sh:291
 msgid "Copy started: %s"
 msgstr "コピーを開始しました: %s"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1431
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1437
 #: big-mount/usr/lib/big-mount/drive-recovery.sh:293
 msgid "To follow it: bigmount --drive status %s --watch"
 msgstr "進行状況を確認するには: bigmount --drive status %s --watch"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1462
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1468
 msgid "No copies or images yet."
 msgstr "コピーやイメージはまだありません。"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1496
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1502
 msgid "A search cannot be paused, only cancelled. What was found stays."
 msgstr "検索は一時停止できず、キャンセルのみ可能です。見つかったものは残ります。"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1516
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1522
 msgid "It is not running."
 msgstr "実行されていません。"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1539
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1545
 msgid "It is already running."
 msgstr "既に実行中です。"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1543
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1549
 msgid "It is already complete."
 msgstr "既に完了しています。"
 
@@ -2467,20 +2420,21 @@ msgid "Only the system log was consulted. Without the drive's own report (SMART)
 msgstr "システムログだけを参照しました。ドライブ自身の報告 (SMART) がなければ、正常とは判断できません。"
 
 #: big-mount/usr/lib/big-mount/drive-diag.sh:198
-msgid "It has used %s%% of the life its maker rates it for: it is near or past its end."
-msgstr "メーカーが定める寿命の %s%% を使用しています: 寿命が近いか、既に過ぎています。"
+#: big-mount/usr/lib/big-mount/drive-diag.sh:199
+msgid "%s%%"
+msgstr "%s%%"
+
+#: big-mount/usr/lib/big-mount/drive-diag.sh:198
+msgid "It has used %s of the life its maker rates it for: it is near or past its end."
+msgstr "メーカーが定める寿命の %s を使用しています: 寿命が近いか、既に過ぎています。"
 
 #: big-mount/usr/lib/big-mount/drive-diag.sh:199
-msgid "It has used %s%% of the life its maker rates it for."
-msgstr "メーカーが定める寿命の %s%% を使用しています。"
+msgid "It has used %s of the life its maker rates it for."
+msgstr "メーカーが定める寿命の %s を使用しています。"
 
 #: big-mount/usr/lib/big-mount/drive-diag.sh:200
 msgid "Some of its SMART values were below their safe limit in the past."
 msgstr "SMART の値の一部が、過去に安全な限度を下回ったことがあります。"
-
-#: big-mount/usr/lib/big-mount/drive-diag.sh:203
-msgid "Powered on for %s hours, about %s years of use: failures become more likely."
-msgstr "通電時間 %s 時間、約 %s 年の使用です: 故障が起きやすくなっています。"
 
 #: big-mount/usr/lib/big-mount/drive-diag.sh:205
 msgid "It is hot now (%s °C). Heat shortens its life: give it air."
@@ -2522,25 +2476,9 @@ msgstr "全体の判定が PASSED であっても、ドライブにはもう読�
 msgid "The NVMe drive raised a critical warning (%s)."
 msgstr "NVMe ドライブが重大な警告を発しました (%s)。"
 
-#: big-mount/usr/lib/big-mount/drive-diag.sh:231
-msgid "The NVMe drive recorded %s media or data integrity errors."
-msgstr "NVMe ドライブが記録したメディアまたはデータ整合性のエラー: %s 件。"
-
 #: big-mount/usr/lib/big-mount/drive-diag.sh:236
 msgid "The drive already replaced damaged sectors with spare ones."
 msgstr "ドライブは既に、損傷したセクターを代替セクターに置き換えています。"
-
-#: big-mount/usr/lib/big-mount/drive-diag.sh:237
-msgid "The drive reported %s errors it could not correct."
-msgstr "ドライブが報告した訂正できないエラー: %s 件。"
-
-#: big-mount/usr/lib/big-mount/drive-diag.sh:238
-msgid "The cable or adapter corrupted data in transit %s times (CRC errors)."
-msgstr "ケーブルまたはアダプターが転送中にデータを破損させた回数: %s (CRC エラー)。"
-
-#: big-mount/usr/lib/big-mount/drive-diag.sh:239
-msgid "%s of its SMART values are below their safe limit now."
-msgstr "現在、安全な限度を下回っている SMART の値: %s 個。"
 
 #: big-mount/usr/lib/big-mount/drive-diag.sh:286
 #: big-mount/usr/lib/big-mount/drive.sh:236
@@ -2738,7 +2676,6 @@ msgstr "Word、Excel、LibreOffice のファイルが結果に含まれること
 msgid "Search started: %s"
 msgstr "検索を開始しました: %s"
 
-#: big-mount/usr/lib/big-mount/drive-recovery.sh:889
 #: big-mount/usr/lib/big-mount/drive-recovery.sh:928
 msgid "%s files found by content in %s. Their original names and folders could not be kept."
 msgstr "内容から見つかったファイル: %s (%s 内)。元の名前とフォルダーは保持できませんでした。"
@@ -3122,6 +3059,16 @@ msgstr "アプリケーションには GTK 4、libadwaita 1.5 以降、PyGObject
 msgid "Press Enter to continue."
 msgstr "Enter キーを押すと続行します。"
 
+#: big-mount/usr/lib/big-mount/drive-tui.sh:42
+#: big-mount/usr/lib/big-mount/ui.sh:131 big-mount/usr/lib/big-mount/ui.sh:146
+msgid "y"
+msgstr "y"
+
+#: big-mount/usr/lib/big-mount/drive-tui.sh:42
+#: big-mount/usr/lib/big-mount/ui.sh:146
+msgid "N"
+msgstr "N"
+
 #: big-mount/usr/lib/big-mount/drive-tui.sh:49
 msgid "The interactive manager needs a terminal. For scripts, see bigmount --drive --help."
 msgstr "対話型の管理画面には端末が必要です。スクリプトの場合は bigmount --drive --help を参照してください。"
@@ -3331,189 +3278,312 @@ msgstr "進行状況を確認しますか?"
 msgid "Resume it?"
 msgstr "再開しますか?"
 
-#: big-mount/usr/lib/big-mount/lib.sh:140
+#: big-mount/usr/lib/big-mount/lib.sh:176
 msgid "No device or folder was given."
 msgstr "デバイスまたはフォルダーが指定されていません。"
 
-#: big-mount/usr/lib/big-mount/lib.sh:141
+#: big-mount/usr/lib/big-mount/lib.sh:177
 msgid "'%s' does not exist. If it is a removable device, it may have been disconnected."
 msgstr "「%s」は存在しません。リムーバブルデバイスの場合は、接続が外れた可能性があります。"
 
-#: big-mount/usr/lib/big-mount/lib.sh:142
+#: big-mount/usr/lib/big-mount/lib.sh:178
 msgid "'%s' is not available. If it is a removable device, it may have been disconnected."
 msgstr "「%s」は利用できません。リムーバブルデバイスの場合は、接続が外れた可能性があります。"
 
-#: big-mount/usr/lib/big-mount/lib.sh:149
+#: big-mount/usr/lib/big-mount/lib.sh:185
 msgid "'%s' is an NVMe controller, not a storage device. Its storage is: %s"
 msgstr "「%s」は NVMe コントローラーで、ストレージデバイスではありません。そのストレージ: %s"
 
-#: big-mount/usr/lib/big-mount/lib.sh:151
+#: big-mount/usr/lib/big-mount/lib.sh:187
 msgid "'%s' is not a storage device."
 msgstr "「%s」はストレージデバイスではありません。"
 
-#: big-mount/usr/lib/big-mount/lib.sh:152
+#: big-mount/usr/lib/big-mount/lib.sh:188
 msgid "'%s' is not on a local storage device (it may be a network share or a memory filesystem)."
 msgstr "「%s」はローカルのストレージデバイス上にありません (ネットワーク共有やメモリ上のファイルシステムの可能性があります)。"
 
-#: big-mount/usr/lib/big-mount/lib.sh:153
+#: big-mount/usr/lib/big-mount/lib.sh:189
 msgid "'%s' is not a local storage device or a folder on one"
 msgstr "「%s」はローカルのストレージデバイスでも、その上のフォルダーでもありません"
 
-#: big-mount/usr/lib/big-mount/lib.sh:498
+#: big-mount/usr/lib/big-mount/lib.sh:534
 msgid "Dolphin (file manager)"
 msgstr "Dolphin (ファイルマネージャー)"
 
-#: big-mount/usr/lib/big-mount/lib.sh:501
+#: big-mount/usr/lib/big-mount/lib.sh:537
 msgid "KDE thumbnail generator"
 msgstr "KDE サムネイル生成"
 
-#: big-mount/usr/lib/big-mount/lib.sh:502
+#: big-mount/usr/lib/big-mount/lib.sh:538
 msgid "KDE trash"
 msgstr "KDE ごみ箱"
 
-#: big-mount/usr/lib/big-mount/lib.sh:503
+#: big-mount/usr/lib/big-mount/lib.sh:539
 msgid "KDE file service (kioworker)"
 msgstr "KDE ファイルサービス (kioworker)"
 
-#: big-mount/usr/lib/big-mount/lib.sh:504
+#: big-mount/usr/lib/big-mount/lib.sh:540
 msgid "KDE file service (%s)"
 msgstr "KDE ファイルサービス (%s)"
 
-#: big-mount/usr/lib/big-mount/lib.sh:507
+#: big-mount/usr/lib/big-mount/lib.sh:543
 msgid "Baloo file indexer"
 msgstr "Baloo ファイルインデクサー"
 
-#: big-mount/usr/lib/big-mount/lib.sh:508
+#: big-mount/usr/lib/big-mount/lib.sh:544
 msgid "File indexer (Tracker)"
 msgstr "ファイルインデクサー (Tracker)"
 
-#: big-mount/usr/lib/big-mount/lib.sh:510
+#: big-mount/usr/lib/big-mount/lib.sh:546
 msgid "Terminal"
 msgstr "端末"
 
-#: big-mount/usr/lib/big-mount/lib.sh:512
+#: big-mount/usr/lib/big-mount/lib.sh:548
 msgid "Command shell (terminal)"
 msgstr "コマンドシェル (端末)"
 
-#: big-mount/usr/lib/big-mount/lib.sh:514
+#: big-mount/usr/lib/big-mount/lib.sh:550
 msgid "Media player"
 msgstr "メディアプレーヤー"
 
-#: big-mount/usr/lib/big-mount/lib.sh:515
+#: big-mount/usr/lib/big-mount/lib.sh:551
 msgid "Thumbnail generator"
 msgstr "サムネイル生成"
 
-#: big-mount/usr/lib/big-mount/lib.sh:516
+#: big-mount/usr/lib/big-mount/lib.sh:552
 msgid "Document viewer"
 msgstr "ドキュメントビューアー"
 
-#: big-mount/usr/lib/big-mount/lib.sh:517
+#: big-mount/usr/lib/big-mount/lib.sh:553
 msgid "Image viewer"
 msgstr "画像ビューアー"
 
-#: big-mount/usr/lib/big-mount/lib.sh:518
+#: big-mount/usr/lib/big-mount/lib.sh:554
 msgid "Text editor"
 msgstr "テキストエディター"
 
-#: big-mount/usr/lib/big-mount/lib.sh:520
+#: big-mount/usr/lib/big-mount/lib.sh:556
 msgid "Web browser"
 msgstr "ウェブブラウザー"
 
-#: big-mount/usr/lib/big-mount/lib.sh:521
+#: big-mount/usr/lib/big-mount/lib.sh:557
 msgid "File manager"
 msgstr "ファイルマネージャー"
 
-#: big-mount/usr/lib/big-mount/lib.sh:523
+#: big-mount/usr/lib/big-mount/lib.sh:559
 msgid "Copy or archive operation"
 msgstr "コピーまたはアーカイブ操作"
 
-#: big-mount/usr/lib/big-mount/lib.sh:524
+#: big-mount/usr/lib/big-mount/lib.sh:560
 msgid "Synchronization service"
 msgstr "同期サービス"
 
-#: big-mount/usr/lib/big-mount/lib.sh:525
+#: big-mount/usr/lib/big-mount/lib.sh:561
 msgid "Backup"
 msgstr "バックアップ"
 
-#: big-mount/usr/lib/big-mount/lib.sh:535
+#: big-mount/usr/lib/big-mount/lib.sh:571
 msgid "Current folder is on the device"
 msgstr "現在のフォルダーがデバイス上にあります"
 
-#: big-mount/usr/lib/big-mount/lib.sh:536
+#: big-mount/usr/lib/big-mount/lib.sh:572
 msgid "Root folder (chroot) is on the device"
 msgstr "ルートフォルダー (chroot) がデバイス上にあります"
 
-#: big-mount/usr/lib/big-mount/lib.sh:537
+#: big-mount/usr/lib/big-mount/lib.sh:573
 msgid "Program running from the device"
 msgstr "デバイスから実行中のプログラム"
 
-#: big-mount/usr/lib/big-mount/lib.sh:538
+#: big-mount/usr/lib/big-mount/lib.sh:574
 msgid "File mapped in memory"
 msgstr "メモリにマップされたファイル"
 
-#: big-mount/usr/lib/big-mount/lib.sh:541
+#: big-mount/usr/lib/big-mount/lib.sh:577
 msgid "Open for writing"
 msgstr "書き込み用に開いています"
 
-#: big-mount/usr/lib/big-mount/lib.sh:542
+#: big-mount/usr/lib/big-mount/lib.sh:578
 msgid "Open for reading and writing"
 msgstr "読み書き用に開いています"
 
-#: big-mount/usr/lib/big-mount/lib.sh:543
+#: big-mount/usr/lib/big-mount/lib.sh:579
 msgid "Folder open"
 msgstr "フォルダーを開いています"
 
-#: big-mount/usr/lib/big-mount/lib.sh:543
+#: big-mount/usr/lib/big-mount/lib.sh:579
 msgid "Open for reading"
 msgstr "読み取り用に開いています"
 
-#: big-mount/usr/lib/big-mount/lib.sh:650
+#: big-mount/usr/lib/big-mount/lib.sh:686
 msgid "belongs to another user or to the system"
 msgstr "他のユーザーまたはシステムのもの"
 
-#: big-mount/usr/lib/big-mount/lib.sh:653
+#: big-mount/usr/lib/big-mount/lib.sh:689
 msgid "part of the desktop session"
 msgstr "デスクトップセッションの一部"
 
-#: big-mount/usr/lib/big-mount/lib.sh:656
+#: big-mount/usr/lib/big-mount/lib.sh:692
 msgid "a terminal: type 'cd' in it or close the tab"
 msgstr "端末: 'cd' と入力するか、タブを閉じてください"
 
-#: big-mount/usr/lib/big-mount/lib.sh:659
+#: big-mount/usr/lib/big-mount/lib.sh:695
 msgid "this tool"
 msgstr "このツール"
 
-#: big-mount/usr/lib/big-mount/lib.sh:664
+#: big-mount/usr/lib/big-mount/lib.sh:700
 msgid "has a file open for writing: finish or cancel the operation in the application"
 msgstr "ファイルを書き込み用に開いています: アプリケーションで操作を完了するか、キャンセルしてください"
 
-#: big-mount/usr/lib/big-mount/lib.sh:929
+#: big-mount/usr/lib/big-mount/lib.sh:965
 msgid "%s is unmounted here, but %s (PID %s) still has it mounted at %s"
 msgstr "%s はここではアンマウントされましたが、%s (PID %s) がまだ %s にマウントしています"
 
-#: big-mount/usr/lib/big-mount/lib.sh:933
+#: big-mount/usr/lib/big-mount/lib.sh:969
 msgid "%s is unmounted, but its filesystem driver is still writing to it"
 msgstr "%s はアンマウントされましたが、ファイルシステムドライバーがまだ書き込んでいます"
 
-#: big-mount/usr/lib/big-mount/lib.sh:959
+#: big-mount/usr/lib/big-mount/lib.sh:995
 msgid "%s is still mounted at %s after being unmounted"
 msgstr "%s はアンマウント後も %s にマウントされたままです"
 
-#: big-mount/usr/lib/big-mount/lib.sh:1303
+#: big-mount/usr/lib/big-mount/lib.sh:1339
 msgid "%s is mounted at %s"
 msgstr "%s は %s にマウントされています"
 
-#: big-mount/usr/lib/big-mount/lib.sh:1306
+#: big-mount/usr/lib/big-mount/lib.sh:1342
 msgid "%s is in use (encryption, LVM or RAID)"
 msgstr "%s は使用中です (暗号化、LVM、または RAID)"
 
-#: big-mount/usr/lib/big-mount/lib.sh:1320
+#: big-mount/usr/lib/big-mount/lib.sh:1356
 msgid "%s belongs to a filesystem that spans several drives"
 msgstr "%s は複数のドライブにまたがるファイルシステムに属しています"
 
-#: big-mount/usr/lib/big-mount/lib.sh:1326
+#: big-mount/usr/lib/big-mount/lib.sh:1362
 msgid "UDisks2 does not know this drive."
 msgstr "UDisks2 はこのドライブを認識していません。"
+
+#: big-mount/usr/lib/big-mount/cli.sh:530
+#, sh-printf-format
+msgid "In total, %d program is using it."
+msgid_plural "In total, %d programs are using it."
+msgstr[0] "合計 %d 個のプログラムが使用しています。"
+
+#: big-mount/usr/lib/big-mount/cli.sh:898
+#, sh-printf-format
+msgid "no failure predicted (%s damaged sector was replaced by a spare one)"
+msgid_plural "no failure predicted (%s damaged sectors were replaced by spare ones)"
+msgstr[0] "故障は予測されていません (損傷したセクター %s 個が代替セクターに置き換えられました)"
+
+#: big-mount/usr/lib/big-mount/cli.sh:913
+#: big-mount/usr/lib/big-mount/drive-diag.sh:233
+#, sh-printf-format
+msgid "Since the computer was started, it stopped answering and the connection had to be reset (%s kernel message)."
+msgid_plural "Since the computer was started, it stopped answering and the connection had to be reset (%s kernel messages)."
+msgstr[0] "コンピューターの起動後、応答が止まり、接続のリセットが必要になりました (カーネルメッセージ %s 件)。"
+
+#: big-mount/usr/lib/big-mount/cli.sh:914
+#: big-mount/usr/lib/big-mount/drive-diag.sh:232
+#, sh-printf-format
+msgid "Since the computer was started, reading or writing failed (%s kernel message)."
+msgid_plural "Since the computer was started, reading or writing failed (%s kernel messages)."
+msgstr[0] "コンピューターの起動後、読み取りまたは書き込みに失敗しました (カーネルメッセージ %s 件)。"
+
+#: big-mount/usr/lib/big-mount/cli.sh:916
+#: big-mount/usr/lib/big-mount/drive-diag.sh:234
+#, sh-printf-format
+msgid "Since the computer was started, the USB connection was reset or lost %s time."
+msgid_plural "Since the computer was started, the USB connection was reset or lost %s times."
+msgstr[0] "コンピューターの起動後、USB 接続が %s 回リセットまたは切断されました。"
+
+#: big-mount/usr/lib/big-mount/cli.sh:988
+#, sh-printf-format
+msgid "The drive announces that erasing takes about %d minute."
+msgid_plural "The drive announces that erasing takes about %d minutes."
+msgstr[0] "ドライブによると、消去にはおよそ %d 分かかります。"
+
+#: big-mount/usr/lib/big-mount/doctor.sh:441
+#, sh-printf-format
+msgid "%d package has a newer version in the last synchronized package list"
+msgid_plural "%d packages have newer versions in the last synchronized package list"
+msgstr[0] "最後に同期したパッケージリストで、%d 個のパッケージに新しいバージョンがあります"
+
+#: big-mount/usr/lib/big-mount/doctor.sh:463
+#, sh-printf-format
+msgid "%d problem"
+msgid_plural "%d problems"
+msgstr[0] "%d 件の問題"
+
+#: big-mount/usr/lib/big-mount/doctor.sh:464
+#, sh-printf-format
+msgid "%d warning"
+msgid_plural "%d warnings"
+msgstr[0] "%d 件の警告"
+
+#: big-mount/usr/lib/big-mount/drive-copy.sh:428
+#, sh-printf-format
+msgid "%s file was set aside because it did not advance. The drive may be getting worse, so the copy stopped."
+msgid_plural "%s files were set aside because they did not advance. The drive may be getting worse, so the copy stopped."
+msgstr[0] "%s 個のファイルが進まなかったため保留にしました。ドライブの状態が悪化している可能性があるため、コピーを停止しました。"
+
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1023
+#, sh-printf-format
+msgid "Waiting for the disk to answer, for %s second"
+msgid_plural "Waiting for the disk to answer, for %s seconds"
+msgstr[0] "ディスクの応答を待っています (%s 秒経過)"
+
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1094
+#, sh-printf-format
+msgid "%s file differs"
+msgid_plural "%s files differ"
+msgstr[0] "%s 個のファイルが異なります"
+
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1405
+#, sh-printf-format
+msgid "%s file, %s to copy"
+msgid_plural "%s files, %s to copy"
+msgstr[0] "%s 個のファイル、コピーする容量 %s"
+
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1406
+#, sh-printf-format
+msgid "%s already exists with different content."
+msgid_plural "%s already exist with different content."
+msgstr[0] "%s 個は既に存在し、内容が異なります。"
+
+#: big-mount/usr/lib/big-mount/drive-diag.sh:203
+#, sh-printf-format
+msgid "Powered on for %s hours, about %s year of use: failures become more likely."
+msgid_plural "Powered on for %s hours, about %s years of use: failures become more likely."
+msgstr[0] "通電時間 %s 時間、約 %s 年の使用です: 故障が起きやすくなっています。"
+
+#: big-mount/usr/lib/big-mount/drive-diag.sh:231
+#, sh-printf-format
+msgid "The NVMe drive recorded %s media or data integrity error."
+msgid_plural "The NVMe drive recorded %s media or data integrity errors."
+msgstr[0] "NVMe ドライブが %s 件のメディアまたはデータ整合性のエラーを記録しました。"
+
+#: big-mount/usr/lib/big-mount/drive-diag.sh:237
+#, sh-printf-format
+msgid "The drive reported %s error it could not correct."
+msgid_plural "The drive reported %s errors it could not correct."
+msgstr[0] "ドライブが訂正できないエラーを %s 件報告しました。"
+
+#: big-mount/usr/lib/big-mount/drive-diag.sh:238
+#, sh-printf-format
+msgid "The cable or adapter corrupted data in transit %s time (CRC errors)."
+msgid_plural "The cable or adapter corrupted data in transit %s times (CRC errors)."
+msgstr[0] "ケーブルまたはアダプターが転送中にデータを %s 回破損させました (CRC エラー)。"
+
+#: big-mount/usr/lib/big-mount/drive-diag.sh:239
+#, sh-printf-format
+msgid "%s of its SMART values is below its safe limit now."
+msgid_plural "%s of its SMART values are below their safe limit now."
+msgstr[0] "SMART の値のうち %s 個が現在、安全な限度を下回っています。"
+
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:889
+#, sh-printf-format
+msgid "%s file found by content in %s. Its original name and folder could not be kept."
+msgid_plural "%s files found by content in %s. Their original names and folders could not be kept."
+msgstr[0] "内容から %s 個のファイルが見つかりました (%s 内)。元の名前とフォルダーは保持できませんでした。"
 
 #: big-mount/usr/lib/big-mount/gui/about.py:16
 msgid "Big-Mount takes care of the drives of your computer:"
@@ -3636,25 +3706,25 @@ msgid "Recover files…"
 msgstr "ファイルを復元…"
 
 #: big-mount/usr/lib/big-mount/gui/actions.py:166
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:374
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:491
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:372
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:489
 msgid "Unmount"
 msgstr "アンマウント"
 
 #: big-mount/usr/lib/big-mount/gui/actions.py:167
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:375
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:373
 msgid "Force unmount (close the programs using it)…"
 msgstr "強制アンマウント (使用中のプログラムを終了)…"
 
 #: big-mount/usr/lib/big-mount/gui/actions.py:172
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:379
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:377
 msgid "Erase data permanently…"
 msgstr "データを完全に消去…"
 
 #: big-mount/usr/lib/big-mount/gui/actions.py:187
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:336
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:337
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1013
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:334
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:335
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1014
 msgid "More options"
 msgstr "その他のオプション"
 
@@ -3701,7 +3771,7 @@ msgid "List of files"
 msgstr "ファイルの一覧"
 
 #: big-mount/usr/lib/big-mount/gui/models.py:334
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:519
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:517
 msgid "Search by content"
 msgstr "内容による検索"
 
@@ -3961,7 +4031,7 @@ msgstr "「%s」を読み取り専用でマウント"
 
 #: big-mount/usr/lib/big-mount/gui/pages/device.py:65
 #: big-mount/usr/lib/big-mount/gui/pages/device.py:85
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:486
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:484
 msgid "Mount read-only"
 msgstr "読み取り専用でマウント"
 
@@ -3975,8 +4045,8 @@ msgid "Unmount and mount read-only"
 msgstr "アンマウントして読み取り専用でマウント"
 
 #: big-mount/usr/lib/big-mount/gui/pages/device.py:89
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1054
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:618
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1055
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:621
 msgid "The reason could not be determined."
 msgstr "原因を判別できませんでした。"
 
@@ -4026,7 +4096,7 @@ msgid "Rescue my files"
 msgstr "ファイルを救出"
 
 #: big-mount/usr/lib/big-mount/gui/pages/device.py:166
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:370
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:368
 msgid "Export diagnosis…"
 msgstr "診断をエクスポート…"
 
@@ -4125,178 +4195,174 @@ msgstr "SMART をもう一度読み取る…"
 msgid "Asks for the administrator password. It only reads: no test is started."
 msgstr "管理者パスワードを求めます。読み取るだけで、テストは開始しません。"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:243
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:242
 #, python-format
-msgid "%s (about a year of use)"
-msgstr "%s (約 1 年使用)"
+msgid "%(h)s (about %(y)d year of use)"
+msgid_plural "%(h)s (about %(y)d years of use)"
+msgstr[0] "%(h)s (約 %(y)d 年使用)"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:244
-#, python-format
-msgid "%(h)s (about %(y)d years of use)"
-msgstr "%(h)s (約 %(y)d 年使用)"
-
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:250
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:248
 msgid "Reading SMART. Through USB it can take a minute."
 msgstr "SMART を読み取っています。USB 経由では 1 分ほどかかる場合があります。"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:265
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:263
 msgid "Details"
 msgstr "詳細"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:275
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:273
 msgid "Hidden. It identifies this drive: it is also left out of shared reports."
 msgstr "非表示。このドライブを識別できる情報のため、共有用のレポートからも除外されます。"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:284
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:285
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:282
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:283
 msgid "Show the serial number"
 msgstr "シリアル番号を表示"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:291
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:294
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:289
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:292
 msgid "Messages from the system log"
 msgstr "システムログのメッセージ"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:292
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:290
 #, python-format
 msgid "%d recent message about this drive"
 msgid_plural "%d recent messages about this drive"
 msgstr[0] "このドライブに関する最近のメッセージ: %d 件"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:303
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:301
 #: big-mount/usr/lib/big-mount/gui/pages/maintenance.py:13
 msgid "Advanced maintenance"
 msgstr "高度なメンテナンス"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:304
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:302
 #: big-mount/usr/lib/big-mount/gui/pages/maintenance.py:38
 msgid "Erase data permanently"
 msgstr "データを完全に消去"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:304
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:302
 msgid "Separate from recovery. Warns first, then checks the drive and asks twice more."
 msgstr "復元とは別の機能です。最初に警告し、次にドライブをチェックして、さらに 2 回確認を求めます。"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:329
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:327
 msgid "Overview"
 msgstr "概要"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:330
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:328
 msgid "Recover"
 msgstr "復元"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:332
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:330
 msgid "History"
 msgstr "履歴"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:343
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:408
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:341
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:406
 msgid "The drive was disconnected"
 msgstr "ドライブの接続が外れました"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:344
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:342
 msgid "Nothing else was done. Connect it again and it comes back here."
 msgstr "それ以外の処理は行っていません。再接続すると、ここに再び表示されます。"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:345
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:343
 msgid "Back to my drives"
 msgstr "ドライブの一覧に戻る"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:373
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:371
 msgid "Block writing on the device…"
 msgstr "デバイスでの書き込みを禁止…"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:446
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:444
 #: big-mount/usr/lib/big-mount/gui/pages/overview.py:69
 #: big-mount/usr/lib/big-mount/gui/pages/rescue.py:277
 msgid "Recover files"
 msgstr "ファイルを復元"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:449
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:447
 msgid "Check drive"
 msgstr "ドライブをチェック"
 
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:452
 #: big-mount/usr/lib/big-mount/gui/pages/device.py:454
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:456
 msgid "Volumes"
 msgstr "ボリューム"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:479
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:477
 msgid "This volume spans more than one device. All of them must be connected."
 msgstr "このボリュームは複数のデバイスにまたがっています。すべてのデバイスを接続する必要があります。"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:490
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:493
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:488
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:491
 #: big-mount/usr/lib/big-mount/gui/pages/overview.py:66
 msgid "Open files"
 msgstr "ファイルを開く"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:495
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:493
 msgid "Unlock…"
 msgstr "ロックを解除…"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:512
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:510
 msgid "Copy your files to another place, step by step. This never writes to this drive."
 msgstr "ファイルを段階的に別の場所へコピーします。このドライブに書き込むことはありません。"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:513
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:511
 msgid "Start recovering files"
 msgstr "ファイルの復元を開始"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:516
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:514
 msgid "What can be done"
 msgstr "できること"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:517
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:515
 msgid "Copy files that can still be read"
 msgstr "まだ読み取れるファイルをコピー"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:517
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:515
 msgid "The quickest and safest: names and folders are kept."
 msgstr "最も速く安全な方法です: 名前とフォルダーは保持されます。"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:518
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:516
 msgid "List what exists, by type"
 msgstr "存在するものを種類別に一覧表示"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:518
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:516
 msgid "Goes through the folders. Then you choose what to copy."
 msgstr "フォルダーを走査します。その後、コピーするものを選択します。"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:519
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:517
 msgid "For when files cannot be opened. Names and folders are lost, and nothing is guaranteed."
 msgstr "ファイルを開けない場合に使います。名前とフォルダーは失われ、何も保証されません。"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:536
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:534
 msgid "Copies and searches of this drive"
 msgstr "このドライブのコピーと検索"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:540
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:538
 msgid "Nothing yet"
 msgstr "まだありません"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:541
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:539
 msgid "What you copy from this drive is listed here."
 msgstr "このドライブからコピーしたものが、ここに表示されます。"
 
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:559
 #: big-mount/usr/lib/big-mount/gui/pages/device.py:561
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:563
 msgid "Export diagnosis"
 msgstr "診断をエクスポート"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:564
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:562
 msgid "Keep them"
 msgstr "含める"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:564
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:562
 msgid "Hide them"
 msgstr "隠す"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:596
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:594
 msgid "Whatever a driver or another program tries, the disk does not change. It lasts until the drive is disconnected. It asks for the administrator password."
 msgstr "ドライバーや他のプログラムが何をしようとしても、ディスクは変更されません。ドライブの接続を外すまで有効です。管理者パスワードを求めます。"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:597
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:595
 msgid "Block writing"
 msgstr "書き込みを禁止"
 
@@ -4388,6 +4454,11 @@ msgstr "読み取りを増やさないよう、危険な状態のドライブで
 msgid "%s could not be read."
 msgstr "%s を読み取れませんでした。"
 
+#: big-mount/usr/lib/big-mount/gui/pages/job.py:205
+#, python-format
+msgid "Waiting for the disk to answer, for %s seconds"
+msgstr "ディスクの応答を待っています (%s 秒経過)"
+
 #: big-mount/usr/lib/big-mount/gui/pages/job.py:219
 msgid "Search again"
 msgstr "もう一度検索"
@@ -4409,7 +4480,7 @@ msgid "Keep working"
 msgstr "処理を続ける"
 
 #: big-mount/usr/lib/big-mount/gui/pages/job.py:254
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1142
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1143
 msgid "Stop"
 msgstr "停止"
 
@@ -4614,12 +4685,12 @@ msgid "Copies the whole device to a file on another disk with GNU ddrescue, keep
 msgstr "GNU ddrescue でデバイス全体を別のディスク上のファイルにコピーします。マップを保持するため再開でき、正常な領域を 2 回読み取ることはありません。"
 
 #: big-mount/usr/lib/big-mount/gui/pages/rescue.py:40
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1076
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1077
 msgid "Look for lost partitions"
 msgstr "失われたパーティションを探す"
 
 #: big-mount/usr/lib/big-mount/gui/pages/rescue.py:41
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1083
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1084
 msgid "TestDisk reads the partition table and analyzes the disk. It only shows what it finds: nothing is written."
 msgstr "TestDisk がパーティションテーブルを読み取り、ディスクを分析します。見つけたものを表示するだけで、何も書き込みません。"
 
@@ -4713,7 +4784,7 @@ msgid "You can choose more than one. If you are not sure, leave All."
 msgstr "複数選択できます。よくわからない場合は「すべての種類」のままにしてください。"
 
 #: big-mount/usr/lib/big-mount/gui/pages/rescue.py:552
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1006
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1007
 msgid "All types"
 msgstr "すべての種類"
 
@@ -4743,7 +4814,7 @@ msgid "What to copy"
 msgstr "コピーするもの"
 
 #: big-mount/usr/lib/big-mount/gui/pages/rescue.py:636
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1004
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1005
 msgid "Everything"
 msgstr "すべて"
 
@@ -4809,7 +4880,7 @@ msgid "Looking for places…"
 msgstr "場所を探しています…"
 
 #: big-mount/usr/lib/big-mount/gui/pages/rescue.py:795
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:627
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:630
 msgid "Choose another folder…"
 msgstr "別のフォルダーを選択…"
 
@@ -4858,161 +4929,162 @@ msgstr "対象"
 msgid "Space it will use"
 msgstr "使用する容量"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:975
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:977
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:976
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:978
 msgid "To copy"
 msgstr "コピーする量"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:975
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:976
 #, python-format
-msgid "%(files)s files, %(size)s"
-msgstr "ファイル %(files)s 個、%(size)s"
+msgid "%(files)s file, %(size)s"
+msgid_plural "%(files)s files, %(size)s"
+msgstr[0] "%(files)s 個のファイル、%(size)s"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:979
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:980
 msgid "Free at the destination"
 msgstr "コピー先の空き容量"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:981
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:982
 msgid "Already there, with different content"
 msgstr "既にあり、内容が異なるもの"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:984
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:985
 msgid "Your files will be copied with their names. Nothing is written to the source."
 msgstr "ファイルは名前を保ったままコピーされます。コピー元には何も書き込みません。"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:985
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:986
 msgid "First a list of what exists is made. Then you choose what to copy. Nothing is written to the source."
 msgstr "まず、存在するものの一覧を作成します。その後、コピーするものを選択します。コピー元には何も書き込みません。"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:986
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:987
 msgid "Files will be searched for by their content. Names and folders are lost, some files may come out incomplete, and finding nothing is possible. Nothing is written to the source."
 msgstr "ファイルを内容によって検索します。名前とフォルダーは失われ、一部のファイルは不完全になる可能性があり、何も見つからないこともあります。コピー元には何も書き込みません。"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:987
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:988
 msgid "The disk is read once, into a file. Nothing is written to it."
 msgstr "ディスクを一度だけ読み取り、ファイルに保存します。ディスクには何も書き込みません。"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:992
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:993
 msgid "After the image, the search needs your confirmation. It can also be started later."
 msgstr "イメージの作成後、検索にはあなたの確認が必要です。検索は後で開始することもできます。"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:994
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:995
 msgid "Good to know"
 msgstr "知っておきたいこと"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1004
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1005
 #, python-format
 msgid "%d item you marked"
 msgid_plural "%d items you marked"
 msgstr[0] "選択した項目: %d 個"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1014
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1015
 msgid "If a file already exists"
 msgstr "ファイルが既に存在する場合"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1019
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1020
 msgid "Check the result"
 msgstr "結果をチェック"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1021
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1022
 msgid "Basic: rsync confirms each file as it is copied"
 msgstr "基本: rsync がコピー時に各ファイルを確認"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1021
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1022
 msgid "Names, sizes and dates compared at the end"
 msgstr "最後に名前、サイズ、日付を比較"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1022
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1023
 msgid "Content compared at the end (reads the source again)"
 msgstr "最後に内容を比較 (コピー元をもう一度読み取ります)"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1026
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1027
 msgid "Set aside a stuck file after (seconds)"
 msgstr "進まないファイルを保留にするまでの時間 (秒)"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1028
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1029
 msgid "A file that does not advance for this long is set aside, so that the others are saved first. 0: never."
 msgstr "この時間進まないファイルは保留にし、他のファイルを先に保存します。0: 保留にしない。"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1032
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1033
 msgid "Limit the reading speed (kB/s)"
 msgstr "読み取り速度の制限 (kB/s)"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1034
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1035
 msgid "0: no limit"
 msgstr "0: 制限なし"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1045
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1046
 msgid "Starting…"
 msgstr "開始しています…"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1054
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:618
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1055
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:621
 msgid "It did not start"
 msgstr "開始されませんでした"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1084
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1085
 msgid "Read the partition table"
 msgstr "パーティションテーブルを読み取る"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1085
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1086
 msgid "Analyze the whole disk"
 msgstr "ディスク全体を分析"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1086
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1087
 msgid "It reads all of the disk. On a drive with problems this is extra wear."
 msgstr "ディスク全体を読み取ります。問題のあるドライブでは、その分だけ消耗が進みます。"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1089
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1090
 msgid "This drive reported problems: analyzing all of it is extra wear. A disk image first spares it."
 msgstr "このドライブは問題を報告しました: 全体を分析すると、その分だけ消耗が進みます。先にディスクイメージを作成すれば、ドライブへの負担を抑えられます。"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1111
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1112
 msgid "Stopping…"
 msgstr "停止しています…"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1118
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1119
 msgid "Volumes this drive already has"
 msgstr "このドライブに既にあるボリューム"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1119
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1120
 msgid "They are not lost. To recover their files, copying them is faster and reads the disk less than any analysis."
 msgstr "これらは失われていません。ファイルを復元するには、どの分析よりもコピーの方が速く、ディスクの読み取りも少なく済みます。"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1124
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1125
 msgid "Recover its files"
 msgstr "ファイルを復元"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1136
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1137
 msgid "Looking for partitions…"
 msgstr "パーティションを探しています…"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1140
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1141
 msgid "TestDisk does not say how far it has gone, so there is no percentage. Analyzing a whole disk reads all of it and can take hours; the drive can be used for nothing else meanwhile."
 msgstr "TestDisk は進み具合を示さないため、割合は表示されません。ディスク全体の分析ではすべてを読み取るため、数時間かかることがあります。その間、ドライブは他の用途に使えません。"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1151
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1152
 #, python-format
 msgid "Elapsed: %s"
 msgstr "経過時間: %s"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1171
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1172
 msgid "The search failed."
 msgstr "検索に失敗しました。"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1174
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1175
 msgid "What TestDisk found"
 msgstr "TestDisk が見つけたもの"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1180
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1181
 msgid "Big-Mount does not rewrite partition tables, on purpose: a mistake there can lose everything. A disk image, or a search by content, recovers files without that risk."
 msgstr "Big-Mount は意図的にパーティションテーブルを書き換えません: そこでの誤りはすべてを失う原因になりかねません。ディスクイメージや内容による検索なら、その危険なしにファイルを復元できます。"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1182
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1183
 msgid "The analysis did not recognize any partition. That does not prove there is no data: a search by content may still find files."
 msgstr "分析ではパーティションを認識できませんでした。これはデータがないという証明ではありません: 内容による検索でファイルが見つかる可能性があります。"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1184
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1185
 msgid "The partition table is empty or unreadable. Analyzing the whole disk may find what it no longer lists."
 msgstr "パーティションテーブルが空か、読み取れません。ディスク全体を分析すると、一覧から消えたものが見つかる可能性があります。"
 
@@ -5078,7 +5150,7 @@ msgid "Clear selection"
 msgstr "選択を解除"
 
 #: big-mount/usr/lib/big-mount/gui/pages/results.py:321
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:639
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:642
 msgid "Save report"
 msgstr "レポートを保存"
 
@@ -5107,30 +5179,42 @@ msgstr "すべて (%d)"
 msgid "The list could not be read."
 msgstr "一覧を読み取れませんでした。"
 
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:492
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:493
 #, python-format
-msgid "%(shown)d shown, %(sel)d selected (%(size)s)"
-msgstr "%(shown)d 件表示、%(sel)d 件選択 (%(size)s)"
+msgid "%(shown)s, %(sel)s (%(size)s)"
+msgstr "%(shown)s、%(sel)s (%(size)s)"
 
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:509
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:493
+#, python-format
+msgid "%d shown"
+msgid_plural "%d shown"
+msgstr[0] "%d 件表示"
+
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:494
+#, python-format
+msgid "%d selected"
+msgid_plural "%d selected"
+msgstr[0] "%d 件選択"
+
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:512
 msgid "Select"
 msgstr "選択"
 
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:531
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:534
 msgid "Preview"
 msgstr "プレビュー"
 
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:597
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:600
 msgid "It cannot be copied"
 msgstr "コピーできません"
 
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:600
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:603
 #, python-format
 msgid "%d file with a line break in its name was left out. It cannot be handled safely."
 msgid_plural "%d files with a line break in their names were left out. They cannot be handled safely."
 msgstr[0] "名前に改行を含むファイル %d 個を除外しました。安全に処理できません。"
 
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:626
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:629
 msgid "It cannot be saved here"
 msgstr "ここには保存できません"
 

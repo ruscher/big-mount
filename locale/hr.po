@@ -103,11 +103,11 @@ msgstr "%s: montiran kao %s na %s (%s)"
 msgid "Usage: bigmount [OPTION] [DEVICE|FOLDER]"
 msgstr "Uporaba: bigmount [OPCIJA] [UREĐAJ|MAPA]"
 
-#: big-mount/usr/lib/big-mount/cli.sh:27
+#: big-mount/usr/lib/big-mount/cli.sh:26
 msgid "(none)"
 msgstr "(bez opcije)"
 
-#: big-mount/usr/lib/big-mount/cli.sh:27
+#: big-mount/usr/lib/big-mount/cli.sh:26
 msgid "mount internal partitions (run at boot by big-mount.service)"
 msgstr "montira unutarnje particije (pokreće ga big-mount.service pri pokretanju sustava)"
 
@@ -678,10 +678,6 @@ msgstr "Zatvorite taj program, a zatim pokušajte ponovno."
 msgid "%s is using files on this device."
 msgstr "%s koristi datoteke na ovom uređaju."
 
-#: big-mount/usr/lib/big-mount/cli.sh:530
-msgid "In total, %d programs are using it."
-msgstr "Ukupan broj programa koji ga koriste: %d."
-
 #: big-mount/usr/lib/big-mount/cli.sh:543
 msgid "In use"
 msgstr "U uporabi"
@@ -863,10 +859,6 @@ msgstr "nije prijavljen nikakav problem"
 msgid "the drive predicts its own failure"
 msgstr "disk predviđa vlastiti kvar"
 
-#: big-mount/usr/lib/big-mount/cli.sh:898
-msgid "no failure predicted (%s damaged sectors were replaced by spare ones)"
-msgstr "kvar nije predviđen (oštećeni sektori zamijenjeni rezervnima: %s)"
-
 #: big-mount/usr/lib/big-mount/cli.sh:900
 msgid "SMART status"
 msgstr "Stanje SMART"
@@ -888,25 +880,10 @@ msgstr "Pronađeni problemi:"
 msgid "The drive itself reports that it is failing (SMART)."
 msgstr "Sam disk prijavljuje da otkazuje (SMART)."
 
-#: big-mount/usr/lib/big-mount/cli.sh:913
-#: big-mount/usr/lib/big-mount/drive-diag.sh:233
-msgid "Since the computer was started, it stopped answering and the connection had to be reset (%s kernel messages)."
-msgstr "Od pokretanja računala prestao je odgovarati i vezu je trebalo ponovno uspostaviti (poruke jezgre: %s)."
-
-#: big-mount/usr/lib/big-mount/cli.sh:914
-#: big-mount/usr/lib/big-mount/drive-diag.sh:232
-msgid "Since the computer was started, reading or writing failed (%s kernel messages)."
-msgstr "Od pokretanja računala čitanje ili pisanje nije uspjelo (poruke jezgre: %s)."
-
 #: big-mount/usr/lib/big-mount/cli.sh:915
 #: big-mount/usr/lib/big-mount/drive-diag.sh:235
 msgid "Since the computer was started, the connection was slowed down after errors."
 msgstr "Od pokretanja računala veza je usporena nakon pogrešaka."
-
-#: big-mount/usr/lib/big-mount/cli.sh:916
-#: big-mount/usr/lib/big-mount/drive-diag.sh:234
-msgid "Since the computer was started, the USB connection was reset or lost %s times."
-msgstr "Od pokretanja računala USB veza resetirana je ili izgubljena (broj puta: %s)."
 
 #: big-mount/usr/lib/big-mount/cli.sh:921
 msgid "Check the data and power cables of the drive, or try another SATA port."
@@ -971,10 +948,6 @@ msgstr "Ove će particije biti izgubljene:"
 #: big-mount/usr/lib/big-mount/cli.sh:986
 msgid "The drive announces that erasing takes more than 8 hours."
 msgstr "Disk najavljuje da brisanje traje dulje od 8 sati."
-
-#: big-mount/usr/lib/big-mount/cli.sh:988
-msgid "The drive announces that erasing takes about %d minutes."
-msgstr "Disk najavljuje da brisanje traje oko %d min."
 
 #: big-mount/usr/lib/big-mount/cli.sh:992
 msgid "Afterwards an empty %s partition table is written and read back, to check that the drive keeps what is written again."
@@ -1111,7 +1084,7 @@ msgstr "Ništa nije obrisano."
 #: big-mount/usr/lib/big-mount/drive-erase.sh:201
 #: big-mount/usr/lib/big-mount/drive-erase.sh:204
 #: big-mount/usr/lib/big-mount/drive-erase.sh:221
-#: big-mount/usr/lib/big-mount/lib.sh:1295
+#: big-mount/usr/lib/big-mount/lib.sh:1331
 msgid "The drive was disconnected or replaced. Nothing was erased."
 msgstr "Disk je odspojen ili zamijenjen. Ništa nije obrisano."
 
@@ -1183,7 +1156,7 @@ msgstr "Tehničke pojedinosti"
 #: big-mount/usr/lib/big-mount/cli.sh:1257
 #: big-mount/usr/lib/big-mount/cli.sh:1259
 #: big-mount/usr/lib/big-mount/cli.sh:1533
-#: big-mount/usr/lib/big-mount/ui.sh:234
+#: big-mount/usr/lib/big-mount/ui.sh:241
 msgid "Close"
 msgstr "Zatvori"
 
@@ -1764,10 +1737,6 @@ msgstr "Obično ih ostavi grafički program pokrenut sa sudo. Administrator vam 
 msgid "All your settings files belong to you"
 msgstr "Sve vaše datoteke postavki pripadaju vama"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:441
-msgid "%d packages have newer versions in the last synchronized package list"
-msgstr "Paketi s novijim inačicama na posljednjem sinkroniziranom popisu paketa: %d"
-
 #: big-mount/usr/lib/big-mount/doctor.sh:442
 msgid "Keep the system consistent: update everything at once (sudo pacman -Syu), never only some packages."
 msgstr "Održavajte sustav usklađenim: ažurirajte sve odjednom (sudo pacman -Syu), nikada samo neke pakete."
@@ -1776,15 +1745,15 @@ msgstr "Održavajte sustav usklađenim: ažurirajte sve odjednom (sudo pacman -S
 msgid "Big-Mount check (nothing is changed; labels, serial numbers, UUIDs and personal paths are left out)"
 msgstr "Provjera Big-Mounta (ništa se ne mijenja; oznake, serijski brojevi, UUID-ovi i osobne putanje izostavljeni su)"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:462
-msgid "Result: %d problem(s), %d warning(s)."
-msgstr "Rezultat: problemi: %d, upozorenja: %d."
+#: big-mount/usr/lib/big-mount/doctor.sh:465
+msgid "Result: %s, %s."
+msgstr "Rezultat: %s, %s."
 
-#: big-mount/usr/lib/big-mount/doctor.sh:463
+#: big-mount/usr/lib/big-mount/doctor.sh:466
 msgid "Big-Mount and the storage stack look healthy."
 msgstr "Big-Mount i podsustav za pohranu izgledaju ispravno."
 
-#: big-mount/usr/lib/big-mount/doctor.sh:464
+#: big-mount/usr/lib/big-mount/doctor.sh:467
 msgid "To report a problem, attach this output: bigmount --doctor > big-mount-report.txt"
 msgstr "Da biste prijavili problem, priložite ovaj ispis: bigmount --doctor > big-mount-report.txt"
 
@@ -2066,10 +2035,6 @@ msgstr "Odredište je odspojeno ili odmontirano. Ponovno ga priključite i monti
 msgid "The destination ran out of space. Free some space or choose another place, then resume."
 msgstr "Na odredištu je ponestalo prostora. Oslobodite prostor ili odaberite drugo mjesto, a zatim nastavite."
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:428
-msgid "%s files were set aside because they did not advance. The drive may be getting worse, so the copy stopped."
-msgstr "Datoteke odgođene jer nisu napredovale: %s. Disk se možda pogoršava, pa je kopiranje zaustavljeno."
-
 #: big-mount/usr/lib/big-mount/drive-copy.sh:429
 msgid "Some files were not copied. See the list below."
 msgstr "Neke datoteke nisu kopirane. Pogledajte popis niže."
@@ -2115,228 +2080,216 @@ msgstr "njezin sadržaj nije bilo moguće pročitati"
 msgid "Source:"
 msgstr "Izvor:"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:999
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1000
 #: big-mount/usr/lib/big-mount/drive-recovery.sh:940
 msgid "Destination:"
 msgstr "Odredište:"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1001
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1003
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1002
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1004
 msgid "Files:"
 msgstr "Datoteke:"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1013
 #: big-mount/usr/lib/big-mount/drive-copy.sh:1014
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1015
 msgid "Copied:"
 msgstr "Kopirano:"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1018
-msgid "Speed:"
-msgstr "Brzina:"
-
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1018
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1019
 msgid "average"
 msgstr "prosječno"
 
 #: big-mount/usr/lib/big-mount/drive-copy.sh:1019
+msgid "Speed:"
+msgstr "Brzina:"
+
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1020
 #: big-mount/usr/lib/big-mount/drive-recovery.sh:948
 msgid "Elapsed:"
 msgstr "Proteklo:"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1020
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1021
 msgid "Remaining:"
 msgstr "Preostalo:"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1021
-msgid "Waiting for the disk to answer, for %s seconds"
-msgstr "Čeka se odgovor diska, već %s s"
-
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1022
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1025
 msgid "Current file:"
 msgstr "Trenutna datoteka:"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1023
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1026
 msgid "Set aside:"
 msgstr "Odgođeno:"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1024
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1027
 msgid "Failed:"
 msgstr "Neuspjelo:"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1064
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1067
 msgid "Cancelled. Files already copied stay at the destination, and the copy can be resumed."
 msgstr "Otkazano. Već kopirane datoteke ostaju na odredištu, a kopiranje se može nastaviti."
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1080
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1083
 msgid "Source"
 msgstr "Izvor"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1085
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1088
 #: big-mount/usr/lib/big-mount/drive-recovery.sh:962
 msgid "Destination"
 msgstr "Odredište"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1086
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1089
 msgid "Files copied"
 msgstr "Kopirane datoteke"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1087
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1090
 msgid "Data copied"
 msgstr "Kopirani podaci"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1088
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1091
 #: big-mount/usr/lib/big-mount/drive-recovery.sh:966
 msgid "Elapsed"
 msgstr "Proteklo"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1090
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1091
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1092
 #: big-mount/usr/lib/big-mount/drive-copy.sh:1093
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1094
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1095
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1096
 msgid "Check"
 msgstr "Provjera"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1090
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1093
 msgid "source and destination match"
 msgstr "izvor i odredište se podudaraju"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1091
-msgid "%s files differ"
-msgstr "Datoteke koje se razlikuju: %s"
-
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1092
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1095
 msgid "did not finish"
 msgstr "nije završila"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1093
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1096
 msgid "rsync confirmed each file as it was copied; no second comparison was made"
 msgstr "rsync je potvrdio svaku datoteku tijekom kopiranja; druga usporedba nije provedena"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1095
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1098
 msgid "Already at the destination, with different content"
 msgstr "Već na odredištu, s drugačijim sadržajem"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1099
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1102
 msgid "Set aside because they did not advance (damaged area of the disk):"
 msgstr "Odgođene jer nisu napredovale (oštećeno područje diska):"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1102
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1105
 msgid "To try them again, which puts more strain on the disk: bigmount --drive resume %s --retry-deferred"
 msgstr "Za ponovni pokušaj, koji dodatno opterećuje disk: bigmount --drive resume %s --retry-deferred"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1106
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1109
 msgid "Not copied:"
 msgstr "Nije kopirano:"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1111
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1114
 msgid "Different at the destination:"
 msgstr "Drugačije na odredištu:"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1114
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1117
 msgid "Log:"
 msgstr "Zapisnik:"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1138
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1141
 #: big-mount/usr/lib/big-mount/drive.sh:239
 msgid "Serial number"
 msgstr "Serijski broj"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1138
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1141
 #: big-mount/usr/lib/big-mount/drive.sh:255
 msgid "Label"
 msgstr "Oznaka"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1170
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1173
 msgid "'%s' already exists. Nothing was written."
 msgstr "'%s' već postoji. Ništa nije zapisano."
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1186
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1189
 msgid "Kernel messages:"
 msgstr "Poruke jezgre:"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1194
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1197
 msgid "'%s' is a folder. Nothing was written."
 msgstr "'%s' je mapa. Ništa nije zapisano."
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1202
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1205
 msgid "Report written to %s"
 msgstr "Izvješće je zapisano u %s"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1255
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1262
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1258
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1265
 msgid "free"
 msgstr "slobodno"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1258
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1261
 msgid "drive with critical alerts"
 msgstr "disk s kritičnim upozorenjima"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1259
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1262
 msgid "same physical disk as the source"
 msgstr "isti fizički disk kao izvor"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1260
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1263
 msgid "not enough space"
 msgstr "nema dovoljno prostora"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1276
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1279
 msgid "Home folder"
 msgstr "Osobna mapa"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1323
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1476
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1488
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1533
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1326
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1482
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1494
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1539
 #: big-mount/usr/lib/big-mount/drive-recovery.sh:986
 msgid "There is no job '%s'."
 msgstr "Ne postoji zadatak '%s'."
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1326
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1329
 msgid "Only the results of a search by content can be copied this way."
 msgstr "Na ovaj se način mogu kopirati samo rezultati pretrage po sadržaju."
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1333
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1336
 #: big-mount/usr/lib/big-mount/drive-recovery.sh:521
 #: big-mount/usr/lib/big-mount/drive-recovery.sh:847
 msgid "Both --source and --destination are needed."
 msgstr "Potrebni su i --source i --destination."
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1401
-msgid "%s files, %s to copy; %s already exist with different content."
-msgstr "Datoteke: %s, za kopiranje: %s; već postoje s drugačijim sadržajem: %s."
-
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1424
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1430
 msgid "The copy could not be started."
 msgstr "Kopiranje nije bilo moguće pokrenuti."
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1429
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1560
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1435
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1566
 #: big-mount/usr/lib/big-mount/drive-recovery.sh:291
 msgid "Copy started: %s"
 msgstr "Kopiranje je pokrenuto: %s"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1431
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1437
 #: big-mount/usr/lib/big-mount/drive-recovery.sh:293
 msgid "To follow it: bigmount --drive status %s --watch"
 msgstr "Za praćenje: bigmount --drive status %s --watch"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1462
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1468
 msgid "No copies or images yet."
 msgstr "Još nema kopija ni slika."
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1496
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1502
 msgid "A search cannot be paused, only cancelled. What was found stays."
 msgstr "Pretraga se ne može pauzirati, samo otkazati. Ono što je pronađeno ostaje."
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1516
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1522
 msgid "It is not running."
 msgstr "Zadatak se ne izvodi."
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1539
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1545
 msgid "It is already running."
 msgstr "Zadatak se već izvodi."
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1543
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1549
 msgid "It is already complete."
 msgstr "Zadatak je već dovršen."
 
@@ -2467,20 +2420,21 @@ msgid "Only the system log was consulted. Without the drive's own report (SMART)
 msgstr "Pregledan je samo zapisnik sustava. Bez vlastitog izvješća diska (SMART) ne može se ocijeniti kao odličan."
 
 #: big-mount/usr/lib/big-mount/drive-diag.sh:198
-msgid "It has used %s%% of the life its maker rates it for: it is near or past its end."
-msgstr "Iskoristio je %s%% vijeka trajanja koji mu predviđa proizvođač: blizu je kraja ili ga je već prešao."
+#: big-mount/usr/lib/big-mount/drive-diag.sh:199
+msgid "%s%%"
+msgstr "%s %%"
+
+#: big-mount/usr/lib/big-mount/drive-diag.sh:198
+msgid "It has used %s of the life its maker rates it for: it is near or past its end."
+msgstr "Iskoristio je %s vijeka trajanja koji mu predviđa proizvođač: blizu je kraja ili ga je već prešao."
 
 #: big-mount/usr/lib/big-mount/drive-diag.sh:199
-msgid "It has used %s%% of the life its maker rates it for."
-msgstr "Iskoristio je %s%% vijeka trajanja koji mu predviđa proizvođač."
+msgid "It has used %s of the life its maker rates it for."
+msgstr "Iskoristio je %s vijeka trajanja koji mu predviđa proizvođač."
 
 #: big-mount/usr/lib/big-mount/drive-diag.sh:200
 msgid "Some of its SMART values were below their safe limit in the past."
 msgstr "Neke su njegove SMART vrijednosti u prošlosti bile ispod sigurne granice."
-
-#: big-mount/usr/lib/big-mount/drive-diag.sh:203
-msgid "Powered on for %s hours, about %s years of use: failures become more likely."
-msgstr "Sati rada: %s, oko %s god. uporabe: kvarovi postaju vjerojatniji."
 
 #: big-mount/usr/lib/big-mount/drive-diag.sh:205
 msgid "It is hot now (%s °C). Heat shortens its life: give it air."
@@ -2522,25 +2476,9 @@ msgstr "Disk ima sektore koje više ne može pročitati (na čekanju: %s), iako 
 msgid "The NVMe drive raised a critical warning (%s)."
 msgstr "NVMe disk izdao je kritično upozorenje (%s)."
 
-#: big-mount/usr/lib/big-mount/drive-diag.sh:231
-msgid "The NVMe drive recorded %s media or data integrity errors."
-msgstr "NVMe disk zabilježio je pogreške medija ili cjelovitosti podataka: %s."
-
 #: big-mount/usr/lib/big-mount/drive-diag.sh:236
 msgid "The drive already replaced damaged sectors with spare ones."
 msgstr "Disk je već zamijenio oštećene sektore rezervnima."
-
-#: big-mount/usr/lib/big-mount/drive-diag.sh:237
-msgid "The drive reported %s errors it could not correct."
-msgstr "Disk je prijavio pogreške koje nije mogao ispraviti: %s."
-
-#: big-mount/usr/lib/big-mount/drive-diag.sh:238
-msgid "The cable or adapter corrupted data in transit %s times (CRC errors)."
-msgstr "Kabel ili prilagodnik oštetio je podatke tijekom prijenosa (CRC pogreške, broj puta: %s)."
-
-#: big-mount/usr/lib/big-mount/drive-diag.sh:239
-msgid "%s of its SMART values are below their safe limit now."
-msgstr "SMART vrijednosti koje su sada ispod sigurne granice: %s."
 
 #: big-mount/usr/lib/big-mount/drive-diag.sh:286
 #: big-mount/usr/lib/big-mount/drive.sh:236
@@ -2738,7 +2676,6 @@ msgstr "Među rezultatima se mogu pojaviti datoteke Worda, Excela i LibreOfficea
 msgid "Search started: %s"
 msgstr "Pretraga je pokrenuta: %s"
 
-#: big-mount/usr/lib/big-mount/drive-recovery.sh:889
 #: big-mount/usr/lib/big-mount/drive-recovery.sh:928
 msgid "%s files found by content in %s. Their original names and folders could not be kept."
 msgstr "Datoteke pronađene po sadržaju: %s (u mapi %s). Njihove izvorne nazive i mape nije bilo moguće zadržati."
@@ -3122,6 +3059,16 @@ msgstr "Aplikacija treba GTK 4, libadwaita 1.5 ili noviju i PyGObject (paketi gt
 msgid "Press Enter to continue."
 msgstr "Pritisnite Enter za nastavak."
 
+#: big-mount/usr/lib/big-mount/drive-tui.sh:42
+#: big-mount/usr/lib/big-mount/ui.sh:131 big-mount/usr/lib/big-mount/ui.sh:146
+msgid "y"
+msgstr "d"
+
+#: big-mount/usr/lib/big-mount/drive-tui.sh:42
+#: big-mount/usr/lib/big-mount/ui.sh:146
+msgid "N"
+msgstr "N"
+
 #: big-mount/usr/lib/big-mount/drive-tui.sh:49
 msgid "The interactive manager needs a terminal. For scripts, see bigmount --drive --help."
 msgstr "Interaktivni upravitelj treba terminal. Za skripte pogledajte bigmount --drive --help."
@@ -3331,189 +3278,352 @@ msgstr "Pratiti njegov napredak?"
 msgid "Resume it?"
 msgstr "Nastaviti ga?"
 
-#: big-mount/usr/lib/big-mount/lib.sh:140
+#: big-mount/usr/lib/big-mount/lib.sh:176
 msgid "No device or folder was given."
 msgstr "Nije naveden nijedan uređaj ni mapa."
 
-#: big-mount/usr/lib/big-mount/lib.sh:141
+#: big-mount/usr/lib/big-mount/lib.sh:177
 msgid "'%s' does not exist. If it is a removable device, it may have been disconnected."
 msgstr "'%s' ne postoji. Ako je to izmjenjivi uređaj, možda je odspojen."
 
-#: big-mount/usr/lib/big-mount/lib.sh:142
+#: big-mount/usr/lib/big-mount/lib.sh:178
 msgid "'%s' is not available. If it is a removable device, it may have been disconnected."
 msgstr "'%s' nije dostupan. Ako je to izmjenjivi uređaj, možda je odspojen."
 
-#: big-mount/usr/lib/big-mount/lib.sh:149
+#: big-mount/usr/lib/big-mount/lib.sh:185
 msgid "'%s' is an NVMe controller, not a storage device. Its storage is: %s"
 msgstr "'%s' je NVMe upravljač, a ne uređaj za pohranu. Njegova pohrana je: %s"
 
-#: big-mount/usr/lib/big-mount/lib.sh:151
+#: big-mount/usr/lib/big-mount/lib.sh:187
 msgid "'%s' is not a storage device."
 msgstr "'%s' nije uređaj za pohranu."
 
-#: big-mount/usr/lib/big-mount/lib.sh:152
+#: big-mount/usr/lib/big-mount/lib.sh:188
 msgid "'%s' is not on a local storage device (it may be a network share or a memory filesystem)."
 msgstr "'%s' nije na lokalnom uređaju za pohranu (možda je mrežni dijeljeni resurs ili datotečni sustav u memoriji)."
 
-#: big-mount/usr/lib/big-mount/lib.sh:153
+#: big-mount/usr/lib/big-mount/lib.sh:189
 msgid "'%s' is not a local storage device or a folder on one"
 msgstr "'%s' nije lokalni uređaj za pohranu ni mapa na njemu"
 
-#: big-mount/usr/lib/big-mount/lib.sh:498
+#: big-mount/usr/lib/big-mount/lib.sh:534
 msgid "Dolphin (file manager)"
 msgstr "Dolphin (upravitelj datoteka)"
 
-#: big-mount/usr/lib/big-mount/lib.sh:501
+#: big-mount/usr/lib/big-mount/lib.sh:537
 msgid "KDE thumbnail generator"
 msgstr "KDE generator sličica"
 
-#: big-mount/usr/lib/big-mount/lib.sh:502
+#: big-mount/usr/lib/big-mount/lib.sh:538
 msgid "KDE trash"
 msgstr "KDE smeće"
 
-#: big-mount/usr/lib/big-mount/lib.sh:503
+#: big-mount/usr/lib/big-mount/lib.sh:539
 msgid "KDE file service (kioworker)"
 msgstr "KDE usluga za datoteke (kioworker)"
 
-#: big-mount/usr/lib/big-mount/lib.sh:504
+#: big-mount/usr/lib/big-mount/lib.sh:540
 msgid "KDE file service (%s)"
 msgstr "KDE usluga za datoteke (%s)"
 
-#: big-mount/usr/lib/big-mount/lib.sh:507
+#: big-mount/usr/lib/big-mount/lib.sh:543
 msgid "Baloo file indexer"
 msgstr "Baloo indeksator datoteka"
 
-#: big-mount/usr/lib/big-mount/lib.sh:508
+#: big-mount/usr/lib/big-mount/lib.sh:544
 msgid "File indexer (Tracker)"
 msgstr "Indeksator datoteka (Tracker)"
 
-#: big-mount/usr/lib/big-mount/lib.sh:510
+#: big-mount/usr/lib/big-mount/lib.sh:546
 msgid "Terminal"
 msgstr "Terminal"
 
-#: big-mount/usr/lib/big-mount/lib.sh:512
+#: big-mount/usr/lib/big-mount/lib.sh:548
 msgid "Command shell (terminal)"
 msgstr "Naredbena ljuska (terminal)"
 
-#: big-mount/usr/lib/big-mount/lib.sh:514
+#: big-mount/usr/lib/big-mount/lib.sh:550
 msgid "Media player"
 msgstr "Reproduktor medija"
 
-#: big-mount/usr/lib/big-mount/lib.sh:515
+#: big-mount/usr/lib/big-mount/lib.sh:551
 msgid "Thumbnail generator"
 msgstr "Generator sličica"
 
-#: big-mount/usr/lib/big-mount/lib.sh:516
+#: big-mount/usr/lib/big-mount/lib.sh:552
 msgid "Document viewer"
 msgstr "Preglednik dokumenata"
 
-#: big-mount/usr/lib/big-mount/lib.sh:517
+#: big-mount/usr/lib/big-mount/lib.sh:553
 msgid "Image viewer"
 msgstr "Preglednik slika"
 
-#: big-mount/usr/lib/big-mount/lib.sh:518
+#: big-mount/usr/lib/big-mount/lib.sh:554
 msgid "Text editor"
 msgstr "Uređivač teksta"
 
-#: big-mount/usr/lib/big-mount/lib.sh:520
+#: big-mount/usr/lib/big-mount/lib.sh:556
 msgid "Web browser"
 msgstr "Web preglednik"
 
-#: big-mount/usr/lib/big-mount/lib.sh:521
+#: big-mount/usr/lib/big-mount/lib.sh:557
 msgid "File manager"
 msgstr "Upravitelj datoteka"
 
-#: big-mount/usr/lib/big-mount/lib.sh:523
+#: big-mount/usr/lib/big-mount/lib.sh:559
 msgid "Copy or archive operation"
 msgstr "Kopiranje ili arhiviranje"
 
-#: big-mount/usr/lib/big-mount/lib.sh:524
+#: big-mount/usr/lib/big-mount/lib.sh:560
 msgid "Synchronization service"
 msgstr "Usluga sinkronizacije"
 
-#: big-mount/usr/lib/big-mount/lib.sh:525
+#: big-mount/usr/lib/big-mount/lib.sh:561
 msgid "Backup"
 msgstr "Izrada sigurnosnih kopija"
 
-#: big-mount/usr/lib/big-mount/lib.sh:535
+#: big-mount/usr/lib/big-mount/lib.sh:571
 msgid "Current folder is on the device"
 msgstr "Trenutna mapa nalazi se na uređaju"
 
-#: big-mount/usr/lib/big-mount/lib.sh:536
+#: big-mount/usr/lib/big-mount/lib.sh:572
 msgid "Root folder (chroot) is on the device"
 msgstr "Korijenska mapa (chroot) nalazi se na uređaju"
 
-#: big-mount/usr/lib/big-mount/lib.sh:537
+#: big-mount/usr/lib/big-mount/lib.sh:573
 msgid "Program running from the device"
 msgstr "Program se izvodi s uređaja"
 
-#: big-mount/usr/lib/big-mount/lib.sh:538
+#: big-mount/usr/lib/big-mount/lib.sh:574
 msgid "File mapped in memory"
 msgstr "Datoteka mapirana u memoriju"
 
-#: big-mount/usr/lib/big-mount/lib.sh:541
+#: big-mount/usr/lib/big-mount/lib.sh:577
 msgid "Open for writing"
 msgstr "Otvoreno za pisanje"
 
-#: big-mount/usr/lib/big-mount/lib.sh:542
+#: big-mount/usr/lib/big-mount/lib.sh:578
 msgid "Open for reading and writing"
 msgstr "Otvoreno za čitanje i pisanje"
 
-#: big-mount/usr/lib/big-mount/lib.sh:543
+#: big-mount/usr/lib/big-mount/lib.sh:579
 msgid "Folder open"
 msgstr "Mapa je otvorena"
 
-#: big-mount/usr/lib/big-mount/lib.sh:543
+#: big-mount/usr/lib/big-mount/lib.sh:579
 msgid "Open for reading"
 msgstr "Otvoreno za čitanje"
 
-#: big-mount/usr/lib/big-mount/lib.sh:650
+#: big-mount/usr/lib/big-mount/lib.sh:686
 msgid "belongs to another user or to the system"
 msgstr "pripada drugom korisniku ili sustavu"
 
-#: big-mount/usr/lib/big-mount/lib.sh:653
+#: big-mount/usr/lib/big-mount/lib.sh:689
 msgid "part of the desktop session"
 msgstr "dio sesije radne površine"
 
-#: big-mount/usr/lib/big-mount/lib.sh:656
+#: big-mount/usr/lib/big-mount/lib.sh:692
 msgid "a terminal: type 'cd' in it or close the tab"
 msgstr "terminal: upišite u njemu 'cd' ili zatvorite karticu"
 
-#: big-mount/usr/lib/big-mount/lib.sh:659
+#: big-mount/usr/lib/big-mount/lib.sh:695
 msgid "this tool"
 msgstr "ovaj alat"
 
-#: big-mount/usr/lib/big-mount/lib.sh:664
+#: big-mount/usr/lib/big-mount/lib.sh:700
 msgid "has a file open for writing: finish or cancel the operation in the application"
 msgstr "ima datoteku otvorenu za pisanje: dovršite ili otkažite radnju u aplikaciji"
 
-#: big-mount/usr/lib/big-mount/lib.sh:929
+#: big-mount/usr/lib/big-mount/lib.sh:965
 msgid "%s is unmounted here, but %s (PID %s) still has it mounted at %s"
 msgstr "%s je ovdje odmontiran, ali ga %s (PID %s) još ima montiranog u %s"
 
-#: big-mount/usr/lib/big-mount/lib.sh:933
+#: big-mount/usr/lib/big-mount/lib.sh:969
 msgid "%s is unmounted, but its filesystem driver is still writing to it"
 msgstr "%s je odmontiran, ali upravljački program njegova datotečnog sustava još piše na njega"
 
-#: big-mount/usr/lib/big-mount/lib.sh:959
+#: big-mount/usr/lib/big-mount/lib.sh:995
 msgid "%s is still mounted at %s after being unmounted"
 msgstr "%s je i dalje montiran u %s nakon odmontiranja"
 
-#: big-mount/usr/lib/big-mount/lib.sh:1303
+#: big-mount/usr/lib/big-mount/lib.sh:1339
 msgid "%s is mounted at %s"
 msgstr "%s je montiran u %s"
 
-#: big-mount/usr/lib/big-mount/lib.sh:1306
+#: big-mount/usr/lib/big-mount/lib.sh:1342
 msgid "%s is in use (encryption, LVM or RAID)"
 msgstr "%s je u uporabi (šifriranje, LVM ili RAID)"
 
-#: big-mount/usr/lib/big-mount/lib.sh:1320
+#: big-mount/usr/lib/big-mount/lib.sh:1356
 msgid "%s belongs to a filesystem that spans several drives"
 msgstr "%s pripada datotečnom sustavu koji se proteže preko više diskova"
 
-#: big-mount/usr/lib/big-mount/lib.sh:1326
+#: big-mount/usr/lib/big-mount/lib.sh:1362
 msgid "UDisks2 does not know this drive."
 msgstr "UDisks2 ne poznaje ovaj disk."
+
+#: big-mount/usr/lib/big-mount/cli.sh:530
+#, sh-printf-format
+msgid "In total, %d program is using it."
+msgid_plural "In total, %d programs are using it."
+msgstr[0] "Ukupno ga koristi %d program."
+msgstr[1] "Ukupno ga koriste %d programa."
+msgstr[2] "Ukupno ga koristi %d programa."
+
+#: big-mount/usr/lib/big-mount/cli.sh:898
+#, sh-printf-format
+msgid "no failure predicted (%s damaged sector was replaced by a spare one)"
+msgid_plural "no failure predicted (%s damaged sectors were replaced by spare ones)"
+msgstr[0] "kvar nije predviđen (%s oštećeni sektor zamijenjen je rezervnim)"
+msgstr[1] "kvar nije predviđen (%s oštećena sektora zamijenjena su rezervnima)"
+msgstr[2] "kvar nije predviđen (%s oštećenih sektora zamijenjeno je rezervnima)"
+
+#: big-mount/usr/lib/big-mount/cli.sh:913
+#: big-mount/usr/lib/big-mount/drive-diag.sh:233
+#, sh-printf-format
+msgid "Since the computer was started, it stopped answering and the connection had to be reset (%s kernel message)."
+msgid_plural "Since the computer was started, it stopped answering and the connection had to be reset (%s kernel messages)."
+msgstr[0] "Od pokretanja računala prestao je odgovarati i vezu je trebalo ponovno uspostaviti (%s poruka jezgre)."
+msgstr[1] "Od pokretanja računala prestao je odgovarati i vezu je trebalo ponovno uspostaviti (%s poruke jezgre)."
+msgstr[2] "Od pokretanja računala prestao je odgovarati i vezu je trebalo ponovno uspostaviti (%s poruka jezgre)."
+
+#: big-mount/usr/lib/big-mount/cli.sh:914
+#: big-mount/usr/lib/big-mount/drive-diag.sh:232
+#, sh-printf-format
+msgid "Since the computer was started, reading or writing failed (%s kernel message)."
+msgid_plural "Since the computer was started, reading or writing failed (%s kernel messages)."
+msgstr[0] "Od pokretanja računala čitanje ili pisanje nije uspjelo (%s poruka jezgre)."
+msgstr[1] "Od pokretanja računala čitanje ili pisanje nije uspjelo (%s poruke jezgre)."
+msgstr[2] "Od pokretanja računala čitanje ili pisanje nije uspjelo (%s poruka jezgre)."
+
+#: big-mount/usr/lib/big-mount/cli.sh:916
+#: big-mount/usr/lib/big-mount/drive-diag.sh:234
+#, sh-printf-format
+msgid "Since the computer was started, the USB connection was reset or lost %s time."
+msgid_plural "Since the computer was started, the USB connection was reset or lost %s times."
+msgstr[0] "Od pokretanja računala USB veza resetirana je ili izgubljena %s put."
+msgstr[1] "Od pokretanja računala USB veza resetirana je ili izgubljena %s puta."
+msgstr[2] "Od pokretanja računala USB veza resetirana je ili izgubljena %s puta."
+
+#: big-mount/usr/lib/big-mount/cli.sh:988
+#, sh-printf-format
+msgid "The drive announces that erasing takes about %d minute."
+msgid_plural "The drive announces that erasing takes about %d minutes."
+msgstr[0] "Disk najavljuje da brisanje traje oko %d minute."
+msgstr[1] "Disk najavljuje da brisanje traje oko %d minute."
+msgstr[2] "Disk najavljuje da brisanje traje oko %d minuta."
+
+#: big-mount/usr/lib/big-mount/doctor.sh:441
+#, sh-printf-format
+msgid "%d package has a newer version in the last synchronized package list"
+msgid_plural "%d packages have newer versions in the last synchronized package list"
+msgstr[0] "%d paket ima noviju inačicu na posljednjem sinkroniziranom popisu paketa"
+msgstr[1] "%d paketa imaju novije inačice na posljednjem sinkroniziranom popisu paketa"
+msgstr[2] "%d paketa ima novije inačice na posljednjem sinkroniziranom popisu paketa"
+
+#: big-mount/usr/lib/big-mount/doctor.sh:463
+#, sh-printf-format
+msgid "%d problem"
+msgid_plural "%d problems"
+msgstr[0] "%d problem"
+msgstr[1] "%d problema"
+msgstr[2] "%d problema"
+
+#: big-mount/usr/lib/big-mount/doctor.sh:464
+#, sh-printf-format
+msgid "%d warning"
+msgid_plural "%d warnings"
+msgstr[0] "%d upozorenje"
+msgstr[1] "%d upozorenja"
+msgstr[2] "%d upozorenja"
+
+#: big-mount/usr/lib/big-mount/drive-copy.sh:428
+#, sh-printf-format
+msgid "%s file was set aside because it did not advance. The drive may be getting worse, so the copy stopped."
+msgid_plural "%s files were set aside because they did not advance. The drive may be getting worse, so the copy stopped."
+msgstr[0] "%s datoteka odgođena je jer nije napredovala. Disk se možda pogoršava, pa je kopiranje zaustavljeno."
+msgstr[1] "%s datoteke odgođene su jer nisu napredovale. Disk se možda pogoršava, pa je kopiranje zaustavljeno."
+msgstr[2] "%s datoteka odgođeno je jer nisu napredovale. Disk se možda pogoršava, pa je kopiranje zaustavljeno."
+
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1023
+#, sh-printf-format
+msgid "Waiting for the disk to answer, for %s second"
+msgid_plural "Waiting for the disk to answer, for %s seconds"
+msgstr[0] "Čeka se odgovor diska, već %s sekundu"
+msgstr[1] "Čeka se odgovor diska, već %s sekunde"
+msgstr[2] "Čeka se odgovor diska, već %s sekundi"
+
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1094
+#, sh-printf-format
+msgid "%s file differs"
+msgid_plural "%s files differ"
+msgstr[0] "%s datoteka se razlikuje"
+msgstr[1] "%s datoteke se razlikuju"
+msgstr[2] "%s datoteka se razlikuje"
+
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1405
+#, sh-printf-format
+msgid "%s file, %s to copy"
+msgid_plural "%s files, %s to copy"
+msgstr[0] "%s datoteka, %s za kopiranje"
+msgstr[1] "%s datoteke, %s za kopiranje"
+msgstr[2] "%s datoteka, %s za kopiranje"
+
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1406
+#, sh-printf-format
+msgid "%s already exists with different content."
+msgid_plural "%s already exist with different content."
+msgstr[0] "%s datoteka već postoji s drugačijim sadržajem."
+msgstr[1] "%s datoteke već postoje s drugačijim sadržajem."
+msgstr[2] "%s datoteka već postoji s drugačijim sadržajem."
+
+#: big-mount/usr/lib/big-mount/drive-diag.sh:203
+#, sh-printf-format
+msgid "Powered on for %s hours, about %s year of use: failures become more likely."
+msgid_plural "Powered on for %s hours, about %s years of use: failures become more likely."
+msgstr[0] "Sati rada: %s, oko %s godine uporabe: kvarovi postaju vjerojatniji."
+msgstr[1] "Sati rada: %s, oko %s godine uporabe: kvarovi postaju vjerojatniji."
+msgstr[2] "Sati rada: %s, oko %s godina uporabe: kvarovi postaju vjerojatniji."
+
+#: big-mount/usr/lib/big-mount/drive-diag.sh:231
+#, sh-printf-format
+msgid "The NVMe drive recorded %s media or data integrity error."
+msgid_plural "The NVMe drive recorded %s media or data integrity errors."
+msgstr[0] "NVMe disk zabilježio je %s pogrešku medija ili cjelovitosti podataka."
+msgstr[1] "NVMe disk zabilježio je %s pogreške medija ili cjelovitosti podataka."
+msgstr[2] "NVMe disk zabilježio je %s pogrešaka medija ili cjelovitosti podataka."
+
+#: big-mount/usr/lib/big-mount/drive-diag.sh:237
+#, sh-printf-format
+msgid "The drive reported %s error it could not correct."
+msgid_plural "The drive reported %s errors it could not correct."
+msgstr[0] "Disk je prijavio %s pogrešku koju nije mogao ispraviti."
+msgstr[1] "Disk je prijavio %s pogreške koje nije mogao ispraviti."
+msgstr[2] "Disk je prijavio %s pogrešaka koje nije mogao ispraviti."
+
+#: big-mount/usr/lib/big-mount/drive-diag.sh:238
+#, sh-printf-format
+msgid "The cable or adapter corrupted data in transit %s time (CRC errors)."
+msgid_plural "The cable or adapter corrupted data in transit %s times (CRC errors)."
+msgstr[0] "Kabel ili prilagodnik oštetio je podatke tijekom prijenosa %s put (CRC pogreške)."
+msgstr[1] "Kabel ili prilagodnik oštetio je podatke tijekom prijenosa %s puta (CRC pogreške)."
+msgstr[2] "Kabel ili prilagodnik oštetio je podatke tijekom prijenosa %s puta (CRC pogreške)."
+
+#: big-mount/usr/lib/big-mount/drive-diag.sh:239
+#, sh-printf-format
+msgid "%s of its SMART values is below its safe limit now."
+msgid_plural "%s of its SMART values are below their safe limit now."
+msgstr[0] "%s SMART vrijednost sada je ispod sigurne granice."
+msgstr[1] "%s SMART vrijednosti sada su ispod sigurne granice."
+msgstr[2] "%s SMART vrijednosti sada je ispod sigurne granice."
+
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:889
+#, sh-printf-format
+msgid "%s file found by content in %s. Its original name and folder could not be kept."
+msgid_plural "%s files found by content in %s. Their original names and folders could not be kept."
+msgstr[0] "%s datoteka pronađena je po sadržaju u %s. Njezin izvorni naziv i mapu nije bilo moguće zadržati."
+msgstr[1] "%s datoteke pronađene su po sadržaju u %s. Njihove izvorne nazive i mape nije bilo moguće zadržati."
+msgstr[2] "%s datoteka pronađeno je po sadržaju u %s. Njihove izvorne nazive i mape nije bilo moguće zadržati."
 
 #: big-mount/usr/lib/big-mount/gui/about.py:16
 msgid "Big-Mount takes care of the drives of your computer:"
@@ -3636,25 +3746,25 @@ msgid "Recover files…"
 msgstr "Oporavi datoteke…"
 
 #: big-mount/usr/lib/big-mount/gui/actions.py:166
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:374
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:491
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:372
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:489
 msgid "Unmount"
 msgstr "Odmontiraj"
 
 #: big-mount/usr/lib/big-mount/gui/actions.py:167
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:375
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:373
 msgid "Force unmount (close the programs using it)…"
 msgstr "Prisilno odmontiraj (zatvori programe koji ga koriste)…"
 
 #: big-mount/usr/lib/big-mount/gui/actions.py:172
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:379
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:377
 msgid "Erase data permanently…"
 msgstr "Trajno obriši podatke…"
 
 #: big-mount/usr/lib/big-mount/gui/actions.py:187
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:336
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:337
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1013
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:334
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:335
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1014
 msgid "More options"
 msgstr "Više mogućnosti"
 
@@ -3703,7 +3813,7 @@ msgid "List of files"
 msgstr "Popis datoteka"
 
 #: big-mount/usr/lib/big-mount/gui/models.py:334
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:519
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:517
 msgid "Search by content"
 msgstr "Pretraga po sadržaju"
 
@@ -3965,7 +4075,7 @@ msgstr "Montiraj „%s“ samo za čitanje"
 
 #: big-mount/usr/lib/big-mount/gui/pages/device.py:65
 #: big-mount/usr/lib/big-mount/gui/pages/device.py:85
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:486
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:484
 msgid "Mount read-only"
 msgstr "Montiraj samo za čitanje"
 
@@ -3979,8 +4089,8 @@ msgid "Unmount and mount read-only"
 msgstr "Odmontiraj i montiraj samo za čitanje"
 
 #: big-mount/usr/lib/big-mount/gui/pages/device.py:89
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1054
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:618
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1055
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:621
 msgid "The reason could not be determined."
 msgstr "Razlog nije bilo moguće utvrditi."
 
@@ -4030,7 +4140,7 @@ msgid "Rescue my files"
 msgstr "Spasi moje datoteke"
 
 #: big-mount/usr/lib/big-mount/gui/pages/device.py:166
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:370
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:368
 msgid "Export diagnosis…"
 msgstr "Izvezi dijagnostiku…"
 
@@ -4129,39 +4239,37 @@ msgstr "Ponovno pročitaj SMART…"
 msgid "Asks for the administrator password. It only reads: no test is started."
 msgstr "Traži administratorsku lozinku. Samo čita: ne pokreće se nikakav test."
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:243
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:242
 #, python-format
-msgid "%s (about a year of use)"
-msgstr "%s (oko godinu dana uporabe)"
+msgid "%(h)s (about %(y)d year of use)"
+msgid_plural "%(h)s (about %(y)d years of use)"
+msgstr[0] "%(h)s (oko %(y)d godine uporabe)"
+msgstr[1] "%(h)s (oko %(y)d godine uporabe)"
+msgstr[2] "%(h)s (oko %(y)d godina uporabe)"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:244
-#, python-format
-msgid "%(h)s (about %(y)d years of use)"
-msgstr "%(h)s (oko %(y)d god. uporabe)"
-
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:250
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:248
 msgid "Reading SMART. Through USB it can take a minute."
 msgstr "Čitanje SMART podataka. Preko USB-a može potrajati minutu."
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:265
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:263
 msgid "Details"
 msgstr "Pojedinosti"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:275
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:273
 msgid "Hidden. It identifies this drive: it is also left out of shared reports."
 msgstr "Skriveno. Identificira ovaj disk: izostavlja se i iz dijeljenih izvješća."
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:284
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:285
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:282
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:283
 msgid "Show the serial number"
 msgstr "Prikaži serijski broj"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:291
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:294
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:289
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:292
 msgid "Messages from the system log"
 msgstr "Poruke iz zapisnika sustava"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:292
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:290
 #, python-format
 msgid "%d recent message about this drive"
 msgid_plural "%d recent messages about this drive"
@@ -4169,140 +4277,140 @@ msgstr[0] "%d nedavna poruka o ovom disku"
 msgstr[1] "%d nedavne poruke o ovom disku"
 msgstr[2] "%d nedavnih poruka o ovom disku"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:303
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:301
 #: big-mount/usr/lib/big-mount/gui/pages/maintenance.py:13
 msgid "Advanced maintenance"
 msgstr "Napredno održavanje"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:304
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:302
 #: big-mount/usr/lib/big-mount/gui/pages/maintenance.py:38
 msgid "Erase data permanently"
 msgstr "Trajno obriši podatke"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:304
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:302
 msgid "Separate from recovery. Warns first, then checks the drive and asks twice more."
 msgstr "Odvojeno od oporavka. Najprije upozorava, zatim provjerava disk i još dvaput traži potvrdu."
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:329
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:327
 msgid "Overview"
 msgstr "Pregled"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:330
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:328
 msgid "Recover"
 msgstr "Oporavak"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:332
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:330
 msgid "History"
 msgstr "Povijest"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:343
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:408
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:341
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:406
 msgid "The drive was disconnected"
 msgstr "Disk je odspojen"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:344
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:342
 msgid "Nothing else was done. Connect it again and it comes back here."
 msgstr "Ništa drugo nije učinjeno. Ponovno ga priključite i vratit će se ovdje."
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:345
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:343
 msgid "Back to my drives"
 msgstr "Natrag na moje diskove"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:373
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:371
 msgid "Block writing on the device…"
 msgstr "Blokiraj pisanje na uređaju…"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:446
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:444
 #: big-mount/usr/lib/big-mount/gui/pages/overview.py:69
 #: big-mount/usr/lib/big-mount/gui/pages/rescue.py:277
 msgid "Recover files"
 msgstr "Oporavi datoteke"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:449
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:447
 msgid "Check drive"
 msgstr "Provjeri disk"
 
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:452
 #: big-mount/usr/lib/big-mount/gui/pages/device.py:454
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:456
 msgid "Volumes"
 msgstr "Volumeni"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:479
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:477
 msgid "This volume spans more than one device. All of them must be connected."
 msgstr "Ovaj se volumen proteže preko više uređaja. Svi moraju biti priključeni."
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:490
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:493
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:488
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:491
 #: big-mount/usr/lib/big-mount/gui/pages/overview.py:66
 msgid "Open files"
 msgstr "Otvori datoteke"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:495
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:493
 msgid "Unlock…"
 msgstr "Otključaj…"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:512
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:510
 msgid "Copy your files to another place, step by step. This never writes to this drive."
 msgstr "Kopirajte svoje datoteke na drugo mjesto, korak po korak. Na ovaj se disk nikada ne piše."
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:513
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:511
 msgid "Start recovering files"
 msgstr "Započni oporavak datoteka"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:516
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:514
 msgid "What can be done"
 msgstr "Što se može učiniti"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:517
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:515
 msgid "Copy files that can still be read"
 msgstr "Kopiraj datoteke koje se još mogu pročitati"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:517
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:515
 msgid "The quickest and safest: names and folders are kept."
 msgstr "Najbrže i najsigurnije: nazivi i mape se zadržavaju."
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:518
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:516
 msgid "List what exists, by type"
 msgstr "Izlistaj ono što postoji, po vrsti"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:518
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:516
 msgid "Goes through the folders. Then you choose what to copy."
 msgstr "Prolazi kroz mape. Zatim odabirete što ćete kopirati."
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:519
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:517
 msgid "For when files cannot be opened. Names and folders are lost, and nothing is guaranteed."
 msgstr "Za slučaj kada se datoteke ne mogu otvoriti. Nazivi i mape se gube i ništa nije zajamčeno."
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:536
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:534
 msgid "Copies and searches of this drive"
 msgstr "Kopije i pretrage ovog diska"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:540
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:538
 msgid "Nothing yet"
 msgstr "Još ništa"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:541
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:539
 msgid "What you copy from this drive is listed here."
 msgstr "Ovdje se navodi ono što kopirate s ovog diska."
 
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:559
 #: big-mount/usr/lib/big-mount/gui/pages/device.py:561
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:563
 msgid "Export diagnosis"
 msgstr "Izvezi dijagnostiku"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:564
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:562
 msgid "Keep them"
 msgstr "Zadrži ih"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:564
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:562
 msgid "Hide them"
 msgstr "Sakrij ih"
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:596
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:594
 msgid "Whatever a driver or another program tries, the disk does not change. It lasts until the drive is disconnected. It asks for the administrator password."
 msgstr "Što god upravljački program ili drugi program pokušao, disk se ne mijenja. Traje dok se disk ne odspoji. Traži administratorsku lozinku."
 
-#: big-mount/usr/lib/big-mount/gui/pages/device.py:597
+#: big-mount/usr/lib/big-mount/gui/pages/device.py:595
 msgid "Block writing"
 msgstr "Blokiraj pisanje"
 
@@ -4394,6 +4502,11 @@ msgstr "Ukupna količina ne mjeri se na ugroženom disku, kako bi se izbjegla do
 msgid "%s could not be read."
 msgstr "%s nije bilo moguće pročitati."
 
+#: big-mount/usr/lib/big-mount/gui/pages/job.py:205
+#, python-format
+msgid "Waiting for the disk to answer, for %s seconds"
+msgstr "Čeka se odgovor diska, već %s s"
+
 #: big-mount/usr/lib/big-mount/gui/pages/job.py:219
 msgid "Search again"
 msgstr "Pretraži ponovno"
@@ -4415,7 +4528,7 @@ msgid "Keep working"
 msgstr "Nastavi rad"
 
 #: big-mount/usr/lib/big-mount/gui/pages/job.py:254
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1142
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1143
 msgid "Stop"
 msgstr "Zaustavi"
 
@@ -4622,12 +4735,12 @@ msgid "Copies the whole device to a file on another disk with GNU ddrescue, keep
 msgstr "Kopira cijeli uređaj u datoteku na drugom disku programom GNU ddrescue i vodi datoteku mape, tako da može nastaviti i nikada dvaput ne čita ispravno područje."
 
 #: big-mount/usr/lib/big-mount/gui/pages/rescue.py:40
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1076
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1077
 msgid "Look for lost partitions"
 msgstr "Potraži izgubljene particije"
 
 #: big-mount/usr/lib/big-mount/gui/pages/rescue.py:41
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1083
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1084
 msgid "TestDisk reads the partition table and analyzes the disk. It only shows what it finds: nothing is written."
 msgstr "TestDisk čita particijsku tablicu i analizira disk. Samo prikazuje ono što pronađe: ništa se ne zapisuje."
 
@@ -4723,7 +4836,7 @@ msgid "You can choose more than one. If you are not sure, leave All."
 msgstr "Možete odabrati više od jednoga. Ako niste sigurni, ostavite Sve vrste."
 
 #: big-mount/usr/lib/big-mount/gui/pages/rescue.py:552
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1006
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1007
 msgid "All types"
 msgstr "Sve vrste"
 
@@ -4753,7 +4866,7 @@ msgid "What to copy"
 msgstr "Što kopirati"
 
 #: big-mount/usr/lib/big-mount/gui/pages/rescue.py:636
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1004
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1005
 msgid "Everything"
 msgstr "Sve"
 
@@ -4819,7 +4932,7 @@ msgid "Looking for places…"
 msgstr "Traženje mjesta…"
 
 #: big-mount/usr/lib/big-mount/gui/pages/rescue.py:795
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:627
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:630
 msgid "Choose another folder…"
 msgstr "Odaberi drugu mapu…"
 
@@ -4868,49 +4981,52 @@ msgstr "Što"
 msgid "Space it will use"
 msgstr "Prostor koji će zauzeti"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:975
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:977
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:976
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:978
 msgid "To copy"
 msgstr "Za kopiranje"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:975
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:976
 #, python-format
-msgid "%(files)s files, %(size)s"
-msgstr "datoteke: %(files)s, %(size)s"
+msgid "%(files)s file, %(size)s"
+msgid_plural "%(files)s files, %(size)s"
+msgstr[0] "%(files)s datoteka, %(size)s"
+msgstr[1] "%(files)s datoteke, %(size)s"
+msgstr[2] "%(files)s datoteka, %(size)s"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:979
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:980
 msgid "Free at the destination"
 msgstr "Slobodno na odredištu"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:981
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:982
 msgid "Already there, with different content"
 msgstr "Već postoji, s drugačijim sadržajem"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:984
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:985
 msgid "Your files will be copied with their names. Nothing is written to the source."
 msgstr "Vaše će datoteke biti kopirane s njihovim nazivima. Na izvor se ništa ne zapisuje."
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:985
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:986
 msgid "First a list of what exists is made. Then you choose what to copy. Nothing is written to the source."
 msgstr "Najprije se izrađuje popis onoga što postoji. Zatim odabirete što ćete kopirati. Na izvor se ništa ne zapisuje."
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:986
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:987
 msgid "Files will be searched for by their content. Names and folders are lost, some files may come out incomplete, and finding nothing is possible. Nothing is written to the source."
 msgstr "Datoteke će se tražiti po sadržaju. Nazivi i mape se gube, neke datoteke mogu ostati nepotpune, a moguće je i da se ništa ne pronađe. Na izvor se ništa ne zapisuje."
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:987
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:988
 msgid "The disk is read once, into a file. Nothing is written to it."
 msgstr "Disk se čita jednom, u datoteku. Na njega se ništa ne zapisuje."
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:992
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:993
 msgid "After the image, the search needs your confirmation. It can also be started later."
 msgstr "Nakon izrade slike, za pretragu je potrebna vaša potvrda. Može se pokrenuti i kasnije."
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:994
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:995
 msgid "Good to know"
 msgstr "Dobro je znati"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1004
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1005
 #, python-format
 msgid "%d item you marked"
 msgid_plural "%d items you marked"
@@ -4918,113 +5034,113 @@ msgstr[0] "%d stavka koju ste označili"
 msgstr[1] "%d stavke koje ste označili"
 msgstr[2] "%d stavki koje ste označili"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1014
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1015
 msgid "If a file already exists"
 msgstr "Ako datoteka već postoji"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1019
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1020
 msgid "Check the result"
 msgstr "Provjeri rezultat"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1021
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1022
 msgid "Basic: rsync confirms each file as it is copied"
 msgstr "Osnovno: rsync potvrđuje svaku datoteku tijekom kopiranja"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1021
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1022
 msgid "Names, sizes and dates compared at the end"
 msgstr "Nazivi, veličine i datumi uspoređuju se na kraju"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1022
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1023
 msgid "Content compared at the end (reads the source again)"
 msgstr "Sadržaj se uspoređuje na kraju (ponovno čita izvor)"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1026
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1027
 msgid "Set aside a stuck file after (seconds)"
 msgstr "Odgodi zapelu datoteku nakon (sekundi)"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1028
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1029
 msgid "A file that does not advance for this long is set aside, so that the others are saved first. 0: never."
 msgstr "Datoteka koja toliko dugo ne napreduje odgađa se kako bi se ostale najprije spremile. 0: nikada."
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1032
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1033
 msgid "Limit the reading speed (kB/s)"
 msgstr "Ograniči brzinu čitanja (kB/s)"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1034
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1035
 msgid "0: no limit"
 msgstr "0: bez ograničenja"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1045
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1046
 msgid "Starting…"
 msgstr "Pokretanje…"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1054
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:618
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1055
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:621
 msgid "It did not start"
 msgstr "Nije se pokrenulo"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1084
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1085
 msgid "Read the partition table"
 msgstr "Pročitaj particijsku tablicu"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1085
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1086
 msgid "Analyze the whole disk"
 msgstr "Analiziraj cijeli disk"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1086
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1087
 msgid "It reads all of the disk. On a drive with problems this is extra wear."
 msgstr "Čita cijeli disk. Na disku s problemima to je dodatno trošenje."
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1089
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1090
 msgid "This drive reported problems: analyzing all of it is extra wear. A disk image first spares it."
 msgstr "Ovaj je disk prijavio probleme: analiza cijelog diska dodatno ga troši. Ako najprije izradite sliku diska, disk se štedi."
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1111
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1112
 msgid "Stopping…"
 msgstr "Zaustavljanje…"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1118
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1119
 msgid "Volumes this drive already has"
 msgstr "Volumeni koje ovaj disk već ima"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1119
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1120
 msgid "They are not lost. To recover their files, copying them is faster and reads the disk less than any analysis."
 msgstr "Nisu izgubljeni. Za oporavak njihovih datoteka kopiranje je brže i manje čita disk od bilo kakve analize."
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1124
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1125
 msgid "Recover its files"
 msgstr "Oporavi njegove datoteke"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1136
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1137
 msgid "Looking for partitions…"
 msgstr "Traženje particija…"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1140
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1141
 msgid "TestDisk does not say how far it has gone, so there is no percentage. Analyzing a whole disk reads all of it and can take hours; the drive can be used for nothing else meanwhile."
 msgstr "TestDisk ne javlja dokle je stigao, pa nema postotka. Analiza cijelog diska čita ga cijelog i može trajati satima; za to vrijeme disk se ne može koristiti ni za što drugo."
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1151
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1152
 #, python-format
 msgid "Elapsed: %s"
 msgstr "Proteklo: %s"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1171
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1172
 msgid "The search failed."
 msgstr "Pretraga nije uspjela."
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1174
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1175
 msgid "What TestDisk found"
 msgstr "Što je TestDisk pronašao"
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1180
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1181
 msgid "Big-Mount does not rewrite partition tables, on purpose: a mistake there can lose everything. A disk image, or a search by content, recovers files without that risk."
 msgstr "Big-Mount namjerno ne prepisuje particijske tablice: pogreška ondje može izgubiti sve. Slika diska ili pretraga po sadržaju oporavljaju datoteke bez tog rizika."
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1182
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1183
 msgid "The analysis did not recognize any partition. That does not prove there is no data: a search by content may still find files."
 msgstr "Analiza nije prepoznala nijednu particiju. To ne dokazuje da nema podataka: pretraga po sadržaju možda će ipak pronaći datoteke."
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1184
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1185
 msgid "The partition table is empty or unreadable. Analyzing the whole disk may find what it no longer lists."
 msgstr "Particijska tablica je prazna ili nečitljiva. Analiza cijelog diska možda će pronaći ono što ona više ne navodi."
 
@@ -5090,7 +5206,7 @@ msgid "Clear selection"
 msgstr "Poništi odabir"
 
 #: big-mount/usr/lib/big-mount/gui/pages/results.py:321
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:639
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:642
 msgid "Save report"
 msgstr "Spremi izvješće"
 
@@ -5119,24 +5235,40 @@ msgstr "Sve (%d)"
 msgid "The list could not be read."
 msgstr "Popis nije bilo moguće pročitati."
 
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:492
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:493
 #, python-format
-msgid "%(shown)d shown, %(sel)d selected (%(size)s)"
-msgstr "Prikazano: %(shown)d, odabrano: %(sel)d (%(size)s)"
+msgid "%(shown)s, %(sel)s (%(size)s)"
+msgstr "%(shown)s, %(sel)s (%(size)s)"
 
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:509
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:493
+#, python-format
+msgid "%d shown"
+msgid_plural "%d shown"
+msgstr[0] "Prikazana %d datoteka"
+msgstr[1] "Prikazane %d datoteke"
+msgstr[2] "Prikazano %d datoteka"
+
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:494
+#, python-format
+msgid "%d selected"
+msgid_plural "%d selected"
+msgstr[0] "odabrana %d datoteka"
+msgstr[1] "odabrane %d datoteke"
+msgstr[2] "odabrano %d datoteka"
+
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:512
 msgid "Select"
 msgstr "Odaberi"
 
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:531
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:534
 msgid "Preview"
 msgstr "Pretpregled"
 
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:597
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:600
 msgid "It cannot be copied"
 msgstr "Ne može se kopirati"
 
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:600
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:603
 #, python-format
 msgid "%d file with a line break in its name was left out. It cannot be handled safely."
 msgid_plural "%d files with a line break in their names were left out. They cannot be handled safely."
@@ -5144,7 +5276,7 @@ msgstr[0] "%d datoteka s prijelomom retka u nazivu izostavljena je. Ne može se 
 msgstr[1] "%d datoteke s prijelomom retka u nazivu izostavljene su. Ne mogu se sigurno obraditi."
 msgstr[2] "%d datoteka s prijelomom retka u nazivu izostavljeno je. Ne mogu se sigurno obraditi."
 
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:626
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:629
 msgid "It cannot be saved here"
 msgstr "Ovdje se ne može spremiti"
 
