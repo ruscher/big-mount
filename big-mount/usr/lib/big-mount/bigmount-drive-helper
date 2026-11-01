@@ -10,9 +10,10 @@
 #   protect DEV     block writing on a device and everything it sits on
 #   unprotect DEV   allow writing again
 #   smart DEV       print `smartctl -H -A -i` (read-only, never starts a test)
-#   partitions DEV [search i386|gpt]
+#   partitions DEV STOPFILE [search i386|gpt]
 #                   print what `testdisk /list` finds, or what its analysis of
-#                   the disk finds. Fixed commands: never one that writes
+#                   the disk finds, until STOPFILE appears. Fixed commands:
+#                   never one that writes
 #   image DEV FILE MAP RETRIES STOPFILE
 #                   read DEV into FILE with GNU ddrescue, its map in MAP (and
 #                   the previous one in MAP.bak)
@@ -43,6 +44,17 @@ while read -r name type; do
    case "$type" in disk | loop) disks+=("$name") ;; esac
 done < <(lsblk -s -n -p -r -o NAME,TYPE -- "$dev" 2>/dev/null)
 [ "${#chain[@]}" -gt 0 ] || die "unknown device"
+
+# A path root reads or writes for the user: only in a real folder of theirs
+# (root's own when started directly by root)
+uid="${PKEXEC_UID:-0}"
+[[ $uid =~ ^[0-9]+$ ]] || die "bad user"
+user_path() {
+   local parent="${1%/*}"
+   [[ $1 == /* && $1 != *..* && $1 != *$'\n'* ]] || die "bad path"
+   [ "$(readlink -f -- "$parent")" = "$parent" ] && [ "$(stat -c %u -- "$parent")" = "$uid" ] || die "$parent is not a folder of the user"
+   [ ! -L "$1" ] || die "$1 is a link"
+}
 
 refuse_system() {
    local d
@@ -89,26 +101,39 @@ case "$verb" in
       ;;
    partitions)
       command -v testdisk >/dev/null || exit 25
+      [ "$#" -ge 3 ] || die "partitions DEV STOPFILE [search i386|gpt]"
+      stop="$3"
+      user_path "$stop"
       cd /tmp || exit 1
-      if [ "$#" -eq 2 ]; then exec testdisk /nolog /list "$dev"; fi
-      [ "$#" -eq 4 ] && [ "$3" = search ] || die "partitions DEV [search i386|gpt]"
-      case "$4" in i386 | gpt) ;; *) die "partitions DEV [search i386|gpt]" ;; esac
-      TERM=xterm exec testdisk /nolog /cmd "$dev" "partition_$4,analyze"
+      # Its own session: TestDisk passes a SIGTERM on to its whole process
+      # group, which is also the window that started it
+      if [ "$#" -eq 3 ]; then
+         setsid testdisk /nolog /list "$dev" &
+      else
+         [ "$#" -eq 5 ] && [ "$4" = search ] || die "partitions DEV STOPFILE [search i386|gpt]"
+         case "$5" in i386 | gpt) ;; *) die "partitions DEV STOPFILE [search i386|gpt]" ;; esac
+         TERM=xterm setsid testdisk /nolog /cmd "$dev" "partition_$5,analyze" &
+      fi
+      pid=$!
+      trap 'kill -TERM "$pid" 2>/dev/null' TERM INT HUP
+      # Woken by the end of testdisk or every second, to look for the stop file
+      while :; do
+         sleep 1 &
+         wait -n "$pid" "$!"
+         kill "$!" 2>/dev/null
+         kill -0 "$pid" 2>/dev/null || break
+         [ -e "$stop" ] && kill -TERM "$pid" 2>/dev/null
+      done
+      wait "$pid"
+      exit
       ;;
    image)
       [ "$#" -eq 6 ] || die "image DEV FILE MAP RETRIES STOPFILE"
       file="$3" map="$4" retries="$5" stop="$6"
       command -v ddrescue >/dev/null || exit 25
-      uid="${PKEXEC_UID:-}"
-      [[ $uid =~ ^[0-9]+$ ]] || die "no user"
+      [[ ${PKEXEC_UID:-} =~ ^[0-9]+$ ]] || die "no user"
       [[ $retries =~ ^[0-9]+$ ]] && [ "$retries" -le 5 ] || die "bad retries"
-      for p in "$file" "$map" "$stop"; do
-         [[ $p == /* && $p != *..* && $p != *$'\n'* ]] || die "bad path"
-         parent="${p%/*}"
-         # Written as root: only into a real folder of the user who asked
-         [ "$(readlink -f -- "$parent")" = "$parent" ] && [ "$(stat -c %u -- "$parent")" = "$uid" ] || die "$parent is not a folder of the user"
-         [ ! -L "$p" ] || die "$p is a link"
-      done
+      for p in "$file" "$map" "$stop"; do user_path "$p"; done
       # The map is written over: never over the image
       [ "$file" != "$map" ] && [ "$file" != "$map.bak" ] || die "the image and its map must be different files"
       for p in "$file" "$map"; do

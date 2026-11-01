@@ -4,6 +4,7 @@ not: here a refusal is shown in plain words, and the unsafe choices (the same
 physical disk, above all) have no button that overrides them."""
 
 import os
+import signal
 import time
 
 from gi.repository import Adw, Gio, GLib, Gtk
@@ -1077,6 +1078,7 @@ class PartitionsPage(Adw.NavigationPage):
         self.plan = plan
         self.wizard = wizard
         self._timer = None
+        self._proc = None
         self.box = w.box(spacing=18)
         self.box.append(w.label(_("TestDisk reads the partition table and analyzes the disk. It only shows what it finds: nothing is written."), css=("dim-label",)))
         self.list_btn = w.button(_("Read the partition table"), lambda: self.run(False), css=("pill",))
@@ -1091,6 +1093,22 @@ class PartitionsPage(Adw.NavigationPage):
         tool = Adw.ToolbarView(content=w.page_scroller(self.box, maximum=760))
         tool.add_top_bar(Adw.HeaderBar())
         self.set_child(tool)
+        self.connect("hidden", self._hidden)
+
+    def _hidden(self, *_a):
+        # Popped: nobody waits for the analysis any more
+        if self.window.nav.find_page(self.get_tag()) is None:
+            self._stop()
+            if self._timer:
+                GLib.source_remove(self._timer)
+                self._timer = None
+
+    def _stop(self, *_a):
+        """The engine stops TestDisk on SIGTERM, also the one the helper runs as root."""
+        if self._proc:
+            self._proc.send_signal(signal.SIGTERM)
+            self.stop_btn.set_sensitive(False)
+            self.stop_btn.set_label(_("Stopping…"))
 
     def _volumes_group(self):
         """The volumes the system already sees on this drive are not lost: their files
@@ -1121,6 +1139,9 @@ class PartitionsPage(Adw.NavigationPage):
         if search:
             self.results.append(w.label(_("TestDisk does not say how far it has gone, so there is no percentage. Analyzing a whole disk reads all of it and can take hours; the drive can be used for nothing else meanwhile."),
                                         css=("caption", "dim-label"), xalign=0.5))
+        self.stop_btn = w.button(_("Stop"), self._stop, css=("pill",))
+        self.stop_btn.set_halign(Gtk.Align.CENTER)
+        self.results.append(self.stop_btn)
         self.list_btn.set_sensitive(False)
         self.search_btn.set_sensitive(False)
         started = GLib.get_monotonic_time()
@@ -1132,9 +1153,10 @@ class PartitionsPage(Adw.NavigationPage):
         tick()
         self._timer = GLib.timeout_add_seconds(1, tick)
         target = self.plan.device.device if self.plan.device and not self.plan.image else self.plan.target
-        self.window.engine.partitions(target, lambda res: self._done(res, search), search=search)
+        self._proc = self.window.engine.partitions(target, lambda res: self._done(res, search), search=search)
 
     def _done(self, res, search):
+        self._proc = None
         if self._timer:
             GLib.source_remove(self._timer)
             self._timer = None
@@ -1142,6 +1164,9 @@ class PartitionsPage(Adw.NavigationPage):
         self.search_btn.set_sensitive(True)
         w.clear(self.results)
         data = res.data if isinstance(res.data, dict) else None
+        if data and data.get("error") == "cancelled":
+            self.results.append(w.label(data.get("error_text", ""), xalign=0.5))
+            return
         if data is None or data.get("error"):
             self.results.append(w.LevelBadge("critical", (data or {}).get("error_text") or res.message or _("The search failed.")))
             return

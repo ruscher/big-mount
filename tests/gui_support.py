@@ -62,7 +62,7 @@ done
 key="$2"
 for a in "$@"; do [ "$a" = --dry-run ] && key="$2-dry"; done
 d="{FIX}/$key.delay"
-[ -f "$d" ] && sleep "$(cat "$d")"
+[ -f "$d" ] && sleep "$(cat "$d")" >/dev/null 2>&1
 f="{FIX}/$key.json"
 [ -f "$f" ] && cat "$f"
 t="{FIX}/$key.txt"

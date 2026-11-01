@@ -13,7 +13,7 @@ path of the helper fixed in the policy).
 | `protect DEV` | `blockdev --setro` on the device and everything it sits on | the running system (exit 4); a drive with a volume mounted for writing (exit 3) |
 | `unprotect DEV` | `blockdev --setrw` on the same chain | the running system |
 | `smart DEV` | prints `smartctl -H -A -i`, and never starts a self-test | more than one drive |
-| `partitions DEV` | prints `testdisk /list` | |
+| `partitions DEV STOP [search i386\|gpt]` | prints `testdisk /list`, or its analysis, until the stop file appears | |
 | `image DEV FILE MAP RETRIES STOP` | `ddrescue` to a file | see below |
 
 It gets a clean environment from pkexec, resets `PATH`, reads its library from a
@@ -24,7 +24,9 @@ without `..`, which must be a block device.
 path) owned by the user who asked, and to files that are not links and belong to
 that user; files it creates are handed to the user before `ddrescue` starts. It
 refuses a file on the disk being read. The user cannot signal a root process, so
-`cancel` creates a stop file that the helper watches.
+`cancel` creates a stop file that the helper watches, and so does Stop for
+`partitions`: the stop file of both is checked like the image, a path in a real
+folder of the user that is not a link, and the helper only tests that it exists.
 
 The folder is the user's, so a name could be swapped for a link while root works.
 The image, the map and `MAP.bak` are therefore opened once (a new file with

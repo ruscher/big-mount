@@ -1011,6 +1011,18 @@ class Wizard(Base):
         click(page, "Analyze the whole disk")
         self.see("does not prove there is no data", page)
 
+    def test_partitions_stop_ends_the_search(self):
+        wiz = self.wizard_to("how", method="partitions")
+        fix("partitions", {"ok": True, "mode": "search", "found": []}, delay=60)
+        wiz.go_next()
+        page = self.win.nav.get_visible_page()
+        click(page, "Analyze the whole disk")
+        self.see("Looking for partitions", page)
+        click(page, "Stop")
+        # The engine was signalled: no waiting for the minute TestDisk would take
+        self.assertTrue(pump(lambda: page.search_btn.get_sensitive(), 5))
+        self.assertNotIn("Looking for partitions", text(page))
+
     def whole_drive_to_how(self, rows):
         fix("methods", {**METHODS, "target": "/dev/sdb", "source_kind": "disk", "volume": "", "recommended": "image", "methods": rows})
         wiz = self.wizard_to("source")

@@ -117,6 +117,7 @@ bm_cp_err_text() {
       no-photorec) REPLY=$"PhotoRec is not installed (package testdisk)." ;;
       no-testdisk) REPLY=$"TestDisk is not installed (package testdisk)." ;;
       not-authorized) REPLY=$"Permission was not granted." ;;
+      cancelled) REPLY=$"Stopped. Nothing was changed on the disk." ;;
       not-readable) REPLY=$"This device cannot be read by your user. Make a disk image first (bigmount --drive image), and search in the image: it also spares the disk." ;;
       image-same-disk) REPLY=$"The image cannot be stored on the disk being read." ;;
       image-other-disk) REPLY=$"An image of another disk already exists in that place. Continuing it would mix the two: choose another name." ;;
@@ -138,6 +139,7 @@ bm_cp_err_rc() {
       no-rsync | no-ddrescue | no-photorec | no-testdisk) REPLY=25 ;;
       no-space) REPLY=21 ;;
       not-authorized) REPLY=5 ;;
+      cancelled) REPLY=23 ;;
       source-replaced) REPLY=24 ;;
       source-stuck | dest-stuck) REPLY=24 ;;
       *) REPLY=20 ;;

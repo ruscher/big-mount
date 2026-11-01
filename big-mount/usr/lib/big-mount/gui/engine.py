@@ -178,7 +178,8 @@ class Engine:
         self.run(["protect" if on else "unprotect", device], cb, json_output=False, operation=True)
 
     def partitions(self, target, cb, search=False):
-        self.run(["partitions", target, *(["--search"] if search else [])], cb, limit=None)
+        """Returns the process: a SIGTERM stops TestDisk."""
+        return self.run(["partitions", target, *(["--search"] if search else [])], cb, limit=None)
 
     def copy(self, cb, source=None, destination="", dry_run=False, items=None, results_of=None,
              on_conflict="skip", verify="basic", stall=90, bwlimit=0, scan=None):

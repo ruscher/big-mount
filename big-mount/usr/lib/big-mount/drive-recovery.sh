@@ -614,27 +614,54 @@ bm_rec_partitions() {
       return 25
    fi
    bm_drive_abs "$target"; target="$REPLY"
+   # TestDisk runs in the background so that a SIGTERM (Stop in the window)
+   # ends it: a device is read by the root helper, which stops when the stop
+   # file appears in this private folder. setsid: as in the helper
+   local here stop pid cancelled=0 direct=0 args=()
    if [ -f "$target" ]; then
+      direct=1
       # An image of a GPT disk starts with its protective table
       if [ "$search" = 1 ]; then
          [ "$(blkid -p -o value -s PTTYPE -- "$target" 2>/dev/null)" = gpt ] && table=gpt
-         local here; here="$(mktemp -d)" || return 1
-         out="$(cd "$here" && TERM=xterm timeout 3600 testdisk /nolog /cmd "$target" "partition_$table,analyze" 2>&1)"; rc=$?
-         rm -rf -- "$here"
+         args=(env TERM=xterm setsid timeout 3600 testdisk /nolog /cmd "$target" "partition_$table,analyze")
       else
-         out="$(testdisk /nolog /list "$target" 2>&1)"; rc=$?
+         args=(setsid testdisk /nolog /list "$target")
       fi
    else
       bm_resolve "$target" || { bm_resolve_fail "$target"; return 24; }
+      args=(bm_helper partitions "$R_DEV")
       if [ "$search" = 1 ]; then
          bm_dv_scan
          local disk="$R_DEV"
          bm_dv_disks_of "$R_DEV" && disk="${DV_DISKS[0]}"
          [ "${DV[$disk|PTTYPE]:-}" = gpt ] && table=gpt
-         out="$(bm_helper partitions "$R_DEV" search "$table" 2>&1)"; rc=$?
-      else
-         out="$(bm_helper partitions "$R_DEV" 2>&1)"; rc=$?
       fi
+   fi
+   here="$(mktemp -d)" || return 1
+   stop="$here/stop"
+   [ "$direct" = 0 ] && args+=("$stop")
+   [ "$direct" = 0 ] && [ "$search" = 1 ] && args+=(search "$table")
+   (cd "$here" && "${args[@]}") > "$here/out" 2>&1 &
+   pid=$!
+   if [ "$direct" = 1 ]; then
+      trap 'cancelled=1; pkill -TERM -P "$pid"; kill -TERM "$pid" 2>/dev/null' TERM INT
+   else
+      trap 'cancelled=1; : > "$stop"' TERM INT
+   fi
+   # A trap ends the wait early: wait again until TestDisk is really gone
+   while :; do
+      wait "$pid"; rc=$?
+      kill -0 "$pid" 2>/dev/null || break
+   done
+   trap - TERM INT
+   out="$(cat -- "$here/out")"
+   rm -rf -- "$here"
+   if [ "$cancelled" = 1 ]; then
+      if [ "$json" = 1 ]; then bm_rec_refusal 1 cancelled; return; fi
+      printf '%s\n' $"Stopped. Nothing was changed on the disk." >&2
+      return 23
+   fi
+   if [ "$direct" = 0 ]; then
       case "$rc" in
          126 | 127)
             if [ "$json" = 1 ]; then bm_rec_refusal 1 not-authorized; return; fi

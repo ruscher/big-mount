@@ -575,6 +575,14 @@ check "  ... its type" eq "${PT_TYPE[0]}" Linux
 check "  ... its size in sectors" eq "${PT_SECTORS[0]}" 65536
 check "  ... its label, with spaces" eq "${PT_LABEL[0]}" "TEST LOST"
 check "  ... the list format too" eq "${PT_TYPE[1]}:${PT_SECTORS[1]}" "HPFS - NTFS:14336"
+testdisk() { :; }
+stop_helper() { printf '%s\n' "$*" > "$WORK/helper.args"; while [ ! -e "$3" ]; do sleep 0.1; done; return 143; }
+rm -f "$WORK/helper.args"
+out="$(BM_HELPER_CMD=stop_helper; bm_resolve() { R_DEV="$1"; }; bm_rec_partitions /dev/sda --search --json & p=$!
+   until [ -e "$WORK/helper.args" ]; do sleep 0.1; done; kill -TERM "$p"; wait "$p")"
+check "TestDisk stops through its stop file" grep -q '"error":"cancelled"' <<< "$out"
+check "  ... with the analysis arguments" grep -qE '^partitions /dev/sda /.+/stop search (gpt|i386)$' "$WORK/helper.args"
+unset -f testdisk
 DV=() bm_drive_is_uuid UUID=ABCD; check "a UUID is a target" eq "$REPLY" ABCD
 bm_drive_is_uuid /dev/sda; check "  ... a path is not" eq "$?" 1
 bm_drive_uuid_device u-a1; check "UUID of one device: found" eq "$?:$REPLY" 0:/dev/sda1

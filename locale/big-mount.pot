@@ -1836,12 +1836,12 @@ msgid "There is not enough free space at the destination."
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/drive-copy.sh:116
-#: big-mount/usr/lib/big-mount/drive-copy.sh:432
+#: big-mount/usr/lib/big-mount/drive-copy.sh:434
 msgid "GNU ddrescue is not installed (package ddrescue). It makes the disk image."
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/drive-copy.sh:117
-#: big-mount/usr/lib/big-mount/drive-recovery.sh:818
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:845
 msgid "PhotoRec is not installed (package testdisk)."
 msgstr ""
 
@@ -1851,462 +1851,467 @@ msgid "TestDisk is not installed (package testdisk)."
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/drive-copy.sh:119
-#: big-mount/usr/lib/big-mount/drive-copy.sh:431
-#: big-mount/usr/lib/big-mount/drive-recovery.sh:641
+#: big-mount/usr/lib/big-mount/drive-copy.sh:433
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:668
 #: big-mount/usr/lib/big-mount/drive.sh:607
 msgid "Permission was not granted."
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/drive-copy.sh:120
-#: big-mount/usr/lib/big-mount/drive-recovery.sh:825
-msgid "This device cannot be read by your user. Make a disk image first (bigmount --drive image), and search in the image: it also spares the disk."
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:661
+msgid "Stopped. Nothing was changed on the disk."
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/drive-copy.sh:121
-msgid "The image cannot be stored on the disk being read."
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:852
+msgid "This device cannot be read by your user. Make a disk image first (bigmount --drive image), and search in the image: it also spares the disk."
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/drive-copy.sh:122
-msgid "An image of another disk already exists in that place. Continuing it would mix the two: choose another name."
+msgid "The image cannot be stored on the disk being read."
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/drive-copy.sh:123
-msgid "A file with this name already exists and is not an image started here. Choose another name."
+msgid "An image of another disk already exists in that place. Continuing it would mix the two: choose another name."
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/drive-copy.sh:124
+msgid "A file with this name already exists and is not an image started here. Choose another name."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/drive-copy.sh:125
 #: big-mount/usr/lib/big-mount/drive-diag.sh:387
 #: big-mount/usr/lib/big-mount/drive-tui.sh:78
 msgid "The device was disconnected or replaced. Nothing was done."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:125
+#: big-mount/usr/lib/big-mount/drive-copy.sh:126
 #: big-mount/usr/lib/big-mount/drive-diag.sh:378
 msgid "This computer has no driver for this filesystem. Installing the right package may solve it."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:126
+#: big-mount/usr/lib/big-mount/drive-copy.sh:127
 #: big-mount/usr/lib/big-mount/drive-diag.sh:383
 msgid "This volume is encrypted. Unlock it first."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:127
+#: big-mount/usr/lib/big-mount/drive-copy.sh:128
 #: big-mount/usr/lib/big-mount/drive-diag.sh:384
 msgid "This is a part of a larger volume (RAID, LVM or similar), not a filesystem of its own. Its volume must be assembled first."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:128
+#: big-mount/usr/lib/big-mount/drive-copy.sh:129
 #: big-mount/usr/lib/big-mount/drive-diag.sh:386
 msgid "This is swap space, not a place for files."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:129
+#: big-mount/usr/lib/big-mount/drive-copy.sh:130
 msgid "No filesystem was recognized on it, so its files cannot be listed."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:130
+#: big-mount/usr/lib/big-mount/drive-copy.sh:131
 msgid "Choose one of the volumes of this drive to see its files."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:131
+#: big-mount/usr/lib/big-mount/drive-copy.sh:132
 msgid "This is already a disk image."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:132
+#: big-mount/usr/lib/big-mount/drive-copy.sh:133
 msgid "The copy was refused."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:149
+#: big-mount/usr/lib/big-mount/drive-copy.sh:151
 msgid "The source is mounted with writing enabled. Mounting it read-only is safer."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:150
+#: big-mount/usr/lib/big-mount/drive-copy.sh:152
 msgid "The source drive reported problems. Files that do not advance are set aside so the rest is saved first."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:151
+#: big-mount/usr/lib/big-mount/drive-copy.sh:153
 msgid "The total is not measured on a drive at risk, to avoid extra reads. Progress shows what was copied so far."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:152
+#: big-mount/usr/lib/big-mount/drive-copy.sh:154
 msgid "The total is the used space of the volume: an approximation."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:153
+#: big-mount/usr/lib/big-mount/drive-copy.sh:155
 msgid "The destination is FAT32, which cannot store files of 4 GiB or more. Those files will be listed as failed."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:154
+#: big-mount/usr/lib/big-mount/drive-copy.sh:156
 msgid "The destination does not store Linux permissions. Names and dates are kept, permissions are not."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:155
+#: big-mount/usr/lib/big-mount/drive-copy.sh:157
 msgid "Some files already exist at the destination with different content. See the option for existing files."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:156
+#: big-mount/usr/lib/big-mount/drive-copy.sh:158
 msgid "This version of rsync cannot sync each file to the disk (it needs 3.2.4 or later). After a power cut, the last files copied should be checked."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:157
+#: big-mount/usr/lib/big-mount/drive-copy.sh:159
 msgid "The full check reads every file of the source again. On a drive at risk that is extra wear."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:356
+#: big-mount/usr/lib/big-mount/drive-copy.sh:358
 msgid "Cannot record a name with a line break: %s"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:394
+#: big-mount/usr/lib/big-mount/drive-copy.sh:396
 msgid "Making the disk image"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:395
+#: big-mount/usr/lib/big-mount/drive-copy.sh:397
 msgid "Disk image complete"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:396
+#: big-mount/usr/lib/big-mount/drive-copy.sh:398
 msgid "Listing the files"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:397
+#: big-mount/usr/lib/big-mount/drive-copy.sh:399
 msgid "List of files complete"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:398
+#: big-mount/usr/lib/big-mount/drive-copy.sh:400
 msgid "Searching by content"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:399
+#: big-mount/usr/lib/big-mount/drive-copy.sh:401
 msgid "Search complete"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:402
+#: big-mount/usr/lib/big-mount/drive-copy.sh:404
 msgid "Waiting to start"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:403
+#: big-mount/usr/lib/big-mount/drive-copy.sh:405
 msgid "Measuring what will be copied"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:404
+#: big-mount/usr/lib/big-mount/drive-copy.sh:406
 msgid "Copying"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:405
+#: big-mount/usr/lib/big-mount/drive-copy.sh:407
 msgid "Checking the result"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:406
+#: big-mount/usr/lib/big-mount/drive-copy.sh:408
 msgid "Stopping: waiting for the disk to answer"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:407
+#: big-mount/usr/lib/big-mount/drive-copy.sh:409
 msgid "Paused"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:408
+#: big-mount/usr/lib/big-mount/drive-copy.sh:410
 msgid "Completed and checked"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:409
+#: big-mount/usr/lib/big-mount/drive-copy.sh:411
 msgid "Cancelled"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:410
+#: big-mount/usr/lib/big-mount/drive-copy.sh:412
 msgid "Failed"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:411
+#: big-mount/usr/lib/big-mount/drive-copy.sh:413
 msgid "Finished, needs your attention"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:412
+#: big-mount/usr/lib/big-mount/drive-copy.sh:414
 msgid "Interrupted (it can be resumed)"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:423
+#: big-mount/usr/lib/big-mount/drive-copy.sh:425
 msgid "The source drive was disconnected or unmounted. Connect and mount it again, then resume."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:424
+#: big-mount/usr/lib/big-mount/drive-copy.sh:426
 msgid "The destination was disconnected or unmounted. Connect and mount it again, then resume."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:425
+#: big-mount/usr/lib/big-mount/drive-copy.sh:427
 msgid "The destination ran out of space. Free some space or choose another place, then resume."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:426
+#: big-mount/usr/lib/big-mount/drive-copy.sh:428
 msgid "%s files were set aside because they did not advance. The drive may be getting worse, so the copy stopped."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:427
+#: big-mount/usr/lib/big-mount/drive-copy.sh:429
 msgid "Some files were not copied. See the list below."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:428
+#: big-mount/usr/lib/big-mount/drive-copy.sh:430
 msgid "The check found differences between source and destination."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:429
+#: big-mount/usr/lib/big-mount/drive-copy.sh:431
 msgid "Everything was copied, but the check did not finish: it was cancelled or failed."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:430
+#: big-mount/usr/lib/big-mount/drive-copy.sh:432
 msgid "rsync stopped with an error. See the log."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:433
+#: big-mount/usr/lib/big-mount/drive-copy.sh:435
 msgid "GNU ddrescue stopped with an error. See the log."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:434
+#: big-mount/usr/lib/big-mount/drive-copy.sh:436
 msgid "Some areas of the disk could not be read. The image holds everything that could be."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:435
+#: big-mount/usr/lib/big-mount/drive-copy.sh:437
 msgid "Some folders could not be read, so the list may be incomplete. See the log."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:436
+#: big-mount/usr/lib/big-mount/drive-copy.sh:438
 msgid "PhotoRec stopped with an error. See the log."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:437
+#: big-mount/usr/lib/big-mount/drive-copy.sh:439
 msgid "No file was recognized by its content. That does not prove there is nothing to recover: another method, or a professional, may find more."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:527
+#: big-mount/usr/lib/big-mount/drive-copy.sh:529
 msgid "its content could not be read"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:982
-#: big-mount/usr/lib/big-mount/drive-recovery.sh:900
+#: big-mount/usr/lib/big-mount/drive-copy.sh:984
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:927
 msgid "Source:"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:982
-#: big-mount/usr/lib/big-mount/drive-recovery.sh:905
+#: big-mount/usr/lib/big-mount/drive-copy.sh:984
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:932
 msgid "Destination:"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:984
 #: big-mount/usr/lib/big-mount/drive-copy.sh:986
+#: big-mount/usr/lib/big-mount/drive-copy.sh:988
 msgid "Files:"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:996
-#: big-mount/usr/lib/big-mount/drive-copy.sh:997
+#: big-mount/usr/lib/big-mount/drive-copy.sh:998
+#: big-mount/usr/lib/big-mount/drive-copy.sh:999
 msgid "Copied:"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1001
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1003
 msgid "Speed:"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1001
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1003
 msgid "average"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1002
-#: big-mount/usr/lib/big-mount/drive-recovery.sh:913
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1004
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:940
 msgid "Elapsed:"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1003
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1005
 msgid "Remaining:"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1004
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1006
 msgid "Waiting for the disk to answer, for %s seconds"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1005
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1007
 msgid "Current file:"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1006
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1008
 msgid "Set aside:"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1007
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1009
 msgid "Failed:"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1047
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1049
 msgid "Cancelled. Files already copied stay at the destination, and the copy can be resumed."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1063
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1065
 msgid "Source"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1068
-#: big-mount/usr/lib/big-mount/drive-recovery.sh:927
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1070
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:954
 msgid "Destination"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1069
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1071
 msgid "Files copied"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1070
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1072
 msgid "Data copied"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1071
-#: big-mount/usr/lib/big-mount/drive-recovery.sh:931
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1073
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:958
 msgid "Elapsed"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1073
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1074
 #: big-mount/usr/lib/big-mount/drive-copy.sh:1075
 #: big-mount/usr/lib/big-mount/drive-copy.sh:1076
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1077
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1078
 msgid "Check"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1073
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1075
 msgid "source and destination match"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1074
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1076
 msgid "%s files differ"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1075
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1077
 msgid "did not finish"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1076
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1078
 msgid "rsync confirmed each file as it was copied; no second comparison was made"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1078
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1080
 msgid "Already at the destination, with different content"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1082
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1084
 msgid "Set aside because they did not advance (damaged area of the disk):"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1085
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1087
 msgid "To try them again, which puts more strain on the disk: bigmount --drive resume %s --retry-deferred"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1089
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1091
 msgid "Not copied:"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1094
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1096
 msgid "Different at the destination:"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1097
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1099
 msgid "Log:"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1121
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1123
 #: big-mount/usr/lib/big-mount/drive.sh:239
 msgid "Serial number"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1121
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1123
 #: big-mount/usr/lib/big-mount/drive.sh:255
 msgid "Label"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1153
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1155
 msgid "'%s' already exists. Nothing was written."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1169
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1171
 msgid "Kernel messages:"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1177
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1179
 msgid "'%s' is a folder. Nothing was written."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1185
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1187
 msgid "Report written to %s"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1238
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1245
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1240
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1247
 msgid "free"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1241
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1243
 msgid "drive with critical alerts"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1242
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1244
 msgid "same physical disk as the source"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1243
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1245
 msgid "not enough space"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1259
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1261
 msgid "Home folder"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1306
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1459
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1471
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1516
-#: big-mount/usr/lib/big-mount/drive-recovery.sh:951
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1308
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1461
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1473
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1518
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:978
 msgid "There is no job '%s'."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1309
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1311
 msgid "Only the results of a search by content can be copied this way."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1316
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1318
 #: big-mount/usr/lib/big-mount/drive-recovery.sh:521
-#: big-mount/usr/lib/big-mount/drive-recovery.sh:812
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:839
 msgid "Both --source and --destination are needed."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1384
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1386
 msgid "%s files, %s to copy; %s already exist with different content."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1407
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1409
 msgid "The copy could not be started."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1412
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1543
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1414
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1545
 #: big-mount/usr/lib/big-mount/drive-recovery.sh:291
 msgid "Copy started: %s"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1414
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1416
 #: big-mount/usr/lib/big-mount/drive-recovery.sh:293
 msgid "To follow it: bigmount --drive status %s --watch"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1445
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1447
 msgid "No copies or images yet."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1479
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1481
 msgid "A search cannot be paused, only cancelled. What was found stays."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1499
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1501
 msgid "It is not running."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1522
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1524
 msgid "It is already running."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1526
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1528
 msgid "It is already complete."
 msgstr ""
 
@@ -2710,92 +2715,92 @@ msgid "Word, Excel and LibreOffice files can appear among the results: they are 
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/drive-recovery.sh:551
-#: big-mount/usr/lib/big-mount/drive-recovery.sh:868
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:895
 msgid "Search started: %s"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-recovery.sh:854
-#: big-mount/usr/lib/big-mount/drive-recovery.sh:893
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:881
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:920
 msgid "%s files found by content in %s. Their original names and folders could not be kept."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-recovery.sh:902
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:929
 msgid "Files listed:"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-recovery.sh:903
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:930
 msgid "Files examined:"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-recovery.sh:906
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:933
 msgid "Candidates found:"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-recovery.sh:910
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:937
 msgid "Read:"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-recovery.sh:923
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:950
 msgid "Files listed"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-recovery.sh:924
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:951
 msgid "Files examined"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-recovery.sh:925
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:952
 msgid "These files exist on the volume. Files that were deleted are not on this list."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-recovery.sh:928
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:955
 msgid "Candidates found"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-recovery.sh:929
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:956
 msgid "Found by content: their original names and folders could not be kept, and some may be incomplete. Open them to check."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-recovery.sh:934
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:961
 msgid "Could not be read:"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-recovery.sh:959
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:986
 msgid "Only a list or a search has results."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-recovery.sh:978
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:1005
 msgid "The list is not ready yet."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-recovery.sh:1002
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:1029
 msgid "This command only answers with --json."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-recovery.sh:1080
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:1107
 msgid "This is a disk image: searching it does not touch any disk."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-recovery.sh:1084
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:1111
 msgid "The drive reported problems. For the whole drive, a disk image reads it only once. To copy files, choose one of its volumes."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-recovery.sh:1088
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:1115
 msgid "For the whole drive, files are searched by their content. To copy files, choose one of its volumes."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-recovery.sh:1092
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:1119
 msgid "The drive reported problems: copy what matters first, without going through everything."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-recovery.sh:1096
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:1123
 msgid "The drive reported problems and its files cannot be opened: a disk image reads it only once, and the search is done on the image."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-recovery.sh:1100
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:1127
 msgid "The files can be read normally: list them, and choose what to copy."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-recovery.sh:1104
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:1131
 msgid "The files cannot be opened normally: search for them by content."
 msgstr ""
 
@@ -3627,7 +3632,7 @@ msgstr ""
 #: big-mount/usr/lib/big-mount/gui/actions.py:187
 #: big-mount/usr/lib/big-mount/gui/pages/device.py:336
 #: big-mount/usr/lib/big-mount/gui/pages/device.py:337
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1012
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1013
 msgid "More options"
 msgstr ""
 
@@ -3936,12 +3941,12 @@ msgid "Mounting…"
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/gui/pages/device.py:86
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:930
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:931
 msgid "Unmount and mount read-only"
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/gui/pages/device.py:89
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1053
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1054
 #: big-mount/usr/lib/big-mount/gui/pages/results.py:618
 msgid "The reason could not be determined."
 msgstr ""
@@ -4175,7 +4180,7 @@ msgstr ""
 
 #: big-mount/usr/lib/big-mount/gui/pages/device.py:446
 #: big-mount/usr/lib/big-mount/gui/pages/overview.py:69
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:276
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:277
 msgid "Recover files"
 msgstr ""
 
@@ -4376,6 +4381,7 @@ msgid "Keep working"
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/gui/pages/job.py:254
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1142
 msgid "Stop"
 msgstr ""
 
@@ -4528,456 +4534,460 @@ msgstr ""
 msgid "Search by name, model, volume label, folder or health."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:18
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:19
 msgid "Where should files be recovered from?"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:19
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:20
 msgid "What are you looking for?"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:20
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:21
 msgid "How should they be looked for?"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:22
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:23
 msgid "Where should they be saved?"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:23
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:24
 msgid "Check and start"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:27
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:28
 msgid "Quick analysis"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:28
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:29
 msgid "Lists the files that exist on the volume, by type, and you choose what to copy. Deleted files are not on this list."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:30
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:31
 msgid "Copy files directly"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:31
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:32
 msgid "Copies everything, or the folders you choose, with their names. It does not filter by type, and it does not go through what you leave out."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:33
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:34
 msgid "Deep analysis"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:34
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:35
 msgid "Searches every sector for files by their content. It can find what no longer appears, but names and folders are lost, some files come out incomplete and nothing is guaranteed."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:36
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:37
 msgid "Make a disk image only"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:37
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:38
 msgid "Copies the whole device to a file on another disk with GNU ddrescue, keeping a map so it can resume and never reads a good area twice."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:39
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1075
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:40
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1076
 msgid "Look for lost partitions"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:40
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1081
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:41
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1083
 msgid "TestDisk reads the partition table and analyzes the disk. It only shows what it finds: nothing is written."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:46
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:47
 msgid "Recovered"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:122
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:123
 msgid "Recovered files"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:130
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:131
 msgid "Files found"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:267
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:268
 #, python-format
 msgid "%d item marked. The total is measured in the next steps."
 msgid_plural "%d items marked. The total is measured in the next steps."
 msgstr[0] ""
 msgstr[1] ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:303
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:304
 msgid "Mark what to copy. A marked folder takes everything inside. Only the folders you open are read."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:326
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:396
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:327
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:397
 msgid "Next"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:366
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:367
 #, python-format
 msgid "Step %(n)d of %(t)d"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:405
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:406
 msgid "Look for partitions"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:412
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:413
 msgid "Start"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:433
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:434
 msgid "The source was unmounted. Nothing was done."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:445
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:446
 msgid "Choose the drive or the volume. Nothing is read or changed yet."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:450
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:451
 msgid "A disk image"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:451
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:454
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:452
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:455
 msgid "A disk image saved before"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:451
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:452
 msgid "Searching it does not touch any disk."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:476
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:477
 msgid "For an image or a deep search: every sector, whatever the volumes."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:478
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:479
 msgid "Only for a disk image, a deep search or lost partitions. To copy files, choose a volume above."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:479
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:480
 msgid "The whole drive"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:506
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:507
 msgid "Image file"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:525
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:526
 msgid "Checking what can be done…"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:530
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:531
 msgid "This source cannot be used"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:548
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:549
 msgid "You can choose more than one. If you are not sure, leave All."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:551
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1005
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:552
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1006
 msgid "All types"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:610
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:611
 msgid "This drive reported problems: every extra read wears it. Nothing starts without you."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:615
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:616
 msgid "You chose the whole drive. Copying files and the quick analysis work with the files of a volume."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:616
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:617
 #, python-format
 msgid "Use the volume %s"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:626
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:627
 msgid "Advanced"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:626
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:627
 msgid "Tools that work with the whole disk"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:633
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:634
 msgid "What to copy"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:635
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1003
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:636
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1004
 msgid "Everything"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:635
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:636
 msgid "All the files of this volume."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:636
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:637
 msgid "Only what you mark. Recommended on a drive with problems: the most important first."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:701
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:702
 msgid "It asks for the administrator password."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:703
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:828
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:704
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:829
 #, python-format
 msgid "Not available: %s"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:716
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:717
 #, python-format
 msgid "Use %s"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:718
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:719
 msgid "Check again"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:719
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:720
 msgid "After installing the package, check again without leaving the assistant."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:721
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:722
 msgid "Recommended"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:743
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:744
 #, python-format
 msgid "First a disk image is made, which needs free space elsewhere as large as the source (%s). Then the image is searched, and the disk rests."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:745
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:746
 msgid "A direct copy does not filter by type. To choose by type, use the quick analysis."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:787
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:788
 #, python-format
 msgid "From: %s"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:789
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:790
 msgid "Never on the same physical disk as the source. If that disk fails, both are lost."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:790
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:791
 msgid "Places on another disk"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:791
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:792
 msgid "Looking for places…"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:794
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:795
 #: big-mount/usr/lib/big-mount/gui/pages/results.py:627
 msgid "Choose another folder…"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:844
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:845
 msgid "No other disk is mounted. Connect one, or choose a folder."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:865
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:866
 msgid "Checking this place…"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:871
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:872
 msgid "The check could not be done."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:875
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:876
 msgid "Everything can be saved here."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:877
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:878
 #, python-format
 msgid "It can be saved here: %s free."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:880
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:881
 msgid "It cannot be saved here."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:937
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:938
 msgid "Checking the source and the destination…"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:946
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:947
 msgid "It cannot be started."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:966
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:967
 msgid "Method"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:969
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:970
 msgid "What"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:972
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:973
 msgid "Space it will use"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:974
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:976
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:975
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:977
 msgid "To copy"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:974
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:975
 #, python-format
 msgid "%(files)s files, %(size)s"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:978
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:979
 msgid "Free at the destination"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:980
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:981
 msgid "Already there, with different content"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:983
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:984
 msgid "Your files will be copied with their names. Nothing is written to the source."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:984
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:985
 msgid "First a list of what exists is made. Then you choose what to copy. Nothing is written to the source."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:985
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:986
 msgid "Files will be searched for by their content. Names and folders are lost, some files may come out incomplete, and finding nothing is possible. Nothing is written to the source."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:986
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:987
 msgid "The disk is read once, into a file. Nothing is written to it."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:991
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:992
 msgid "After the image, the search needs your confirmation. It can also be started later."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:993
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:994
 msgid "Good to know"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1003
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1004
 #, python-format
 msgid "%d item you marked"
 msgid_plural "%d items you marked"
 msgstr[0] ""
 msgstr[1] ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1013
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1014
 msgid "If a file already exists"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1018
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1019
 msgid "Check the result"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1020
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1021
 msgid "Basic: rsync confirms each file as it is copied"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1020
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1021
 msgid "Names, sizes and dates compared at the end"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1021
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1022
 msgid "Content compared at the end (reads the source again)"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1025
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1026
 msgid "Set aside a stuck file after (seconds)"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1027
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1028
 msgid "A file that does not advance for this long is set aside, so that the others are saved first. 0: never."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1031
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1032
 msgid "Limit the reading speed (kB/s)"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1033
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1034
 msgid "0: no limit"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1044
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1045
 msgid "Starting…"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1053
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1054
 #: big-mount/usr/lib/big-mount/gui/pages/results.py:618
 msgid "It did not start"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1082
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1084
 msgid "Read the partition table"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1083
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1085
 msgid "Analyze the whole disk"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1084
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1086
 msgid "It reads all of the disk. On a drive with problems this is extra wear."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1087
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1089
 msgid "This drive reported problems: analyzing all of it is extra wear. A disk image first spares it."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1100
-msgid "Volumes this drive already has"
-msgstr ""
-
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1101
-msgid "They are not lost. To recover their files, copying them is faster and reads the disk less than any analysis."
-msgstr ""
-
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1106
-msgid "Recover its files"
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1111
+msgid "Stopping…"
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1118
+msgid "Volumes this drive already has"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1119
+msgid "They are not lost. To recover their files, copying them is faster and reads the disk less than any analysis."
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1124
+msgid "Recover its files"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1136
 msgid "Looking for partitions…"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1122
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1140
 msgid "TestDisk does not say how far it has gone, so there is no percentage. Analyzing a whole disk reads all of it and can take hours; the drive can be used for nothing else meanwhile."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1130
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1151
 #, python-format
 msgid "Elapsed: %s"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1146
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1171
 msgid "The search failed."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1149
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1174
 msgid "What TestDisk found"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1155
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1180
 msgid "Big-Mount does not rewrite partition tables, on purpose: a mistake there can lose everything. A disk image, or a search by content, recovers files without that risk."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1157
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1182
 msgid "The analysis did not recognize any partition. That does not prove there is no data: a search by content may still find files."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1159
+#: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1184
 msgid "The partition table is empty or unreadable. Analyzing the whole disk may find what it no longer lists."
 msgstr ""
 
