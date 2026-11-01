@@ -131,6 +131,7 @@ for spec in "ext4 mkfs.ext4 -q -F -L T_EXT4" "btrfs mkfs.btrfs -q -f -L T_BTRFS"
    check "$n: mounting again changes nothing" eq "$(json mountpoint <<< "$out2")" "$mp"
    "$B" --drive diagnose "$d" --json | valid_json; check "$n: diagnose is valid JSON" eq "${PIPESTATUS[1]}" 0
    "$B" --drive unmount "$d" >/dev/null; check "$n: unmount" eq "$?" 0
+   check "$n: device left writable" eq "$(lsblk -dn -o RO "$d" | tr -d ' ')" 0
 done
 fi
 

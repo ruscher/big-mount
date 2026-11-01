@@ -337,6 +337,20 @@ check "writing on a drive at risk: refused" mnt /dev/sdc1 20 refused-rw rw
 FAKE_HEALTH_FIND=() FAKE_SMART=""
 FAKE_MP=""
 check "already rw and ro asked: it does not unmount by surprise" mnt /dev/sda2 20 already-rw
+fake_helper() { printf '%s\n' "$*" >> "$WORK/helper.log"; return "${FAKE_HELPER_RC:-0}"; }
+BM_HELPER_CMD=fake_helper FAKE_MP=/m FAKE_OPTS=ro,noatime
+: > "$WORK/helper.log"
+check "btrfs read-only, healthy drive: mounted" mnt /dev/sdg1 0 ""
+check "  ... without asking for the password" test ! -s "$WORK/helper.log"
+FAKE_HEALTH_FIND=(smart-failing) FAKE_SMART=failing
+check "btrfs read-only, drive at risk: mounted" mnt /dev/sdg1 0 ""
+check "  ... with writing blocked on the device" grep -qx 'protect /dev/sdg1' "$WORK/helper.log"
+: > "$WORK/helper.log"
+check "ext4 read-only, drive at risk: no protection" mnt /dev/sda1 0 ""
+check "  ... so no password is asked" test ! -s "$WORK/helper.log"
+FAKE_HELPER_RC=3; check "btrfs, a sibling volume writing: refused" mnt /dev/sdg1 20 protect-busy
+FAKE_HELPER_RC=4; check "btrfs on the system drive: refused" mnt /dev/sdg1 20 protect-system
+unset BM_HELPER_CMD FAKE_HELPER_RC; FAKE_MP="" FAKE_HEALTH_FIND=() FAKE_SMART=""
 explain() { bm_mnt_explain /dev/sdc1 ntfs "$1"; eq "$MNT_WHY" "$2"; }
 bm_kernel_messages() { KMSG=(); }
 check "no driver" explain "unknown filesystem type 'apfs'" no-driver
@@ -540,6 +554,8 @@ bm_dv_stable_id /dev/sdc; check "a drive is known by its serial, not its name" e
 bm_dv_stable_id /dev/sdg; check "  ... without a serial, by its first filesystem" eq "$REPLY" uuid:multi
 bm_dv_stable_id /dev/sde; check "  ... without either, by name and size, which says so" eq "$REPLY" device:/dev/sde:16000000000
 bm_dv_disk_json /dev/sdc | json_ok; check "the JSON of a drive is valid" eq "$?" 0
+bm_dv_part_json /dev/sdg1 | grep -q '"log_replay":true'; check "btrfs: its log replays read-only" eq "$?" 0
+bm_dv_part_json /dev/sda1 | grep -q '"log_replay"'; check "  ... ext4 does not say so" eq "$?" 1
 bm_dv_disk_json /dev/sdc | grep -q '"stable_id":"serial:S1"'; check "  ... with its identity" eq "$?" 0
 bm_dv_disk_json /dev/sdc | grep -q '"diskseq":7'; check "  ... and this connection of it" eq "$?" 0
 bm_rec_categories_valid photos,videos; check "types of file: known ones" eq "$?" 0

@@ -44,10 +44,16 @@ def unlock_volume(window, vol, done):
 
 def mount_volume(window, dev, vol, then=None):
     """Read-only, always. On a drive at risk: block writing at the device, on by default."""
+    forced = vol.log_replay and dev.health.risky
     check = Gtk.CheckButton(label=_("Also block writing on the device itself (asks for the password)"),
-                            active=dev.health.risky)
+                            active=dev.health.risky, sensitive=not forced)
     check.set_tooltip_text(_("Whatever a driver or another program tries, the disk does not change. It lasts until the drive is disconnected."))
-    body = _("The volume is opened without changing anything on it.")
+    if vol.log_replay:
+        body = _("This filesystem can write its journal to the disk even when mounted read-only.")
+    else:
+        body = _("The volume is opened without changing anything on it.")
+    if forced:
+        body += " " + _("On a drive with problems, writing is always blocked on the device.")
     if dev.health.risky:
         body += "\n\n" + dev.health.label
 

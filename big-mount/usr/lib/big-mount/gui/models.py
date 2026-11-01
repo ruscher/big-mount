@@ -114,6 +114,8 @@ class Volume:
     device_read_only: bool = False
     fs_supported: bool = False
     multi_device: bool = False
+    # A read-only mount still replays its log: on a drive at risk the engine protects the device
+    log_replay: bool = False
 
     @classmethod
     def from_json(cls, d):

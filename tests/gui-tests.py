@@ -710,6 +710,23 @@ class Volumes(Base):
         self.assertTrue(pump(lambda: any(c.startswith("--drive mount") for c in calls()), 3))
         self.assertNotIn("--protect", next(c for c in calls() if c.startswith("--drive mount")))
 
+    def test_log_replay_forced_only_at_risk(self):
+        calm = drive("/dev/sdf", "Calm", serial="F2", volumes=[vol("/dev/sdf1", label="X", fstype="xfs", log_replay=True)])
+        risky = seagate()
+        risky["volumes"][1].update(fstype="xfs", log_replay=True)
+        fix("list", {"partial": False, "devices": [calm, risky]})
+        self.win.refresh()
+        pump(lambda: self.win.device_by_id("serial:F2"), 3)
+        for sid, forced in (("serial:F2", False), ("serial:S1DFL8G9", True)):
+            self.win.show_device(sid)
+            pump(timeout=0.2)
+            click(self.win, "Mount read-only")
+            dialog = self.dialog()
+            box = next(x for x in widgets(dialog) if isinstance(x, Gtk.CheckButton))
+            self.assertEqual((box.get_active(), box.get_sensitive()), (forced, not forced), sid)
+            dialog.force_close()
+            pump(lambda: self.win.get_visible_dialog() is None, 2)
+
     def test_failed_mount_is_explained_in_plain_words(self):
         self.win.show_device("serial:S1DFL8G9")
         pump(timeout=0.2)

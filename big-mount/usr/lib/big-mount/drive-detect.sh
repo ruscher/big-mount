@@ -197,6 +197,13 @@ bm_dv_multi_btrfs() {
    [ "${#DV_MULTI[@]}" -gt 1 ]
 }
 
+# Filesystems that replay a journal or log even when mounted read-only, with
+# no UDisks2 option to stop it: a read-only mount always protects their device
+bm_dv_fs_replays() {
+   case "$1" in xfs | btrfs | f2fs | jfs | reiserfs | nilfs2 | bcachefs) return 0 ;; esac
+   return 1
+}
+
 # Can this filesystem be mounted here at all? A driver in the running kernel,
 # a module on disk or a mount helper. Nothing is loaded by asking.
 bm_dv_fs_supported() {
@@ -274,6 +281,7 @@ bm_dv_part_json() {
    out+=",$k,$(bm_jb read_only "$DV_RO" device_read_only "${DV[$d|RO]:-0}")"
    bm_dv_fs_supported "${DV[$d|FSTYPE]:-}" && k=1 || k=0
    out+=",$(bm_jb fs_supported "$k")"
+   if bm_dv_fs_replays "${DV[$d|FSTYPE]:-}"; then out+=",$(bm_jb log_replay 1)"; fi
    if bm_dv_multi_btrfs "$d"; then out+=",$(bm_jb multi_device 1)"; fi
    printf '%s}' "$out"
 }

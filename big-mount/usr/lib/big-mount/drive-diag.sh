@@ -388,13 +388,23 @@ bm_mnt_why_text() {
       refused-rw) REPLY=$"This drive reported problems, so it is only mounted read-only. Writing to it can destroy what is still readable." ;;
       already-rw) REPLY=$"It is already mounted with writing enabled. Unmount it first to mount it read-only (bigmount --drive mount DEVICE --remount)." ;;
       busy) REPLY=$"It is in use, so it could not be unmounted to be mounted again." ;;
+      protect-busy) REPLY=$"Writing could not be blocked on the drive: another volume of it is mounted with writing enabled. Unmount it first." ;;
+      protect-system) REPLY=$"Writing cannot be blocked on the drive of the running system, so the volume was not mounted." ;;
       *) REPLY=$"The reason could not be determined. Nothing was changed on the device. See the technical details." ;;
    esac
 }
 
+# bm_mnt_auto_protect MODE FSTYPE: whether a mount needs writing blocked on the
+# device without being asked. Uses DS_LEVEL of its drive.
+bm_mnt_auto_protect() {
+   [ "$1" = ro ] && bm_dv_fs_replays "$2" && [[ ${DS_LEVEL:-} == attention || ${DS_LEVEL:-} == critical ]]
+}
+
 # bm_mnt_mount DEV MODE PROTECT REMOUNT: mount one volume. MODE ro|rw. PROTECT=1
 # blocks writing on the block device first (administrator password): whatever
-# a driver or another program tries afterwards, the disk does not change.
+# a driver or another program tries afterwards, the disk does not change. A
+# read-only mount of a filesystem that replays its log gets it on a drive at
+# risk, where that write can destroy what is still readable.
 # Sets MNT_POINT, MNT_RO, MNT_PROTECTED, MNT_WHY, MNT_DETAIL. Returns:
 # 0 mounted, 20 refused by a check, 5 not authorized, 24 device gone, 1 failed.
 bm_mnt_mount() {
@@ -441,10 +451,13 @@ bm_mnt_mount() {
 
    bm_diskseq "$disk"
    [ "$REPLY" = "$seq" ] || { MNT_WHY=gone; return 24; }
+   bm_mnt_auto_protect "$mode" "$fs" && protect=1
    if [ "$protect" = 1 ] && [ "$mode" = ro ]; then
       bm_helper protect "$dev"; local hrc=$?
       case "$hrc" in
          0) MNT_PROTECTED=1 ;;
+         3) MNT_WHY="protect-busy"; return 20 ;;
+         4) MNT_WHY="protect-system"; return 20 ;;
          126 | 127) MNT_WHY=not-authorized; return 5 ;;
          *) MNT_WHY=unknown; MNT_DETAIL="helper protect: exit $hrc"; return 1 ;;
       esac

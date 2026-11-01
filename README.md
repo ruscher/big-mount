@@ -1116,7 +1116,7 @@ Options of `mount`:
 | Option | Effect |
 | --- | --- |
 | `--read-only` | the default: read-only, `noatime`, `nosuid`, `nodev`, `noexec`, and `noload` on ext3/ext4 so the journal is not replayed |
-| `--protect` | also blocks writing on the block device (asks for the password). Lasts until the drive is disconnected |
+| `--protect` | also blocks writing on the block device (asks for the password). Lasts until the drive is disconnected. Done without asking on a drive at risk for XFS, Btrfs, F2FS, JFS, ReiserFS, NILFS2 and bcachefs, which replay their log even when mounted read-only. Refused (exit 20) when another volume of the drive is mounted with writing enabled, or the drive holds the running system |
 | `--remount` | unmounts first, when it is mounted with writing enabled |
 | `--read-write` | mounts with writing enabled; refused on a drive at risk |
 

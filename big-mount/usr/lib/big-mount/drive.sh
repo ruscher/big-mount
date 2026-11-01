@@ -433,10 +433,12 @@ bm_drive_mount() {
    bm_resolve "$target" || { bm_resolve_fail "$target"; return 24; }
    if [ "$dry" = 1 ]; then
       bm_dv_scan
+      bm_facts "$R_DEV" && bm_ds_level "${F[DISK]}"
+      bm_mnt_auto_protect "$mode" "${DV[$R_DEV|FSTYPE]:-}" && protect=1
+      [ "$mode" = ro ] && [ "$protect" = 1 ] && printf 'dry-run: pkexec bigmount-drive-helper protect %q\n' "$R_DEV"
       bm_mnt_options "${DV[$R_DEV|FSTYPE]:-}"
       [ "$mode" = rw ] && REPLY=noatime
       printf 'dry-run: udisksctl mount -b %q -o %s\n' "$R_DEV" "$REPLY"
-      [ "$protect" = 1 ] && printf 'dry-run: pkexec bigmount-drive-helper protect %q\n' "$R_DEV"
       return 0
    fi
    # The window names the disk it showed: another one under that name is refused
