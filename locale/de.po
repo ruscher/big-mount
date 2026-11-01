@@ -285,7 +285,7 @@ msgstr "Kopieren Sie zuerst Ihre wichtigen Dateien an einen anderen Ort."
 
 #: big-mount/usr/lib/big-mount/cli.sh:153
 msgid "Then check the filesystem with the device unmounted, for example with KDE Partition Manager (Check)."
-msgstr "Prüfen Sie dann das Dateisystem bei ausgehängtem Gerät, zum Beispiel mit der KDE-Partitionsverwaltung (Überprüfen)."
+msgstr "Prüfen Sie dann das Dateisystem bei ausgehängtem Gerät, zum Beispiel mit der KDE-Partitionsverwaltung (Prüfen)."
 
 #: big-mount/usr/lib/big-mount/cli.sh:154
 msgid "Do not write to the device until it has been checked."
@@ -1255,7 +1255,7 @@ msgstr "Diese Programme schließen?"
 
 #: big-mount/usr/lib/big-mount/cli.sh:1367
 msgid "They will be asked to close, as when you close their windows. Unsaved changes in them may be lost: if possible, close them yourself instead."
-msgstr "Sie werden zum Beenden aufgefordert, als ob Sie ihre Fenster schließen. Nicht gespeicherte Änderungen darin können verloren gehen: Schließen Sie sie nach Möglichkeit lieber selbst."
+msgstr "Die Programme werden zum Beenden aufgefordert, als ob Sie ihre Fenster schließen. Nicht gespeicherte Änderungen darin können verloren gehen: Schließen Sie sie nach Möglichkeit lieber selbst."
 
 #: big-mount/usr/lib/big-mount/cli.sh:1369
 msgid "These will not be closed:"

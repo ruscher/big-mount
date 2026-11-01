@@ -253,7 +253,7 @@ msgstr "Om erop te schrijven kopieert u de bestanden naar een andere plek en for
 
 #: big-mount/usr/lib/big-mount/cli.sh:143
 msgid "Windows did not close this NTFS partition properly (hibernation, Fast Startup or an interrupted shutdown). Writing to it now could damage files."
-msgstr "Windows heeft deze NTFS-partitie niet correct afgesloten (slaapstand, Snel opstarten of een onderbroken afsluiting). Er nu op schrijven kan bestanden beschadigen."
+msgstr "Windows heeft deze NTFS-partitie niet correct afgesloten (sluimerstand, Snel opstarten of een onderbroken afsluiting). Er nu op schrijven kan bestanden beschadigen."
 
 #: big-mount/usr/lib/big-mount/cli.sh:144
 msgid "Start Windows and shut it down completely: hold the Shift key while you click Shut down."
@@ -285,7 +285,7 @@ msgstr "Kopieer eerst uw belangrijke bestanden naar een andere plek."
 
 #: big-mount/usr/lib/big-mount/cli.sh:153
 msgid "Then check the filesystem with the device unmounted, for example with KDE Partition Manager (Check)."
-msgstr "Controleer daarna het bestandssysteem terwijl het apparaat is afgekoppeld, bijvoorbeeld met KDE Partitiebeheer (Controleren)."
+msgstr "Controleer daarna het bestandssysteem terwijl het apparaat is afgekoppeld, bijvoorbeeld met KDE Partitiebeheerder (Controleren)."
 
 #: big-mount/usr/lib/big-mount/cli.sh:154
 msgid "Do not write to the device until it has been checked."
@@ -310,7 +310,7 @@ msgstr "Probeer een andere kabel en sluit het apparaat rechtstreeks op de comput
 
 #: big-mount/usr/lib/big-mount/cli.sh:161
 msgid "Check the health of the drive in KDE Partition Manager (SMART status)."
-msgstr "Controleer de gezondheid van de schijf in KDE Partitiebeheer (SMART-status)."
+msgstr "Controleer de gezondheid van de schijf in KDE Partitiebeheerder (SMART-status)."
 
 #: big-mount/usr/lib/big-mount/cli.sh:165
 msgid "The filesystem was mounted read-only, but no problem was found with it."
@@ -1050,7 +1050,7 @@ msgstr "De schijf is gewist, maar het schrijven van een nieuwe partitietabel is 
 
 #: big-mount/usr/lib/big-mount/cli.sh:1041
 msgid "Create a partition table with KDE Partition Manager, and check that it is still there after a restart."
-msgstr "Maak een partitietabel aan met KDE Partitiebeheer en controleer of die er na een herstart nog is."
+msgstr "Maak een partitietabel aan met KDE Partitiebeheerder en controleer of die er na een herstart nog is."
 
 #: big-mount/usr/lib/big-mount/cli.sh:1044
 #: big-mount/usr/lib/big-mount/cli.sh:1049
@@ -1952,7 +1952,7 @@ msgstr "De bron is aangekoppeld met schrijftoegang. Alleen-lezen aankoppelen is 
 
 #: big-mount/usr/lib/big-mount/drive-copy.sh:152
 msgid "The source drive reported problems. Files that do not advance are set aside so the rest is saved first."
-msgstr "De bronschijf meldde problemen. Bestanden die niet opschieten, worden opzijgezet, zodat de rest eerst wordt gered."
+msgstr "De bronschijf meldde problemen. Bestanden die geen voortgang boeken, worden opzijgezet, zodat de rest eerst wordt gered."
 
 #: big-mount/usr/lib/big-mount/drive-copy.sh:153
 msgid "The total is not measured on a drive at risk, to avoid extra reads. Progress shows what was copied so far."
@@ -2068,7 +2068,7 @@ msgstr "De bestemming heeft geen ruimte meer. Maak ruimte vrij of kies een ander
 
 #: big-mount/usr/lib/big-mount/drive-copy.sh:428
 msgid "%s files were set aside because they did not advance. The drive may be getting worse, so the copy stopped."
-msgstr "%s bestanden zijn opzijgezet omdat ze niet opschoten. De schijf gaat mogelijk achteruit, daarom is het kopiëren gestopt."
+msgstr "%s bestanden zijn opzijgezet omdat ze geen voortgang boekten. De schijf gaat mogelijk achteruit, daarom is het kopiëren gestopt."
 
 #: big-mount/usr/lib/big-mount/drive-copy.sh:429
 msgid "Some files were not copied. See the list below."
@@ -2218,7 +2218,7 @@ msgstr "Al op de bestemming, met een andere inhoud"
 
 #: big-mount/usr/lib/big-mount/drive-copy.sh:1099
 msgid "Set aside because they did not advance (damaged area of the disk):"
-msgstr "Opzijgezet omdat ze niet opschoten (beschadigd gebied van de schijf):"
+msgstr "Opzijgezet omdat ze geen voortgang boekten (beschadigd gebied van de schijf):"
 
 #: big-mount/usr/lib/big-mount/drive-copy.sh:1102
 msgid "To try them again, which puts more strain on the disk: bigmount --drive resume %s --retry-deferred"
@@ -2606,7 +2606,7 @@ msgstr "Er is geen toestemming gegeven om aan te koppelen."
 
 #: big-mount/usr/lib/big-mount/drive-diag.sh:379
 msgid "Windows left this partition hibernated (Fast Startup). It can be read only after Windows shuts down completely."
-msgstr "Windows heeft deze partitie in slaapstand achtergelaten (Snel opstarten). Ze kan pas worden gelezen nadat Windows volledig is afgesloten."
+msgstr "Windows heeft deze partitie in de sluimerstand achtergelaten (Snel opstarten). Ze kan pas worden gelezen nadat Windows volledig is afgesloten."
 
 #: big-mount/usr/lib/big-mount/drive-diag.sh:380
 msgid "The drive could not read the start of this filesystem. This is usually damage on the disk, a bad cable or a weak USB port. Making a disk image with GNU ddrescue is the safest next step."
@@ -2921,7 +2921,7 @@ msgstr "hoe het resultaat wordt gecontroleerd (full leest de bron opnieuw)"
 
 #: big-mount/usr/lib/big-mount/drive.sh:137
 msgid "set aside a file that does not advance for N seconds (default 90, 0: never)"
-msgstr "een bestand dat N seconden niet opschiet opzijzetten (standaard 90, 0: nooit)"
+msgstr "een bestand dat N seconden geen voortgang boekt opzijzetten (standaard 90, 0: nooit)"
 
 #: big-mount/usr/lib/big-mount/drive.sh:138
 msgid "limit the reading speed"
@@ -4938,7 +4938,7 @@ msgstr "Een vastgelopen bestand opzijzetten na (seconden)"
 
 #: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1028
 msgid "A file that does not advance for this long is set aside, so that the others are saved first. 0: never."
-msgstr "Een bestand dat zo lang niet opschiet, wordt opzijgezet, zodat de andere eerst worden gered. 0: nooit."
+msgstr "Een bestand dat zo lang geen voortgang boekt, wordt opzijgezet, zodat de andere eerst worden gered. 0: nooit."
 
 #: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1032
 msgid "Limit the reading speed (kB/s)"

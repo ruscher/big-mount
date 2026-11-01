@@ -285,7 +285,7 @@ msgstr "Nejprve zkopírujte důležité soubory jinam."
 
 #: big-mount/usr/lib/big-mount/cli.sh:153
 msgid "Then check the filesystem with the device unmounted, for example with KDE Partition Manager (Check)."
-msgstr "Poté zkontrolujte souborový systém při odpojeném zařízení, například ve Správci oddílů KDE (Zkontrolovat)."
+msgstr "Poté zkontrolujte souborový systém při odpojeném zařízení, například v programu Správce diskových oddílů pro KDE (Ověřit)."
 
 #: big-mount/usr/lib/big-mount/cli.sh:154
 msgid "Do not write to the device until it has been checked."
@@ -310,7 +310,7 @@ msgstr "Zkuste jiný kabel a zapojte zařízení přímo do počítače, bez roz
 
 #: big-mount/usr/lib/big-mount/cli.sh:161
 msgid "Check the health of the drive in KDE Partition Manager (SMART status)."
-msgstr "Zkontrolujte stav zdraví disku ve Správci oddílů KDE (stav SMART)."
+msgstr "Zkontrolujte stav zdraví disku v programu Správce diskových oddílů pro KDE (stav SMART)."
 
 #: big-mount/usr/lib/big-mount/cli.sh:165
 msgid "The filesystem was mounted read-only, but no problem was found with it."
@@ -1050,7 +1050,7 @@ msgstr "Disk byl vymazán, ale zápis nové tabulky oddílů selhal (%s), takže
 
 #: big-mount/usr/lib/big-mount/cli.sh:1041
 msgid "Create a partition table with KDE Partition Manager, and check that it is still there after a restart."
-msgstr "Vytvořte tabulku oddílů ve Správci oddílů KDE a ověřte, že tam po restartu stále je."
+msgstr "Vytvořte tabulku oddílů v programu Správce diskových oddílů pro KDE a ověřte, že tam po restartu stále je."
 
 #: big-mount/usr/lib/big-mount/cli.sh:1044
 #: big-mount/usr/lib/big-mount/cli.sh:1049
@@ -1530,7 +1530,7 @@ msgstr "Povolena při startu systému"
 
 #: big-mount/usr/lib/big-mount/doctor.sh:249
 msgid "Not found by systemd"
-msgstr "Systemd ji nenašel"
+msgstr "systemd ji nenašel"
 
 #: big-mount/usr/lib/big-mount/doctor.sh:250
 msgid "Not enabled at boot (%s)"

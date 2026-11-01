@@ -261,7 +261,7 @@ msgstr "Inicie o Windows e encerre-o completamente: mantenha premida a tecla Shi
 
 #: big-mount/usr/lib/big-mount/cli.sh:145
 msgid "To avoid this in the future, disable Fast Startup in Windows: Control Panel > Power Options > Choose what the power buttons do."
-msgstr "Para evitar isto no futuro, desative o Arranque Rápido no Windows: Painel de Controlo > Opções de Energia > Escolher a função dos botões de energia."
+msgstr "Para evitar isto no futuro, desative o Arranque Rápido no Windows: Painel de Controlo > Opções de Energia > Escolher o que fazem os botões para ligar/desligar."
 
 #: big-mount/usr/lib/big-mount/cli.sh:146
 msgid "If it still happens, check the partition in Windows: open the Command Prompt as administrator and run chkdsk with the /f option for that drive letter."

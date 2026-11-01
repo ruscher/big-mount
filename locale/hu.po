@@ -69,7 +69,7 @@ msgstr "%s: kihagyva, az udev/UDisks elrejti (UDISKS_IGNORE)"
 
 #: big-mount/usr/bin/bigmount:394
 msgid "%s: left to UDisks, external device (%s)"
-msgstr "%s: a UDisks kezeli, külső eszköz (%s)"
+msgstr "%s: az UDisks kezeli, külső eszköz (%s)"
 
 #: big-mount/usr/bin/bigmount:400
 msgid "%s: skipped, listed in /etc/fstab"
@@ -261,7 +261,7 @@ msgstr "Indítsa el a Windowst, és állítsa le teljesen: tartsa lenyomva a Shi
 
 #: big-mount/usr/lib/big-mount/cli.sh:145
 msgid "To avoid this in the future, disable Fast Startup in Windows: Control Panel > Power Options > Choose what the power buttons do."
-msgstr "Hogy ez a jövőben ne forduljon elő, kapcsolja ki a Windowsban a gyors rendszerindítást: Vezérlőpult > Energiagazdálkodási lehetőségek > A főkapcsoló funkciójának megadása."
+msgstr "Hogy ez a jövőben ne forduljon elő, kapcsolja ki a Windowsban a gyors rendszerindítást: Vezérlőpult > Energiagazdálkodási lehetőségek > A főkapcsolók funkciójának megadása."
 
 #: big-mount/usr/lib/big-mount/cli.sh:146
 msgid "If it still happens, check the partition in Windows: open the Command Prompt as administrator and run chkdsk with the /f option for that drive letter."
@@ -285,7 +285,7 @@ msgstr "Először másolja át a fontos fájljait máshová."
 
 #: big-mount/usr/lib/big-mount/cli.sh:153
 msgid "Then check the filesystem with the device unmounted, for example with KDE Partition Manager (Check)."
-msgstr "Ezután ellenőrizze a fájlrendszert leválasztott eszközzel, például a KDE Partíciókezelővel (Ellenőrzés)."
+msgstr "Ezután ellenőrizze a fájlrendszert leválasztott eszközzel, például a KDE partíciókezelővel (Ellenőrzés)."
 
 #: big-mount/usr/lib/big-mount/cli.sh:154
 msgid "Do not write to the device until it has been checked."
@@ -310,7 +310,7 @@ msgstr "Próbáljon ki egy másik kábelt, és csatlakoztassa az eszközt közve
 
 #: big-mount/usr/lib/big-mount/cli.sh:161
 msgid "Check the health of the drive in KDE Partition Manager (SMART status)."
-msgstr "Ellenőrizze a meghajtó egészségi állapotát a KDE Partíciókezelőben (SMART-állapot)."
+msgstr "Ellenőrizze a meghajtó egészségi állapotát a KDE partíciókezelőben (SMART-állapot)."
 
 #: big-mount/usr/lib/big-mount/cli.sh:165
 msgid "The filesystem was mounted read-only, but no problem was found with it."
@@ -994,7 +994,7 @@ msgstr "A rendszer a rendszergazdai jelszót fogja kérni."
 
 #: big-mount/usr/lib/big-mount/cli.sh:1001
 msgid "The drive is locked against erasing"
-msgstr "A meghajtó zárolva van a törlés ellen"
+msgstr "A meghajtó törlése zárolva van"
 
 #: big-mount/usr/lib/big-mount/cli.sh:1004
 msgid "When the computer starts, its firmware locks the security commands of the drives (they are frozen). Sleeping once usually unlocks them."
@@ -1030,7 +1030,7 @@ msgstr "A meghajtó még mindig zárolva van"
 
 #: big-mount/usr/lib/big-mount/cli.sh:1030
 msgid "The drive is still locked against erasing. Nothing was erased."
-msgstr "A meghajtó még mindig zárolva van a törlés ellen. Semmi sem lett törölve."
+msgstr "A meghajtó törlése még mindig zárolva van. Semmi sem lett törölve."
 
 #: big-mount/usr/lib/big-mount/cli.sh:1031
 msgid "Some computers lock the drives again when they wake up. Try once more, or erase the drive in another computer."
@@ -1050,7 +1050,7 @@ msgstr "A meghajtó törölve lett, de az új partíciós tábla írása nem sik
 
 #: big-mount/usr/lib/big-mount/cli.sh:1041
 msgid "Create a partition table with KDE Partition Manager, and check that it is still there after a restart."
-msgstr "Hozzon létre partíciós táblát a KDE Partíciókezelővel, és ellenőrizze, hogy újraindítás után is megvan-e."
+msgstr "Hozzon létre partíciós táblát a KDE partíciókezelővel, és ellenőrizze, hogy újraindítás után is megvan-e."
 
 #: big-mount/usr/lib/big-mount/cli.sh:1044
 #: big-mount/usr/lib/big-mount/cli.sh:1049
@@ -1682,11 +1682,11 @@ msgstr "Telepítse a big-mount függőségeit (util-linux, udisks2, lsof, glib2)
 
 #: big-mount/usr/lib/big-mount/doctor.sh:351
 msgid "UDisks2 answers on the system D-Bus"
-msgstr "A UDisks2 válaszol a rendszer D-Bus-án"
+msgstr "Az UDisks2 válaszol a rendszer D-Bus-án"
 
 #: big-mount/usr/lib/big-mount/doctor.sh:353
 msgid "UDisks2 does not answer on the system D-Bus"
-msgstr "A UDisks2 nem válaszol a rendszer D-Bus-án"
+msgstr "Az UDisks2 nem válaszol a rendszer D-Bus-án"
 
 #: big-mount/usr/lib/big-mount/doctor.sh:353
 msgid "Plasma and Big-Mount cannot mount or remove devices. Check: systemctl status udisks2"
@@ -1726,7 +1726,7 @@ msgstr "A kernelben nincs hozzá /sys/block bejegyzés"
 
 #: big-mount/usr/lib/big-mount/doctor.sh:386
 msgid "UDisks2 does not know this device: Plasma and Big-Mount cannot manage it"
-msgstr "A UDisks2 nem ismeri ezt az eszközt: a Plasma és a Big-Mount nem tudja kezelni"
+msgstr "Az UDisks2 nem ismeri ezt az eszközt: a Plasma és a Big-Mount nem tudja kezelni"
 
 #: big-mount/usr/lib/big-mount/doctor.sh:393
 msgid "%s: the drive reports problems (%s)"
@@ -3513,7 +3513,7 @@ msgstr "%s: több meghajtóra kiterjedő fájlrendszer része"
 
 #: big-mount/usr/lib/big-mount/lib.sh:1326
 msgid "UDisks2 does not know this drive."
-msgstr "A UDisks2 nem ismeri ezt a meghajtót."
+msgstr "Az UDisks2 nem ismeri ezt a meghajtót."
 
 #: big-mount/usr/lib/big-mount/gui/about.py:16
 msgid "Big-Mount takes care of the drives of your computer:"

@@ -285,7 +285,7 @@ msgstr "Önce önemli dosyalarınızı başka bir yere kopyalayın."
 
 #: big-mount/usr/lib/big-mount/cli.sh:153
 msgid "Then check the filesystem with the device unmounted, for example with KDE Partition Manager (Check)."
-msgstr "Ardından aygıtın bağlantısı kesikken dosya sistemini denetleyin, örneğin KDE Bölüm Yöneticisi ile (Denetle)."
+msgstr "Ardından aygıtın bağlantısı kesikken dosya sistemini denetleyin, örneğin KDE Bölüntü Yöneticisi ile (Denetle)."
 
 #: big-mount/usr/lib/big-mount/cli.sh:154
 msgid "Do not write to the device until it has been checked."
@@ -310,7 +310,7 @@ msgstr "Başka bir kablo deneyin ve aygıtı çoklayıcı kullanmadan doğrudan 
 
 #: big-mount/usr/lib/big-mount/cli.sh:161
 msgid "Check the health of the drive in KDE Partition Manager (SMART status)."
-msgstr "Sürücünün sağlık durumunu KDE Bölüm Yöneticisi'nde denetleyin (SMART durumu)."
+msgstr "Sürücünün sağlık durumunu KDE Bölüntü Yöneticisi'nde denetleyin (SMART durumu)."
 
 #: big-mount/usr/lib/big-mount/cli.sh:165
 msgid "The filesystem was mounted read-only, but no problem was found with it."
@@ -769,7 +769,7 @@ msgstr "Aygıt güvenle kaldırıldı. Artık çıkarılabilir."
 #: big-mount/usr/lib/big-mount/cli.sh:823
 #: big-mount/usr/lib/big-mount/drive.sh:497
 msgid "Unmounted. Everything was written to the device."
-msgstr "Bağlantı kesildi. Her şey aygıta yazıldı."
+msgstr "Bağlantısı kesildi. Her şey aygıta yazıldı."
 
 #: big-mount/usr/lib/big-mount/cli.sh:835
 msgid "These programs can be asked to close (unsaved changes in them may be lost):"
@@ -811,7 +811,7 @@ msgstr "Hiçbir şey yapılmadı. Onları durdurmak için --assume-yes ile yenid
 
 #: big-mount/usr/lib/big-mount/cli.sh:859
 msgid "Unmounted, but powering the drive off failed (%s). Wait a moment before disconnecting it."
-msgstr "Bağlantı kesildi, ancak sürücünün gücü kapatılamadı (%s). Çıkarmadan önce biraz bekleyin."
+msgstr "Bağlantısı kesildi, ancak sürücünün gücü kapatılamadı (%s). Çıkarmadan önce biraz bekleyin."
 
 #: big-mount/usr/lib/big-mount/cli.sh:860
 #: big-mount/usr/lib/big-mount/drive.sh:499
@@ -825,11 +825,11 @@ msgstr "Bağlantıyı kesme izni verilmedi."
 
 #: big-mount/usr/lib/big-mount/cli.sh:862
 msgid "Unmounted, but the drive is still in use (%s), so it was not powered off."
-msgstr "Bağlantı kesildi, ancak sürücü hâlâ kullanımda (%s), bu yüzden gücü kapatılmadı."
+msgstr "Bağlantısı kesildi, ancak sürücü hâlâ kullanımda (%s), bu yüzden gücü kapatılmadı."
 
 #: big-mount/usr/lib/big-mount/cli.sh:863
 msgid "Unmounted. This drive cannot be powered off by the computer; it can be disconnected now."
-msgstr "Bağlantı kesildi. Bu sürücünün gücü bilgisayar tarafından kapatılamıyor; artık çıkarılabilir."
+msgstr "Bağlantısı kesildi. Bu sürücünün gücü bilgisayar tarafından kapatılamıyor; artık çıkarılabilir."
 
 #: big-mount/usr/lib/big-mount/cli.sh:866
 #: big-mount/usr/lib/big-mount/drive.sh:506
@@ -930,7 +930,7 @@ msgstr "Güvenli Silme bir bölümde değil, bütün bir sürücüde çalışır
 
 #: big-mount/usr/lib/big-mount/cli.sh:958
 msgid "The kernel gives this drive no sequence number, so another drive connected under the same name could not be told apart from it."
-msgstr "Çekirdek bu sürücüye bir seri numarası vermiyor, bu yüzden aynı adla takılan başka bir sürücü ondan ayırt edilemez."
+msgstr "Çekirdek bu sürücüye bir sıra numarası vermiyor, bu yüzden aynı adla takılan başka bir sürücü ondan ayırt edilemez."
 
 #: big-mount/usr/lib/big-mount/cli.sh:959
 msgid "It holds the operating system that is running now. Start the computer from a live USB drive to erase it."
@@ -1050,7 +1050,7 @@ msgstr "Sürücü silindi, ancak yeni bir bölüm tablosu yazılamadı (%s), bu 
 
 #: big-mount/usr/lib/big-mount/cli.sh:1041
 msgid "Create a partition table with KDE Partition Manager, and check that it is still there after a restart."
-msgstr "KDE Bölüm Yöneticisi ile bir bölüm tablosu oluşturun ve yeniden başlatmadan sonra hâlâ orada olduğunu denetleyin."
+msgstr "KDE Bölüntü Yöneticisi ile bir bölüm tablosu oluşturun ve yeniden başlatmadan sonra hâlâ orada olduğunu denetleyin."
 
 #: big-mount/usr/lib/big-mount/cli.sh:1044
 #: big-mount/usr/lib/big-mount/cli.sh:1049
@@ -1290,11 +1290,11 @@ msgstr "Güvenle çıkarılabilir"
 
 #: big-mount/usr/lib/big-mount/cli.sh:1422
 msgid "Successfully unmounted and powered off. You can disconnect it now."
-msgstr "Bağlantı kesildi ve gücü kapatıldı. Aygıtı artık çıkarabilirsiniz."
+msgstr "Bağlantısı kesildi ve gücü kapatıldı. Aygıtı artık çıkarabilirsiniz."
 
 #: big-mount/usr/lib/big-mount/cli.sh:1425
 msgid "Successfully unmounted. You can disconnect it now."
-msgstr "Bağlantı kesildi. Aygıtı artık çıkarabilirsiniz."
+msgstr "Bağlantısı kesildi. Aygıtı artık çıkarabilirsiniz."
 
 #: big-mount/usr/lib/big-mount/cli.sh:1427
 msgid "Device unmounted"
@@ -1306,7 +1306,7 @@ msgstr "Bekleyen tüm veriler yazıldı ve dosya sistemlerinin bağlantısı kes
 
 #: big-mount/usr/lib/big-mount/cli.sh:1434
 msgid "Successfully unmounted. This drive cannot be powered off by the computer, but you can disconnect it now."
-msgstr "Bağlantı kesildi. Bu sürücünün gücü bilgisayar tarafından kapatılamıyor, ancak aygıtı artık çıkarabilirsiniz."
+msgstr "Bağlantısı kesildi. Bu sürücünün gücü bilgisayar tarafından kapatılamıyor, ancak aygıtı artık çıkarabilirsiniz."
 
 #: big-mount/usr/lib/big-mount/cli.sh:1441
 #: big-mount/usr/lib/big-mount/cli.sh:1445

@@ -261,7 +261,7 @@ msgstr "Käivita Windows ja lülita see täielikult välja: hoia klahvi Shift al
 
 #: big-mount/usr/lib/big-mount/cli.sh:145
 msgid "To avoid this in the future, disable Fast Startup in Windows: Control Panel > Power Options > Choose what the power buttons do."
-msgstr "Et seda edaspidi vältida, keela Windowsis kiirkäivitus: Juhtpaneel > Toitesuvandid > Toitenuppude funktsiooni valimine."
+msgstr "Et seda edaspidi vältida, keela Windowsis kiirkäivitus: Juhtpaneel > Toitesuvandid > Valige, mida toitenupud teevad."
 
 #: big-mount/usr/lib/big-mount/cli.sh:146
 msgid "If it still happens, check the partition in Windows: open the Command Prompt as administrator and run chkdsk with the /f option for that drive letter."
@@ -1038,7 +1038,7 @@ msgstr "Mõned arvutid lukustavad kettad ärkamisel uuesti. Proovi veel kord võ
 
 #: big-mount/usr/lib/big-mount/cli.sh:1032
 msgid "If the computer supports hot-plugging SATA drives, disconnecting and connecting the drive while the computer is on also unlocks it."
-msgstr "Kui arvuti toetab SATA-ketaste kuumvahetust, avab ketta lahti ja uuesti ühendamine sisselülitatud arvutis samuti luku."
+msgstr "Kui arvuti toetab SATA-ketaste ühendamist töö ajal (kuumühendus), avab luku ka ketta lahtiühendamine ja uuesti ühendamine sisselülitatud arvutis."
 
 #: big-mount/usr/lib/big-mount/cli.sh:1037
 msgid "Drive erased, not verified"
@@ -1885,7 +1885,7 @@ msgstr "Luba ei antud."
 #: big-mount/usr/lib/big-mount/drive-copy.sh:120
 #: big-mount/usr/lib/big-mount/drive-recovery.sh:669
 msgid "Stopped. Nothing was changed on the disk."
-msgstr "Peatatud. Kettal ei muudetud midagi."
+msgstr "Katkestatud. Kettal ei muudetud midagi."
 
 #: big-mount/usr/lib/big-mount/drive-copy.sh:121
 #: big-mount/usr/lib/big-mount/drive-recovery.sh:860

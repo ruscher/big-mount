@@ -253,7 +253,7 @@ msgstr "Чтобы записывать на устройство, скопир�
 
 #: big-mount/usr/lib/big-mount/cli.sh:143
 msgid "Windows did not close this NTFS partition properly (hibernation, Fast Startup or an interrupted shutdown). Writing to it now could damage files."
-msgstr "Windows неправильно закрыла этот раздел NTFS (спящий режим, быстрый запуск или прерванное завершение работы). Запись на него сейчас может повредить файлы."
+msgstr "Windows неправильно закрыла этот раздел NTFS (гибернация, быстрый запуск или прерванное завершение работы). Запись на него сейчас может повредить файлы."
 
 #: big-mount/usr/lib/big-mount/cli.sh:144
 msgid "Start Windows and shut it down completely: hold the Shift key while you click Shut down."
@@ -285,7 +285,7 @@ msgstr "Сначала скопируйте важные файлы в друг�
 
 #: big-mount/usr/lib/big-mount/cli.sh:153
 msgid "Then check the filesystem with the device unmounted, for example with KDE Partition Manager (Check)."
-msgstr "Затем проверьте файловую систему на отмонтированном устройстве, например в KDE Partition Manager (Проверить)."
+msgstr "Затем проверьте файловую систему на отмонтированном устройстве, например в программе «Диспетчер разделов от KDE» (Проверить)."
 
 #: big-mount/usr/lib/big-mount/cli.sh:154
 msgid "Do not write to the device until it has been checked."
@@ -310,7 +310,7 @@ msgstr "Попробуйте другой кабель и подключите �
 
 #: big-mount/usr/lib/big-mount/cli.sh:161
 msgid "Check the health of the drive in KDE Partition Manager (SMART status)."
-msgstr "Проверьте состояние диска в KDE Partition Manager (состояние SMART)."
+msgstr "Проверьте состояние диска в программе «Диспетчер разделов от KDE» (состояние SMART)."
 
 #: big-mount/usr/lib/big-mount/cli.sh:165
 msgid "The filesystem was mounted read-only, but no problem was found with it."
@@ -1050,7 +1050,7 @@ msgstr "Диск стёрт, но записать новую таблицу р�
 
 #: big-mount/usr/lib/big-mount/cli.sh:1041
 msgid "Create a partition table with KDE Partition Manager, and check that it is still there after a restart."
-msgstr "Создайте таблицу разделов в KDE Partition Manager и убедитесь, что она сохраняется после перезагрузки."
+msgstr "Создайте таблицу разделов в программе «Диспетчер разделов от KDE» и убедитесь, что она сохраняется после перезагрузки."
 
 #: big-mount/usr/lib/big-mount/cli.sh:1044
 #: big-mount/usr/lib/big-mount/cli.sh:1049
@@ -2606,7 +2606,7 @@ msgstr "Разрешение на монтирование не получено
 
 #: big-mount/usr/lib/big-mount/drive-diag.sh:379
 msgid "Windows left this partition hibernated (Fast Startup). It can be read only after Windows shuts down completely."
-msgstr "Windows оставила этот раздел в спящем режиме (быстрый запуск). Его можно будет прочитать только после полного завершения работы Windows."
+msgstr "Windows оставила этот раздел в режиме гибернации (быстрый запуск). Его можно будет прочитать только после полного завершения работы Windows."
 
 #: big-mount/usr/lib/big-mount/drive-diag.sh:380
 msgid "The drive could not read the start of this filesystem. This is usually damage on the disk, a bad cable or a weak USB port. Making a disk image with GNU ddrescue is the safest next step."
@@ -3857,9 +3857,9 @@ msgstr "Диски"
 #, python-format
 msgid "%d running"
 msgid_plural "%d running"
-msgstr[0] "%d активное"
-msgstr[1] "%d активных"
-msgstr[2] "%d активных"
+msgstr[0] "Выполняется: %d"
+msgstr[1] "Выполняется: %d"
+msgstr[2] "Выполняется: %d"
 
 #: big-mount/usr/lib/big-mount/gui/window.py:202
 msgid "Home"
@@ -4071,7 +4071,7 @@ msgstr "Пройдено"
 
 #: big-mount/usr/lib/big-mount/gui/pages/device.py:204
 msgid "Failing"
-msgstr "Отказ"
+msgstr "Не пройдено"
 
 #: big-mount/usr/lib/big-mount/gui/pages/device.py:205
 msgid "Sectors waiting to be replaced"

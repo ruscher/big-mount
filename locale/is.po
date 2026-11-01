@@ -285,7 +285,7 @@ msgstr "Afritaðu fyrst mikilvægar skrár á annan stað."
 
 #: big-mount/usr/lib/big-mount/cli.sh:153
 msgid "Then check the filesystem with the device unmounted, for example with KDE Partition Manager (Check)."
-msgstr "Athugaðu síðan skráakerfið á meðan tækið er aftengt, til dæmis með KDE Partition Manager (Check)."
+msgstr "Athugaðu síðan skráakerfið á meðan tækið er aftengt, til dæmis með KDE Partition Manager (Yfirfara)."
 
 #: big-mount/usr/lib/big-mount/cli.sh:154
 msgid "Do not write to the device until it has been checked."

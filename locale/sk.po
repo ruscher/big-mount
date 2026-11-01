@@ -253,7 +253,7 @@ msgstr "Ak doň chcete zapisovať, skopírujte súbory inam a naformátujte zari
 
 #: big-mount/usr/lib/big-mount/cli.sh:143
 msgid "Windows did not close this NTFS partition properly (hibernation, Fast Startup or an interrupted shutdown). Writing to it now could damage files."
-msgstr "Windows tento oddiel NTFS správne neuzavrel (hibernácia, Rýchle spustenie alebo prerušené vypnutie). Zápis doň by teraz mohol poškodiť súbory."
+msgstr "Windows tento oddiel NTFS správne neuzavrel (dlhodobý spánok, Rýchle spustenie alebo prerušené vypnutie). Zápis doň by teraz mohol poškodiť súbory."
 
 #: big-mount/usr/lib/big-mount/cli.sh:144
 msgid "Start Windows and shut it down completely: hold the Shift key while you click Shut down."
@@ -261,7 +261,7 @@ msgstr "Spustite Windows a úplne ho vypnite: pri kliknutí na Vypnúť podržte
 
 #: big-mount/usr/lib/big-mount/cli.sh:145
 msgid "To avoid this in the future, disable Fast Startup in Windows: Control Panel > Power Options > Choose what the power buttons do."
-msgstr "Aby sa to v budúcnosti neopakovalo, vypnite vo Windows Rýchle spustenie: Ovládací panel > Možnosti napájania > Vybrať akcie tlačidiel napájania."
+msgstr "Aby sa to v budúcnosti neopakovalo, vypnite vo Windows Rýchle spustenie: Ovládací panel > Možnosti napájania > Vybrať akcie pre tlačidlá napájania."
 
 #: big-mount/usr/lib/big-mount/cli.sh:146
 msgid "If it still happens, check the partition in Windows: open the Command Prompt as administrator and run chkdsk with the /f option for that drive letter."
@@ -906,7 +906,7 @@ msgstr "Od spustenia počítača sa spojenie po chybách spomalilo."
 #: big-mount/usr/lib/big-mount/cli.sh:916
 #: big-mount/usr/lib/big-mount/drive-diag.sh:234
 msgid "Since the computer was started, the USB connection was reset or lost %s times."
-msgstr "Od spustenia počítača sa spojenie USB obnovilo alebo prerušilo, počet: %s."
+msgstr "Od spustenia počítača sa spojenie USB resetovalo alebo prerušilo, počet: %s."
 
 #: big-mount/usr/lib/big-mount/cli.sh:921
 msgid "Check the data and power cables of the drive, or try another SATA port."
@@ -2606,7 +2606,7 @@ msgstr "Oprávnenie na pripojenie nebolo udelené."
 
 #: big-mount/usr/lib/big-mount/drive-diag.sh:379
 msgid "Windows left this partition hibernated (Fast Startup). It can be read only after Windows shuts down completely."
-msgstr "Windows nechal tento oddiel v hibernácii (Rýchle spustenie). Čítať ho možno až po úplnom vypnutí Windows."
+msgstr "Windows nechal tento oddiel v režime dlhodobého spánku (Rýchle spustenie). Čítať ho možno až po úplnom vypnutí Windows."
 
 #: big-mount/usr/lib/big-mount/drive-diag.sh:380
 msgid "The drive could not read the start of this filesystem. This is usually damage on the disk, a bad cable or a weak USB port. Making a disk image with GNU ddrescue is the safest next step."

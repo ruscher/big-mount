@@ -934,7 +934,7 @@ msgstr "El kernel no asigna a esta unidad ningún número de secuencia, así que
 
 #: big-mount/usr/lib/big-mount/cli.sh:959
 msgid "It holds the operating system that is running now. Start the computer from a live USB drive to erase it."
-msgstr "Contiene el sistema operativo que se está ejecutando. Inicie el equipo desde una unidad USB autónoma (live) para borrarla."
+msgstr "Contiene el sistema operativo que se está ejecutando. Para borrarla, inicie el equipo desde una unidad USB live."
 
 #: big-mount/usr/lib/big-mount/cli.sh:960
 msgid "Secure Erase is only offered for drives connected inside the computer, not through USB."

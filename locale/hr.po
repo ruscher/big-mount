@@ -261,7 +261,7 @@ msgstr "Pokrenite Windows i potpuno ga isključite: držite tipku Shift dok klik
 
 #: big-mount/usr/lib/big-mount/cli.sh:145
 msgid "To avoid this in the future, disable Fast Startup in Windows: Control Panel > Power Options > Choose what the power buttons do."
-msgstr "Da biste to ubuduće izbjegli, isključite brzo pokretanje u Windowsima: Upravljačka ploča > Mogućnosti napajanja > Odaberite funkcije gumba za uključivanje/isključivanje."
+msgstr "Da biste to ubuduće izbjegli, isključite brzo pokretanje u Windowsima: Upravljačka ploča > Mogućnosti uštede energije > Odabir funkcija gumba za uključivanje."
 
 #: big-mount/usr/lib/big-mount/cli.sh:146
 msgid "If it still happens, check the partition in Windows: open the Command Prompt as administrator and run chkdsk with the /f option for that drive letter."
@@ -285,7 +285,7 @@ msgstr "Najprije kopirajte važne datoteke na drugo mjesto."
 
 #: big-mount/usr/lib/big-mount/cli.sh:153
 msgid "Then check the filesystem with the device unmounted, for example with KDE Partition Manager (Check)."
-msgstr "Zatim provjerite datotečni sustav dok je uređaj odmontiran, primjerice programom KDE Partition Manager (Provjeri)."
+msgstr "Zatim provjerite datotečni sustav dok je uređaj odmontiran, primjerice programom KDE Partition Manager (Provjeriti)."
 
 #: big-mount/usr/lib/big-mount/cli.sh:154
 msgid "Do not write to the device until it has been checked."
@@ -906,7 +906,7 @@ msgstr "Od pokretanja računala veza je usporena nakon pogrešaka."
 #: big-mount/usr/lib/big-mount/cli.sh:916
 #: big-mount/usr/lib/big-mount/drive-diag.sh:234
 msgid "Since the computer was started, the USB connection was reset or lost %s times."
-msgstr "Od pokretanja računala USB veza ponovno je uspostavljena ili izgubljena (broj puta: %s)."
+msgstr "Od pokretanja računala USB veza resetirana je ili izgubljena (broj puta: %s)."
 
 #: big-mount/usr/lib/big-mount/cli.sh:921
 msgid "Check the data and power cables of the drive, or try another SATA port."

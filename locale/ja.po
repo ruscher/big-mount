@@ -285,7 +285,7 @@ msgstr "まず、重要なファイルを別の場所にコピーしてくださ
 
 #: big-mount/usr/lib/big-mount/cli.sh:153
 msgid "Then check the filesystem with the device unmounted, for example with KDE Partition Manager (Check)."
-msgstr "次に、デバイスをアンマウントした状態で、ファイルシステムをチェックしてください。たとえば KDE Partition Manager の「チェック」を使います。"
+msgstr "次に、デバイスをアンマウントした状態で、ファイルシステムをチェックしてください。たとえば KDE パーティションマネージャ の「検査」を使います。"
 
 #: big-mount/usr/lib/big-mount/cli.sh:154
 msgid "Do not write to the device until it has been checked."
@@ -310,7 +310,7 @@ msgstr "別のケーブルを試し、ハブを使わずにデバイスをコン
 
 #: big-mount/usr/lib/big-mount/cli.sh:161
 msgid "Check the health of the drive in KDE Partition Manager (SMART status)."
-msgstr "KDE Partition Manager で、ドライブの健康状態 (SMART ステータス) をチェックしてください。"
+msgstr "KDE パーティションマネージャ で、ドライブの健康状態 (SMART ステータス) をチェックしてください。"
 
 #: big-mount/usr/lib/big-mount/cli.sh:165
 msgid "The filesystem was mounted read-only, but no problem was found with it."
@@ -1050,7 +1050,7 @@ msgstr "ドライブは消去されましたが、新しいパーティション
 
 #: big-mount/usr/lib/big-mount/cli.sh:1041
 msgid "Create a partition table with KDE Partition Manager, and check that it is still there after a restart."
-msgstr "KDE Partition Manager でパーティションテーブルを作成し、再起動後もそれが残っていることを確認してください。"
+msgstr "KDE パーティションマネージャ でパーティションテーブルを作成し、再起動後もそれが残っていることを確認してください。"
 
 #: big-mount/usr/lib/big-mount/cli.sh:1044
 #: big-mount/usr/lib/big-mount/cli.sh:1049
@@ -2444,7 +2444,7 @@ msgstr "危険"
 
 #: big-mount/usr/lib/big-mount/drive-diag.sh:185
 msgid "Poor"
-msgstr "不良"
+msgstr "注意"
 
 #: big-mount/usr/lib/big-mount/drive-diag.sh:186
 msgid "Good"
@@ -2614,7 +2614,7 @@ msgstr "ドライブはこのファイルシステムの先頭を読み取れま
 
 #: big-mount/usr/lib/big-mount/drive-diag.sh:381
 msgid "The structure of this filesystem seems damaged, or this is not the filesystem it claims to be. Nothing was repaired. A disk image or a search for files (PhotoRec) may still recover data."
-msgstr "このファイルシステムの構造が損傷しているか、名乗っているファイルシステムとは別のものです。修復は行っていません。ディスクイメージやファイルの検索 (PhotoRec) で、データを復元できる可能性があります。"
+msgstr "このファイルシステムの構造が損傷しているか、名乗っているファイルシステムとは別のものです。修復は行っていません。ディスクイメージの作成やファイルの検索 (PhotoRec) で、データを復元できる可能性があります。"
 
 #: big-mount/usr/lib/big-mount/drive-diag.sh:382
 msgid "This filesystem was not closed properly and needs to replay its journal, which writes to the disk. To protect the data that was not done. A disk image, worked on as a copy, is the safe way to read it."
@@ -3533,7 +3533,7 @@ msgstr "デバイスを使用中にしているプログラムを表示し、何
 
 #: big-mount/usr/lib/big-mount/gui/about.py:21
 msgid "tells how each drive is doing in one word (Critical, Poor, Good or Healthy) from SMART, errors, age and temperature, and warns when a drive with problems is mounted;"
-msgstr "SMART、エラー、使用年数、温度から、各ドライブの状態をひと言 (危険、不良、おおむね良好、正常) で示し、問題のあるドライブがマウントされると警告します。"
+msgstr "SMART、エラー、使用年数、温度から、各ドライブの状態をひと言 (危険、注意、おおむね良好、正常) で示し、問題のあるドライブがマウントされると警告します。"
 
 #: big-mount/usr/lib/big-mount/gui/about.py:23
 msgid "rescues files from a failing disk: copies them with real progress, resumes after a power cut, makes disk images and finds lost partitions."
@@ -3724,7 +3724,7 @@ msgstr "健康状態をひと言で"
 
 #: big-mount/usr/lib/big-mount/gui/welcome.py:15
 msgid "Critical, Poor, Good or Healthy, from SMART, errors, age and temperature."
-msgstr "SMART、エラー、使用年数、温度から、危険、不良、おおむね良好、正常のいずれかで示します。"
+msgstr "SMART、エラー、使用年数、温度から、危険、注意、おおむね良好、正常のいずれかで示します。"
 
 #: big-mount/usr/lib/big-mount/gui/welcome.py:16
 msgid "Rescue your files"

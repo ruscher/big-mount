@@ -285,7 +285,7 @@ msgstr "Kopiér først dine vigtige filer til et andet sted."
 
 #: big-mount/usr/lib/big-mount/cli.sh:153
 msgid "Then check the filesystem with the device unmounted, for example with KDE Partition Manager (Check)."
-msgstr "Tjek derefter filsystemet, mens enheden er afmonteret, for eksempel med KDE Partition Manager (Kontrollér)."
+msgstr "Tjek derefter filsystemet, mens enheden er afmonteret, for eksempel med KDE Partitionshåndtering (Tjek)."
 
 #: big-mount/usr/lib/big-mount/cli.sh:154
 msgid "Do not write to the device until it has been checked."
@@ -310,7 +310,7 @@ msgstr "Prøv et andet kabel, og tilslut enheden direkte til computeren uden en 
 
 #: big-mount/usr/lib/big-mount/cli.sh:161
 msgid "Check the health of the drive in KDE Partition Manager (SMART status)."
-msgstr "Tjek drevets tilstand i KDE Partition Manager (SMART-status)."
+msgstr "Tjek drevets tilstand i KDE Partitionshåndtering (SMART-status)."
 
 #: big-mount/usr/lib/big-mount/cli.sh:165
 msgid "The filesystem was mounted read-only, but no problem was found with it."
@@ -1050,7 +1050,7 @@ msgstr "Drevet blev slettet, men det mislykkedes at skrive en ny partitionstabel
 
 #: big-mount/usr/lib/big-mount/cli.sh:1041
 msgid "Create a partition table with KDE Partition Manager, and check that it is still there after a restart."
-msgstr "Opret en partitionstabel med KDE Partition Manager, og tjek, at den stadig er der efter en genstart."
+msgstr "Opret en partitionstabel med KDE Partitionshåndtering, og tjek, at den stadig er der efter en genstart."
 
 #: big-mount/usr/lib/big-mount/cli.sh:1044
 #: big-mount/usr/lib/big-mount/cli.sh:1049

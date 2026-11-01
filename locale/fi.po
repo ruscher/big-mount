@@ -261,7 +261,7 @@ msgstr "Käynnistä Windows ja sammuta se kokonaan: pidä Vaihto-näppäintä pa
 
 #: big-mount/usr/lib/big-mount/cli.sh:145
 msgid "To avoid this in the future, disable Fast Startup in Windows: Control Panel > Power Options > Choose what the power buttons do."
-msgstr "Jotta näin ei käy jatkossa, poista nopea käynnistys käytöstä Windowsissa: Ohjauspaneeli > Virranhallinta-asetukset > Valitse virtapainikkeiden toiminta."
+msgstr "Jotta näin ei käy jatkossa, poista nopea käynnistys käytöstä Windowsissa: Ohjauspaneeli > Virranhallinta-asetukset > Valitse virtapainikkeiden toiminnot."
 
 #: big-mount/usr/lib/big-mount/cli.sh:146
 msgid "If it still happens, check the partition in Windows: open the Command Prompt as administrator and run chkdsk with the /f option for that drive letter."
@@ -2052,7 +2052,7 @@ msgstr "Valmis, vaatii huomiotasi"
 
 #: big-mount/usr/lib/big-mount/drive-copy.sh:414
 msgid "Interrupted (it can be resumed)"
-msgstr "Keskeytynyt (voidaan jatkaa)"
+msgstr "Katkennut (voidaan jatkaa)"
 
 #: big-mount/usr/lib/big-mount/drive-copy.sh:425
 msgid "The source drive was disconnected or unmounted. Connect and mount it again, then resume."
@@ -3172,7 +3172,7 @@ msgstr "Kopioi tiedostot toiselle levylle"
 
 #: big-mount/usr/lib/big-mount/drive-tui.sh:94
 msgid "Advanced recovery"
-msgstr "Edistynyt palautus"
+msgstr "Palautuksen lisätyökalut"
 
 #: big-mount/usr/lib/big-mount/drive-tui.sh:95
 msgid "Unmount safely"
@@ -3200,7 +3200,7 @@ msgstr "Luetaanko SMART-tiedot nyt? Salasanaa kysytään, ja USB:n kautta se voi
 
 #: big-mount/usr/lib/big-mount/drive-tui.sh:142
 msgid "This drive has no volume with files that can be opened. Advanced recovery may help."
-msgstr "Tällä asemalla ei ole taltiota, jonka tiedostot voisi avata. Edistynyt palautus voi auttaa."
+msgstr "Tällä asemalla ei ole taltiota, jonka tiedostot voisi avata. Palautuksen lisätyökalut voivat auttaa."
 
 #: big-mount/usr/lib/big-mount/drive-tui.sh:152
 msgid "Choose a volume:"
@@ -4169,7 +4169,7 @@ msgstr[1] "%d viimeaikaista viestiä tästä asemasta"
 #: big-mount/usr/lib/big-mount/gui/pages/device.py:303
 #: big-mount/usr/lib/big-mount/gui/pages/maintenance.py:13
 msgid "Advanced maintenance"
-msgstr "Edistynyt ylläpito"
+msgstr "Ylläpidon lisätyökalut"
 
 #: big-mount/usr/lib/big-mount/gui/pages/device.py:304
 #: big-mount/usr/lib/big-mount/gui/pages/maintenance.py:38
@@ -4737,7 +4737,7 @@ msgstr "Käytä taltiota %s"
 
 #: big-mount/usr/lib/big-mount/gui/pages/rescue.py:627
 msgid "Advanced"
-msgstr "Edistynyt"
+msgstr "Lisätoiminnot"
 
 #: big-mount/usr/lib/big-mount/gui/pages/rescue.py:627
 msgid "Tools that work with the whole disk"

@@ -1952,7 +1952,7 @@ msgstr "Крыніца прымантавана з дазволам на зап�
 
 #: big-mount/usr/lib/big-mount/drive-copy.sh:152
 msgid "The source drive reported problems. Files that do not advance are set aside so the rest is saved first."
-msgstr "Зыходны дыск паведаміў пра праблемы. Файлы, якія не прасоўваюцца, адкладаюцца, каб спачатку захаваць астатнія."
+msgstr "Зыходны дыск паведаміў пра праблемы. Файлы, капіяванне якіх не прасоўваецца, адкладаюцца, каб спачатку захаваць астатнія."
 
 #: big-mount/usr/lib/big-mount/drive-copy.sh:153
 msgid "The total is not measured on a drive at risk, to avoid extra reads. Progress shows what was copied so far."
@@ -2068,7 +2068,7 @@ msgstr "У месцы прызначэння скончылася вольная
 
 #: big-mount/usr/lib/big-mount/drive-copy.sh:428
 msgid "%s files were set aside because they did not advance. The drive may be getting worse, so the copy stopped."
-msgstr "Адкладзена файлаў, якія не прасоўваліся: %s. Стан дыска можа пагаршацца, таму капіяванне спынена."
+msgstr "Адкладзена файлаў, капіяванне якіх не прасоўвалася: %s. Стан дыска можа пагаршацца, таму капіяванне спынена."
 
 #: big-mount/usr/lib/big-mount/drive-copy.sh:429
 msgid "Some files were not copied. See the list below."
@@ -2218,7 +2218,7 @@ msgstr "Ужо ёсць у месцы прызначэння, з іншым зм
 
 #: big-mount/usr/lib/big-mount/drive-copy.sh:1099
 msgid "Set aside because they did not advance (damaged area of the disk):"
-msgstr "Адкладзена, бо не прасоўваліся (пашкоджаная вобласць дыска):"
+msgstr "Адкладзена, бо капіяванне не прасоўвалася (пашкоджаная вобласць дыска):"
 
 #: big-mount/usr/lib/big-mount/drive-copy.sh:1102
 msgid "To try them again, which puts more strain on the disk: bigmount --drive resume %s --retry-deferred"
@@ -2921,7 +2921,7 @@ msgstr "як правяраць вынік (full зноў чытае крыні�
 
 #: big-mount/usr/lib/big-mount/drive.sh:137
 msgid "set aside a file that does not advance for N seconds (default 90, 0: never)"
-msgstr "адкласці файл, які не прасоўваецца N секунд (па змаўчанні 90, 0: ніколі)"
+msgstr "адкласці файл, капіяванне якога не прасоўваецца N секунд (па змаўчанні 90, 0: ніколі)"
 
 #: big-mount/usr/lib/big-mount/drive.sh:138
 msgid "limit the reading speed"
@@ -4944,7 +4944,7 @@ msgstr "Адкладаць файл, які завіс, праз (секунды
 
 #: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1028
 msgid "A file that does not advance for this long is set aside, so that the others are saved first. 0: never."
-msgstr "Файл, які не прасоўваецца столькі часу, адкладаецца, каб спачатку захаваць астатнія. 0: ніколі."
+msgstr "Файл, капіяванне якога не прасоўваецца столькі часу, адкладаецца, каб спачатку захаваць астатнія. 0: ніколі."
 
 #: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1032
 msgid "Limit the reading speed (kB/s)"

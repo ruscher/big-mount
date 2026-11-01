@@ -285,7 +285,7 @@ msgstr "Najpierw należy skopiować ważne pliki w inne miejsce."
 
 #: big-mount/usr/lib/big-mount/cli.sh:153
 msgid "Then check the filesystem with the device unmounted, for example with KDE Partition Manager (Check)."
-msgstr "Następnie należy sprawdzić system plików przy odmontowanym urządzeniu, na przykład w Menedżerze partycji KDE (Sprawdź)."
+msgstr "Następnie należy sprawdzić system plików przy odmontowanym urządzeniu, na przykład w programie Zarządzanie partycjami (KDE Partition Manager) (Sprawdź)."
 
 #: big-mount/usr/lib/big-mount/cli.sh:154
 msgid "Do not write to the device until it has been checked."
@@ -310,7 +310,7 @@ msgstr "Warto użyć innego kabla i podłączyć urządzenie bezpośrednio do ko
 
 #: big-mount/usr/lib/big-mount/cli.sh:161
 msgid "Check the health of the drive in KDE Partition Manager (SMART status)."
-msgstr "Należy sprawdzić kondycję dysku w Menedżerze partycji KDE (stan SMART)."
+msgstr "Należy sprawdzić kondycję dysku w programie Zarządzanie partycjami (KDE Partition Manager) (stan SMART)."
 
 #: big-mount/usr/lib/big-mount/cli.sh:165
 msgid "The filesystem was mounted read-only, but no problem was found with it."
@@ -906,7 +906,7 @@ msgstr "Od uruchomienia komputera połączenie zostało spowolnione po błędach
 #: big-mount/usr/lib/big-mount/cli.sh:916
 #: big-mount/usr/lib/big-mount/drive-diag.sh:234
 msgid "Since the computer was started, the USB connection was reset or lost %s times."
-msgstr "Od uruchomienia komputera połączenie USB było resetowane lub zrywane (liczba razy: %s)."
+msgstr "Od uruchomienia komputera połączenie USB było resetowane lub zrywane (liczba przypadków: %s)."
 
 #: big-mount/usr/lib/big-mount/cli.sh:921
 msgid "Check the data and power cables of the drive, or try another SATA port."
@@ -1050,7 +1050,7 @@ msgstr "Dysk został wymazany, ale zapisanie nowej tablicy partycji nie powiodł
 
 #: big-mount/usr/lib/big-mount/cli.sh:1041
 msgid "Create a partition table with KDE Partition Manager, and check that it is still there after a restart."
-msgstr "Należy utworzyć tablicę partycji w Menedżerze partycji KDE i sprawdzić, czy nadal istnieje po ponownym uruchomieniu komputera."
+msgstr "Należy utworzyć tablicę partycji w programie Zarządzanie partycjami (KDE Partition Manager) i sprawdzić, czy nadal istnieje po ponownym uruchomieniu komputera."
 
 #: big-mount/usr/lib/big-mount/cli.sh:1044
 #: big-mount/usr/lib/big-mount/cli.sh:1049
@@ -2536,7 +2536,7 @@ msgstr "Dysk zgłosił błędy, których nie mógł skorygować (liczba: %s)."
 
 #: big-mount/usr/lib/big-mount/drive-diag.sh:238
 msgid "The cable or adapter corrupted data in transit %s times (CRC errors)."
-msgstr "Kabel lub adapter uszkadzał przesyłane dane (błędy CRC, liczba razy: %s)."
+msgstr "Kabel lub adapter uszkadzał przesyłane dane (błędy CRC, liczba przypadków: %s)."
 
 #: big-mount/usr/lib/big-mount/drive-diag.sh:239
 msgid "%s of its SMART values are below their safe limit now."

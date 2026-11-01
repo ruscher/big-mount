@@ -285,7 +285,7 @@ msgstr "Спершу скопіюйте важливі файли в інше м
 
 #: big-mount/usr/lib/big-mount/cli.sh:153
 msgid "Then check the filesystem with the device unmounted, for example with KDE Partition Manager (Check)."
-msgstr "Потім перевірте файлову систему на демонтованому пристрої, наприклад у KDE Partition Manager (Перевірити)."
+msgstr "Потім перевірте файлову систему на демонтованому пристрої, наприклад у програмі «Керування розділами диска KDE» (Перевірити)."
 
 #: big-mount/usr/lib/big-mount/cli.sh:154
 msgid "Do not write to the device until it has been checked."
@@ -1050,7 +1050,7 @@ msgstr "Диск стерто, але не вдалося записати но�
 
 #: big-mount/usr/lib/big-mount/cli.sh:1041
 msgid "Create a partition table with KDE Partition Manager, and check that it is still there after a restart."
-msgstr "Створіть таблицю розділів у KDE Partition Manager і перевірте, чи вона залишилася після перезапуску."
+msgstr "Створіть таблицю розділів у програмі «Керування розділами диска KDE» і перевірте, чи вона залишилася після перезапуску."
 
 #: big-mount/usr/lib/big-mount/cli.sh:1044
 #: big-mount/usr/lib/big-mount/cli.sh:1049

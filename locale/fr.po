@@ -253,7 +253,7 @@ msgstr "Pour y écrire, copiez les fichiers ailleurs et formatez le périphériq
 
 #: big-mount/usr/lib/big-mount/cli.sh:143
 msgid "Windows did not close this NTFS partition properly (hibernation, Fast Startup or an interrupted shutdown). Writing to it now could damage files."
-msgstr "Windows n’a pas fermé correctement cette partition NTFS (hibernation, Démarrage rapide ou arrêt interrompu). Y écrire maintenant pourrait endommager des fichiers."
+msgstr "Windows n’a pas fermé correctement cette partition NTFS (veille prolongée, Démarrage rapide ou arrêt interrompu). Y écrire maintenant pourrait endommager des fichiers."
 
 #: big-mount/usr/lib/big-mount/cli.sh:144
 msgid "Start Windows and shut it down completely: hold the Shift key while you click Shut down."
@@ -2606,7 +2606,7 @@ msgstr "L’autorisation de monter n’a pas été accordée."
 
 #: big-mount/usr/lib/big-mount/drive-diag.sh:379
 msgid "Windows left this partition hibernated (Fast Startup). It can be read only after Windows shuts down completely."
-msgstr "Windows a laissé cette partition en hibernation (Démarrage rapide). Elle ne peut être lue qu’après un arrêt complet de Windows."
+msgstr "Windows a laissé cette partition en veille prolongée (Démarrage rapide). Elle ne peut être lue qu’après un arrêt complet de Windows."
 
 #: big-mount/usr/lib/big-mount/drive-diag.sh:380
 msgid "The drive could not read the start of this filesystem. This is usually damage on the disk, a bad cable or a weak USB port. Making a disk image with GNU ddrescue is the safest next step."

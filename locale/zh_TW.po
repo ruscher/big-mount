@@ -285,7 +285,7 @@ msgstr "請先將重要檔案複製到其他位置。"
 
 #: big-mount/usr/lib/big-mount/cli.sh:153
 msgid "Then check the filesystem with the device unmounted, for example with KDE Partition Manager (Check)."
-msgstr "接著在裝置卸載的狀態下檢查檔案系統，例如使用 KDE 磁碟分割管理員（檢查）。"
+msgstr "接著在裝置卸載的狀態下檢查檔案系統，例如使用 KDE 磁碟分割區管理員（檢查）。"
 
 #: big-mount/usr/lib/big-mount/cli.sh:154
 msgid "Do not write to the device until it has been checked."
@@ -310,7 +310,7 @@ msgstr "請換一條傳輸線，並將裝置直接連接到電腦，不要經過
 
 #: big-mount/usr/lib/big-mount/cli.sh:161
 msgid "Check the health of the drive in KDE Partition Manager (SMART status)."
-msgstr "在 KDE 磁碟分割管理員中檢查磁碟機的健康狀態（SMART 狀態）。"
+msgstr "在 KDE 磁碟分割區管理員中檢查磁碟機的健康狀態（SMART 狀態）。"
 
 #: big-mount/usr/lib/big-mount/cli.sh:165
 msgid "The filesystem was mounted read-only, but no problem was found with it."
@@ -1050,7 +1050,7 @@ msgstr "磁碟機已清除，但寫入新的分割表失敗（%s），因此無�
 
 #: big-mount/usr/lib/big-mount/cli.sh:1041
 msgid "Create a partition table with KDE Partition Manager, and check that it is still there after a restart."
-msgstr "請使用 KDE 磁碟分割管理員建立分割表，並確認重新啟動後它仍然存在。"
+msgstr "請使用 KDE 磁碟分割區管理員建立分割表，並確認重新啟動後它仍然存在。"
 
 #: big-mount/usr/lib/big-mount/cli.sh:1044
 #: big-mount/usr/lib/big-mount/cli.sh:1049
@@ -3611,7 +3611,7 @@ msgid ""
 "\n"
 "Copy what you want to keep first. The next page checks whether this drive can be erased, and asks for confirmation twice more."
 msgstr ""
-"這不是復原：它會永久摧毀整個磁碟機上的每個檔案。任何程式或資料救援服務都無法將它們找回。\n"
+"這不是檔案復原：它會永久摧毀整個磁碟機上的每個檔案。任何程式或資料救援服務都無法將它們找回。\n"
 "\n"
 "請先複製您想保留的內容。下一頁會檢查此磁碟機是否可以清除，並會再要求確認兩次。"
 
@@ -4439,7 +4439,7 @@ msgstr "正在檢查此磁碟機…"
 
 #: big-mount/usr/lib/big-mount/gui/pages/maintenance.py:40
 msgid "IT ERASES ALL THE FILES ON THE DRIVE FOR GOOD. THIS IS NOT RECOVERY."
-msgstr "這會永久清除磁碟機上的所有檔案。這不是復原。"
+msgstr "這會永久清除磁碟機上的所有檔案。這不是檔案復原。"
 
 #: big-mount/usr/lib/big-mount/gui/pages/maintenance.py:41
 msgid "To get your files back, go to Recover files instead."

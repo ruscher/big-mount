@@ -253,7 +253,7 @@ msgstr "כדי לכתוב אליו, יש להעתיק את הקבצים למקו
 
 #: big-mount/usr/lib/big-mount/cli.sh:143
 msgid "Windows did not close this NTFS partition properly (hibernation, Fast Startup or an interrupted shutdown). Writing to it now could damage files."
-msgstr "Windows לא סגרה כראוי את מחיצת ה־NTFS הזו (מצב שינה עמוקה, הפעלה מהירה או כיבוי שנקטע). כתיבה אליה עכשיו עלולה לפגוע בקבצים."
+msgstr "Windows לא סגרה כראוי את מחיצת ה־NTFS הזו (תרדמה, אתחול מהיר או כיבוי שנקטע). כתיבה אליה עכשיו עלולה לפגוע בקבצים."
 
 #: big-mount/usr/lib/big-mount/cli.sh:144
 msgid "Start Windows and shut it down completely: hold the Shift key while you click Shut down."
@@ -261,7 +261,7 @@ msgstr "יש להפעיל את Windows ולכבות אותה לגמרי: להח�
 
 #: big-mount/usr/lib/big-mount/cli.sh:145
 msgid "To avoid this in the future, disable Fast Startup in Windows: Control Panel > Power Options > Choose what the power buttons do."
-msgstr "כדי למנוע זאת בעתיד, יש לכבות את ההפעלה המהירה ב־Windows: לוח הבקרה > אפשרויות צריכת חשמל > בחר מה יעשו לחצני ההפעלה."
+msgstr "כדי למנוע זאת בעתיד, יש לכבות את האתחול המהיר ב־Windows: לוח הבקרה > אפשרויות צריכת חשמל > בחר מה עושים לחצני ההפעלה."
 
 #: big-mount/usr/lib/big-mount/cli.sh:146
 msgid "If it still happens, check the partition in Windows: open the Command Prompt as administrator and run chkdsk with the /f option for that drive letter."
@@ -285,7 +285,7 @@ msgstr "קודם כול יש להעתיק את הקבצים החשובים של�
 
 #: big-mount/usr/lib/big-mount/cli.sh:153
 msgid "Then check the filesystem with the device unmounted, for example with KDE Partition Manager (Check)."
-msgstr "לאחר מכן יש לבדוק את מערכת הקבצים כשההתקן אינו מעוגן, למשל עם KDE Partition Manager (Check)."
+msgstr "לאחר מכן יש לבדוק את מערכת הקבצים כשההתקן אינו מעוגן, למשל עם מנהל מחיצות מבית KDE (בדיקה)."
 
 #: big-mount/usr/lib/big-mount/cli.sh:154
 msgid "Do not write to the device until it has been checked."
@@ -310,7 +310,7 @@ msgstr "כדאי לנסות כבל אחר ולחבר את ההתקן ישירו�
 
 #: big-mount/usr/lib/big-mount/cli.sh:161
 msgid "Check the health of the drive in KDE Partition Manager (SMART status)."
-msgstr "יש לבדוק את בריאות הכונן ב־KDE Partition Manager (מצב SMART)."
+msgstr "יש לבדוק את בריאות הכונן במנהל מחיצות מבית KDE (מצב SMART)."
 
 #: big-mount/usr/lib/big-mount/cli.sh:165
 msgid "The filesystem was mounted read-only, but no problem was found with it."
@@ -1006,7 +1006,7 @@ msgstr "המחשב יעבור למצב שינה ויתעורר מעצמו לאח
 
 #: big-mount/usr/lib/big-mount/cli.sh:1008
 msgid "The computer will go to sleep. Wake it up with the power button, and unlock the session if asked: the erase continues afterwards."
-msgstr "המחשב יעבור למצב שינה. כדי להעיר אותו יש ללחוץ על לחצן ההפעלה, ולבטל את נעילת ההפעלה אם תופיע בקשה: המחיקה תימשך לאחר מכן."
+msgstr "המחשב יעבור למצב שינה. כדי להעיר אותו יש ללחוץ על לחצן ההפעלה, ולבטל את נעילת המסך אם תופיע בקשה: המחיקה תימשך לאחר מכן."
 
 #: big-mount/usr/lib/big-mount/cli.sh:1016
 msgid "Unable to erase the drive"
@@ -1050,7 +1050,7 @@ msgstr "הכונן נמחק, אבל כתיבת טבלת מחיצות חדשה נ
 
 #: big-mount/usr/lib/big-mount/cli.sh:1041
 msgid "Create a partition table with KDE Partition Manager, and check that it is still there after a restart."
-msgstr "יש ליצור טבלת מחיצות עם KDE Partition Manager, ולבדוק שהיא עדיין שם אחרי הפעלה מחדש."
+msgstr "יש ליצור טבלת מחיצות עם מנהל מחיצות מבית KDE, ולבדוק שהיא עדיין שם אחרי הפעלה מחדש."
 
 #: big-mount/usr/lib/big-mount/cli.sh:1044
 #: big-mount/usr/lib/big-mount/cli.sh:1049
@@ -2606,7 +2606,7 @@ msgstr "ההרשאה לעיגון לא ניתנה."
 
 #: big-mount/usr/lib/big-mount/drive-diag.sh:379
 msgid "Windows left this partition hibernated (Fast Startup). It can be read only after Windows shuts down completely."
-msgstr "Windows השאירה את המחיצה הזו במצב שינה עמוקה (הפעלה מהירה). אפשר לקרוא אותה רק אחרי ש־Windows נכבית לגמרי."
+msgstr "Windows השאירה את המחיצה הזו במצב תרדמה (אתחול מהיר). אפשר לקרוא אותה רק אחרי ש־Windows נכבית לגמרי."
 
 #: big-mount/usr/lib/big-mount/drive-diag.sh:380
 msgid "The drive could not read the start of this filesystem. This is usually damage on the disk, a bad cable or a weak USB port. Making a disk image with GNU ddrescue is the safest next step."
@@ -3739,7 +3739,7 @@ msgstr "מעתיק קבצים מכונן כושל עם התקדמות אמיתי
 
 #: big-mount/usr/lib/big-mount/gui/welcome.py:18
 msgid "Disk images and lost partitions"
-msgstr "דמויות כונן ומחיצות אבודות"
+msgstr "מחיצות אבודות ודמויות כונן"
 
 #: big-mount/usr/lib/big-mount/gui/welcome.py:19
 msgid "Reads a damaged disk only once, and finds partitions that were lost."

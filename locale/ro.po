@@ -261,7 +261,7 @@ msgstr "Porniți Windows și închideți-l complet: țineți apăsată tasta Shi
 
 #: big-mount/usr/lib/big-mount/cli.sh:145
 msgid "To avoid this in the future, disable Fast Startup in Windows: Control Panel > Power Options > Choose what the power buttons do."
-msgstr "Pentru a evita acest lucru pe viitor, dezactivați Pornirea rapidă în Windows: Panou de control > Opțiuni de alimentare > Alegeți ce fac butoanele de alimentare."
+msgstr "Pentru a evita acest lucru pe viitor, dezactivați Pornirea rapidă în Windows: Panou de control > Opțiuni de alimentare > Alegerea acțiunii butoanelor de alimentare."
 
 #: big-mount/usr/lib/big-mount/cli.sh:146
 msgid "If it still happens, check the partition in Windows: open the Command Prompt as administrator and run chkdsk with the /f option for that drive letter."
@@ -285,7 +285,7 @@ msgstr "Mai întâi copiați-vă fișierele importante în alt loc."
 
 #: big-mount/usr/lib/big-mount/cli.sh:153
 msgid "Then check the filesystem with the device unmounted, for example with KDE Partition Manager (Check)."
-msgstr "Apoi verificați sistemul de fișiere cu dispozitivul demontat, de exemplu cu KDE Partition Manager (Verifică)."
+msgstr "Apoi verificați sistemul de fișiere cu dispozitivul demontat, de exemplu cu Gestionarul de partiții KDE (Verifică)."
 
 #: big-mount/usr/lib/big-mount/cli.sh:154
 msgid "Do not write to the device until it has been checked."
@@ -310,7 +310,7 @@ msgstr "Încercați alt cablu și conectați dispozitivul direct la calculator, 
 
 #: big-mount/usr/lib/big-mount/cli.sh:161
 msgid "Check the health of the drive in KDE Partition Manager (SMART status)."
-msgstr "Verificați sănătatea unității în KDE Partition Manager (starea SMART)."
+msgstr "Verificați sănătatea unității în Gestionarul de partiții KDE (starea SMART)."
 
 #: big-mount/usr/lib/big-mount/cli.sh:165
 msgid "The filesystem was mounted read-only, but no problem was found with it."
@@ -502,7 +502,7 @@ msgstr "MĂRIME"
 
 #: big-mount/usr/lib/big-mount/cli.sh:374
 msgid "FS"
-msgstr "TIP SF"
+msgstr "TIP"
 
 #: big-mount/usr/lib/big-mount/cli.sh:374
 msgid "MANAGED BY"
@@ -1050,7 +1050,7 @@ msgstr "Unitatea a fost ștearsă, dar scrierea unei noi tabele de partiții a e
 
 #: big-mount/usr/lib/big-mount/cli.sh:1041
 msgid "Create a partition table with KDE Partition Manager, and check that it is still there after a restart."
-msgstr "Creați o tabelă de partiții cu KDE Partition Manager și verificați dacă este încă acolo după o repornire."
+msgstr "Creați o tabelă de partiții cu Gestionarul de partiții KDE și verificați dacă este încă acolo după o repornire."
 
 #: big-mount/usr/lib/big-mount/cli.sh:1044
 #: big-mount/usr/lib/big-mount/cli.sh:1049
@@ -3738,7 +3738,7 @@ msgstr "Copiază fișiere de pe un disc care se defectează cu un progres real �
 
 #: big-mount/usr/lib/big-mount/gui/welcome.py:18
 msgid "Disk images and lost partitions"
-msgstr "Imagini de disc și partiții pierdute"
+msgstr "Partiții pierdute și imagini de disc"
 
 #: big-mount/usr/lib/big-mount/gui/welcome.py:19
 msgid "Reads a damaged disk only once, and finds partitions that were lost."
@@ -4071,7 +4071,7 @@ msgstr "Reușit"
 
 #: big-mount/usr/lib/big-mount/gui/pages/device.py:204
 msgid "Failing"
-msgstr "Eșuat"
+msgstr "Se defectează"
 
 #: big-mount/usr/lib/big-mount/gui/pages/device.py:205
 msgid "Sectors waiting to be replaced"
@@ -4340,7 +4340,7 @@ msgstr "Raport"
 
 #: big-mount/usr/lib/big-mount/gui/pages/job.py:85
 msgid "Pause"
-msgstr "Pune pe pauză"
+msgstr "Pauză"
 
 #: big-mount/usr/lib/big-mount/gui/pages/job.py:86
 #: big-mount/usr/lib/big-mount/gui/pages/job.py:219

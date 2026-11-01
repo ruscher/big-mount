@@ -261,7 +261,7 @@ msgstr "Стартирайте Windows и го изключете напълно
 
 #: big-mount/usr/lib/big-mount/cli.sh:145
 msgid "To avoid this in the future, disable Fast Startup in Windows: Control Panel > Power Options > Choose what the power buttons do."
-msgstr "За да избегнете това в бъдеще, изключете бързото стартиране в Windows: Контролен панел > Опции на захранването > Изберете какво да правят бутоните за захранване."
+msgstr "За да избегнете това в бъдеще, изключете бързото стартиране в Windows: Контролен панел > Опции на захранването > Изберете какво да правят бутоните за захранването."
 
 #: big-mount/usr/lib/big-mount/cli.sh:146
 msgid "If it still happens, check the partition in Windows: open the Command Prompt as administrator and run chkdsk with the /f option for that drive letter."
@@ -285,7 +285,7 @@ msgstr "Първо копирайте важните си файлове на д
 
 #: big-mount/usr/lib/big-mount/cli.sh:153
 msgid "Then check the filesystem with the device unmounted, for example with KDE Partition Manager (Check)."
-msgstr "След това проверете файловата система при демонтирано устройство, например с KDE Partition Manager (Проверка)."
+msgstr "След това проверете файловата система при демонтирано устройство, например с програмата „Управление на дялове за KDE“ (Проверка)."
 
 #: big-mount/usr/lib/big-mount/cli.sh:154
 msgid "Do not write to the device until it has been checked."
@@ -310,7 +310,7 @@ msgstr "Опитайте с друг кабел и свържете устрой
 
 #: big-mount/usr/lib/big-mount/cli.sh:161
 msgid "Check the health of the drive in KDE Partition Manager (SMART status)."
-msgstr "Проверете състоянието на диска в KDE Partition Manager (състояние на SMART)."
+msgstr "Проверете състоянието на диска в програмата „Управление на дялове за KDE“ (състояние на SMART)."
 
 #: big-mount/usr/lib/big-mount/cli.sh:165
 msgid "The filesystem was mounted read-only, but no problem was found with it."
@@ -463,7 +463,7 @@ msgstr "С разрешен запис, но не за вашия потреби
 #: big-mount/usr/lib/big-mount/cli.sh:273
 #: big-mount/usr/lib/big-mount/drive.sh:259
 msgid "Status"
-msgstr "Състояние"
+msgstr "Статус"
 
 #: big-mount/usr/lib/big-mount/cli.sh:277
 #: big-mount/usr/lib/big-mount/cli.sh:919
@@ -514,7 +514,7 @@ msgstr "МОНТИРАНО В"
 
 #: big-mount/usr/lib/big-mount/cli.sh:374
 msgid "STATE"
-msgstr "СЪСТОЯНИЕ"
+msgstr "СТАТУС"
 
 #: big-mount/usr/lib/big-mount/cli.sh:384
 msgid "not mounted"
@@ -1050,7 +1050,7 @@ msgstr "Дискът е изтрит, но записването на нова 
 
 #: big-mount/usr/lib/big-mount/cli.sh:1041
 msgid "Create a partition table with KDE Partition Manager, and check that it is still there after a restart."
-msgstr "Създайте таблица на дяловете с KDE Partition Manager и проверете дали все още е там след рестартиране."
+msgstr "Създайте таблица на дяловете с програмата „Управление на дялове за KDE“ и проверете дали все още е там след рестартиране."
 
 #: big-mount/usr/lib/big-mount/cli.sh:1044
 #: big-mount/usr/lib/big-mount/cli.sh:1049

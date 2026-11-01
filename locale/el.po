@@ -229,7 +229,7 @@ msgstr "Η ίδια η συσκευή έχει προστασία εγγραφή
 
 #: big-mount/usr/lib/big-mount/cli.sh:131
 msgid "SD cards and some USB drives have a small lock switch on the side. Remove the device, move the switch to the unlocked position and connect it again."
-msgstr "Οι κάρτες SD και ορισμένα USB stick έχουν στο πλάι έναν μικρό διακόπτη κλειδώματος. Αφαιρέστε τη συσκευή, μετακινήστε τον διακόπτη στη θέση ξεκλειδώματος και συνδέστε την ξανά."
+msgstr "Οι κάρτες SD και ορισμένες μονάδες USB έχουν στο πλάι έναν μικρό διακόπτη κλειδώματος. Αφαιρέστε τη συσκευή, μετακινήστε τον διακόπτη στη θέση ξεκλειδώματος και συνδέστε την ξανά."
 
 #: big-mount/usr/lib/big-mount/cli.sh:132
 msgid "If there is no switch, the device may have locked itself because of wear. Copy your files to another place as soon as possible."
@@ -261,7 +261,7 @@ msgstr "Ξεκινήστε τα Windows και τερματίστε τα πλή�
 
 #: big-mount/usr/lib/big-mount/cli.sh:145
 msgid "To avoid this in the future, disable Fast Startup in Windows: Control Panel > Power Options > Choose what the power buttons do."
-msgstr "Για να το αποφύγετε στο μέλλον, απενεργοποιήστε τη Γρήγορη εκκίνηση στα Windows: Πίνακας Ελέγχου > Επιλογές παροχής ενέργειας > Επιλέξτε τι θα κάνουν τα κουμπιά λειτουργίας."
+msgstr "Για να το αποφύγετε στο μέλλον, απενεργοποιήστε τη Γρήγορη εκκίνηση στα Windows: Πίνακας Ελέγχου > Επιλογές παροχής ενέργειας > Επιλογή των ενεργειών των κουμπιών τροφοδοσίας."
 
 #: big-mount/usr/lib/big-mount/cli.sh:146
 msgid "If it still happens, check the partition in Windows: open the Command Prompt as administrator and run chkdsk with the /f option for that drive letter."
@@ -285,7 +285,7 @@ msgstr "Πρώτα αντιγράψτε τα σημαντικά αρχεία σ�
 
 #: big-mount/usr/lib/big-mount/cli.sh:153
 msgid "Then check the filesystem with the device unmounted, for example with KDE Partition Manager (Check)."
-msgstr "Έπειτα ελέγξτε το σύστημα αρχείων με τη συσκευή αποπροσαρτημένη, για παράδειγμα με τη Διαχείριση κατατμήσεων του KDE (Έλεγχος)."
+msgstr "Έπειτα ελέγξτε το σύστημα αρχείων με τη συσκευή αποπροσαρτημένη, για παράδειγμα με τον Διαχειριστή κατατμήσεων του KDE (Έλεγχος)."
 
 #: big-mount/usr/lib/big-mount/cli.sh:154
 msgid "Do not write to the device until it has been checked."
@@ -310,7 +310,7 @@ msgstr "Δοκιμάστε άλλο καλώδιο και συνδέστε τη 
 
 #: big-mount/usr/lib/big-mount/cli.sh:161
 msgid "Check the health of the drive in KDE Partition Manager (SMART status)."
-msgstr "Ελέγξτε την υγεία του δίσκου στη Διαχείριση κατατμήσεων του KDE (κατάσταση SMART)."
+msgstr "Ελέγξτε την υγεία του δίσκου στον Διαχειριστή κατατμήσεων του KDE (κατάσταση SMART)."
 
 #: big-mount/usr/lib/big-mount/cli.sh:165
 msgid "The filesystem was mounted read-only, but no problem was found with it."
@@ -934,7 +934,7 @@ msgstr "Ο πυρήνας δεν δίνει σε αυτόν τον δίσκο α
 
 #: big-mount/usr/lib/big-mount/cli.sh:959
 msgid "It holds the operating system that is running now. Start the computer from a live USB drive to erase it."
-msgstr "Περιέχει το λειτουργικό σύστημα που εκτελείται τώρα. Εκκινήστε τον υπολογιστή από ζωντανό USB για να τον διαγράψετε."
+msgstr "Περιέχει το λειτουργικό σύστημα που εκτελείται τώρα. Εκκινήστε τον υπολογιστή από ένα Live USB για να τον διαγράψετε."
 
 #: big-mount/usr/lib/big-mount/cli.sh:960
 msgid "Secure Erase is only offered for drives connected inside the computer, not through USB."
@@ -1006,7 +1006,7 @@ msgstr "Ο υπολογιστής θα τεθεί σε αναστολή και �
 
 #: big-mount/usr/lib/big-mount/cli.sh:1008
 msgid "The computer will go to sleep. Wake it up with the power button, and unlock the session if asked: the erase continues afterwards."
-msgstr "Ο υπολογιστής θα τεθεί σε αναστολή. Επαναφέρετέ τον με το κουμπί λειτουργίας και ξεκλειδώστε τη συνεδρία αν ζητηθεί: η διαγραφή συνεχίζεται μετά."
+msgstr "Ο υπολογιστής θα τεθεί σε αναστολή. Ξυπνήστε τον με το κουμπί λειτουργίας και ξεκλειδώστε τη συνεδρία αν ζητηθεί: η διαγραφή συνεχίζεται μετά."
 
 #: big-mount/usr/lib/big-mount/cli.sh:1016
 msgid "Unable to erase the drive"
@@ -1050,7 +1050,7 @@ msgstr "Ο δίσκος διαγράφηκε, αλλά η εγγραφή νέο�
 
 #: big-mount/usr/lib/big-mount/cli.sh:1041
 msgid "Create a partition table with KDE Partition Manager, and check that it is still there after a restart."
-msgstr "Δημιουργήστε πίνακα κατατμήσεων με τη Διαχείριση κατατμήσεων του KDE και ελέγξτε ότι υπάρχει ακόμη μετά από επανεκκίνηση."
+msgstr "Δημιουργήστε πίνακα κατατμήσεων με τον Διαχειριστή κατατμήσεων του KDE και ελέγξτε ότι υπάρχει ακόμη μετά από επανεκκίνηση."
 
 #: big-mount/usr/lib/big-mount/cli.sh:1044
 #: big-mount/usr/lib/big-mount/cli.sh:1049
@@ -1778,7 +1778,7 @@ msgstr "Έλεγχος του Big-Mount (δεν αλλάζει τίποτα· ε
 
 #: big-mount/usr/lib/big-mount/doctor.sh:462
 msgid "Result: %d problem(s), %d warning(s)."
-msgstr "Αποτέλεσμα: προβλήματα: %d, προειδοποιήσεις: %d."
+msgstr "Αποτέλεσμα: προβλήματα %d, προειδοποιήσεις %d."
 
 #: big-mount/usr/lib/big-mount/doctor.sh:463
 msgid "Big-Mount and the storage stack look healthy."
@@ -1885,7 +1885,7 @@ msgstr "Δεν δόθηκε άδεια."
 #: big-mount/usr/lib/big-mount/drive-copy.sh:120
 #: big-mount/usr/lib/big-mount/drive-recovery.sh:669
 msgid "Stopped. Nothing was changed on the disk."
-msgstr "Διακόπηκε. Δεν άλλαξε τίποτα στον δίσκο."
+msgstr "Σταμάτησε. Δεν άλλαξε τίποτα στον δίσκο."
 
 #: big-mount/usr/lib/big-mount/drive-copy.sh:121
 #: big-mount/usr/lib/big-mount/drive-recovery.sh:860
@@ -2141,7 +2141,7 @@ msgstr "μέση"
 #: big-mount/usr/lib/big-mount/drive-copy.sh:1019
 #: big-mount/usr/lib/big-mount/drive-recovery.sh:948
 msgid "Elapsed:"
-msgstr "Πέρασαν:"
+msgstr "Χρόνος που πέρασε:"
 
 #: big-mount/usr/lib/big-mount/drive-copy.sh:1020
 msgid "Remaining:"
@@ -2322,7 +2322,7 @@ msgstr "Για να την παρακολουθήσετε: bigmount --drive stat
 
 #: big-mount/usr/lib/big-mount/drive-copy.sh:1462
 msgid "No copies or images yet."
-msgstr "Δεν υπάρχουν ακόμη αντίγραφα ή εικόνες."
+msgstr "Δεν υπάρχουν ακόμη αντιγραφές ή εικόνες."
 
 #: big-mount/usr/lib/big-mount/drive-copy.sh:1496
 msgid "A search cannot be paused, only cancelled. What was found stays."
@@ -2949,7 +2949,7 @@ msgstr "έναρξη και επιστροφή· η αντιγραφή συνε�
 
 #: big-mount/usr/lib/big-mount/drive.sh:144
 msgid "copies and images, running and past"
-msgstr "αντίγραφα και εικόνες, σε εξέλιξη και παλαιότερα"
+msgstr "αντιγραφές και εικόνες, σε εξέλιξη και παλαιότερες"
 
 #: big-mount/usr/lib/big-mount/drive.sh:145
 msgid "progress of one of them"
@@ -3136,7 +3136,7 @@ msgstr "Συσκευές που βρέθηκαν: %s"
 
 #: big-mount/usr/lib/big-mount/drive-tui.sh:58
 msgid "Copies and images"
-msgstr "Αντίγραφα και εικόνες"
+msgstr "Αντιγραφές και εικόνες"
 
 #: big-mount/usr/lib/big-mount/drive-tui.sh:58
 msgid "Refresh"
@@ -3802,7 +3802,7 @@ msgstr "Οι δίσκοι σας, η κατάστασή τους και τα α�
 
 #: big-mount/usr/lib/big-mount/gui/welcome.py:80
 msgid "Tip: type to search your drives; F5 refreshes, Ctrl+J opens copies and searches."
-msgstr "Συμβουλή: πληκτρολογήστε για αναζήτηση στους δίσκους σας· το F5 κάνει ανανέωση, το Ctrl+J ανοίγει τα αντίγραφα και τις αναζητήσεις."
+msgstr "Συμβουλή: πληκτρολογήστε για αναζήτηση στους δίσκους σας· το F5 κάνει ανανέωση, το Ctrl+J ανοίγει τις αντιγραφές και τις αναζητήσεις."
 
 #: big-mount/usr/lib/big-mount/gui/welcome.py:93
 msgid "Show this screen on startup"
@@ -3867,7 +3867,7 @@ msgstr "Αρχική"
 #: big-mount/usr/lib/big-mount/gui/pages/job.py:301
 #: big-mount/usr/lib/big-mount/gui/pages/job.py:304
 msgid "Copies and searches"
-msgstr "Αντίγραφα και αναζητήσεις"
+msgstr "Αντιγραφές και αναζητήσεις"
 
 #: big-mount/usr/lib/big-mount/gui/window.py:315
 msgid "Choose a drive to see how it is doing."
@@ -4272,7 +4272,7 @@ msgstr "Για όταν τα αρχεία δεν ανοίγουν. Τα ονόμ
 
 #: big-mount/usr/lib/big-mount/gui/pages/device.py:536
 msgid "Copies and searches of this drive"
-msgstr "Αντίγραφα και αναζητήσεις αυτού του δίσκου"
+msgstr "Αντιγραφές και αναζητήσεις αυτού του δίσκου"
 
 #: big-mount/usr/lib/big-mount/gui/pages/device.py:540
 msgid "Nothing yet"

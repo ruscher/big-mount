@@ -285,7 +285,7 @@ msgstr "Per prima cosa copia i tuoi file importanti in un altro posto."
 
 #: big-mount/usr/lib/big-mount/cli.sh:153
 msgid "Then check the filesystem with the device unmounted, for example with KDE Partition Manager (Check)."
-msgstr "Poi controlla il file system con il dispositivo smontato, ad esempio con il Gestore delle partizioni di KDE (Controlla)."
+msgstr "Poi controlla il file system con il dispositivo smontato, ad esempio con il Gestore delle partizioni di KDE (Verifica)."
 
 #: big-mount/usr/lib/big-mount/cli.sh:154
 msgid "Do not write to the device until it has been checked."

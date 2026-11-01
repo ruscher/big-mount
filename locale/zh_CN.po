@@ -3841,7 +3841,7 @@ msgstr "设备无法写入时发出警告"
 
 #: big-mount/usr/lib/big-mount/gui/window.py:100
 msgid "Welcome screen"
-msgstr "欢迎屏幕"
+msgstr "欢迎界面"
 
 #: big-mount/usr/lib/big-mount/gui/window.py:101
 msgid "About Big-Mount"

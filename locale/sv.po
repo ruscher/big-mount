@@ -261,7 +261,7 @@ msgstr "Starta Windows och stäng av det helt: håll ned Skift-tangenten medan d
 
 #: big-mount/usr/lib/big-mount/cli.sh:145
 msgid "To avoid this in the future, disable Fast Startup in Windows: Control Panel > Power Options > Choose what the power buttons do."
-msgstr "För att undvika detta i framtiden, inaktivera snabb start i Windows: Kontrollpanelen > Energialternativ > Välj vad strömbrytarna ska göra."
+msgstr "För att undvika detta i framtiden, inaktivera snabb start i Windows: Kontrollpanelen > Energialternativ > Ange hur strömbrytarna ska fungera."
 
 #: big-mount/usr/lib/big-mount/cli.sh:146
 msgid "If it still happens, check the partition in Windows: open the Command Prompt as administrator and run chkdsk with the /f option for that drive letter."
@@ -285,7 +285,7 @@ msgstr "Kopiera först dina viktiga filer till en annan plats."
 
 #: big-mount/usr/lib/big-mount/cli.sh:153
 msgid "Then check the filesystem with the device unmounted, for example with KDE Partition Manager (Check)."
-msgstr "Kontrollera sedan filsystemet medan enheten är avmonterad, till exempel med KDE Partition Manager (Kontrollera)."
+msgstr "Kontrollera sedan filsystemet medan enheten är avmonterad, till exempel med KDE:s partitionshanterare (Kontrollera)."
 
 #: big-mount/usr/lib/big-mount/cli.sh:154
 msgid "Do not write to the device until it has been checked."
@@ -310,7 +310,7 @@ msgstr "Prova en annan kabel och anslut enheten direkt till datorn, utan hubb."
 
 #: big-mount/usr/lib/big-mount/cli.sh:161
 msgid "Check the health of the drive in KDE Partition Manager (SMART status)."
-msgstr "Kontrollera diskens hälsa i KDE Partition Manager (SMART-status)."
+msgstr "Kontrollera diskens hälsa i KDE:s partitionshanterare (SMART-status)."
 
 #: big-mount/usr/lib/big-mount/cli.sh:165
 msgid "The filesystem was mounted read-only, but no problem was found with it."
@@ -1050,7 +1050,7 @@ msgstr "Disken har raderats, men det gick inte att skriva en ny partitionstabell
 
 #: big-mount/usr/lib/big-mount/cli.sh:1041
 msgid "Create a partition table with KDE Partition Manager, and check that it is still there after a restart."
-msgstr "Skapa en partitionstabell med KDE Partition Manager och kontrollera att den fortfarande finns kvar efter en omstart."
+msgstr "Skapa en partitionstabell med KDE:s partitionshanterare och kontrollera att den fortfarande finns kvar efter en omstart."
 
 #: big-mount/usr/lib/big-mount/cli.sh:1044
 #: big-mount/usr/lib/big-mount/cli.sh:1049

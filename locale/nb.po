@@ -261,7 +261,7 @@ msgstr "Start Windows og slå det helt av: hold inne Shift-tasten mens du klikke
 
 #: big-mount/usr/lib/big-mount/cli.sh:145
 msgid "To avoid this in the future, disable Fast Startup in Windows: Control Panel > Power Options > Choose what the power buttons do."
-msgstr "For å unngå dette i fremtiden kan du slå av Rask oppstart i Windows: Kontrollpanel > Strømalternativer > Velg hva av/på-knappene skal gjøre."
+msgstr "For å unngå dette i fremtiden kan du slå av Rask oppstart i Windows: Kontrollpanel > Strømalternativer > Velg hva av/på-knappene gjør."
 
 #: big-mount/usr/lib/big-mount/cli.sh:146
 msgid "If it still happens, check the partition in Windows: open the Command Prompt as administrator and run chkdsk with the /f option for that drive letter."
@@ -285,7 +285,7 @@ msgstr "Kopier først de viktige filene dine til et annet sted."
 
 #: big-mount/usr/lib/big-mount/cli.sh:153
 msgid "Then check the filesystem with the device unmounted, for example with KDE Partition Manager (Check)."
-msgstr "Sjekk deretter filsystemet mens enheten er avmontert, for eksempel med KDE Partisjonsbehandler (Sjekk)."
+msgstr "Sjekk deretter filsystemet mens enheten er avmontert, for eksempel med KDE partisjonshåndtering (Kontroller)."
 
 #: big-mount/usr/lib/big-mount/cli.sh:154
 msgid "Do not write to the device until it has been checked."
@@ -310,7 +310,7 @@ msgstr "Prøv en annen kabel, og koble enheten direkte til datamaskinen, uten hu
 
 #: big-mount/usr/lib/big-mount/cli.sh:161
 msgid "Check the health of the drive in KDE Partition Manager (SMART status)."
-msgstr "Sjekk diskens helse i KDE Partisjonsbehandler (SMART-status)."
+msgstr "Sjekk diskens helse i KDE partisjonshåndtering (SMART-status)."
 
 #: big-mount/usr/lib/big-mount/cli.sh:165
 msgid "The filesystem was mounted read-only, but no problem was found with it."
@@ -1050,7 +1050,7 @@ msgstr "Disken ble slettet, men en ny partisjonstabell kunne ikke skrives (%s), 
 
 #: big-mount/usr/lib/big-mount/cli.sh:1041
 msgid "Create a partition table with KDE Partition Manager, and check that it is still there after a restart."
-msgstr "Opprett en partisjonstabell med KDE Partisjonsbehandler, og sjekk at den fortsatt er der etter en omstart."
+msgstr "Opprett en partisjonstabell med KDE partisjonshåndtering, og sjekk at den fortsatt er der etter en omstart."
 
 #: big-mount/usr/lib/big-mount/cli.sh:1044
 #: big-mount/usr/lib/big-mount/cli.sh:1049
@@ -2913,7 +2913,7 @@ msgstr "kopier funnede filer ut av mappen til det søket"
 
 #: big-mount/usr/lib/big-mount/drive.sh:135
 msgid "files that already exist: keep them (default), keep them aside, replace them"
-msgstr "filer som allerede finnes: behold dem (standard), legg dem til side, erstatt dem"
+msgstr "filer som allerede finnes: behold dem (standard), ta vare på dem ved siden av, erstatt dem"
 
 #: big-mount/usr/lib/big-mount/drive.sh:136
 msgid "how to check the result (full reads the source again)"
@@ -3253,7 +3253,7 @@ msgstr "Behold den eksisterende filen (trygt)"
 
 #: big-mount/usr/lib/big-mount/drive-tui.sh:279
 msgid "Replace it, keeping the old one aside"
-msgstr "Erstatt den, og legg den gamle til side"
+msgstr "Erstatt den, og ta vare på den gamle ved siden av"
 
 #: big-mount/usr/lib/big-mount/drive-tui.sh:279
 msgid "Replace it"
