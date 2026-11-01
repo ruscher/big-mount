@@ -1,0 +1,13 @@
+# Big-Mount install messages. Nothing is restarted automatically: the boot
+# service is enabled by big-mount.hook. Nothing runs in the session by default.
+
+post_install() {
+    echo ":: Big-Mount mounts the internal partitions at the next boot."
+    echo "   To mount them now: sudo systemctl start big-mount"
+    echo "   Diagnosis: bigmount --diagnose   |   Dolphin: right-click > Storage device"
+}
+
+post_upgrade() {
+    echo ":: Big-Mount was updated. The new version runs at the next boot."
+    echo "   To apply it now (mounted NTFS volumes stay mounted): sudo systemctl restart big-mount"
+}

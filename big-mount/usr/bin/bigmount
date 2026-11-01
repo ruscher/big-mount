@@ -1,74 +1,415 @@
 #!/bin/bash
+#
+# bigmount - BigLinux automount for internal partitions
+#
+# Without arguments (as run by big-mount.service) it mounts, as root, the
+# partitions of internal disks under /mnt/<label>. Removable, hot-pluggable
+# and USB/FireWire/SD/Thunderbolt devices are left to UDisks2 (Plasma,
+# Dolphin), and partitions listed in /etc/fstab are never touched.
+#
+# Diagnostics and safe removal (bigmount --help) live in /usr/lib/big-mount
+# and are only loaded when asked for, so the boot path stays small.
+
+DRY_RUN=""
+case "${1:-}" in
+   "") ;;
+   --dry-run) DRY_RUN=1 ;;
+   *)
+      # Normalized: /usr/lib/big-mount, not /usr/bin/../lib/big-mount
+      BIGMOUNT_LIB="$(readlink -f -- "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/../lib/big-mount")"
+      # shellcheck source-path=SCRIPTDIR source=../lib/big-mount/cli.sh
+      . "$BIGMOUNT_LIB/cli.sh" || exit 1
+      bm_main "$@"
+      exit
+      ;;
+esac
 
 if [ -e "/etc/bigmountall-no" ]; then
    exit 0
 fi
 
+# Messages are translated for a person at a terminal (bigmount --dry-run) and
+# stay in English in the journal, where they are searched for and quoted in
+# bug reports. $"..." is resolved by bash itself: no extra process.
+# journald turns a leading "<N>" into the syslog priority of the line.
+shopt -s noexpand_translation 2>/dev/null
+# Translations are only looked for when a person reads them (a terminal, or
+# a user who ran bigmount without options): the boot run spends no process
+if [ -t 1 ] || { [ -z "$DRY_RUN" ] && [ "$EUID" -ne 0 ]; }; then # root-check
+   TEXTDOMAINDIR="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/../share/locale"
+   export TEXTDOMAINDIR
+fi
+if [ -t 1 ]; then
+   P_WARN="" P_ERR=""
+   export TEXTDOMAIN=big-mount
+else
+   P_WARN="<4>" P_ERR="<3>"
+   # A domain without catalogs: every message stays as written
+   export TEXTDOMAIN=big-mount-journal
+fi
+# log|warn|err FORMAT ARGS...: FORMAT is always a constant (translatable)
+# string, data only ever goes in ARGS
+# shellcheck disable=SC2059
+log()  { local f="$1"; shift; printf -- "$f"'\n' "$@"; }
+# shellcheck disable=SC2059
+warn() { local f="$1"; shift; printf -- "$P_WARN$f"'\n' "$@"; }
+# shellcheck disable=SC2059
+err()  { local f="$1"; shift; printf -- "$P_ERR$f"'\n' "$@"; }
+
+# Execute, or only show, a command that changes the system. Fd 9 holds the
+# lock and is closed for the command: mount helpers such as mount.lowntfs-3g
+# stay alive as FUSE daemons and would otherwise hold the lock forever, so
+# every later run (systemctl restart big-mount) would wait and give up.
+run() {
+   local a
+   if [ -n "$DRY_RUN" ]; then
+      printf 'dry-run:'
+      for a in "$@"; do
+         if [[ $a =~ ^[][A-Za-z0-9_./,=:@%+-]+$ ]]; then printf ' %s' "$a"; else printf ' %q' "$a"; fi
+      done
+      printf '\n'
+      return 0
+   fi
+   "$@" 9>&-
+}
+
+# Mounting is the job of big-mount.service, as root. A person who runs
+# "bigmount" at a terminal gets an explanation instead of one permission
+# error per command (exit 5: not authorized, as in the other modes).
+# bash translates $"..." while it parses a command, so the domain is chosen
+# by a command of its own, before the block that prints
+[ -z "$DRY_RUN" ] && [ "$EUID" -ne 0 ] && TEXTDOMAIN=big-mount # root-check
+if [ -z "$DRY_RUN" ] && [ "$EUID" -ne 0 ]; then # root-check
+   printf '%s\n' $"bigmount: mounting the internal partitions needs administrator rights. big-mount.service does it at every boot." \
+      $"To mount them now:            sudo systemctl restart big-mount" \
+      $"To see what would be mounted: bigmount --dry-run" \
+      $"To check the installation:    bigmount --doctor" >&2
+   exit 5
+fi
+
+if [ -z "$DRY_RUN" ]; then
+   # 0600: flock works on a read-only descriptor, so a lock others can open
+   # lets any user hold back every run
+   old_umask="$(umask)"
+   umask 077
+   if ! { exec 9>/run/lock/big-mount.lock; } 2>/dev/null; then
+      err $"cannot open the lock file /run/lock/big-mount.lock, giving up"
+      exit 1
+   fi
+   umask "$old_umask"
+   if ! flock -w 60 9; then
+      err $"another bigmount is still running, giving up"
+      exit 1
+   fi
+fi
+
 # Compatibility symlinks (independent of each other)
 if [ ! -e "/media" ]; then
-   ln -s /mnt /media
+   run ln -s /mnt /media
 fi
 if [ ! -e "/mnt/user-mount" ] && [ -d /run/media ]; then
-   ln -s /run/media /mnt/user-mount
+   run ln -s /run/media /mnt/user-mount
 fi
 
-# Change space delimiters to newline
-OIFS=$IFS
-IFS=$'\n'
-
-# Detect last logged-in user across display managers, fallback to first human UID
+# Owner of the FAT/exFAT/NTFS files: the last user who logged in through
+# the display manager, else the first account in the range of people
+# (UID_MIN..UID_MAX of /etc/login.defs). The display manager files belong
+# to root; they are only read when readable, never with an error. No
+# account at all (a fresh install): root, never a made-up UID.
+UID_MIN=1000 UID_MAX=60000
+if [ -r /etc/login.defs ]; then
+   while read -r key val _; do
+      case "$key" in
+         UID_MIN) [[ $val =~ ^[0-9]+$ ]] && UID_MIN="$val" ;;
+         UID_MAX) [[ $val =~ ^[0-9]+$ ]] && UID_MAX="$val" ;;
+      esac
+   done < /etc/login.defs
+fi
 UserLastLogin=""
 if [ -r /var/lib/sddm/state.conf ]; then
-   UserLastLogin="$(grep '^User=' /var/lib/sddm/state.conf | cut -f2- -d= | sed 's| *$||')"
+   while IFS= read -r line; do
+      case "$line" in User=*) UserLastLogin="${line#User=}" ;; esac
+   done < /var/lib/sddm/state.conf
+   UserLastLogin="${UserLastLogin%"${UserLastLogin##*[! ]}"}"
 fi
 if [ -z "$UserLastLogin" ] && [ -r /var/lib/lightdm/data/last-user ]; then
-   UserLastLogin="$(head -n1 /var/lib/lightdm/data/last-user)"
-fi
-if [ -z "$UserLastLogin" ]; then
-   UserLastLogin="$(getent passwd | awk -F: '$3 >= 1000 && $3 < 60000 { print $1; exit }')"
+   read -r UserLastLogin < /var/lib/lightdm/data/last-user
 fi
 
-if [ -n "$UserLastLogin" ] && id -u "$UserLastLogin" >/dev/null 2>&1; then
-   UserID=$(id -u "$UserLastLogin")
-   GroupID=$(id -g "$UserLastLogin")
-else
-   UserID=1000
-   GroupID=1000
+UserID=0
+GroupID=0
+pw_entry=""
+if [ -n "$UserLastLogin" ] && ! pw_entry="$(getent passwd -- "$UserLastLogin")"; then
+   warn $"last login '%s' is not a known account, ignoring it" "$UserLastLogin"
+   pw_entry=""
+fi
+if [ -z "$pw_entry" ]; then
+   pw_entry="$(getent passwd | awk -F: -v lo="$UID_MIN" -v hi="$UID_MAX" '$3 >= lo && $3 <= hi { print; exit }')"
+fi
+if [ -n "$pw_entry" ]; then
+   IFS=: read -r _ _ UserID GroupID _ <<< "$pw_entry"
 fi
 
-# Iterate partitions, skip swap and squashfs
-for i in $(blkid | grep -v -e 'TYPE="swap"' -e 'TYPE="squashfs"'); do
+# Permission mask for FAT/exFAT/NTFS (see /etc/big-mount.conf). The file is
+# parsed as data, never sourced: this runs as root.
+FILE_MASK="umask=000"
+if [ -r /etc/big-mount.conf ]; then
+   while IFS= read -r line; do
+      line="${line%%#*}"
+      line="${line//[[:space:]]/}"
+      case "$line" in
+         PERMISSIONS=shared) FILE_MASK="umask=000" ;;
+         PERMISSIONS=owner) FILE_MASK="dmask=022,fmask=022" ;;
+         PERMISSIONS=private) FILE_MASK="umask=077" ;;
+         PERMISSIONS=*) warn $"/etc/big-mount.conf: unknown value '%s', using shared" "${line#*=}" ;;
+      esac
+   done < /etc/big-mount.conf
+fi
 
-   PARTITION="$(echo "$i" | sed 's|:.*||;s|.*/||')"
+# ---------------------------------------------------------------------------
+# Snapshot of the system, taken once. Everything below is parsed with bash
+# builtins instead of one grep/sed pipeline per partition.
 
-   # Skip partitions managed by /etc/fstab, even "noauto"
-   if findmnt --fstab --source "/dev/$PARTITION" >/dev/null 2>&1; then
+# Disk sequence numbers change whenever a new device takes a name, so a disk
+# swapped while we scan is never mistaken for the one we examined.
+declare -A DISKSEQ
+for f in /sys/block/*/diskseq; do
+   [ -r "$f" ] || continue
+   d="${f%/diskseq}"
+   read -r DISKSEQ["${d##*/}"] < "$f"
+done
+
+mapfile -t BLKID_LINES < <(blkid 2>/dev/null)
+
+# Topology and kernel transport flags (sysfs based, independent of udev)
+declare -A LS_PK LS_TYPE LS_TRAN LS_RM LS_HOTPLUG
+pair_re='^[[:space:]]*([A-Z_:-]+)="(([^"\\]|\\.)*)"(.*)$'
+while IFS= read -r rest; do
+   declare -A kv=()
+   while [[ $rest =~ $pair_re ]]; do
+      kv[${BASH_REMATCH[1]}]="${BASH_REMATCH[2]}"
+      rest="${BASH_REMATCH[4]}"
+   done
+   name="${kv[NAME]:-}"
+   # md and similar devices appear once per member; the first one wins
+   if [ -z "$name" ] || [ -n "${LS_TYPE[$name]+set}" ]; then
+      unset kv
+      continue
+   fi
+   LS_PK[$name]="${kv[PKNAME]:-}"
+   LS_TYPE[$name]="${kv[TYPE]:-}"
+   LS_TRAN[$name]="${kv[TRAN]:-}"
+   LS_RM[$name]="${kv[RM]:-}"
+   LS_HOTPLUG[$name]="${kv[HOTPLUG]:-}"
+   unset kv
+done < <(lsblk -P -p -o NAME,PKNAME,TYPE,TRAN,RM,HOTPLUG 2>/dev/null)
+
+mapfile -t MOUNTS < /proc/mounts
+
+is_mounted_dev() {
+   local l
+   for l in "${MOUNTS[@]}"; do
+      [[ $l == "$1 "* ]] && return 0
+   done
+   return 1
+}
+
+is_mounted_on() {
+   local l
+   for l in "${MOUNTS[@]}"; do
+      [[ $l == *" $1 "* ]] && return 0
+   done
+   return 1
+}
+
+mounted_dev_on() {
+   local l
+   for l in "${MOUNTS[@]}"; do
+      [[ $l == "$1 $2 "* ]] && return 0
+   done
+   return 1
+}
+
+# Split a blkid line into DEV and the BK[KEY]=value map
+declare -A BK
+blkid_parse() {
+   local rest="${1#*: }" v
+   DEV="${1%%: *}"
+   BK=()
+   while [[ $rest =~ $pair_re ]]; do
+      v="${BASH_REMATCH[2]}"
+      v="${v//\\\"/\"}"
+      v="${v//\\\\/\\}"
+      BK[${BASH_REMATCH[1]}]="$v"
+      rest="${BASH_REMATCH[4]}"
+   done
+}
+
+# Helpers return their result in REPLY: a $(...) would fork for every call.
+
+# Whole-disk ancestor (sda for sda1, the first member disk for md devices)
+top_disk() {
+   local dev="$1" n=0
+   while [ -n "${LS_PK[$dev]:-}" ] && [ "$n" -lt 8 ]; do
+      dev="${LS_PK[$dev]}"
+      n=$((n + 1))
+   done
+   REPLY="${dev##*/}"
+}
+
+# Turn a volume label into a single, safe path component (or nothing)
+safe_label() {
+   local s="$1" LC_ALL=C
+   s="${s//[\/ ]/_}"
+   s="${s//[[:cntrl:]]/_}"
+   case "$s" in
+      . | ..) s="" ;;
+   esac
+   # NAME_MAX is 255 bytes; LC_ALL=C makes ${#s} count bytes
+   [ "${#s}" -gt 200 ] && s=""
+   REPLY="$s"
+}
+
+# ---------------------------------------------------------------------------
+# Pass 1: cheap filters, collecting the candidates that need udev data
+
+CANDIDATES=()
+for i in "${BLKID_LINES[@]}"; do
+   blkid_parse "$i"
+   case "${BK[TYPE]:-}" in
+      "" | swap | squashfs) continue ;;
+      # Containers and members: LUKS, LVM, md/fake RAID, ZFS, VMFS, ...
+      crypto_* | BitLocker | *_member | bcache | ceph | DM_snapshot_cow | drbd)
+         [ -n "$DRY_RUN" ] && log $"%s: skipped, %s is not a filesystem" "$DEV" "${BK[TYPE]}"
+         continue
+         ;;
+   esac
+   case "$DEV" in
+      /dev/mapper/* | /dev/dm-* | /dev/loop* | /dev/zram* | /dev/ram*)
+         [ -n "$DRY_RUN" ] && log $"%s: skipped, virtual device" "$DEV"
+         continue
+         ;;
+      /dev/?*) ;;
+      *) continue ;;
+   esac
+   if is_mounted_dev "$DEV"; then
+      [ -n "$DRY_RUN" ] && log $"%s: skipped, already mounted" "$DEV"
+      continue
+   fi
+   CANDIDATES+=("$i")
+done
+
+# udev properties of all candidates in a single call, kept as UD[dev|KEY].
+# Every device block of `udevadm info` starts with DEVPATH=.
+declare -A UD
+udev_query() {
+   local line devname="" pairs=() kv
+   [ "$#" -gt 0 ] || return 0
+   while IFS= read -r line; do
+      case "$line" in
+         DEVPATH=* | "")
+            for kv in "${pairs[@]}"; do UD["$devname|${kv%%=*}"]="${kv#*=}"; done
+            devname="" pairs=()
+            ;;
+         DEVNAME=*) devname="${line#DEVNAME=}" ;;
+         ID_BUS=* | ID_PATH=* | ID_DRIVE_FLASH_SD=* | ID_DRIVE_MEDIA_FLASH_SD=* | UDISKS_IGNORE=* | UDISKS_SYSTEM=* | USEC_INITIALIZED=*)
+            pairs+=("$line") ;;
+      esac
+   done < <(udevadm info --query=property "$@" 2>/dev/null; echo)
+}
+
+devs=()
+for i in "${CANDIDATES[@]}"; do devs+=("${i%%: *}"); done
+udev_query "${devs[@]}"
+
+# udev may still be processing a device right after local-fs.target: wait
+# once, and leave alone whatever is still unknown afterwards.
+pending=()
+for d in "${devs[@]}"; do
+   [ -n "${UD[$d|USEC_INITIALIZED]:-}" ] || pending+=("$d")
+done
+if [ "${#pending[@]}" -gt 0 ]; then
+   log $"waiting for udev to finish processing %s" "${pending[*]}"
+   udevadm settle --timeout=10 >/dev/null 2>&1
+   udev_query "${pending[@]}"
+fi
+
+# Why a device belongs to UDisks/Plasma instead of us; empty when internal.
+# Kernel (sysfs) and udev facts are combined, so a single missing or wrong
+# property is not enough to take over an external disk: many USB HDDs and
+# SSDs report RM=0, but the kernel still knows they hang off a USB port.
+external_reason() {
+   local dev="$1" disk="$2" disk_dev="/dev/$2" reasons=() v=""
+   if [ -r "/sys/block/$disk/removable" ]; then
+      read -r v < "/sys/block/$disk/removable"
+   fi
+   if [ "$v" = "1" ] || [ "${LS_RM[$disk_dev]:-}" = "1" ]; then
+      reasons+=("removable")
+   fi
+   case "${LS_TRAN[$disk_dev]:-}" in
+      usb | ieee1394 | sbp) reasons+=("transport=${LS_TRAN[$disk_dev]}") ;;
+   esac
+   # Parent port marked removable by the kernel: USB, Thunderbolt/USB4 PCIe
+   if [ "${LS_HOTPLUG[$disk_dev]:-}" = "1" ] || [ "${LS_HOTPLUG[$dev]:-}" = "1" ]; then
+      reasons+=("hotplug")
+   fi
+   # MMC block devices: "SD" is a card, "MMC" is soldered eMMC
+   if [ -r "/sys/block/$disk/device/type" ]; then
+      read -r v < "/sys/block/$disk/device/type"
+      [ "$v" = "SD" ] && reasons+=("sd-card")
+   fi
+   case "${UD[$dev|ID_BUS]:-}" in
+      usb | ieee1394) reasons+=("ID_BUS=${UD[$dev|ID_BUS]}") ;;
+   esac
+   [[ ${UD[$dev|ID_PATH]:-} == *-usb-* ]] && reasons+=("ID_PATH=usb")
+   [ "${UD[$dev|ID_DRIVE_FLASH_SD]:-}" = "1" ] && reasons+=("ID_DRIVE_FLASH_SD")
+   [ "${UD[$dev|ID_DRIVE_MEDIA_FLASH_SD]:-}" = "1" ] && reasons+=("ID_DRIVE_MEDIA_FLASH_SD")
+   # Set by udev rules (e.g. for eSATA bays) to mark a non-system device
+   [ "${UD[$dev|UDISKS_SYSTEM]:-}" = "0" ] && reasons+=("UDISKS_SYSTEM=0")
+   REPLY="${reasons[*]}"
+}
+
+# ---------------------------------------------------------------------------
+# Pass 2: decide and mount, in blkid order
+
+STATUS=()
+for i in "${CANDIDATES[@]}"; do
+   blkid_parse "$i"
+   PARTITION="${DEV##*/}"
+   FSTYPE="${BK[TYPE]}"
+
+   if [ -z "${UD[$DEV|USEC_INITIALIZED]:-}" ]; then
+      warn $"%s: udev has no information about it yet, not mounting" "$DEV"
+      continue
+   fi
+   if [ "${UD[$DEV|UDISKS_IGNORE]:-}" = "1" ]; then
+      [ -n "$DRY_RUN" ] && log $"%s: skipped, hidden by udev/UDisks (UDISKS_IGNORE)" "$DEV"
       continue
    fi
 
-   # Parent block device works for sdX, nvmeXnYpZ, mmcblkXpY
-   PARENT_DEV="$(lsblk -no PKNAME "/dev/$PARTITION" 2>/dev/null | head -n1)"
-   if [ -z "$PARENT_DEV" ]; then
-      PARENT_DEV="$PARTITION"
+   top_disk "$DEV"
+   DISK="$REPLY"
+   external_reason "$DEV" "$DISK"
+   if [ -n "$REPLY" ]; then
+      log $"%s: left to UDisks, external device (%s)" "$DEV" "$REPLY"
+      continue
    fi
 
-   LABEL_NAME=""
+   # Skip partitions managed by /etc/fstab, even "noauto"
+   if findmnt --fstab --source "$DEV" >/dev/null 2>&1; then
+      [ -n "$DRY_RUN" ] && log $"%s: skipped, listed in /etc/fstab" "$DEV"
+      continue
+   fi
 
-   # 1. Try LABEL (not PARTLABEL)
-   LABEL_NAME=$(echo "$i" | sed -n 's/.* LABEL="\([^"]*\)".*/\1/p')
+   # 1. LABEL, 2. PARTLABEL, 3. device name
+   safe_label "${BK[LABEL]:-}"
+   LABEL_NAME="$REPLY"
    if [ -z "$LABEL_NAME" ]; then
-      LABEL_NAME=$(echo "$i" | sed -n 's/^[^:]*: LABEL="\([^"]*\)".*/\1/p')
+      safe_label "${BK[PARTLABEL]:-}"
+      LABEL_NAME="$REPLY"
    fi
 
-   # 2. Fall back to PARTLABEL
-   if [ -z "$LABEL_NAME" ]; then
-      LABEL_NAME=$(echo "$i" | sed -n 's/.*PARTLABEL="\([^"]*\)".*/\1/p')
-   fi
-
-   # 3. Sanitize label (avoid spaces and slashes in path)
-   LABEL_NAME=$(echo "$LABEL_NAME" | tr ' /' '__')
-
-   # 4. Resolve a free mount point with numeric suffix on collision
+   # Resolve a free mount point with numeric suffix on collision
    if [ -n "$LABEL_NAME" ]; then
       BASE_NAME="$LABEL_NAME"
       COUNTER=1
@@ -76,7 +417,8 @@ for i in $(blkid | grep -v -e 'TYPE="swap"' -e 'TYPE="squashfs"'); do
 
          # Remove stale symlink before existence check
          if [ -L "/mnt/$LABEL_NAME" ]; then
-            rm "/mnt/$LABEL_NAME"
+            run rm "/mnt/$LABEL_NAME"
+            [ -n "$DRY_RUN" ] && break
          fi
 
          if [ ! -e "/mnt/$LABEL_NAME" ]; then
@@ -84,13 +426,12 @@ for i in $(blkid | grep -v -e 'TYPE="swap"' -e 'TYPE="squashfs"'); do
          fi
 
          # Folder exists but nothing is mounted on it (stale) — reuse
-         IS_MOUNTED=$(grep -F " /mnt/$LABEL_NAME " /proc/mounts)
-         if [ -z "$IS_MOUNTED" ]; then
+         if ! is_mounted_on "/mnt/$LABEL_NAME"; then
             break
          fi
 
          # Already mounted by this exact device — idempotent success
-         if grep -qF "/dev/$PARTITION /mnt/$LABEL_NAME " /proc/mounts; then
+         if mounted_dev_on "$DEV" "/mnt/$LABEL_NAME"; then
             break
          fi
 
@@ -104,49 +445,118 @@ for i in $(blkid | grep -v -e 'TYPE="swap"' -e 'TYPE="squashfs"'); do
       MOUNT_POINT="/mnt/$PARTITION"
    fi
 
-   bigremovable=n
-
-   # Removable flag in sysfs
-   if [ -r "/sys/block/$PARENT_DEV/removable" ] && [ "$(cat "/sys/block/$PARENT_DEV/removable")" = "1" ]; then
-      bigremovable=y
-   fi
-
-   # USB transport
-   if udisksctl info -b "/dev/$PARENT_DEV" 2>/dev/null | grep -q -- "-usb-"; then
-      bigremovable=y
-   fi
-
-   # HintIgnore
-   if udisksctl info -b "/dev/$PARTITION" 2>/dev/null | grep -q "HintIgnore:.*true"; then
-      bigremovable=y
-   fi
-
-   # Already mounted (exact device match — trailing space avoids prefix matches)
-   if grep -qE "^/dev/${PARTITION} " /proc/mounts; then
-      bigremovable=y
-   fi
-
-   if [ "$bigremovable" = "n" ]; then
-
-      mkdir -p "$MOUNT_POINT"
-
-      mount_rc=1
-      if echo "$i" | grep -q 'TYPE="ntfs"'; then
-         ntfsfix "/dev/$PARTITION"
-         mount -t lowntfs-3g -o "uid=$UserID,gid=$GroupID,rw,noatime,exec,umask=000,nodev,nofail,x-gvfs-show" "/dev/$PARTITION" "$MOUNT_POINT"
-         mount_rc=$?
-      elif echo "$i" | grep -q 'TYPE=".*fat.*"'; then
-         mount -o "uid=$UserID,gid=$GroupID,noatime,rw,umask=000,nodev,nofail,x-gvfs-show" "/dev/$PARTITION" "$MOUNT_POINT"
-         mount_rc=$?
-      else
-         mount -o "noatime,rw,nodev,nofail,x-gvfs-show" "/dev/$PARTITION" "$MOUNT_POINT"
-         mount_rc=$?
+   # The device we examined must still be the one behind this name
+   if [ -n "${DISKSEQ[$DISK]:-}" ] && [ -r "/sys/block/$DISK/diskseq" ]; then
+      read -r seq_now < "/sys/block/$DISK/diskseq"
+      if [ "$seq_now" != "${DISKSEQ[$DISK]}" ]; then
+         warn $"%s: device changed during the scan, not mounting" "$DEV"
+         continue
       fi
+   fi
 
-      # Reverse symlink only on successful mount and when paths differ
-      if [ "$mount_rc" -eq 0 ] && [ -n "$LABEL_NAME" ] && [ "$MOUNT_POINT" != "/mnt/$PARTITION" ] && [ ! -e "/mnt/$PARTITION" ]; then
-         ln -s "$MOUNT_POINT" "/mnt/$PARTITION" 2>/dev/null
+   created_dir=""
+   [ -e "$MOUNT_POINT" ] || created_dir=1
+   run mkdir -p "$MOUNT_POINT"
+
+   state=rw
+   note=""
+   mount_rc=1
+   case "$FSTYPE" in
+      ntfs)
+         ntfs_opts="uid=$UserID,gid=$GroupID,rw,noatime,exec,$FILE_MASK,nodev,nofail,x-gvfs-show"
+         run mount -t lowntfs-3g -o "$ntfs_opts" "$DEV" "$MOUNT_POINT"
+         mount_rc=$?
+         # ntfs-3g refuses read-write on hibernated (14), inconsistent (13)
+         # or uncleanly unmounted (15) volumes. Reading does not change the
+         # volume, so offer the files read-only and tell the user why.
+         case "$mount_rc" in
+            13) note=ntfs-inconsistent ;;
+            14) note=ntfs-hibernated ;;
+            15) note=ntfs-unclean ;;
+         esac
+         if [ -n "$note" ]; then
+            warn $"%s: NTFS refused read-write mount (%s), retrying read-only" "$DEV" "$note"
+            run mount -t lowntfs-3g -o "${ntfs_opts/,rw,/,ro,}" "$DEV" "$MOUNT_POINT"
+            mount_rc=$?
+            state=ro
+         fi
+         ;;
+      *fat*)
+         run mount -o "uid=$UserID,gid=$GroupID,noatime,rw,$FILE_MASK,nodev,nofail,x-gvfs-show" "$DEV" "$MOUNT_POINT"
+         mount_rc=$?
+         ;;
+      *)
+         run mount -o "noatime,rw,nodev,nofail,x-gvfs-show" "$DEV" "$MOUNT_POINT"
+         mount_rc=$?
+         ;;
+   esac
+
+   if [ "$mount_rc" -ne 0 ]; then
+      err $"%s: mount of %s on %s failed (exit %s)" "$DEV" "$FSTYPE" "$MOUNT_POINT" "$mount_rc"
+      printf -v line '%s\t%s\t%s\t%s\t%s' "$DEV" "${BK[UUID]:--}" "$MOUNT_POINT" failed "${note:-mount-exit-$mount_rc}"
+      STATUS+=("$line")
+      if [ -n "$created_dir" ]; then
+         run rmdir "$MOUNT_POINT" 2>/dev/null
+      fi
+      continue
+   fi
+
+   mapfile -t MOUNTS < /proc/mounts
+
+   # Record the real state: drivers fall back to read-only on their own
+   # (ntfs-3g for hibernated or unclean volumes, mount(8) for write-protected
+   # devices), and the user deserves to know why
+   if [ -z "$DRY_RUN" ] && [ "$state" = rw ]; then
+      for l in "${MOUNTS[@]}"; do
+         [[ $l == "$DEV $MOUNT_POINT "* ]] || continue
+         read -r _ _ _ mount_opts _ <<< "$l"
+         if [[ ,$mount_opts, == *,ro,* ]]; then
+            state=ro
+            if [ "$FSTYPE" = ntfs ]; then note=ntfs-readonly; else note=readonly-fallback; fi
+            warn $"%s: the driver mounted %s read-only on its own (%s)" "$DEV" "$FSTYPE" "$note"
+         fi
+         break
+      done
+   fi
+
+   if [ -n "$DRY_RUN" ]; then
+      log $"%s: would be mounted %s on %s (%s)" "$DEV" "$FSTYPE" "$MOUNT_POINT" "$state"
+   else
+      log $"%s: mounted %s on %s (%s)" "$DEV" "$FSTYPE" "$MOUNT_POINT" "$state"
+   fi
+   printf -v line '%s\t%s\t%s\t%s\t%s' "$DEV" "${BK[UUID]:--}" "$MOUNT_POINT" "$state" "${note:--}"
+   STATUS+=("$line")
+
+   # Reverse symlink /mnt/<device> -> mount point, refreshing a stale one
+   if [ -n "$LABEL_NAME" ] && [ "$MOUNT_POINT" != "/mnt/$PARTITION" ]; then
+      if [ -L "/mnt/$PARTITION" ]; then
+         if [ "$(readlink "/mnt/$PARTITION")" != "$MOUNT_POINT" ]; then
+            run ln -sfn "$MOUNT_POINT" "/mnt/$PARTITION"
+         fi
+      elif [ ! -e "/mnt/$PARTITION" ]; then
+         run ln -s "$MOUNT_POINT" "/mnt/$PARTITION" 2>/dev/null
       fi
    fi
 done
-IFS=$OIFS
+
+# State for the user session notifier (bigmount --notifier) and --diagnose.
+# A partition an earlier run mounted is skipped in this one: its line is kept
+# while it is still mounted there, so the reason it is read-only is kept too.
+if [ -z "$DRY_RUN" ]; then
+   if [ -r /run/big-mount/status ]; then
+      while IFS=$'\t' read -r dev uuid mp st why; do
+         if [[ $dev != /dev/* ]] || [ "$st" = failed ] || ! mounted_dev_on "$dev" "$mp"; then continue; fi
+         [[ " ${STATUS[*]} " == *" $dev"$'\t'* ]] && continue
+         printf -v line '%s\t%s\t%s\t%s\t%s' "$dev" "$uuid" "$mp" "$st" "$why"
+         STATUS=("$line" "${STATUS[@]}")
+      done < /run/big-mount/status
+   fi
+   if [ -d /run/big-mount ] || mkdir -m 0755 /run/big-mount 2>/dev/null; then
+      {
+         printf '# big-mount status v1: DEVICE UUID MOUNTPOINT STATE REASON\n'
+         [ "${#STATUS[@]}" -gt 0 ] && printf '%s\n' "${STATUS[@]}"
+      } > /run/big-mount/status
+   fi
+fi
+
+exit 0

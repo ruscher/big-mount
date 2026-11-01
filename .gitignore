@@ -1,0 +1,8 @@
+# Scratch directories of the test suites (never commit them)
+tests/tmp-*/
+tests/.bench.*/
+tests/.integ.*/
+tests/.pkg.*/
+
+# Left by importing the window in a one-off script
+__pycache__/
