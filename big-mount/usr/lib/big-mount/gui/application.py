@@ -24,7 +24,9 @@ def load_style():
 
 
 def parse(argv):
-    parser = argparse.ArgumentParser(prog="bigmount --gui-drive", add_help=False)
+    # An error is raised, never an exit: a second invocation is parsed inside the
+    # window that is already open
+    parser = argparse.ArgumentParser(prog="bigmount --gui-drive", add_help=False, exit_on_error=False)
     parser.add_argument("--target", default="")
     parser.add_argument("--section", default="", choices=["", "health"])
     args, _unknown = parser.parse_known_args(argv[1:])
@@ -61,7 +63,11 @@ class Application(Adw.Application):
             self.set_accels_for_action(f"app.{name}", accels)
 
     def do_command_line(self, command_line):
-        args = parse(command_line.get_arguments())
+        try:
+            args = parse(command_line.get_arguments())
+        except argparse.ArgumentError as exc:
+            command_line.printerr_literal(f"bigmount --gui-drive: {exc}\n")
+            return 2
         first = self.window is None
         if first:
             self.window = MainWindow(self)
