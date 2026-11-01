@@ -776,6 +776,25 @@ bm_diskseq() {
    { read -r REPLY < "/sys/block/${1##*/}/diskseq"; } 2>/dev/null
 }
 
+# Read-only by choice: a read-only mount, or writing blocked on a drive, that
+# the person asked Big-Mount for is not reported back to them as a problem.
+# Recorded in the private runtime folder with the disk sequence number, which
+# changes when another device takes the name. bm_chosen_ro_add DEV DISK;
+# bm_chosen_ro DEV after bm_facts.
+bm_chosen_ro_add() {
+   local dir="${XDG_RUNTIME_DIR:-}"
+   { [ -n "$dir" ] && [ -d "$dir" ] && [ -O "$dir" ]; } || return 0
+   bm_diskseq "$2"
+   [ -n "$REPLY" ] && printf '%s %s\n' "$REPLY" "$1" >> "$dir/big-mount-read-only"
+}
+
+bm_chosen_ro() {
+   local file="${XDG_RUNTIME_DIR:-}/big-mount-read-only"
+   [ -r "$file" ] || return 1
+   bm_diskseq "${F[DISK]:-}"
+   [ -n "$REPLY" ] && grep -qxF -e "$REPLY $1" -e "$REPLY ${F[DISK]}" -- "$file"
+}
+
 # bm_drive_lock DISK: one removal or remount of a drive at a time. A double
 # click on the Dolphin action, or the action and a terminal command, must
 # not unmount and power off the same drive concurrently. The lock file is

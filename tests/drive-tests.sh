@@ -348,6 +348,11 @@ check "  ... with writing blocked on the device" grep -qx 'protect /dev/sdg1' "$
 : > "$WORK/helper.log"
 check "ext4 read-only, drive at risk: no protection" mnt /dev/sda1 0 ""
 check "  ... so no password is asked" test ! -s "$WORK/helper.log"
+bm_facts /dev/sdg1; bm_chosen_ro /dev/sdg1
+check "  ... recorded as chosen" eq "$?" 0
+bm_diskseq() { REPLY=8; }; bm_facts /dev/sdg1; bm_chosen_ro /dev/sdg1
+check "  ... not for a replaced device" eq "$?" 1
+bm_diskseq() { REPLY=7; }
 FAKE_HELPER_RC=3; check "btrfs, a sibling volume writing: refused" mnt /dev/sdg1 20 protect-busy
 FAKE_HELPER_RC=4; check "btrfs on the system drive: refused" mnt /dev/sdg1 20 protect-system
 unset BM_HELPER_CMD FAKE_HELPER_RC; FAKE_MP="" FAKE_HEALTH_FIND=() FAKE_SMART=""

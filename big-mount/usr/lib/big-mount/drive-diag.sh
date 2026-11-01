@@ -495,5 +495,9 @@ bm_mnt_mount() {
       bm_udisks unmount -b "$dev" || MNT_DETAIL+="; unmount failed: $UD_MESSAGE"
       return 1
    fi
+   if [ "$mode" = ro ]; then
+      bm_chosen_ro_add "$dev" "$disk"
+      [ "$MNT_PROTECTED" = 1 ] && bm_chosen_ro_add "$disk" "$disk"
+   fi
    return 0
 }

@@ -1179,7 +1179,7 @@ msgid "Safely remove…"
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/cli.sh:1272
-#: big-mount/usr/lib/big-mount/cli.sh:1557
+#: big-mount/usr/lib/big-mount/cli.sh:1561
 msgid "How to solve"
 msgstr ""
 
@@ -1367,11 +1367,11 @@ msgstr ""
 msgid "Open Big-Mount"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/cli.sh:1555
+#: big-mount/usr/lib/big-mount/cli.sh:1559
 msgid "Device: %s\\nFilesystem: %s\\nPossible reason: %s"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/cli.sh:1557
+#: big-mount/usr/lib/big-mount/cli.sh:1561
 msgid "View details"
 msgstr ""
 
@@ -1416,7 +1416,7 @@ msgid "Commands such as 'bigmount --diagnose' do not diagnose anything and may p
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/doctor.sh:145
-#: big-mount/usr/lib/big-mount/drive.sh:691
+#: big-mount/usr/lib/big-mount/drive.sh:692
 msgid "Big-Mount"
 msgstr ""
 
@@ -1853,7 +1853,7 @@ msgstr ""
 #: big-mount/usr/lib/big-mount/drive-copy.sh:119
 #: big-mount/usr/lib/big-mount/drive-copy.sh:433
 #: big-mount/usr/lib/big-mount/drive-recovery.sh:676
-#: big-mount/usr/lib/big-mount/drive.sh:607
+#: big-mount/usr/lib/big-mount/drive.sh:608
 msgid "Permission was not granted."
 msgstr ""
 
@@ -2634,7 +2634,7 @@ msgstr ""
 
 #: big-mount/usr/lib/big-mount/drive-erase.sh:185
 #: big-mount/usr/lib/big-mount/drive-erase.sh:188
-#: big-mount/usr/lib/big-mount/lib.sh:1273
+#: big-mount/usr/lib/big-mount/lib.sh:1292
 msgid "The drive was disconnected or replaced. Nothing was erased."
 msgstr ""
 
@@ -3055,7 +3055,7 @@ msgstr ""
 
 #: big-mount/usr/lib/big-mount/drive.sh:432
 #: big-mount/usr/lib/big-mount/drive.sh:596
-#: big-mount/usr/lib/big-mount/drive.sh:615
+#: big-mount/usr/lib/big-mount/drive.sh:616
 msgid "Name a device, such as /dev/sdb1."
 msgstr ""
 
@@ -3063,39 +3063,39 @@ msgstr ""
 msgid "Nothing was done. Use bigmount --unmount to confirm stopping them."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive.sh:601
+#: big-mount/usr/lib/big-mount/drive.sh:602
 msgid "Writing is now blocked on this device until it is disconnected."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive.sh:602
+#: big-mount/usr/lib/big-mount/drive.sh:603
 msgid "Writing is allowed on this device again."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive.sh:605
+#: big-mount/usr/lib/big-mount/drive.sh:606
 msgid "Another volume of this drive is mounted with writing enabled. Unmount it first."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive.sh:606
+#: big-mount/usr/lib/big-mount/drive.sh:607
 msgid "Refused: this drive holds the running system."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive.sh:608
+#: big-mount/usr/lib/big-mount/drive.sh:609
 msgid "The helper failed (exit %s)."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive.sh:617
+#: big-mount/usr/lib/big-mount/drive.sh:618
 msgid "Unlocking in the terminal needs an interactive terminal."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive.sh:678
+#: big-mount/usr/lib/big-mount/drive.sh:679
 msgid "bigmount: the graphical application does not run as administrator. Open it as your user; it asks for the password when it needs it."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive.sh:682
+#: big-mount/usr/lib/big-mount/drive.sh:683
 msgid "bigmount: there is no graphical session here. Use the manager in the terminal: bigmount --drive"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive.sh:692
+#: big-mount/usr/lib/big-mount/drive.sh:693
 msgid "The application needs GTK 4, libadwaita 1.5 or later and PyGObject (packages gtk4, libadwaita and python-gobject). The same tools work in the terminal: bigmount --drive"
 msgstr ""
 
@@ -3468,31 +3468,31 @@ msgstr ""
 msgid "has a file open for writing: finish or cancel the operation in the application"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/lib.sh:912
+#: big-mount/usr/lib/big-mount/lib.sh:931
 msgid "%s is unmounted here, but %s (PID %s) still has it mounted at %s"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/lib.sh:916
+#: big-mount/usr/lib/big-mount/lib.sh:935
 msgid "%s is unmounted, but its filesystem driver is still writing to it"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/lib.sh:942
+#: big-mount/usr/lib/big-mount/lib.sh:961
 msgid "%s is still mounted at %s after being unmounted"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/lib.sh:1281
+#: big-mount/usr/lib/big-mount/lib.sh:1300
 msgid "%s is mounted at %s"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/lib.sh:1284
+#: big-mount/usr/lib/big-mount/lib.sh:1303
 msgid "%s is in use (encryption, LVM or RAID)"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/lib.sh:1298
+#: big-mount/usr/lib/big-mount/lib.sh:1317
 msgid "%s belongs to a filesystem that spans several drives"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/lib.sh:1304
+#: big-mount/usr/lib/big-mount/lib.sh:1323
 msgid "UDisks2 does not know this drive."
 msgstr ""
 

@@ -598,6 +598,7 @@ bm_drive_protect() {
    bm_helper "$verb" "$R_DEV"; rc=$?
    case "$rc" in
       0)
+         [ "$verb" = protect ] && bm_facts "$R_DEV" && bm_chosen_ro_add "${F[DISK]}" "${F[DISK]}"
          if [ "$verb" = protect ]; then printf '%s\n' $"Writing is now blocked on this device until it is disconnected."
          else printf '%s\n' $"Writing is allowed on this device again."
          fi

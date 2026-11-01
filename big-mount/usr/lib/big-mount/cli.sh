@@ -1539,7 +1539,11 @@ bm_notifier_check() {
    [ "${F[DISK_TYPE]}" = rom ] && return 0
    case "${F[FSTYPE]}" in squashfs | iso9660 | erofs | udf) return 0 ;; esac
    bm_diagnose_write "$dev"
-   case "$D_CAUSE" in ok | not-mounted | unsupported) return 0 ;; esac
+   case "$D_CAUSE" in
+      ok | not-mounted | unsupported) return 0 ;;
+      # Read-only because the person asked for it in Big-Mount
+      hw-readonly | mounted-ro) bm_chosen_ro "$dev" && return 0 ;;
+   esac
    # Another operating system mounted by big-mount (its folders belong to it):
    # nothing to fix, so no warning at every login. --diagnose still explains it.
    bm_cause_key
