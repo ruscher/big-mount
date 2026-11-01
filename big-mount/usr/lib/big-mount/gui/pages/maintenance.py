@@ -102,7 +102,7 @@ class MaintenancePage(Adw.NavigationPage):
 
     def _prepared(self, res):
         data = res.data if isinstance(res.data, dict) else None
-        if not data or not data.get("token"):
+        if not data or not data.get("token") or not data.get("eligible"):
             self.check = data or self.check
             w.clear(self.box)
             self.box.append(self._danger_panel())

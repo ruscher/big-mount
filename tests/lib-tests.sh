@@ -954,6 +954,8 @@ begin "Secure Erase from the application: a ticket, the typed name, and nothing 
    bm_er_cmd_check /dev/sda --json | python3 -I -m json.tool >/dev/null; check "the check is valid JSON, and it changes nothing" eq "$?" 0
    bm_diskseq() { REPLY="$NEXT_SEQ"; NEXT_SEQ=""; }; NEXT_SEQ=7
    check "a drive gone during the check is not offered" bash -c 'grep -q "\"eligible\":false" <<< "$1"' _ "$(bm_er_cmd_check /dev/sda --json)"
+   SEQS=(7 7 8); bm_diskseq() { REPLY="${SEQS[0]}"; SEQS=("${SEQS[@]:1}" 8); }
+   check "  ... nor one replaced during it" bash -c 'grep -q "\"eligible\":false" <<< "$1" && grep -q "\"why\":\"replaced\"" <<< "$1"' _ "$(bm_er_cmd_check /dev/sda --json)"
    exit "$FAIL"
 ) 2>&1 | sed 's/^/ /'
 er_rc="${PIPESTATUS[0]}"

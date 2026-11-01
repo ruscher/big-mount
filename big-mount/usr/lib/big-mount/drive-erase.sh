@@ -72,6 +72,12 @@ bm_er_check_json() {
    bm_display_name; name="$REPLY"
    bm_erase_table; local table="$REPLY"
    { bm_is_block "$disk" && [ -n "$seq" ]; } || eligible=0
+   # Everything above describes one drive only if no other one took the name meanwhile
+   bm_diskseq "$disk"
+   if [ "$REPLY" != "$seq" ]; then
+      eligible=0 ER_WHY=replaced ER_DETAIL=""
+      why_text=$"The drive was disconnected or replaced. Nothing was erased."
+   fi
    printf '{%s,%s,%s,"partitions":%s}\n' \
       "$(bm_jo_inner device "$disk" name "$name" confirm_name "${disk##*/}" serial "$(lsblk -dn -o SERIAL -- "$disk" 2>/dev/null)" why "$ER_WHY" why_text "$why_text" detail "$ER_DETAIL" table "$table" token "$token")" \
       "$(bm_jb eligible "$eligible" frozen "$frozen")" \
