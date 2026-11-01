@@ -655,6 +655,18 @@ class Health(Base):
         click(self.win, "Read SMART…")
         self.assertTrue(pump(lambda: any("--smart" in c for c in calls()), 3))
 
+    def test_smart_stays_with_its_drive(self):
+        self.open()
+        health = self.win.device_page.health
+        self.assertTrue(pump(lambda: health.diag is not None, 3))
+        fix("diagnose", {"device": seagate(), "advice": ["Advice for the Seagate"], "kernel": [], "volumes": [], "tools": {"smartctl": True}}, delay=0.5)
+        click(self.win, "Read SMART…")
+        self.win.show_device("serial:SD1", "health")
+        self.assertTrue(pump(lambda: not health.smart_busy, 4))
+        pump(timeout=0.3)
+        self.assertIsNone(health.diag)
+        self.assertNotIn("Advice for the Seagate", text(self.win))
+
     def test_missing_smartctl_is_explained(self):
         fix("diagnose", {"device": seagate(), "advice": [], "kernel": [], "volumes": [], "tools": {"smartctl": False}})
         self.open()

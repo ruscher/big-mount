@@ -243,7 +243,6 @@ class HealthView(Gtk.Box):
         self.smart_busy = True
         self.window.notify_text(_("Reading SMART. Through USB it can take a minute."))
         self._render()
-        dev = self.dev
 
         def done(res):
             self.smart_busy = False
@@ -252,10 +251,9 @@ class HealthView(Gtk.Box):
                 self.window.notify_text(line)
             self.window.refresh()
             self._render()
-            if isinstance(res.data, dict):
-                self.diag = res.data
-                self._render()
-        self.window.engine.diagnose(dev.device, done, smart=True)
+            # Only if it is still the drive on screen
+            self._diagnosed(res)
+        self.window.engine.diagnose(self.dev.device, done, smart=True)
 
     def _details_group(self, dev):
         group = w.Group(_("Details"))
