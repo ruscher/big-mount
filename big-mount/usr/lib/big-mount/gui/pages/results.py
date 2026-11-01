@@ -14,7 +14,6 @@ from gi.repository import Adw, Gdk, Gio, GLib, GObject, Gtk
 from .. import widgets as w
 from ..common import _, human_size
 from ..models import RESULT_CARVED
-from .rescue import write_items
 
 try:
     from gi.repository import GdkPixbuf
@@ -595,7 +594,6 @@ class ResultsPage(Adw.NavigationPage):
         dialog.select_folder(self.window, None, chosen)
 
     def _copy_to(self, names, destination):
-        items = write_items(names)
         carved = self.info.get("result_kind") == RESULT_CARVED
         kwargs = {"results_of": self.job_id} if carved else {"source": self.info.get("root", "")}
 
@@ -626,8 +624,8 @@ class ResultsPage(Adw.NavigationPage):
                         responses=(("close", _("Close")), ("other", _("Choose another folder…"))),
                         default="other", close="close", callback=answered)
                 return
-            self.window.engine.copy(started, destination=destination, items_from=items, **kwargs)
-        self.window.engine.copy(checked, destination=destination, items_from=items, dry_run=True, scan="no", **kwargs)
+            self.window.engine.copy(started, destination=destination, items=names, **kwargs)
+        self.window.engine.copy(checked, destination=destination, items=names, dry_run=True, scan="no", **kwargs)
 
     def _open_folder(self):
         root = self.info.get("root")

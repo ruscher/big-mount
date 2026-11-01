@@ -27,7 +27,7 @@ A janela não decide nada sobre discos. Toda verificação está no Shell:
 | qual disco é este alvo | `resolve ALVO` (dispositivo, pasta, `/dev/disk/by-*`, `UUID=…`; ambíguo → 20) |
 | como está | `diagnose [--smart]` |
 | o que dá para fazer, e o recomendado | `methods ALVO` |
-| para onde | `destinations --source|--device`, e o `--dry-run` de cada operação |
+| para onde | `destinations --source\|--device`, e o `--dry-run` de cada operação |
 | fazer | `mount --expect-diskseq`, `copy --items-from/--results-of`, `scan`, `carve --categories`, `image --expect-diskseq --then-carve`, `partitions [--search]` |
 | acompanhar | `jobs`, `status`, `results`, `report` |
 | apagar | `erase-check`, `erase-prepare`, `__erase-run` (ver 06) |

@@ -39,12 +39,13 @@ jobs:
           done
 
       - name: ShellCheck
+        shell: bash
         run: |
+          shopt -s extglob
           shellcheck -x -P big-mount/usr/lib/big-mount:tests \
             big-mount/usr/bin/bigmount big-mount/usr/lib/big-mount/*.sh \
             big-mount/usr/lib/big-mount/bigmount-holders big-mount/usr/lib/big-mount/bigmount-drive-helper \
-            locale/*.sh tests/stubs/* \
-            $(ls tests/*.sh | grep -v bigmount.old.sh)
+            locale/*.sh tests/stubs/* tests/!(bigmount.old).sh
 
       - name: Boot path (stubbed devices)
         run: runuser -u ci -- bash tests/run-tests.sh new

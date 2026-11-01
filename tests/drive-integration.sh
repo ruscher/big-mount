@@ -675,6 +675,17 @@ check "the map belongs to the user" eq "$(stat -c %u "$DSTMP/img/disco.img.map")
    "$B" --drive status "$id2" --json > "$WORK/image2.json"
 )
 check "cancelling reaches the root process, through the stop file" eq "$(json state < "$WORK/image2.json")" cancelled
+SF="$WORK/fail-bin"; mkdir -p "$SF"; printf '#!/bin/bash\necho "ddrescue: read error" >&2\nexit 1\n' > "$SF/ddrescue"; chmod +x "$SF/ddrescue"
+sed -e "s|^export PATH=.*|export PATH=$SF:/usr/bin:/bin:/usr/sbin:/sbin|" "$H" > "$H.fail"; chmod +x "$H.fail"
+printf '#!/bin/bash\nexec sudo -n env PKEXEC_UID=%s "%s" "$@"\n' "$EUID" "$H.fail" > "$W.fail"; chmod +x "$W.fail"
+(
+   export PATH="$SB:$PATH" BM_HELPER_CMD="$W.fail"
+   out="$("$B" --drive image --source "$d" --image "$DSTMP/img/f.img" --no-wait --json)"; id3="$(job_id <<< "$out")"
+   wait_state "$id3" completed needs-attention failed
+   "$B" --drive status "$id3" --json > "$WORK/image3.json"
+)
+check "ddrescue fails: the job says it was ddrescue, not rsync" \
+   eq "$(json reason < "$WORK/image3.json") $(json reason_text < "$WORK/image3.json")" "image-error GNU ddrescue stopped with an error. See the log."
 PATH="$SB:$PATH" "$B" --drive image --source "$d" --image "$WORK/im.img.parts/x.img" --dry-run >/dev/null 2>&1; rc=$?
 check "dry run" eq "$rc" 0
 new_img tiny 8M mkfs.ext4 -q -F -m 0 -L T_TINY; t="$REPLY"; tm="$(mnt_rw "$t")"; sudo -n chown "$EUID" "$tm"
@@ -682,6 +693,20 @@ PATH="$SB:$PATH" "$B" --drive image --source "$d" --image "$tm/x.img" --dry-run 
 umnt "$t"
 sudo -n "$H" image "$d" /etc/x.img /etc/x.map 0 /etc/stop >/dev/null 2>&1; check "the helper refuses a folder that is not the user's" eq "$?" 2
 sudo -n "$H" image "$d" "$DSTMP/img/l.img" "$DSTMP/img/l.map" 9 "$DSTMP/img/s" >/dev/null 2>&1; check "  ... and absurd retries" eq "$?" 2
+# The folder is the user's: while root works, the names become links to a file of root
+victim="$WORK/victim"; sudo -n sh -c 'umask 077; echo secret > "$1"' _ "$victim"
+SR="$WORK/race-bin"; mkdir -p "$SR"
+printf '#!/bin/bash\nfor n in "%s" "%s"; do rm -f -- "$n"; ln -s -- "%s" "$n"; done\nsleep 3\n' \
+   "$DSTMP/img/race.img" "$DSTMP/img/race.img.map" "$victim" > "$SR/ddrescue"; chmod +x "$SR/ddrescue"
+sed -e "s|^export PATH=.*|export PATH=$SR:/usr/bin:/bin:/usr/sbin:/sbin|" "$H" > "$H.race"; chmod +x "$H.race"
+sudo -n env PKEXEC_UID="$EUID" "$H.race" image "$d" "$DSTMP/img/race.img" "$DSTMP/img/race.img.map" 0 "$DSTMP/img/race.stop" >/dev/null 2>&1
+check "names swapped for links during the run: root's file keeps its owner and mode" \
+   eq "$(sudo -n stat -c '%u %a' -- "$victim")" "0 600"
+check "  ... and its content" eq "$(sudo -n cat -- "$victim")" secret
+ln -s /etc/bm-should-not-exist "$DSTMP/img/dangling.map"
+sudo -n env PKEXEC_UID="$EUID" "$H" image "$d" "$DSTMP/img/dangling.img" "$DSTMP/img/dangling.map" 0 "$DSTMP/img/s" >/dev/null 2>&1
+check "a map that is a link: refused (exit 2), nothing created through it" \
+   bash -c '[ "$1" = 2 ] && [ ! -e /etc/bm-should-not-exist ]' _ "$?"
 fi
 
 if want recovery; then

@@ -6,7 +6,7 @@
 boot (root)                        user session (never root)
 big-mount.service ── writes ──▶  /run/big-mount/status ── reads ──▶ bigmount --notifier
                                                                      ├─ notify-send (session D-Bus)
-                                                                     └─ KDialog / Zenity
+                                                                     └─ dialog.py (GTK 4, libadwaita)
 ```
 
 The boot service never opens a window or talks to a session. The session
@@ -15,7 +15,8 @@ notifier reads the status file and reacts to mount events through
 
 ## Notifications: what was measured
 
-Measured on Plasma 6.7.4 / Wayland with `dbus-monitor`:
+Measured on Plasma 6.7.4 / Wayland with `dbus-monitor` (round 4, when the
+dialogs were still KDialog):
 
 - `kdialog --passivepopup TEXT 5` sends **the same**
   `org.freedesktop.Notifications.Notify` call as `notify-send`, with
@@ -35,9 +36,9 @@ One path only, in `bm_notify` (`usr/lib/big-mount/ui.sh`):
 | --- | --- | --- |
 | information (safe to disconnect, unmounted, fixed) | `notify-send --transient` | `BM_POPUP_SECONDS` = 5 s, not kept in the history |
 | problem, possibly with buttons (read-only device, unable to unmount) | `notify-send` with `--action` | `BM_WARNING_SECONDS` = 15 s, kept in the history |
-| decision (busy device, close programs, apply a fix) | persistent KDialog/Zenity dialog | never expires |
-| no session bus, but KDialog present | `kdialog --passivepopup`, same durations, no buttons | — |
-| no desktop at all | one line on stderr | — |
+| decision (busy device, close programs, apply a fix) | persistent dialog of `dialog.py` (GTK 4, libadwaita) | never expires |
+| a problem, and `notify-send` is missing or fails (no notification server) | a dialog of `dialog.py` with the same buttons, Close the default | never expires |
+| information, and `notify-send` is missing or fails; no desktop at all | one line on stderr, control characters replaced | — |
 
 The two durations are defined once. Every notification carries
 `desktop-entry=big-mount`, so Plasma shows the Big-Mount icon and lists the
@@ -71,12 +72,22 @@ artificial 1 s wait; see 08).
 | Apply a correction (remount, become owner) | the correction | nothing on the device is changed |
 | Diagnosis | Technical details / Close | — |
 
-KDialog renders a small rich-text document built by `bm_doc_*`. Untrusted
-text (labels, file and process names) is escaped in one place. Each dialog
-opens with a plain-language summary, the technical details come after it,
-and the full paths are behind "Technical details".
+Since 2.6.0 every dialog is drawn by `usr/lib/big-mount/dialog.py` with GTK 4
+and libadwaita, like the application, on any desktop. The shell builds a small
+document with `bm_doc_*` and sends it on standard input as NUL-separated kind and
+text pairs: labels, file and process names are data, shown as plain text and
+never as markup. Each dialog opens with a plain-language summary, the technical
+details come after it, and the full paths are behind "Technical details". A
+dialog that cannot be shown (no display, run as root, GTK missing) is never an
+answer: the question goes to the terminal. `tests/gui-tests.py` and
+`tests/lib-tests.sh` cover the document, the defaults and the answers.
 
-The real `kdialog` 26.08 accepts every call form the code uses (checked on
+![Read-only device diagnosis, in the GTK dialog](images/app-dialog-read-only.png)
+
+### Before 2.6.0: KDialog and Zenity
+
+KDialog rendered the same document as rich text, with untrusted text escaped in
+one place. The real `kdialog` 26.08 accepts every call form the code uses (checked on
 the Qt offscreen platform: valid forms wait for the user, an invalid one
 exits with 1). The real `zenity` 4.2.2 has every option used. The layout was
 checked by rendering the generated HTML with Qt (`QMessageBox`, Fusion,
@@ -84,9 +95,9 @@ scale 2, light and dark palettes, English and Portuguese). That review made
 the technical name a second line under the friendly name, kept only the PID
 on one line (long text used to be cut off), and removed an empty gap.
 
-![Read-only device diagnosis (real Plasma screenshot)](images/read-only-device.png)
+![Read-only device diagnosis, KDialog (real Plasma screenshot)](images/read-only-device.png)
 
-**Verified on the real desktop (rounds 4 and 6):**
+**Verified on the real desktop (rounds 4 and 6, KDialog):**
 
 - Breeze dark (through the user's Kvantum style) and **Breeze Light** at
   100, 125, 150 and 200 %. The light theme was applied to the dialog alone
@@ -103,8 +114,9 @@ on one line (long text used to be cut off), and removed an empty gap.
   programs?" that is Cancel, in KDialog and in Zenity. A button pressed
   through AT-SPI works like a click.
 
-What remains for a person is listed in 09: hearing Orca, and the physical
-right-click in Dolphin. That click uses the same code path as above.
+What remains for a person is listed in 09: hearing Orca, the physical
+right-click in Dolphin (it uses the same code path as above), and the GTK
+dialogs of 2.6.0 in a real Plasma or GNOME session.
 
 ## Desktop files
 

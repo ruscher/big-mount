@@ -20,15 +20,16 @@ usr/lib/big-mount/
   bigmount-drive-helper             the only new privileged code (polkit)
 ```
 
-The window has no recovery logic. `tests/gui-tests.py` checks that it does not
-even import `subprocess`; it talks to `bigmount --drive ... --json` through
-`QProcess`, without blocking.
+The window has no recovery logic. It talks to `bigmount --drive ... --json` only
+through `gui/engine.py`, which runs it with `Gio.Subprocess` (a list of arguments,
+never a shell line) without blocking. `tests/gui-tests.py` checks that the code
+has no `shell=True`, no `os.system` and no other toolkit.
 
 ## 2. Nothing of this runs at boot
 
 `usr/bin/bigmount` without options never reads these files, and `cli.sh` only
 loads them when `--drive` or `--gui-drive` is asked for. `tests/drive-tests.sh`
-checks both. Python and Qt are only touched by `--gui-drive`. The automount and
+checks both. Python and GTK are only touched by `--gui-drive`. The automount and
 its policy (removable devices belong to UDisks2 and the desktop) did not change.
 
 ## 3. What was reused

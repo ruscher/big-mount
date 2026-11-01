@@ -59,7 +59,7 @@ SDDM can read `state.conf`.
 | # | Defect in the stable script | Effect |
 | --- | --- | --- |
 | R1 | `grep ^User= /var/lib/sddm/state.conf` with no readability check | as root (the boot service) it works; when a person runs `bigmount`, it prints *Permission denied* |
-| R2 | the parent disk is derived with `sed 's|[0-9].*||g'`, which cuts the name at the first digit | `sdb1` → `sdb` works, but `nvme0n1p1` → `nvme` and `mmcblk0p1` → `mmcblk`; `/sys/block/nvme/removable` does not exist, and `udisksctl info -b /dev/nvme` fails with *Error looking up object* |
+| R2 | the parent disk is derived with `sed 's\|[0-9].*\|\|g'`, which cuts the name at the first digit | `sdb1` → `sdb` works, but `nvme0n1p1` → `nvme` and `mmcblk0p1` → `mmcblk`; `/sys/block/nvme/removable` does not exist, and `udisksctl info -b /dev/nvme` fails with *Error looking up object* |
 | R3 | arguments are ignored | every `bigmount …` command, including the ones in the README of this fork (`--diagnose`, `--busy`), runs the boot mount as the user |
 
 R2 has a consequence beyond the messages. At boot, run as root, the

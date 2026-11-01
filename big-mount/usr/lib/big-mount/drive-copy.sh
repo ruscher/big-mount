@@ -417,6 +417,7 @@ bm_job_reason_text() {
       rsync-error) REPLY=$"rsync stopped with an error. See the log." ;;
       not-authorized) REPLY=$"Permission was not granted." ;;
       no-ddrescue) REPLY=$"GNU ddrescue is not installed (package ddrescue). It makes the disk image." ;;
+      image-error) REPLY=$"GNU ddrescue stopped with an error. See the log." ;;
       image-incomplete) REPLY=$"Some areas of the disk could not be read. The image holds everything that could be." ;;
       read-errors) REPLY=$"Some folders could not be read, so the list may be incomplete. See the log." ;;
       search-error) REPLY=$"PhotoRec stopped with an error. See the log." ;;

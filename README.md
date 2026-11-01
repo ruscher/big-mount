@@ -1770,10 +1770,11 @@ bash tests/measure-session.sh      # diagnosis time, notification latency, notif
 Quality checks:
 
 ```bash
+shopt -s extglob    # for tests/!(bigmount.old).sh: every suite but the original script
 shellcheck -x -P big-mount/usr/lib/big-mount:tests \
     big-mount/usr/bin/bigmount big-mount/usr/lib/big-mount/*.sh \
     big-mount/usr/lib/big-mount/bigmount-holders big-mount/usr/lib/big-mount/bigmount-drive-helper \
-    locale/*.sh tests/stubs/* $(ls tests/*.sh | grep -v bigmount.old.sh)
+    locale/*.sh tests/stubs/* tests/!(bigmount.old).sh
 ```
 
 `.github/workflows/tests.yml` runs syntax, shellcheck and every suite except

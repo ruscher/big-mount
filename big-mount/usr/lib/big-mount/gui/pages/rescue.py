@@ -4,7 +4,6 @@ not: here a refusal is shown in plain words, and the unsafe choices (the same
 physical disk, above all) have no button that overrides them."""
 
 import os
-import tempfile
 import time
 
 from gi.repository import Adw, Gio, GLib, GObject, Gtk
@@ -874,7 +873,7 @@ class RescueWizard(Adw.NavigationPage):
         engine = self.window.engine
         if plan.method == "copy":
             engine.copy(done, source=plan.mountpoint, destination=plan.dest_folder, dry_run=True,
-                        items_from=self._items_file(), on_conflict=plan.on_conflict, verify=plan.verify,
+                        items=self._items(), on_conflict=plan.on_conflict, verify=plan.verify,
                         scan=None if measure else "no")
         elif plan.method == "quick":
             engine.copy(done, source=plan.mountpoint, destination=plan.dest_folder, dry_run=True, scan="no")
@@ -884,11 +883,9 @@ class RescueWizard(Adw.NavigationPage):
         else:
             engine.carve(done, plan.target, plan.dest_folder, plan.category_arg, dry_run=True)
 
-    def _items_file(self):
-        """The selection on disk, in the runtime folder of the user, for the engine."""
-        if not self.plan.items:
-            return None
-        return write_items([i.encode("utf-8", "surrogateescape") for i in self.plan.items])
+    def _items(self):
+        """The selection, as the names the engine gets."""
+        return [i.encode("utf-8", "surrogateescape") for i in self.plan.items]
 
     def _show_dest_status(self, text, kind, error=None):
         box = self.dest_status
@@ -1046,7 +1043,7 @@ class RescueWizard(Adw.NavigationPage):
 
         engine = self.window.engine
         if plan.method == "copy":
-            engine.copy(started, source=plan.mountpoint, destination=plan.dest_folder, items_from=self._items_file(),
+            engine.copy(started, source=plan.mountpoint, destination=plan.dest_folder, items=self._items(),
                         on_conflict=plan.on_conflict, verify=plan.verify, stall=plan.stall, bwlimit=plan.bwlimit)
         elif plan.method == "quick":
             engine.scan(started, plan.mountpoint, plan.category_arg, copy_to=plan.dest_folder)
@@ -1057,18 +1054,6 @@ class RescueWizard(Adw.NavigationPage):
                          then_carve=plan.carve_folder, categories=plan.category_arg)
         else:
             engine.carve(started, plan.target, plan.dest_folder, plan.category_arg)
-
-
-def write_items(items):
-    """NUL-separated, private, for `copy --items-from`. Names as raw bytes: a name
-    from an old disk may not be valid UTF-8, and it must reach rsync as it is."""
-    folder = os.path.join(GLib.get_user_runtime_dir(), "big-mount")
-    os.makedirs(folder, mode=0o700, exist_ok=True)
-    fd, path = tempfile.mkstemp(prefix="items-", dir=folder)
-    with os.fdopen(fd, "wb") as handle:
-        for item in items:
-            handle.write(item + b"\0")
-    return path
 
 
 class PartitionsPage(Adw.NavigationPage):
@@ -1162,4 +1147,4 @@ class PartitionsPage(Adw.NavigationPage):
             self.results.append(w.label(_("The partition table is empty or unreadable. Analyzing the whole disk may find what it no longer lists.")))
 
 
-__all__ = ["RescueWizard", "PartitionsPage", "write_items", "GObject"]
+__all__ = ["RescueWizard", "PartitionsPage", "GObject"]

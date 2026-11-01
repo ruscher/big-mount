@@ -122,16 +122,38 @@ case "$verb" in
             for d in "${disks[@]}"; do [ "$name" != "$d" ] || die "the image cannot be on the disk being read"; done
          done < <(lsblk -s -n -p -r -o NAME,TYPE -- "$target" 2>/dev/null)
       fi
+      # The folders belong to the user, who can swap a name for a link at any
+      # moment: each file is opened once, here, and from then on only what was
+      # opened is used (ddrescue, chmod and chown get /proc/PID/fd/N, never the name)
+      set -o noclobber
+      open_own() {
+         if [ -e "$1" ] || [ -L "$1" ]; then
+            exec {FD}<"$1" || die "cannot open $1" 1
+         else
+            # noclobber: O_EXCL, which never follows a link
+            exec {FD}>"$1" || die "cannot create $1" 1
+         fi
+         REPLY="/proc/$$/fd/$FD"
+         [ "$(readlink -- "$REPLY")" = "$1" ] || die "$1 changed while it was opened"
+         [ -f "$REPLY" ] || die "$1 is not a file"
+         # One name only (not a hard link to another file), of the user or made here
+         case "$(stat -L -c '%h %u' -- "$REPLY")" in
+            "1 $uid" | "1 0") ;;
+            *) die "$1 is not a file of the user" ;;
+         esac
+      }
+      open_own "$file"; ofile="$REPLY"
+      open_own "$map"; omap="$REPLY"
       # Hand the files over to the user whatever happens next
-      give_back() { chown "$uid" -- "$file" "$map" 2>/dev/null; chmod 600 -- "$file" 2>/dev/null; chmod 644 -- "$map" 2>/dev/null; }
+      give_back() { chown "$uid" -- "$ofile" "$omap" 2>/dev/null; chmod 600 -- "$ofile" 2>/dev/null; chmod 644 -- "$omap" 2>/dev/null; }
       args=(--idirect --no-scrape)
       [ "$retries" -gt 0 ] && args=(--idirect "--retry-passes=$retries")
-      ddrescue "${args[@]}" -- "$dev" "$file" "$map" &
+      ddrescue "${args[@]}" -- "$dev" "$ofile" "$omap" &
       pid=$!
       trap 'kill -TERM "$pid" 2>/dev/null' TERM INT HUP
       while kill -0 "$pid" 2>/dev/null; do
          [ -e "$stop" ] && kill -TERM "$pid" 2>/dev/null
-         chmod 644 -- "$map" 2>/dev/null
+         chmod 644 -- "$omap" 2>/dev/null
          sleep 2
       done
       wait "$pid"; rc=$?

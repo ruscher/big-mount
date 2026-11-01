@@ -73,8 +73,9 @@ check "polkit: description and message translated (pt_BR form)" \
     test "$(grep -c 'xml:lang="pt_BR"' big-mount/usr/share/polkit-1/actions/org.biglinux.big-mount.policy)" -eq 4
 
 begin "no user-visible text outside the translation system"
+# Exit 1 only: a match (0) fails, and so does an error of grep (2), which prints nothing
 check "code and templates are English (no accented letters outside .po/.mo)" \
-    test -z "$(grep -rnP '[\x{00C0}-\x{024F}]' big-mount/usr/bin big-mount/usr/lib locale/templates locale/*.sh)"
+    bash -c 'LC_ALL=C.UTF-8 grep -rqP "[\x{00C0}-\x{024F}]" "$@"; [ "$?" -eq 1 ]' _ big-mount/usr/bin big-mount/usr/lib locale/templates locale/*.sh
 
 begin "language chosen at run time"
 BM=big-mount/usr/bin/bigmount

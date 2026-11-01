@@ -6,6 +6,7 @@ its own supervisor, and nothing here can kill it by closing the window."""
 import json
 import os
 import signal
+import tempfile
 
 from gi.repository import Gio, GLib
 
@@ -171,8 +172,10 @@ class Engine:
     def partitions(self, target, cb, search=False):
         self.run(["partitions", target, *(["--search"] if search else [])], cb, limit=None)
 
-    def copy(self, cb, source=None, destination="", dry_run=False, items_from=None, results_of=None,
+    def copy(self, cb, source=None, destination="", dry_run=False, items=None, results_of=None,
              on_conflict="skip", verify="basic", stall=90, bwlimit=0, scan=None):
+        """items: names (bytes) relative to the source. They go in a private file that
+        the engine reads when it starts (a job keeps its own copy), removed when it ends."""
         args = ["copy"]
         if results_of:
             args += ["--results-of", results_of]
@@ -181,12 +184,23 @@ class Engine:
         args += ["--destination", destination, "--on-conflict", on_conflict, "--verify", verify, "--stall-seconds", str(stall)]
         if bwlimit:
             args += ["--bwlimit", str(bwlimit)]
-        if items_from:
-            args += ["--items-from", items_from]
+        path = None
+        if items:
+            path = write_items(items)
+            args += ["--items-from", path]
         if scan:
             args += ["--scan", scan]
         args.append("--dry-run" if dry_run else "--no-wait")
-        self.run(args, cb, limit=None)
+
+        def done(res):
+            if path:
+                try:
+                    os.unlink(path)
+                except OSError:
+                    pass
+            if cb:
+                cb(res)
+        self.run(args, done, limit=None)
 
     def scan(self, cb, source, categories="all", copy_to="", dry_run=False):
         args = ["scan", "--source", source, "--categories", categories]
@@ -234,3 +248,15 @@ class Engine:
         if unfreeze:
             args.append("--unfreeze")
         self.run(args, cb, limit=None)
+
+
+def write_items(items):
+    """NUL-separated, private, for `copy --items-from`. Names as raw bytes: a name
+    from an old disk may not be valid UTF-8, and it must reach rsync as it is."""
+    folder = os.path.join(GLib.get_user_runtime_dir(), "big-mount")
+    os.makedirs(folder, mode=0o700, exist_ok=True)
+    fd, path = tempfile.mkstemp(prefix="items-", dir=folder)
+    with os.fdopen(fd, "wb") as handle:
+        for item in items:
+            handle.write(item + b"\0")
+    return path

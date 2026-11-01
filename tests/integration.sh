@@ -524,8 +524,14 @@ img note.img; mkfs.ext4 -q -F -L BMNOTE "$IMG/note.img"
 P_NOTE=$!; PIDS+=("$P_NOTE")
 sleep 1
 attach "$IMG/note.img" ro && mountdev "$DEV"
-sleep 3
 notes_for() { grep -c "^Read-only device: Device: $1 " "$NOTE_HOME/notes"; }
+# The notifier also reads the real drives of this computer, and a failing one is
+# slow: wait for both warnings (20 s at most) instead of a fixed time
+for _ in $(seq 40); do
+    [ "$(notes_for BMWP)" -ge 1 ] && [ "$(notes_for BMNOTE)" -ge 1 ] && break
+    sleep 0.5
+done
+sleep 1
 check "initial scan: warns about the device already mounted read-only (BMWP)" test "$(notes_for BMWP)" -eq 1
 check "hot-plugged read-only device: one notification" test "$(notes_for BMNOTE)" -eq 1
 check "the notification names the reason" grep -q "write-protected" "$NOTE_HOME/notes"

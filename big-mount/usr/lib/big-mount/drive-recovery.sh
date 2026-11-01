@@ -157,7 +157,7 @@ bm_rec_image_supervise() {
       *)
          if [ "$ctl" = cancel ]; then JS[STATE]=cancelled
          elif [ "$ctl" = pause ]; then JS[STATE]=paused
-         elif [ "$rc" -ne 0 ]; then JS[STATE]=failed JS[REASON]=rsync-error
+         elif [ "$rc" -ne 0 ]; then JS[STATE]=failed JS[REASON]=image-error
          elif [ "${MP_BAD:-0}" -gt 0 ] || [ "${MP_TODO:-0}" -gt 0 ]; then JS[STATE]=needs-attention JS[REASON]=image-incomplete
          else JS[STATE]=completed
          fi

@@ -39,8 +39,9 @@ Erase of `14`, with its own confirmations.
 Labels, models and file names can hold anything:
 
 - JSON goes through `bm_js`. Terminal output has control characters replaced.
-- The window sets `Qt.PlainText` on every label that shows them (tested with
-  `<img src=x>` as a model name).
+- Every label of the window is plain text (`use_markup=False` in `gui/widgets.py`;
+  tested with `<b>&amp;<span foreground='red'>x` as a drive and volume name), and
+  so are the dialogs of `dialog.py`.
 - Commands get arguments as separate words. Items go to rsync through
   `--files-from --from0`, so a file named `-rf` is a name.
 - Paths with a line break are refused, because the job files are line based.

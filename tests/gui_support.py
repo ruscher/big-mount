@@ -53,6 +53,12 @@ os.environ["GSETTINGS_BACKEND"] = "memory"
 
 STUB.write_text(f"""#!/bin/bash
 printf '%s\\n' "$*" >> {CALLS}
+# The selection is removed once the call ends: keep what was received, and its mode
+prev=""
+for a in "$@"; do
+   [ "$prev" = --items-from ] && cp -- "$a" "{WORK}/last-items" && stat -c %a -- "$a" > "{WORK}/last-items.mode"
+   prev="$a"
+done
 key="$2"
 for a in "$@"; do [ "$a" = --dry-run ] && key="$2-dry"; done
 d="{FIX}/$key.delay"

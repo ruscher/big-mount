@@ -76,6 +76,11 @@ def job_json(**kw):
     return base
 
 
+def leftover_items():
+    """Selections written for the engine and not removed (the runtime folder is WORK)."""
+    return sorted((WORK / "big-mount").glob("items-*"))
+
+
 def reset():
     for path in FIX.iterdir():
         path.unlink()
@@ -917,6 +922,8 @@ class Wizard(Base):
         wiz.go_next()
         self.assertTrue(pump(lambda: wiz.step == "where" and wiz.preflight is not None, 3))
         self.assertTrue(any("--items-from" in c for c in calls()))
+        self.assertEqual((WORK / "last-items").read_bytes(), b"pasta\0")
+        self.assertTrue(pump(lambda: leftover_items() == [], 3), "each check removes its selection")
 
     def test_partitions_only_reads(self):
         wiz = self.wizard_to("how", method="partitions")
@@ -1278,10 +1285,12 @@ class Results(Base):
         self.assertIn(f"--destination {DEST}", call)
         self.assertIn("--items-from", call)
         path = call.split("--items-from ", 1)[1].split(" ")[0]
-        names = pathlib.Path(path).read_bytes().split(b"\0")
+        names = (WORK / "last-items").read_bytes().split(b"\0")
         self.assertIn(b"recup_dir.1/f2.pdf", names)
         self.assertFalse([n for n in names if b"\n" in n], "a line break in a name cannot be handled safely")
-        self.assertEqual(os.stat(path).st_mode & 0o077, 0, "private")
+        self.assertEqual(int((WORK / "last-items.mode").read_text(), 8) & 0o077, 0, "private")
+        self.assertTrue(pump(lambda: not os.path.exists(path), 3), "the selection is removed once the engine has it")
+        self.assertEqual(leftover_items(), [], "the check before it left nothing behind either")
 
     def test_carved_copy_goes_through_results_of(self):
         page = self.open()
