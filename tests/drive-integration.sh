@@ -517,8 +517,10 @@ if want system; then
 begin "the running system is refused, whatever the command"
 "$B" --drive unmount / >/dev/null 2>&1; check "unmount /: exit 4" eq "$?" 4
 "$B" --drive unmount /home >/dev/null 2>&1; check "unmount /home: exit 4" eq "$?" 4
-"$B" --drive unmount /boot/efi >/dev/null 2>&1; check "unmount /boot/efi: exit 4" eq "$?" 4
-check "still mounted" findmnt -n /home
+if findmnt -n /boot/efi >/dev/null; then
+   "$B" --drive unmount /boot/efi >/dev/null 2>&1; check "unmount /boot/efi: exit 4" eq "$?" 4
+fi
+check "still mounted" findmnt -n -T /home
 fi
 
 if want tui; then
