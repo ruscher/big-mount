@@ -1273,8 +1273,9 @@ bm_cp_cmd() {
          --destination) CP_DEST="${2:-}"; shift ;;
          --item) CP_ITEMS+=("${2:-}"); shift ;;
          --items-from)
-            [ -r "${2:-}" ] || { bm_drive_badarg "--items-from ${2:-}"; return 2; }
-            mapfile -d '' -t -O "${#CP_ITEMS[@]}" CP_ITEMS < "$2"
+            bm_drive_abs "${2:-}"
+            [ -n "${2:-}" ] && [ -r "$REPLY" ] || { bm_drive_badarg "--items-from ${2:-}"; return 2; }
+            mapfile -d '' -t -O "${#CP_ITEMS[@]}" CP_ITEMS < "$REPLY"
             shift
             ;;
          --results-of) results_of="${2:-}"; shift ;;

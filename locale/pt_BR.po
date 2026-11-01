@@ -2260,60 +2260,60 @@ msgstr "espaço insuficiente"
 msgid "Home folder"
 msgstr "Pasta pessoal"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1305
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1458
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1470
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1515
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1306
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1459
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1471
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1516
 #: big-mount/usr/lib/big-mount/drive-recovery.sh:951
 msgid "There is no job '%s'."
 msgstr "Não existe a tarefa '%s'."
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1308
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1309
 msgid "Only the results of a search by content can be copied this way."
 msgstr "Só os resultados de uma busca por conteúdo podem ser copiados assim."
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1315
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1316
 #: big-mount/usr/lib/big-mount/drive-recovery.sh:521
 #: big-mount/usr/lib/big-mount/drive-recovery.sh:812
 msgid "Both --source and --destination are needed."
 msgstr "--source e --destination são necessários."
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1383
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1384
 msgid "%s files, %s to copy; %s already exist with different content."
 msgstr "%s arquivos, %s a copiar; %s já existem com conteúdo diferente."
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1406
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1407
 msgid "The copy could not be started."
 msgstr "Não foi possível iniciar a cópia."
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1411
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1542
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1412
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1543
 #: big-mount/usr/lib/big-mount/drive-recovery.sh:291
 msgid "Copy started: %s"
 msgstr "Cópia iniciada: %s"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1413
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1414
 #: big-mount/usr/lib/big-mount/drive-recovery.sh:293
 msgid "To follow it: bigmount --drive status %s --watch"
 msgstr "Para acompanhar: bigmount --drive status %s --watch"
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1444
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1445
 msgid "No copies or images yet."
 msgstr "Ainda não há cópias nem imagens."
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1478
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1479
 msgid "A search cannot be paused, only cancelled. What was found stays."
 msgstr "Uma busca não pode ser pausada, só cancelada. O que foi encontrado fica guardado."
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1498
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1499
 msgid "It is not running."
 msgstr "Ela não está em execução."
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1521
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1522
 msgid "It is already running."
 msgstr "Ela já está em execução."
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1525
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1526
 msgid "It is already complete."
 msgstr "Ela já está concluída."
 
