@@ -1104,7 +1104,7 @@ msgstr ""
 #: big-mount/usr/lib/big-mount/drive-erase.sh:201
 #: big-mount/usr/lib/big-mount/drive-erase.sh:204
 #: big-mount/usr/lib/big-mount/drive-erase.sh:221
-#: big-mount/usr/lib/big-mount/lib.sh:1297
+#: big-mount/usr/lib/big-mount/lib.sh:1295
 msgid "The drive was disconnected or replaced. Nothing was erased."
 msgstr ""
 
@@ -3460,51 +3460,51 @@ msgstr ""
 msgid "Open for reading"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/lib.sh:652
+#: big-mount/usr/lib/big-mount/lib.sh:650
 msgid "belongs to another user or to the system"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/lib.sh:655
+#: big-mount/usr/lib/big-mount/lib.sh:653
 msgid "part of the desktop session"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/lib.sh:658
+#: big-mount/usr/lib/big-mount/lib.sh:656
 msgid "a terminal: type 'cd' in it or close the tab"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/lib.sh:661
+#: big-mount/usr/lib/big-mount/lib.sh:659
 msgid "this tool"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/lib.sh:666
+#: big-mount/usr/lib/big-mount/lib.sh:664
 msgid "has a file open for writing: finish or cancel the operation in the application"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/lib.sh:931
+#: big-mount/usr/lib/big-mount/lib.sh:929
 msgid "%s is unmounted here, but %s (PID %s) still has it mounted at %s"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/lib.sh:935
+#: big-mount/usr/lib/big-mount/lib.sh:933
 msgid "%s is unmounted, but its filesystem driver is still writing to it"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/lib.sh:961
+#: big-mount/usr/lib/big-mount/lib.sh:959
 msgid "%s is still mounted at %s after being unmounted"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/lib.sh:1305
+#: big-mount/usr/lib/big-mount/lib.sh:1303
 msgid "%s is mounted at %s"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/lib.sh:1308
+#: big-mount/usr/lib/big-mount/lib.sh:1306
 msgid "%s is in use (encryption, LVM or RAID)"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/lib.sh:1322
+#: big-mount/usr/lib/big-mount/lib.sh:1320
 msgid "%s belongs to a filesystem that spans several drives"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/lib.sh:1328
+#: big-mount/usr/lib/big-mount/lib.sh:1326
 msgid "UDisks2 does not know this drive."
 msgstr ""
 

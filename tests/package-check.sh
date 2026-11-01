@@ -107,8 +107,8 @@ expect=(
     "644 usr/share/kio/servicemenus/big-mount.desktop"
     "644 usr/share/polkit-1/actions/org.biglinux.big-mount.policy"
     "644 usr/share/icons/hicolor/scalable/apps/big-mount.svg"
-    "644 usr/share/locale/pt_BR/LC_MESSAGES/big-mount.mo"
 )
+while read -r l; do expect+=("644 usr/share/locale/$l/LC_MESSAGES/big-mount.mo"); done < locale/LINGUAS
 for e in "${expect[@]}"; do
     mode="${e%% *}" f="${e#* }"
     check "$f ($mode)" bash -c '[ -f "$1/$2" ] && [ "$(stat -c %a "$1/$2")" = "$3" ]' _ "$P" "$f" "$mode"
@@ -116,8 +116,6 @@ done
 installed="$(cd "$P" && find . -type f | sed 's|^\./||' | sort)"
 check "nothing else is installed (no docs, tests, templates, scratch files)" \
     test "$installed" = "$(printf '%s\n' "${expect[@]}" | cut -d' ' -f2 | sort)"
-check "every translation in locale/LINGUAS is installed" \
-    bash -c 'while read -r l; do [ -f "$1/usr/share/locale/$l/LC_MESSAGES/big-mount.mo" ] || exit 1; done < locale/LINGUAS' _ "$P"
 
 begin "metadata"
 pkginfo="$(source pkgbuild/PKGBUILD 2>/dev/null; printf 'source=%s\n' "${source[*]}"; printf 'depends=%s\n' "${depends[*]}"; printf 'backup=%s\n' "${backup[*]}"; printf 'install=%s\n' "${install:-}"; printf 'url=%s\n' "$url")"

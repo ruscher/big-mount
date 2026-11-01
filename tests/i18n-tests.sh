@@ -83,9 +83,9 @@ help_line() { env -i PATH="$PATH" "$@" bash "$BM" --help 2>/dev/null | head -n1;
 check "LANG=C: English" test "$(help_line LANG=C)" = "Usage: bigmount [OPTION] [DEVICE|FOLDER]"
 check "LANG=en_US.UTF-8: English" test "$(help_line LANG=en_US.UTF-8)" = "Usage: bigmount [OPTION] [DEVICE|FOLDER]"
 check "LANG=pt_BR.UTF-8: Portuguese" test "$(help_line LANG=pt_BR.UTF-8)" = "Uso: bigmount [OPÇÃO] [DISPOSITIVO|PASTA]"
-check "language without translation (de_DE): English" test "$(help_line LANG=de_DE.UTF-8)" = "Usage: bigmount [OPTION] [DEVICE|FOLDER]"
-check "LANGUAGE=fr:pt_BR falls back to the next language" \
-    test "$(help_line LANG=pt_BR.UTF-8 LANGUAGE=fr:pt_BR)" = "Uso: bigmount [OPÇÃO] [DISPOSITIVO|PASTA]"
+check "language without translation (Esperanto): English" test "$(help_line LANG=pt_BR.UTF-8 LANGUAGE=eo)" = "Usage: bigmount [OPTION] [DEVICE|FOLDER]"
+check "LANGUAGE=eo:pt_BR falls back to the next language" \
+    test "$(help_line LANG=pt_BR.UTF-8 LANGUAGE=eo:pt_BR)" = "Uso: bigmount [OPÇÃO] [DISPOSITIVO|PASTA]"
 check "errors are translated too" \
     bash -c 'env -i PATH="$PATH" LANG=pt_BR.UTF-8 bash "$1" --bogus 2>&1 | grep -q "opção desconhecida"' _ "$BM"
 # bash translates $"..." while parsing a command: a text domain chosen inside
