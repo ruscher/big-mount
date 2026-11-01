@@ -47,7 +47,7 @@ bm_jo() { bm_jo_open "$@"; printf '}'; }
 bm_jn() {
    local out="" sep=""
    while [ "$#" -ge 2 ]; do
-      if [[ $2 =~ ^-?[0-9]+$ ]]; then out+="$sep\"$1\":$2"; else out+="$sep\"$1\":null"; fi
+      if [[ $2 =~ ^-?(0|[1-9][0-9]*)$ ]]; then out+="$sep\"$1\":$2"; else out+="$sep\"$1\":null"; fi
       sep=","
       shift 2
    done
