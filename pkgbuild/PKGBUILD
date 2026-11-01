@@ -7,7 +7,7 @@ pkgname=big-mount
 pkgver=$(date +%y.%m.%d)
 pkgrel=$(date +%H%M)
 arch=('any')
-license=('GPL')
+license=('GPL-3.0-or-later')
 # The boot path needs only bash, util-linux, udisks2 and ntfs-3g. The rest is the
 # desktop side: python, python-gobject, gtk4 and libadwaita (>= 1.5) draw the
 # application of --gui-drive and every dialog (--gui, --gui-remove, the notifier),
