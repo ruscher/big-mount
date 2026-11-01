@@ -352,16 +352,17 @@ bm_tui_report() {
 }
 
 bm_tui_jobs() {
-   local a
+   local a dir
    bm_job_list
    printf '\n%s\n' $"To see one, type its name. Empty: back."
    bm_tui_ask ">" || return 0
    a="$REPLY"
    [ -n "$a" ] || return 0
    bm_job_dir "$a" || return 0
-   bm_job_report_text "$REPLY"
-   bm_job_state_load "$REPLY"
-   case "${JS[STATE]}" in
+   dir="$REPLY"
+   bm_job_report_text "$dir"
+   bm_job_state_load "$dir"
+   case "${JS[STATE]:-}" in
       pending | analyzing | running | verifying | stopping)
          bm_tui_yes $"Follow its progress?" && bm_job_watch "$a" 0
          ;;

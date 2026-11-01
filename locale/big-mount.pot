@@ -3291,11 +3291,11 @@ msgstr ""
 msgid "To see one, type its name. Empty: back."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-tui.sh:366
+#: big-mount/usr/lib/big-mount/drive-tui.sh:367
 msgid "Follow its progress?"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-tui.sh:369
+#: big-mount/usr/lib/big-mount/drive-tui.sh:370
 msgid "Resume it?"
 msgstr ""
 

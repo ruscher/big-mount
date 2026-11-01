@@ -3298,11 +3298,11 @@ msgstr "Ocultar números de série, rótulos e seu nome de usuário?"
 msgid "To see one, type its name. Empty: back."
 msgstr "Para ver uma, digite o nome dela. Vazio: voltar."
 
-#: big-mount/usr/lib/big-mount/drive-tui.sh:366
+#: big-mount/usr/lib/big-mount/drive-tui.sh:367
 msgid "Follow its progress?"
 msgstr "Acompanhar o progresso?"
 
-#: big-mount/usr/lib/big-mount/drive-tui.sh:369
+#: big-mount/usr/lib/big-mount/drive-tui.sh:370
 msgid "Resume it?"
 msgstr "Retomar?"
 
