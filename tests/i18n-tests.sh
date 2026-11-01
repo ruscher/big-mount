@@ -75,7 +75,7 @@ check "polkit: description and message translated (pt_BR form)" \
 begin "no user-visible text outside the translation system"
 # Exit 1 only: a match (0) fails, and so does an error of grep (2), which prints nothing
 check "code and templates are English (no accented letters outside .po/.mo)" \
-    bash -c 'LC_ALL=C.UTF-8 grep -rqP "[\x{00C0}-\x{024F}]" "$@"; [ "$?" -eq 1 ]' _ big-mount/usr/bin big-mount/usr/lib locale/templates locale/*.sh
+    bash -c 'LC_ALL=C.UTF-8 grep -rqP --exclude-dir=__pycache__ "[\x{00C0}-\x{024F}]" "$@"; [ "$?" -eq 1 ]' _ big-mount/usr/bin big-mount/usr/lib locale/templates locale/*.sh
 
 begin "language chosen at run time"
 BM=big-mount/usr/bin/bigmount
