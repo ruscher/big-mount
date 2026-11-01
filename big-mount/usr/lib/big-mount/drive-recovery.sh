@@ -582,18 +582,26 @@ BM_REC_SCREEN_AWK='
 # partition is drawn many times by the analysis: once here.
 bm_rec_parse_partitions() {
    local re='^[[:space:]]*([0-9]+[[:space:]]+[PLED*][[:space:]]+)?([A-Za-z][^[:cntrl:]]*[^[:space:]])[[:space:]]+([0-9]+)[[:space:]]+([0-9]+)[[:space:]]+([0-9]+)[[:space:]]+([0-9]+)[[:space:]]+([0-9]+)[[:space:]]+([0-9]+)[[:space:]]+([0-9]+)([[:space:]]+\[(.*)\])?[[:space:]]*$'
-   local line key
+   # GPT: start, end and size in sectors. The header "CHS 522 255 63" has the
+   # same shape, so a row counts only when end - start + 1 is its size
+   local gpt='^[[:space:]]*([0-9]+[[:space:]]+[PLED*][[:space:]]+)?([A-Za-z][^[:cntrl:]]*[^[:space:]])[[:space:]]+([0-9]+)[[:space:]]+([0-9]+)[[:space:]]+([0-9]+)([[:space:]]+\[(.*)\])?[[:space:]]*$'
+   local line key type start sectors label
    local -A seen=()
    PT_TYPE=() PT_START=() PT_SECTORS=() PT_LABEL=()
    while IFS= read -r line; do
-      [[ $line =~ $re ]] || continue
-      key="${BASH_REMATCH[3]}/${BASH_REMATCH[4]}/${BASH_REMATCH[5]}/${BASH_REMATCH[9]}"
+      if [[ $line =~ $re ]]; then
+         type="${BASH_REMATCH[2]}" start="${BASH_REMATCH[3]}/${BASH_REMATCH[4]}/${BASH_REMATCH[5]}"
+         sectors="${BASH_REMATCH[9]}" label="${BASH_REMATCH[11]:-}"
+      elif [[ $line =~ $gpt ]] && [ $((BASH_REMATCH[4] - BASH_REMATCH[3] + 1)) -eq "${BASH_REMATCH[5]}" ]; then
+         type="${BASH_REMATCH[2]}" start="${BASH_REMATCH[3]}"
+         sectors="${BASH_REMATCH[5]}" label="${BASH_REMATCH[7]:-}"
+      else
+         continue
+      fi
+      key="$start/$sectors"
       [ -n "${seen[$key]:-}" ] && continue
       seen[$key]=1
-      PT_TYPE+=("${BASH_REMATCH[2]}")
-      PT_START+=("${BASH_REMATCH[3]}/${BASH_REMATCH[4]}/${BASH_REMATCH[5]}")
-      PT_SECTORS+=("${BASH_REMATCH[9]}")
-      PT_LABEL+=("${BASH_REMATCH[11]:-}")
+      PT_TYPE+=("$type") PT_START+=("$start") PT_SECTORS+=("$sectors") PT_LABEL+=("$label")
    done < <(LC_ALL=C awk "$BM_REC_SCREEN_AWK")
 }
 

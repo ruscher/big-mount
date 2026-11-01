@@ -575,6 +575,10 @@ check "  ... its type" eq "${PT_TYPE[0]}" Linux
 check "  ... its size in sectors" eq "${PT_SECTORS[0]}" 65536
 check "  ... its label, with spaces" eq "${PT_LABEL[0]}" "TEST LOST"
 check "  ... the list format too" eq "${PT_TYPE[1]}:${PT_SECTORS[1]}" "HPFS - NTFS:14336"
+bm_rec_parse_partitions < "$HERE/fixtures/testdisk-gpt-list.txt"
+check "TestDisk reads a GPT table" eq "${#PT_TYPE[@]}:${PT_START[0]}:${PT_SECTORS[0]}:${PT_LABEL[0]}" "4:2048:1638400:DataPart"
+bm_rec_parse_partitions < "$HERE/fixtures/testdisk-gpt-analyze.txt"
+check "  ... and its analysis" eq "${#PT_TYPE[@]}:${PT_TYPE[2]}:${PT_LABEL[3]}:${PT_SECTORS[3]}" "4:Linux filesys. data:NO NAME:1638378"
 testdisk() { :; }
 stop_helper() { printf '%s\n' "$*" > "$WORK/helper.args"; while [ ! -e "$3" ]; do sleep 0.1; done; return 143; }
 rm -f "$WORK/helper.args"

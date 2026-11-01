@@ -1848,29 +1848,29 @@ msgid "GNU ddrescue is not installed (package ddrescue). It makes the disk image
 msgstr "O GNU ddrescue não está instalado (pacote ddrescue). É ele quem faz a imagem de disco."
 
 #: big-mount/usr/lib/big-mount/drive-copy.sh:117
-#: big-mount/usr/lib/big-mount/drive-recovery.sh:845
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:853
 msgid "PhotoRec is not installed (package testdisk)."
 msgstr "O PhotoRec não está instalado (pacote testdisk)."
 
 #: big-mount/usr/lib/big-mount/drive-copy.sh:118
-#: big-mount/usr/lib/big-mount/drive-recovery.sh:613
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:621
 msgid "TestDisk is not installed (package testdisk)."
 msgstr "O TestDisk não está instalado (pacote testdisk)."
 
 #: big-mount/usr/lib/big-mount/drive-copy.sh:119
 #: big-mount/usr/lib/big-mount/drive-copy.sh:433
-#: big-mount/usr/lib/big-mount/drive-recovery.sh:668
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:676
 #: big-mount/usr/lib/big-mount/drive.sh:607
 msgid "Permission was not granted."
 msgstr "A permissão não foi concedida."
 
 #: big-mount/usr/lib/big-mount/drive-copy.sh:120
-#: big-mount/usr/lib/big-mount/drive-recovery.sh:661
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:669
 msgid "Stopped. Nothing was changed on the disk."
 msgstr "Interrompido. Nada foi alterado no disco."
 
 #: big-mount/usr/lib/big-mount/drive-copy.sh:121
-#: big-mount/usr/lib/big-mount/drive-recovery.sh:852
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:860
 msgid "This device cannot be read by your user. Make a disk image first (bigmount --drive image), and search in the image: it also spares the disk."
 msgstr "Seu usuário não consegue ler este dispositivo. Faça antes uma imagem de disco (bigmount --drive image) e busque na imagem: isso também poupa o disco."
 
@@ -2093,12 +2093,12 @@ msgid "its content could not be read"
 msgstr "seu conteúdo não pôde ser lido"
 
 #: big-mount/usr/lib/big-mount/drive-copy.sh:984
-#: big-mount/usr/lib/big-mount/drive-recovery.sh:927
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:935
 msgid "Source:"
 msgstr "Origem:"
 
 #: big-mount/usr/lib/big-mount/drive-copy.sh:984
-#: big-mount/usr/lib/big-mount/drive-recovery.sh:932
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:940
 msgid "Destination:"
 msgstr "Destino:"
 
@@ -2121,7 +2121,7 @@ msgid "average"
 msgstr "média"
 
 #: big-mount/usr/lib/big-mount/drive-copy.sh:1004
-#: big-mount/usr/lib/big-mount/drive-recovery.sh:940
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:948
 msgid "Elapsed:"
 msgstr "Decorrido:"
 
@@ -2154,7 +2154,7 @@ msgid "Source"
 msgstr "Origem"
 
 #: big-mount/usr/lib/big-mount/drive-copy.sh:1070
-#: big-mount/usr/lib/big-mount/drive-recovery.sh:954
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:962
 msgid "Destination"
 msgstr "Destino"
 
@@ -2167,7 +2167,7 @@ msgid "Data copied"
 msgstr "Dados copiados"
 
 #: big-mount/usr/lib/big-mount/drive-copy.sh:1073
-#: big-mount/usr/lib/big-mount/drive-recovery.sh:958
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:966
 msgid "Elapsed"
 msgstr "Decorrido"
 
@@ -2269,7 +2269,7 @@ msgstr "Pasta pessoal"
 #: big-mount/usr/lib/big-mount/drive-copy.sh:1461
 #: big-mount/usr/lib/big-mount/drive-copy.sh:1473
 #: big-mount/usr/lib/big-mount/drive-copy.sh:1518
-#: big-mount/usr/lib/big-mount/drive-recovery.sh:978
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:986
 msgid "There is no job '%s'."
 msgstr "Não existe a tarefa '%s'."
 
@@ -2279,7 +2279,7 @@ msgstr "Só os resultados de uma busca por conteúdo podem ser copiados assim."
 
 #: big-mount/usr/lib/big-mount/drive-copy.sh:1318
 #: big-mount/usr/lib/big-mount/drive-recovery.sh:521
-#: big-mount/usr/lib/big-mount/drive-recovery.sh:839
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:847
 msgid "Both --source and --destination are needed."
 msgstr "--source e --destination são necessários."
 
@@ -2722,92 +2722,92 @@ msgid "Word, Excel and LibreOffice files can appear among the results: they are 
 msgstr "Arquivos do Word, Excel e LibreOffice podem aparecer nos resultados: por dentro, eles são ZIP."
 
 #: big-mount/usr/lib/big-mount/drive-recovery.sh:551
-#: big-mount/usr/lib/big-mount/drive-recovery.sh:895
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:903
 msgid "Search started: %s"
 msgstr "Busca iniciada: %s"
 
-#: big-mount/usr/lib/big-mount/drive-recovery.sh:881
-#: big-mount/usr/lib/big-mount/drive-recovery.sh:920
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:889
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:928
 msgid "%s files found by content in %s. Their original names and folders could not be kept."
 msgstr "%s arquivos encontrados por conteúdo em %s. Os nomes e pastas originais não puderam ser mantidos."
 
-#: big-mount/usr/lib/big-mount/drive-recovery.sh:929
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:937
 msgid "Files listed:"
 msgstr "Arquivos listados:"
 
-#: big-mount/usr/lib/big-mount/drive-recovery.sh:930
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:938
 msgid "Files examined:"
 msgstr "Arquivos examinados:"
 
-#: big-mount/usr/lib/big-mount/drive-recovery.sh:933
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:941
 msgid "Candidates found:"
 msgstr "Candidatos encontrados:"
 
-#: big-mount/usr/lib/big-mount/drive-recovery.sh:937
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:945
 msgid "Read:"
 msgstr "Lido:"
 
-#: big-mount/usr/lib/big-mount/drive-recovery.sh:950
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:958
 msgid "Files listed"
 msgstr "Arquivos listados"
 
-#: big-mount/usr/lib/big-mount/drive-recovery.sh:951
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:959
 msgid "Files examined"
 msgstr "Arquivos examinados"
 
-#: big-mount/usr/lib/big-mount/drive-recovery.sh:952
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:960
 msgid "These files exist on the volume. Files that were deleted are not on this list."
 msgstr "Estes arquivos existem no volume. Arquivos excluídos não estão nesta lista."
 
-#: big-mount/usr/lib/big-mount/drive-recovery.sh:955
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:963
 msgid "Candidates found"
 msgstr "Candidatos encontrados"
 
-#: big-mount/usr/lib/big-mount/drive-recovery.sh:956
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:964
 msgid "Found by content: their original names and folders could not be kept, and some may be incomplete. Open them to check."
 msgstr "Encontrados por conteúdo: os nomes e pastas originais não puderam ser mantidos, e alguns podem estar incompletos. Abra para conferir."
 
-#: big-mount/usr/lib/big-mount/drive-recovery.sh:961
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:969
 msgid "Could not be read:"
 msgstr "Não puderam ser lidos:"
 
-#: big-mount/usr/lib/big-mount/drive-recovery.sh:986
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:994
 msgid "Only a list or a search has results."
 msgstr "Só uma lista ou uma busca têm resultados."
 
-#: big-mount/usr/lib/big-mount/drive-recovery.sh:1005
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:1013
 msgid "The list is not ready yet."
 msgstr "A lista ainda não está pronta."
 
-#: big-mount/usr/lib/big-mount/drive-recovery.sh:1029
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:1037
 msgid "This command only answers with --json."
 msgstr "Este comando só responde com --json."
 
-#: big-mount/usr/lib/big-mount/drive-recovery.sh:1107
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:1115
 msgid "This is a disk image: searching it does not touch any disk."
 msgstr "Isto é uma imagem de disco: procurar nela não toca em nenhum disco."
 
-#: big-mount/usr/lib/big-mount/drive-recovery.sh:1111
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:1119
 msgid "The drive reported problems. For the whole drive, a disk image reads it only once. To copy files, choose one of its volumes."
 msgstr "O disco relatou problemas. No disco inteiro, uma imagem de disco o lê uma única vez. Para copiar arquivos, escolha um dos volumes dele."
 
-#: big-mount/usr/lib/big-mount/drive-recovery.sh:1115
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:1123
 msgid "For the whole drive, files are searched by their content. To copy files, choose one of its volumes."
 msgstr "No disco inteiro, os arquivos são procurados pelo conteúdo. Para copiar arquivos, escolha um dos volumes dele."
 
-#: big-mount/usr/lib/big-mount/drive-recovery.sh:1119
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:1127
 msgid "The drive reported problems: copy what matters first, without going through everything."
 msgstr "O disco relatou problemas: copie primeiro o que importa, sem percorrer tudo."
 
-#: big-mount/usr/lib/big-mount/drive-recovery.sh:1123
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:1131
 msgid "The drive reported problems and its files cannot be opened: a disk image reads it only once, and the search is done on the image."
 msgstr "O disco relatou problemas e os arquivos não abrem: uma imagem de disco o lê uma única vez, e a busca é feita na imagem."
 
-#: big-mount/usr/lib/big-mount/drive-recovery.sh:1127
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:1135
 msgid "The files can be read normally: list them, and choose what to copy."
 msgstr "Os arquivos podem ser lidos normalmente: liste-os e escolha o que copiar."
 
-#: big-mount/usr/lib/big-mount/drive-recovery.sh:1131
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:1139
 msgid "The files cannot be opened normally: search for them by content."
 msgstr "Os arquivos não abrem normalmente: procure-os pelo conteúdo."
 
