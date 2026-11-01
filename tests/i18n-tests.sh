@@ -75,6 +75,8 @@ check "service menu: submenu and actions translated" \
     test "$(grep -c '\[pt_BR\]=' big-mount/usr/share/kio/servicemenus/big-mount.desktop)" -eq 4
 check "polkit: description and message translated (pt_BR form)" \
     test "$(grep -c 'xml:lang="pt_BR"' big-mount/usr/share/polkit-1/actions/org.biglinux.big-mount.policy)" -eq 4
+check "polkit: every language as a POSIX locale name (zh_CN, not zh-Hans-CN)" \
+    bash -c '! grep -q "xml:lang=\"[^\"]*-" "$1"' _ big-mount/usr/share/polkit-1/actions/org.biglinux.big-mount.policy
 
 begin "no user-visible text outside the translation system"
 # Exit 1 only: a match (0) fails, and so does an error of grep (2), which prints nothing

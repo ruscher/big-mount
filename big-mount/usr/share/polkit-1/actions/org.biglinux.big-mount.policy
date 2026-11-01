@@ -6,8 +6,8 @@
   <!-- Read-only: lists the processes of every user that keep one mount point busy -->
   <action id="org.biglinux.big-mount.inspect-processes">
     <description>Show the programs of all users that keep a storage device busy</description>
-    <description xml:lang="zh-Hant-TW">顯示所有使用者中讓儲存裝置處於忙碌狀態的程式</description>
-    <description xml:lang="zh-Hans-CN">显示让存储设备处于忙碌状态的所有用户的程序</description>
+    <description xml:lang="zh_TW">顯示所有使用者中讓儲存裝置處於忙碌狀態的程式</description>
+    <description xml:lang="zh_CN">显示让存储设备处于忙碌状态的所有用户的程序</description>
     <description xml:lang="uk">Показати програми всіх користувачів, що утримують пристрій зберігання зайнятим</description>
     <description xml:lang="tr">Bir depolama aygıtını meşgul eden tüm kullanıcıların programlarını göster</description>
     <description xml:lang="sv">Visa alla användares program som håller en lagringsenhet upptagen</description>
@@ -36,10 +36,10 @@
     <description xml:lang="da">Vis alle brugeres programmer, der holder en lagerenhed optaget</description>
     <description xml:lang="cs">Zobrazit programy všech uživatelů, které blokují úložné zařízení</description>
     <description xml:lang="bg">Показване на програмите на всички потребители, които държат заето устройство за съхранение</description>
-    <description xml:lang="be-Cyrl">Паказаць праграмы ўсіх карыстальнікаў, якія трымаюць прыладу захоўвання занятай</description>
+    <description xml:lang="be">Паказаць праграмы ўсіх карыстальнікаў, якія трымаюць прыладу захоўвання занятай</description>
     <message>Authentication is required to see the programs of all users that are using this device</message>
-    <message xml:lang="zh-Hant-TW">需要通過身分驗證才能查看所有使用者中正在使用此裝置的程式</message>
-    <message xml:lang="zh-Hans-CN">查看正在使用此设备的所有用户的程序需要身份验证</message>
+    <message xml:lang="zh_TW">需要通過身分驗證才能查看所有使用者中正在使用此裝置的程式</message>
+    <message xml:lang="zh_CN">查看正在使用此设备的所有用户的程序需要身份验证</message>
     <message xml:lang="uk">Щоб побачити програми всіх користувачів, які використовують цей пристрій, слід пройти розпізнавання</message>
     <message xml:lang="tr">Bu aygıtı kullanan tüm kullanıcıların programlarını görmek için kimlik doğrulama gerekir</message>
     <message xml:lang="sv">Autentisering krävs för att se alla användares program som använder den här enheten</message>
@@ -68,7 +68,7 @@
     <message xml:lang="da">Der kræves godkendelse for at se alle brugeres programmer, der bruger denne enhed</message>
     <message xml:lang="cs">Pro zobrazení programů všech uživatelů, které toto zařízení používají, je vyžadováno ověření</message>
     <message xml:lang="bg">За да видите програмите на всички потребители, които използват това устройство, е необходима идентификация</message>
-    <message xml:lang="be-Cyrl">Каб убачыць праграмы ўсіх карыстальнікаў, якія выкарыстоўваюць гэтую прыладу, патрабуецца аўтэнтыфікацыя</message>
+    <message xml:lang="be">Каб убачыць праграмы ўсіх карыстальнікаў, якія выкарыстоўваюць гэтую прыладу, патрабуецца аўтэнтыфікацыя</message>
     <icon_name>big-mount</icon_name>
     <defaults>
       <allow_any>auth_admin</allow_any>
@@ -80,8 +80,8 @@
   <!-- Blocks or allows writing on a device, reads SMART, images a disk: never changes data on it -->
   <action id="org.biglinux.big-mount.drive-helper">
     <description>Protect a storage device, read its health or make a disk image</description>
-    <description xml:lang="zh-Hant-TW">保護儲存裝置、讀取其健康狀態或製作磁碟映像檔</description>
-    <description xml:lang="zh-Hans-CN">保护存储设备、读取其健康状况或制作磁盘映像</description>
+    <description xml:lang="zh_TW">保護儲存裝置、讀取其健康狀態或製作磁碟映像檔</description>
+    <description xml:lang="zh_CN">保护存储设备、读取其健康状况或制作磁盘映像</description>
     <description xml:lang="uk">Захистити пристрій зберігання, прочитати його стан або створити образ диска</description>
     <description xml:lang="tr">Bir depolama aygıtını koru, sağlık durumunu oku ya da disk görüntüsü oluştur</description>
     <description xml:lang="sv">Skydda en lagringsenhet, läsa dess hälsa eller skapa en diskavbild</description>
@@ -110,10 +110,10 @@
     <description xml:lang="da">Beskyt en lagerenhed, læs dens tilstand, eller lav et diskaftryk</description>
     <description xml:lang="cs">Chránit úložné zařízení, číst jeho stav zdraví nebo vytvořit obraz disku</description>
     <description xml:lang="bg">Защита на устройство за съхранение, прочитане на състоянието му или създаване на образ на диск</description>
-    <description xml:lang="be-Cyrl">Абараніць прыладу захоўвання, прачытаць звесткі пра яе здароўе або стварыць вобраз дыска</description>
+    <description xml:lang="be">Абараніць прыладу захоўвання, прачытаць звесткі пра яе здароўе або стварыць вобраз дыска</description>
     <message>Authentication is required to protect this storage device, read its health or make a disk image</message>
-    <message xml:lang="zh-Hant-TW">需要通過身分驗證才能保護此儲存裝置、讀取其健康狀態或製作磁碟映像檔</message>
-    <message xml:lang="zh-Hans-CN">保护此存储设备、读取其健康状况或制作磁盘映像需要身份验证</message>
+    <message xml:lang="zh_TW">需要通過身分驗證才能保護此儲存裝置、讀取其健康狀態或製作磁碟映像檔</message>
+    <message xml:lang="zh_CN">保护此存储设备、读取其健康状况或制作磁盘映像需要身份验证</message>
     <message xml:lang="uk">Щоб захистити цей пристрій зберігання, прочитати його стан або створити образ диска, слід пройти розпізнавання</message>
     <message xml:lang="tr">Bu depolama aygıtını korumak, sağlık durumunu okumak ya da disk görüntüsü oluşturmak için kimlik doğrulama gerekir</message>
     <message xml:lang="sv">Autentisering krävs för att skydda den här lagringsenheten, läsa dess hälsa eller skapa en diskavbild</message>
@@ -142,7 +142,7 @@
     <message xml:lang="da">Der kræves godkendelse for at beskytte denne lagerenhed, læse dens tilstand eller lave et diskaftryk</message>
     <message xml:lang="cs">Pro ochranu tohoto úložného zařízení, čtení jeho stavu zdraví nebo vytvoření obrazu disku je vyžadováno ověření</message>
     <message xml:lang="bg">За да защитите това устройство за съхранение, да прочетете състоянието му или да създадете образ на диск, е необходима идентификация</message>
-    <message xml:lang="be-Cyrl">Каб абараніць гэтую прыладу захоўвання, прачытаць звесткі пра яе здароўе або стварыць вобраз дыска, патрабуецца аўтэнтыфікацыя</message>
+    <message xml:lang="be">Каб абараніць гэтую прыладу захоўвання, прачытаць звесткі пра яе здароўе або стварыць вобраз дыска, патрабуецца аўтэнтыфікацыя</message>
     <icon_name>big-mount</icon_name>
     <defaults>
       <allow_any>auth_admin</allow_any>
