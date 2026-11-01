@@ -22,9 +22,9 @@ without `..`, which must be a block device.
 
 `image` writes as root, so it only writes into a real folder (no symlink in the
 path) owned by the user who asked, and to files that are not links and belong to
-that user or to root (an earlier run). It refuses a file on the disk being read,
-and hands the files to the user at the end. The user cannot signal a root process,
-so `cancel` creates a stop file that the helper watches.
+that user; files it creates are handed to the user before `ddrescue` starts. It
+refuses a file on the disk being read. The user cannot signal a root process, so
+`cancel` creates a stop file that the helper watches.
 
 The folder is the user's, so a name could be swapped for a link while root works.
 The image, the map and `MAP.bak` are therefore opened once (a new file with

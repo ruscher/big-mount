@@ -114,8 +114,7 @@ case "$verb" in
       for p in "$file" "$map"; do
          if [ -e "$p" ]; then
             [ -f "$p" ] || die "$p is not a file"
-            owner="$(stat -c %u -- "$p")"
-            [ "$owner" = "$uid" ] || [ "$owner" = 0 ] || die "$p belongs to someone else"
+            [ "$(stat -c %u -- "$p")" = "$uid" ] || die "$p belongs to someone else"
          fi
       done
       # Never onto the disk that is being read
@@ -129,21 +128,22 @@ case "$verb" in
       # moment: each file is opened once, here, and from then on only what was
       # opened is used (ddrescue, chmod and chown get /proc/PID/fd/N, never the name)
       set -o noclobber
+      # An existing file must be the user's; one created here is root's
+      # until it is handed over, right after the three are open
       open_own() {
+         local owner="$uid"
          if [ -e "$1" ] || [ -L "$1" ]; then
             exec {FD}<"$1" || die "cannot open $1" 1
          else
             # noclobber: O_EXCL, which never follows a link
             exec {FD}>"$1" || die "cannot create $1" 1
+            owner=0
          fi
          REPLY="/proc/$$/fd/$FD"
          [ "$(readlink -- "$REPLY")" = "$1" ] || die "$1 changed while it was opened"
          [ -f "$REPLY" ] || die "$1 is not a file"
-         # One name only (not a hard link to another file), of the user or made here
-         case "$(stat -L -c '%h %u' -- "$REPLY")" in
-            "1 $uid" | "1 0") ;;
-            *) die "$1 is not a file of the user" ;;
-         esac
+         # One name only: not a hard link to another file
+         [ "$(stat -L -c '%h %u' -- "$REPLY")" = "1 $owner" ] || die "$1 is not a file of the user"
       }
       open_own "$file"; ofile="$REPLY"
       open_own "$map"; omap="$REPLY"
@@ -151,6 +151,9 @@ case "$verb" in
       # Three different files, whatever names led to them
       ids="$(stat -L -c '%d:%i' -- "$ofile" "$omap" "$obak" | sort -u | wc -l)"
       [ "$ids" = 3 ] || die "the image and its map must be different files"
+      # Handed over before ddrescue starts: a run killed later leaves files the
+      # user can resume
+      chown "$uid" -- "$ofile" "$omap" "$obak" && chmod 600 -- "$ofile" || die "cannot hand the files over" 1
       # ddrescue renames and creates files next to its map (MAP.bak, kept in case
       # a save is cut): it works on a copy in a folder of root, and that copy goes
       # to the user's map through what was opened above
@@ -176,11 +179,6 @@ case "$verb" in
          fi
          { cat -- "$work/snap" >| "$omap" && sync -- "$omap"; } || return 1
       }
-      # Hand the files over to the user whatever happens next
-      give_back() {
-         chown "$uid" -- "$ofile" "$omap" "$obak" 2>/dev/null
-         chmod 600 -- "$ofile" 2>/dev/null; chmod 644 -- "$omap" "$obak" 2>/dev/null
-      }
       args=(--idirect --no-scrape)
       [ "$retries" -gt 0 ] && args=(--idirect "--retry-passes=$retries")
       ddrescue "${args[@]}" -- "$dev" "$ofile" "$work/map" &
@@ -189,7 +187,6 @@ case "$verb" in
       while kill -0 "$pid" 2>/dev/null; do
          [ -e "$stop" ] && kill -TERM "$pid" 2>/dev/null
          mirror
-         chmod 644 -- "$omap" 2>/dev/null
          sleep 2
       done
       wait "$pid"; rc=$?
@@ -197,7 +194,6 @@ case "$verb" in
          printf 'bigmount-drive-helper: the map could not be saved to %s\n' "$map" >&2
          [ "$rc" -ne 0 ] || rc=1
       fi
-      give_back
       exit "$rc"
       ;;
    *) die "unknown command" ;;
