@@ -952,6 +952,8 @@ begin "Secure Erase from the application: a ticket, the typed name, and nothing 
    check "typed and confirmed: erased with the table of this computer" eq "$rc:$(grep -c '"ok":true' "$WORK/er.json")" "0:1"
    bm_er_cmd_run "$T" --typed sda >/dev/null; check "  ... a ticket works once" eq "$?" 20
    bm_er_cmd_check /dev/sda --json | python3 -I -m json.tool >/dev/null; check "the check is valid JSON, and it changes nothing" eq "$?" 0
+   bm_diskseq() { REPLY="$NEXT_SEQ"; NEXT_SEQ=""; }; NEXT_SEQ=7
+   check "a drive gone during the check is not offered" bash -c 'grep -q "\"eligible\":false" <<< "$1"' _ "$(bm_er_cmd_check /dev/sda --json)"
    exit "$FAIL"
 ) 2>&1 | sed 's/^/ /'
 er_rc="${PIPESTATUS[0]}"

@@ -63,13 +63,15 @@ bm_er_facts() {
 
 bm_er_check_json() {
    local disk="$1" token="${2:-}" eligible=0 why_text="" frozen=0 seq name
+   # Read first: the window binds the erase to this number, so a drive that
+   # went away during the checks is never offered
+   bm_diskseq "$disk"; seq="$REPLY"
    if bm_erase_check "$disk"; then eligible=1; else bm_erase_refusal; why_text="$REPLY"; fi
    bm_udev_props "$disk"
    [ "${UP[ID_ATA_FEATURE_SET_SECURITY_FROZEN]:-0}" = 1 ] && frozen=1
-   bm_diskseq "$disk"; seq="$REPLY"
    bm_display_name; name="$REPLY"
    bm_erase_table; local table="$REPLY"
-   bm_is_block "$disk" || eligible=0
+   { bm_is_block "$disk" && [ -n "$seq" ]; } || eligible=0
    printf '{%s,%s,%s,"partitions":%s}\n' \
       "$(bm_jo_inner device "$disk" name "$name" confirm_name "${disk##*/}" serial "$(lsblk -dn -o SERIAL -- "$disk" 2>/dev/null)" why "$ER_WHY" why_text "$why_text" detail "$ER_DETAIL" table "$table" token "$token")" \
       "$(bm_jb eligible "$eligible" frozen "$frozen")" \
