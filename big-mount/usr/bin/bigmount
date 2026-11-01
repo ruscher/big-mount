@@ -88,10 +88,15 @@ if [ -z "$DRY_RUN" ] && [ "$EUID" -ne 0 ]; then # root-check
 fi
 
 if [ -z "$DRY_RUN" ]; then
+   # 0600: flock works on a read-only descriptor, so a lock others can open
+   # lets any user hold back every run
+   old_umask="$(umask)"
+   umask 077
    if ! { exec 9>/run/lock/big-mount.lock; } 2>/dev/null; then
       err $"cannot open the lock file /run/lock/big-mount.lock, giving up"
       exit 1
    fi
+   umask "$old_umask"
    if ! flock -w 60 9; then
       err $"another bigmount is still running, giving up"
       exit 1

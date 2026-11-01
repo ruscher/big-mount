@@ -20,75 +20,75 @@ msgstr ""
 msgid "To check the installation:    bigmount --doctor"
 msgstr ""
 
-#: big-mount/usr/bin/bigmount:92
+#: big-mount/usr/bin/bigmount:96
 msgid "cannot open the lock file /run/lock/big-mount.lock, giving up"
 msgstr ""
 
-#: big-mount/usr/bin/bigmount:96
+#: big-mount/usr/bin/bigmount:101
 msgid "another bigmount is still running, giving up"
 msgstr ""
 
-#: big-mount/usr/bin/bigmount:138
+#: big-mount/usr/bin/bigmount:143
 msgid "last login '%s' is not a known account, ignoring it"
 msgstr ""
 
-#: big-mount/usr/bin/bigmount:159
+#: big-mount/usr/bin/bigmount:164
 msgid "/etc/big-mount.conf: unknown value '%s', using shared"
 msgstr ""
 
-#: big-mount/usr/bin/bigmount:278
+#: big-mount/usr/bin/bigmount:283
 msgid "%s: skipped, %s is not a filesystem"
 msgstr ""
 
-#: big-mount/usr/bin/bigmount:284
+#: big-mount/usr/bin/bigmount:289
 msgid "%s: skipped, virtual device"
 msgstr ""
 
-#: big-mount/usr/bin/bigmount:291
+#: big-mount/usr/bin/bigmount:296
 msgid "%s: skipped, already mounted"
 msgstr ""
 
-#: big-mount/usr/bin/bigmount:327
+#: big-mount/usr/bin/bigmount:332
 msgid "waiting for udev to finish processing %s"
 msgstr ""
 
-#: big-mount/usr/bin/bigmount:377
+#: big-mount/usr/bin/bigmount:382
 msgid "%s: udev has no information about it yet, not mounting"
 msgstr ""
 
-#: big-mount/usr/bin/bigmount:381
+#: big-mount/usr/bin/bigmount:386
 msgid "%s: skipped, hidden by udev/UDisks (UDISKS_IGNORE)"
 msgstr ""
 
-#: big-mount/usr/bin/bigmount:389
+#: big-mount/usr/bin/bigmount:394
 msgid "%s: left to UDisks, external device (%s)"
 msgstr ""
 
-#: big-mount/usr/bin/bigmount:395
+#: big-mount/usr/bin/bigmount:400
 msgid "%s: skipped, listed in /etc/fstab"
 msgstr ""
 
-#: big-mount/usr/bin/bigmount:447
+#: big-mount/usr/bin/bigmount:452
 msgid "%s: device changed during the scan, not mounting"
 msgstr ""
 
-#: big-mount/usr/bin/bigmount:473
+#: big-mount/usr/bin/bigmount:478
 msgid "%s: NTFS refused read-write mount (%s), retrying read-only"
 msgstr ""
 
-#: big-mount/usr/bin/bigmount:490
+#: big-mount/usr/bin/bigmount:495
 msgid "%s: mount of %s on %s failed (exit %s)"
 msgstr ""
 
-#: big-mount/usr/bin/bigmount:511
+#: big-mount/usr/bin/bigmount:516
 msgid "%s: the driver mounted %s read-only on its own (%s)"
 msgstr ""
 
-#: big-mount/usr/bin/bigmount:518
+#: big-mount/usr/bin/bigmount:523
 msgid "%s: would be mounted %s on %s (%s)"
 msgstr ""
 
-#: big-mount/usr/bin/bigmount:520
+#: big-mount/usr/bin/bigmount:525
 msgid "%s: mounted %s on %s (%s)"
 msgstr ""
 
