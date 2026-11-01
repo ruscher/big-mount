@@ -46,17 +46,15 @@ bm_version_info() {
 }
 
 bm_cmd_version() {
-   local l_pkg=$"package:" l_rev=$"revision:" l_src=$"source:" w
+   local l_pkg=$"package:" l_rev=$"revision:" l_src=$"source:" w=0 l
    bm_version_info
-   # Labels are aligned by characters (translations have accents)
-   w="${#l_pkg}"
-   [ "${#l_rev}" -gt "$w" ] && w="${#l_rev}"
-   [ "${#l_src}" -gt "$w" ] && w="${#l_src}"
+   # Labels are aligned by terminal columns (accents, CJK)
+   for l in "$l_pkg" "$l_rev" "$l_src"; do bm_width "$l"; [ "$REPLY" -gt "$w" ] && w="$REPLY"; done
    printf 'Big-Mount %s\n' "$BM_VERSION"
-   [ -n "$V_PKG" ] && { bm_pad "$l_pkg" "$w"; printf '  %s %s\n' "$REPLY" "$V_PKG"; }
+   [ -n "$V_PKG" ] && { bm_fill "$l_pkg" "$w"; printf '  %s %s\n' "$REPLY" "$V_PKG"; }
    [ -n "$V_REVISION" ] || V_REVISION=$"unknown"
-   bm_pad "$l_rev" "$w"; printf '  %s %s\n' "$REPLY" "$V_REVISION${V_DATE:+ ($V_DATE)}"
-   [ -n "$V_SOURCE" ] && { bm_pad "$l_src" "$w"; printf '  %s %s\n' "$REPLY" "$V_SOURCE"; }
+   bm_fill "$l_rev" "$w"; printf '  %s %s\n' "$REPLY" "$V_REVISION${V_DATE:+ ($V_DATE)}"
+   [ -n "$V_SOURCE" ] && { bm_fill "$l_src" "$w"; printf '  %s %s\n' "$REPLY" "$V_SOURCE"; }
    return 0
 }
 

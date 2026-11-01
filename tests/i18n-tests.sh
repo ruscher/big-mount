@@ -105,6 +105,7 @@ check "--version: translated labels aligned by characters, not bytes" env LC_ALL
     cols="$(env -i PATH="$PATH" LANG=pt_BR.UTF-8 bash "$1" --version | tail -n +2 | while IFS= read -r l; do
         [[ $l =~ ^([^:]*:\ +) ]] && echo "${#BASH_REMATCH[1]}"; done | sort -u | wc -l)"
     [ "$cols" -eq 1 ]' _ "$BM"
+check "--version: Japanese labels kept whole" bash -c 'env -i PATH="$PATH" LC_ALL=pt_BR.UTF-8 LANGUAGE=ja bash "$1" --version | grep -q "リビジョン:"' _ "$BM"
 check "--doctor translated" bash -c 'env -i PATH="$PATH" LANG=pt_BR.UTF-8 HOME="$HOME" bash "$1" --doctor 2>/dev/null | grep -q "^Resultado: "' _ "$BM"
 
 # A translation that lacks one message: that one stays English, the rest is translated
