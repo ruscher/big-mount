@@ -109,6 +109,8 @@ case "$verb" in
          [ "$(readlink -f -- "$parent")" = "$parent" ] && [ "$(stat -c %u -- "$parent")" = "$uid" ] || die "$parent is not a folder of the user"
          [ ! -L "$p" ] || die "$p is a link"
       done
+      # The map is written over: never over the image
+      [ "$file" != "$map" ] && [ "$file" != "$map.bak" ] || die "the image and its map must be different files"
       for p in "$file" "$map"; do
          if [ -e "$p" ]; then
             [ -f "$p" ] || die "$p is not a file"
@@ -146,6 +148,9 @@ case "$verb" in
       open_own "$file"; ofile="$REPLY"
       open_own "$map"; omap="$REPLY"
       open_own "$map.bak"; obak="$REPLY"
+      # Three different files, whatever names led to them
+      ids="$(stat -L -c '%d:%i' -- "$ofile" "$omap" "$obak" | sort -u | wc -l)"
+      [ "$ids" = 3 ] || die "the image and its map must be different files"
       # ddrescue renames and creates files next to its map (MAP.bak, kept in case
       # a save is cut): it works on a copy in a folder of root, and that copy goes
       # to the user's map through what was opened above
@@ -154,19 +159,22 @@ case "$verb" in
       # A whole map: it ends with a line break, has the status line and ends with a block
       whole_map() {
          [ -s "$1" ] && [ "$(tail -c 1 -- "$1" | wc -l)" = 1 ] &&
-            grep -qE '^0x[0-9A-Fa-f]+[[:space:]]+[-?*/+FGRB]([[:space:]]+[0-9]+)?[[:space:]]*$' -- "$1" &&
+            grep -qE '^0x[0-9A-Fa-f]+[[:space:]]+[-?*%/+FG]([[:space:]]+[0-9]+)?[[:space:]]*$' -- "$1" &&
             [[ $(tail -n 1 -- "$1") =~ ^0x[0-9A-Fa-f]+[[:space:]]+0x[0-9A-Fa-f]+[[:space:]]+[-?*/+][[:space:]]*$ ]]
       }
       # Resuming: from the map, or from its backup when the map was cut
       if whole_map "$omap"; then cat -- "$omap" > "$work/map"
       elif whole_map "$obak"; then cat -- "$obak" > "$work/map"
       fi
-      # The previous map goes to MAP.bak before the map is overwritten, as ddrescue does
+      # The previous map goes to MAP.bak before the map is overwritten, as ddrescue
+      # does. 1: the map could not be saved (MAP.bak, when written, holds the one before)
       mirror() {
          cp -- "$work/map" "$work/snap" 2>/dev/null && whole_map "$work/snap" || return 0
          cmp -s -- "$work/snap" "$omap" && return 0
-         if whole_map "$omap"; then cat -- "$omap" >| "$obak" && sync -- "$obak"; fi
-         cat -- "$work/snap" >| "$omap" && sync -- "$omap"
+         if whole_map "$omap"; then
+            { cat -- "$omap" >| "$obak" && sync -- "$obak"; } || return 1
+         fi
+         { cat -- "$work/snap" >| "$omap" && sync -- "$omap"; } || return 1
       }
       # Hand the files over to the user whatever happens next
       give_back() {
@@ -185,7 +193,10 @@ case "$verb" in
          sleep 2
       done
       wait "$pid"; rc=$?
-      mirror
+      if ! mirror; then
+         printf 'bigmount-drive-helper: the map could not be saved to %s\n' "$map" >&2
+         [ "$rc" -ne 0 ] || rc=1
+      fi
       give_back
       exit "$rc"
       ;;

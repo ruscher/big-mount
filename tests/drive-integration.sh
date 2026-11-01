@@ -715,6 +715,27 @@ sudo -n env PKEXEC_UID="$EUID" "$H.seen" image "$d" "$DSTMP/img/cut.img" "$DSTMP
 check "a map that was cut: ddrescue resumes from MAP.bak" cmp -s "$WORK/seen-map" "$DSTMP/img/cut.img.map.bak"
 check "  ... and the map is whole again, the user's" \
    bash -c 'cmp -s "$1" "$2" && [ "$(stat -c %u "$1")" = "$3" ]' _ "$DSTMP/img/cut.img.map" "$DSTMP/img/cut.img.map.bak" "$EUID"
+# While sweeping, ddrescue writes % as the status: a whole map too
+printf '# Mapfile\n0x00300000     %%               1\n0x00000000  0x00300000  +\n0x00300000  0x01D00000  ?\n' > "$DSTMP/img/sweep.img.map"
+: > "$DSTMP/img/sweep.img"; rm -f "$WORK/seen-map"
+sudo -n env PKEXEC_UID="$EUID" "$H.seen" image "$d" "$DSTMP/img/sweep.img" "$DSTMP/img/sweep.img.map" 0 "$DSTMP/img/sweep.stop" >/dev/null 2>&1
+check "a map saved while sweeping (%) is resumed" cmp -s "$WORK/seen-map" "$DSTMP/img/sweep.img.map"
+# The image named as its own map: refused before anything is written
+printf 'keep' > "$DSTMP/img/same.img"
+sudo -n env PKEXEC_UID="$EUID" "$H.seen" image "$d" "$DSTMP/img/same.img" "$DSTMP/img/same.img" 0 "$DSTMP/img/same.stop" >/dev/null 2>&1
+check "the image as its own map: refused (exit 2), the image untouched" \
+   bash -c '[ "$1" = 2 ] && [ "$(cat "$2")" = keep ]' _ "$?" "$DSTMP/img/same.img"
+# The map cannot be saved at the end (made immutable): a failure, and MAP.bak keeps the one before
+SL="$WORK/lock-bin"; mkdir -p "$SL"
+printf '#!/bin/bash\nprintf "# Mapfile\\n0x02000000     +               1\\n0x00000000  0x02000000  +\\n" > "${@: -1}"\nchattr +i -- "%s"\n' \
+   "$DSTMP/img/lock.img.map" > "$SL/ddrescue"; chmod +x "$SL/ddrescue"
+sed -e "s|^export PATH=.*|export PATH=$SL:/usr/bin:/bin:/usr/sbin:/sbin|" "$H" > "$H.lock"; chmod +x "$H.lock"
+printf '# Mapfile\n0x00100000     ?               1\n0x00000000  0x00100000  +\n0x00100000  0x01F00000  ?\n' > "$DSTMP/img/lock.img.map"
+cp "$DSTMP/img/lock.img.map" "$WORK/lock.before"; : > "$DSTMP/img/lock.img"
+sudo -n env PKEXEC_UID="$EUID" "$H.lock" image "$d" "$DSTMP/img/lock.img" "$DSTMP/img/lock.img.map" 0 "$DSTMP/img/lock.stop" >"$WORK/lock.out" 2>&1; rc=$?
+sudo -n chattr -i -- "$DSTMP/img/lock.img.map"
+check "the map could not be saved: the helper fails (got $rc)" bash -c '[ "$1" -ne 0 ] && grep -q "map could not be saved" "$2"' _ "$rc" "$WORK/lock.out"
+check "  ... and MAP.bak holds the map before" cmp -s "$WORK/lock.before" "$DSTMP/img/lock.img.map.bak"
 ln -s /etc/bm-should-not-exist "$DSTMP/img/dangling.map"
 sudo -n env PKEXEC_UID="$EUID" "$H" image "$d" "$DSTMP/img/dangling.img" "$DSTMP/img/dangling.map" 0 "$DSTMP/img/s" >/dev/null 2>&1
 check "a map that is a link: refused (exit 2), nothing created through it" \
