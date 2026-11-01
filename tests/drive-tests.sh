@@ -541,8 +541,8 @@ check "  ... replaced with --replace" bash -c '[ "$1" = 0 ] && ! grep -qx old "$
 mkdir -p "$WORK/rdir"; run_b --drive report 20261030-140000-abcd --output "$WORK/rdir" --replace >/dev/null 2>&1
 check "  ... never into a folder" eq "$?:$(find "$WORK/rdir" -mindepth 1 | wc -l)" "20:0"
 for c in "unmount --dry-run" "safe-remove --dry-run" busy close-apps; do
-   # shellcheck disable=SC2086  # the command and its option
-   (cd "$WORK" && run_b --drive $c --json >/dev/null 2>&1); check "${c%% *} without a target: exit 2" eq "$?" 2
+   read -r -a args <<< "$c"
+   (cd "$WORK" && run_b --drive "${args[@]}" --json >/dev/null 2>&1); check "${c%% *} without a target: exit 2" eq "$?" 2
 done
 run_b --drive </dev/null >/dev/null 2>&1; check "the interactive manager without a terminal: exit 2" eq "$?" 2
 out="$(NO_COLOR=1 run_b --drive --help | grep -c $'\033')"; check "NO_COLOR: no escape sequences" eq "$out" 0

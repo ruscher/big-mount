@@ -547,15 +547,13 @@ bm_access_label() {
 }
 
 bm_proc_state() {
-   local stat rest
+   local stat fields
    REPLY="" PROC_START=""
    # The process may end at any moment: that is not an error
    { read -r stat < "/proc/$1/stat"; } 2>/dev/null || return 1
-   rest="${stat##*) }"
-   # shellcheck disable=SC2086
-   set -- $rest
-   REPLY="$1"
-   PROC_START="${20:-}"
+   read -r -a fields <<< "${stat##*) }"
+   REPLY="${fields[0]:-}"
+   PROC_START="${fields[19]:-}"
 }
 
 # bm_holders MOUNTPOINT [LSOF_OUTPUT_FILE]: processes using the filesystem
