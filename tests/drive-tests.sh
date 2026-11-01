@@ -419,6 +419,8 @@ check "no space is noticed" eq "$BM_NOSPACE" 1
 check "the file is named, relative" test -n "${BM_FAILED[video.mkv]:-}"
 out="$(printf 'a\033]0;x\007b\xc2\x9bc\n' | bm_printable_lines)"
 check "listed names lose control characters" eq "$out" "  a]0;xbc"
+out="$(printf 'not read\tPhotos/a.jpg\n' | bm_printable_lines)"
+check "  ... and keep the reason apart" eq "$out" "  not read  Photos/a.jpg"
 bm_job_out_line 'rsync: [sender] send_files failed to open "/src/segredo": Permission denied (13)'
 check "no permission" eq "${BM_FAILED[segredo]:-}" "Permission denied"
 bm_job_out_line 'rsync error: some files/attrs were not transferred (see previous errors) (code 23)'

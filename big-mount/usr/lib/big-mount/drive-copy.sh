@@ -418,7 +418,7 @@ bm_job_state_label() {
 
 # File names in a list for the terminal, indented: control characters from a
 # name could otherwise move the cursor or retitle the terminal
-bm_printable_lines() { LC_ALL=C.UTF-8 sed 's/[[:cntrl:]]//g; s/^/  /'; }
+bm_printable_lines() { LC_ALL=C.UTF-8 sed 's/\t/  /g; s/[[:cntrl:]]//g; s/^/  /'; }
 
 bm_job_reason_text() {
    case "$1" in
