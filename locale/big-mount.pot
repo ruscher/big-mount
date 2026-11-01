@@ -3820,28 +3820,29 @@ msgstr ""
 msgid "This device was not found."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/window.py:385
-#: big-mount/usr/lib/big-mount/gui/window.py:392
+#: big-mount/usr/lib/big-mount/gui/window.py:323
+#: big-mount/usr/lib/big-mount/gui/window.py:401
+#: big-mount/usr/lib/big-mount/gui/window.py:408
 msgid "A drive is being erased"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/window.py:393
+#: big-mount/usr/lib/big-mount/gui/window.py:409
 msgid "Do not turn off the computer or disconnect the drive. This window can be closed when it ends."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/window.py:401
+#: big-mount/usr/lib/big-mount/gui/window.py:417
 msgid "It keeps working"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/window.py:402
+#: big-mount/usr/lib/big-mount/gui/window.py:418
 msgid "The work continues in the background, also with this window closed. Open Big-Mount again to follow it."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/window.py:403
+#: big-mount/usr/lib/big-mount/gui/window.py:419
 msgid "Stay here"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/window.py:403
+#: big-mount/usr/lib/big-mount/gui/window.py:419
 msgid "Close the window"
 msgstr ""
 

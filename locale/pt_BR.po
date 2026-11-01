@@ -3830,28 +3830,29 @@ msgstr "Escolha um disco para ver como ele está."
 msgid "This device was not found."
 msgstr "Este dispositivo não foi encontrado."
 
-#: big-mount/usr/lib/big-mount/gui/window.py:385
-#: big-mount/usr/lib/big-mount/gui/window.py:392
+#: big-mount/usr/lib/big-mount/gui/window.py:323
+#: big-mount/usr/lib/big-mount/gui/window.py:401
+#: big-mount/usr/lib/big-mount/gui/window.py:408
 msgid "A drive is being erased"
 msgstr "Um disco está sendo apagado"
 
-#: big-mount/usr/lib/big-mount/gui/window.py:393
+#: big-mount/usr/lib/big-mount/gui/window.py:409
 msgid "Do not turn off the computer or disconnect the drive. This window can be closed when it ends."
 msgstr "Não desligue o computador nem desconecte o disco. Esta janela pode ser fechada quando terminar."
 
-#: big-mount/usr/lib/big-mount/gui/window.py:401
+#: big-mount/usr/lib/big-mount/gui/window.py:417
 msgid "It keeps working"
 msgstr "Ele continua trabalhando"
 
-#: big-mount/usr/lib/big-mount/gui/window.py:402
+#: big-mount/usr/lib/big-mount/gui/window.py:418
 msgid "The work continues in the background, also with this window closed. Open Big-Mount again to follow it."
 msgstr "O trabalho continua em segundo plano, mesmo com esta janela fechada. Abra o Big-Mount de novo para acompanhar."
 
-#: big-mount/usr/lib/big-mount/gui/window.py:403
+#: big-mount/usr/lib/big-mount/gui/window.py:419
 msgid "Stay here"
 msgstr "Ficar aqui"
 
-#: big-mount/usr/lib/big-mount/gui/window.py:403
+#: big-mount/usr/lib/big-mount/gui/window.py:419
 msgid "Close the window"
 msgstr "Fechar a janela"
 

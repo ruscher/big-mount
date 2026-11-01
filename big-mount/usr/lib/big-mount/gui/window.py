@@ -316,24 +316,40 @@ class MainWindow(Adw.ApplicationWindow):
         self.split.set_show_content(True)
         self._mark_sidebar()
 
+    def _erase_holds(self):
+        """Secure Erase keeps its page in front until it ends: its outcome must be seen."""
+        if not self.erase_running:
+            return False
+        self.notify_text(_("A drive is being erased"))
+        self._mark_sidebar()
+        return True
+
     def show_overview(self):
+        if self._erase_holds():
+            return
         self.wizard = None
         self.selected_id = None
         self._go(self.overview)
 
     def show_device(self, stable_id, section=None):
+        if self._erase_holds():
+            return
         self.wizard = None
         self.selected_id = stable_id
         self.device_page.show(stable_id, section)
         self._go(self.device_page)
 
     def show_jobs(self):
+        if self._erase_holds():
+            return
         self.wizard = None
         self.refresh_jobs()
         self._go(self.jobs_page)
 
     def show_job(self, job_id):
         """From the side: the page of that job, on top of Home."""
+        if self._erase_holds():
+            return
         self.wizard = None
         self.selected_id = None
         self.nav.replace([self.overview, JobPage(self, job_id)])
