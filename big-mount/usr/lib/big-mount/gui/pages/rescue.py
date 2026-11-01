@@ -846,16 +846,10 @@ class RescueWizard(Adw.NavigationPage):
             first[0].set_active(True)
 
     def _pick_folder(self):
-        dialog = Gtk.FileDialog(title=_("Choose where to save"))
-
-        def chosen(d, res):
-            try:
-                f = d.select_folder_finish(res)
-            except GLib.Error:
-                return
-            self.custom_row.set_subtitle(f.get_path() or "")
-            self._set_dest(f.get_path() or "", True)
-        dialog.select_folder(self.window, None, chosen)
+        def chosen(path):
+            self.custom_row.set_subtitle(path)
+            self._set_dest(path, True)
+        w.choose_folder(self.window, chosen)
 
     def _set_dest(self, path, custom):
         self.plan.dest_base = path

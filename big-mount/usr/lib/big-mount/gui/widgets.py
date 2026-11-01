@@ -266,6 +266,18 @@ def toast(overlay, text, timeout=4):
     return t
 
 
+def choose_folder(window, then):
+    """then(path) with the folder the person chose; nothing when they cancel."""
+    def chosen(dialog, res):
+        try:
+            folder = dialog.select_folder_finish(res)
+        except GLib.Error:
+            return
+        if folder.get_path():
+            then(folder.get_path())
+    Gtk.FileDialog(title=_("Choose where to save")).select_folder(window, None, chosen)
+
+
 def open_folder(window, path):
     """The folder in the file manager of the person. Never a file that was found."""
     launcher = Gtk.FileLauncher.new(Gio.File.new_for_path(path))

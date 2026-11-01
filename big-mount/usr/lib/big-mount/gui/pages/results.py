@@ -603,16 +603,7 @@ class ResultsPage(Adw.NavigationPage):
         if hint:
             self._copy_to(kept, hint)
             return
-        dialog = Gtk.FileDialog(title=_("Choose where to save"))
-
-        def chosen(d, res):
-            try:
-                folder = d.select_folder_finish(res)
-            except GLib.Error:
-                return
-            if folder.get_path():
-                self._copy_to(kept, folder.get_path())
-        dialog.select_folder(self.window, None, chosen)
+        w.choose_folder(self.window, lambda path: self._copy_to(kept, path))
 
     def _copy_to(self, names, destination):
         carved = self.info.get("result_kind") == RESULT_CARVED
@@ -631,16 +622,7 @@ class ResultsPage(Adw.NavigationPage):
             if not data.get("ok"):
                 def answered(rid):
                     if rid == "other":
-                        dialog = Gtk.FileDialog(title=_("Choose where to save"))
-
-                        def chosen(d, r):
-                            try:
-                                folder = d.select_folder_finish(r)
-                            except GLib.Error:
-                                return
-                            if folder.get_path():
-                                self._copy_to(names, folder.get_path())
-                        dialog.select_folder(self.window, None, chosen)
+                        w.choose_folder(self.window, lambda path: self._copy_to(names, path))
                 w.alert(self.window, _("It cannot be saved here"), data.get("error_text") or res.message,
                         responses=(("close", _("Close")), ("other", _("Choose another folder…"))),
                         default="other", close="close", callback=answered)
