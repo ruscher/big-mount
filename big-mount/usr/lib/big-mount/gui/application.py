@@ -40,6 +40,9 @@ class Application(Adw.Application):
     def __init__(self):
         super().__init__(application_id=APP_ID, flags=Gio.ApplicationFlags.HANDLES_COMMAND_LINE)
         self.window = None
+        # The accessible name of the application comes from the program name,
+        # which is otherwise the file name of the script
+        GLib.set_prgname("big-mount")
         GLib.set_application_name("Big-Mount")
         Gtk.Window.set_default_icon_name("big-mount")
 
