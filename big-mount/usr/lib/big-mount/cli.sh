@@ -1100,6 +1100,9 @@ bm_cmd_secure_erase() {
 # The terminal dialogue of bm_cmd_secure_erase, with the drive locked
 bm_secure_erase_tty() {
    local disk="$1" seq rc a table
+   # The drive shown is the one erased: another one that takes its name while
+   # the question is open has another sequence number
+   bm_diskseq "$disk"; seq="$REPLY"
    bm_erase_intro_doc "$disk"
    bm_ui_show info ""
    printf '\n'
@@ -1108,7 +1111,6 @@ bm_secure_erase_tty() {
       printf '%s\n' $"Nothing was erased." >&2
       return 5
    fi
-   bm_diskseq "$disk"; seq="$REPLY"
    RM_ALLOW_SERVICES=0
    while :; do
       bm_remove_core release "$disk"; rc=$?

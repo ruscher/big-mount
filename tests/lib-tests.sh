@@ -862,6 +862,9 @@ se_case; FAKE_RUN=12 ER_STAGE=erase-ignored; bm_secure_erase_tty /dev/sda > "$WO
 check "  ... a drive that ignored the erase is called failing" eq "$rc:$(grep -c 'Replace it' "$WORK/se.out")" "12:1"
 se_case; FAKE_RELEASE=4 RM_REASON="/dev/sda2 → /"; bm_secure_erase_tty /dev/sda > /dev/null 2>&1; rc=$?
 check "  ... the system appeared on it meanwhile -> 4, no erase" eq "$rc:${#SE_CALLS[@]}" "4:1"
+se_case; SEQ=7; bm_diskseq() { REPLY="$SEQ"; }; bm_ui_input() { SEQ=8 REPLY=sda; }; bm_erase_run() { SE_CALLS+=("erase:$2"); }
+bm_secure_erase_tty /dev/sda > /dev/null 2>&1
+check "  ... erased only as the drive shown" eq "${SE_CALLS[*]: -1}" "erase:7"
 
 begin "Secure Erase from the application: a ticket, the typed name, and nothing else"
 (
