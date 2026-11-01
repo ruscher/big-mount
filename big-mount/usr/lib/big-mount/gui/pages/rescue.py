@@ -608,7 +608,7 @@ class RescueWizard(Adw.NavigationPage):
         usable = self._usable_volumes()
         if usable:
             box.append(w.notice(_("You chose the whole drive. Copying files and the quick analysis work with the files of a volume."), "info"))
-            box.append(w.button_row(*(w.button(_("Use the volume %s") % v.title, lambda v=v: self.use_volume(v), css=("pill", "suggested-action"))
+            box.append(w.button_row(*(w.button(_("Use the volume %s") % v.title.replace("_", "__"), lambda v=v: self.use_volume(v), css=("pill", "suggested-action"))
                                       for v in usable)))
         group = w.Group()
         self._radio_group = None
@@ -708,7 +708,7 @@ class RescueWizard(Adw.NavigationPage):
         elif m and m.why == "pick-volume" and len(self._usable_volumes()) == 1:
             # The row stays readable: its reason is what to do next
             vol = self._usable_volumes()[0]
-            r.add_suffix(self._row_button(_("Use %s") % vol.title, lambda: self.use_volume(vol)))
+            r.add_suffix(self._row_button(_("Use %s") % vol.title.replace("_", "__"), lambda: self.use_volume(vol)))
         elif m and m.why.startswith("no-"):
             r.add_suffix(self._row_button(_("Check again"), self.check_again,
                                           tooltip=_("After installing the package, check again without leaving the assistant.")))
