@@ -955,6 +955,7 @@ bm_drive_show() {
 bm_erase_refusal() {
    case "$ER_WHY" in
       not-disk) REPLY=$"Secure Erase works on a whole drive, not on a partition." ;;
+      no-seq) REPLY=$"The kernel gives this drive no sequence number, so another drive connected under the same name could not be told apart from it." ;;
       system) REPLY=$"It holds the operating system that is running now. Start the computer from a live USB drive to erase it." ;;
       removable) REPLY=$"Secure Erase is only offered for drives connected inside the computer, not through USB." ;;
       not-ata) REPLY=$"Secure Erase is only available for SATA drives." ;;

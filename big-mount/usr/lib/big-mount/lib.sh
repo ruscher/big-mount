@@ -1220,11 +1220,16 @@ bm_drive_health_nvme() {
 
 # bm_erase_check DISK: may DISK be erased with its ATA Secure Erase? Needs F
 # (bm_facts DISK) and bm_drive_health DISK. On refusal ER_WHY says why:
-#   not-disk | system (ER_DETAIL: what) | removable | not-ata | unsupported | password
+#   not-disk | no-seq | system (ER_DETAIL: what) | removable | not-ata | unsupported | password
+# The confirmation is bound to the disk sequence number: without one, another
+# drive that takes the same name could not be told apart.
 bm_erase_check() {
    ER_WHY="" ER_DETAIL=""
+   bm_diskseq "$1"
    if [ "${F[TYPE]:-}" != disk ] || [ "${F[NAME]:-}" != "${F[DISK]:-}" ]; then
       ER_WHY=not-disk
+   elif [ -z "$REPLY" ]; then
+      ER_WHY=no-seq
    elif bm_system_use "$1"; then
       ER_WHY=system ER_DETAIL="$REPLY"
    elif bm_is_removable_drive; then

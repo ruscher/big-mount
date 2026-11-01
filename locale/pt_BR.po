@@ -189,14 +189,14 @@ msgstr "ALVO é um dispositivo (/dev/sdb1) ou qualquer pasta dentro de um dispos
 
 #: big-mount/usr/lib/big-mount/cli.sh:106
 #: big-mount/usr/lib/big-mount/cli.sh:799
-#: big-mount/usr/lib/big-mount/cli.sh:1069
+#: big-mount/usr/lib/big-mount/cli.sh:1070
 #: big-mount/usr/lib/big-mount/doctor.sh:449
 #: big-mount/usr/lib/big-mount/drive.sh:227
 msgid "bigmount: unknown option '%s' (see bigmount --help)"
 msgstr "bigmount: opção desconhecida '%s' (veja bigmount --help)"
 
 #: big-mount/usr/lib/big-mount/cli.sh:120
-#: big-mount/usr/lib/big-mount/cli.sh:1311
+#: big-mount/usr/lib/big-mount/cli.sh:1312
 msgid "Device ready"
 msgstr "Dispositivo pronto"
 
@@ -776,18 +776,18 @@ msgid "These programs can be asked to close (unsaved changes in them may be lost
 msgstr "Estes programas podem ser solicitados a fechar (alterações não salvas neles podem ser perdidas):"
 
 #: big-mount/usr/lib/big-mount/cli.sh:839
-#: big-mount/usr/lib/big-mount/cli.sh:1361
+#: big-mount/usr/lib/big-mount/cli.sh:1362
 msgid "Close them"
 msgstr "Fechar programas"
 
 #: big-mount/usr/lib/big-mount/cli.sh:839
 #: big-mount/usr/lib/big-mount/cli.sh:852
-#: big-mount/usr/lib/big-mount/cli.sh:1121
-#: big-mount/usr/lib/big-mount/cli.sh:1134
-#: big-mount/usr/lib/big-mount/cli.sh:1285
-#: big-mount/usr/lib/big-mount/cli.sh:1337
-#: big-mount/usr/lib/big-mount/cli.sh:1361
-#: big-mount/usr/lib/big-mount/cli.sh:1434
+#: big-mount/usr/lib/big-mount/cli.sh:1122
+#: big-mount/usr/lib/big-mount/cli.sh:1135
+#: big-mount/usr/lib/big-mount/cli.sh:1286
+#: big-mount/usr/lib/big-mount/cli.sh:1338
+#: big-mount/usr/lib/big-mount/cli.sh:1362
+#: big-mount/usr/lib/big-mount/cli.sh:1435
 msgid "Cancel"
 msgstr "Cancelar"
 
@@ -801,7 +801,7 @@ msgid "These services use the device and will be stopped when it is unmounted:"
 msgstr "Estes serviços usam o dispositivo e serão parados quando ele for desmontado:"
 
 #: big-mount/usr/lib/big-mount/cli.sh:852
-#: big-mount/usr/lib/big-mount/cli.sh:1121
+#: big-mount/usr/lib/big-mount/cli.sh:1122
 msgid "Stop them and continue"
 msgstr "Parar e continuar"
 
@@ -845,7 +845,7 @@ msgid "No drive errors found"
 msgstr "Nenhum erro da unidade encontrado"
 
 #: big-mount/usr/lib/big-mount/cli.sh:890
-#: big-mount/usr/lib/big-mount/cli.sh:972
+#: big-mount/usr/lib/big-mount/cli.sh:973
 msgid "Drive"
 msgstr "Unidade"
 
@@ -929,456 +929,460 @@ msgid "Secure Erase works on a whole drive, not on a partition."
 msgstr "O Secure Erase atua sobre uma unidade inteira, não sobre uma partição."
 
 #: big-mount/usr/lib/big-mount/cli.sh:958
+msgid "The kernel gives this drive no sequence number, so another drive connected under the same name could not be told apart from it."
+msgstr "O kernel não dá um número de sequência a esta unidade, então outra unidade conectada com o mesmo nome não poderia ser diferenciada dela."
+
+#: big-mount/usr/lib/big-mount/cli.sh:959
 msgid "It holds the operating system that is running now. Start the computer from a live USB drive to erase it."
 msgstr "Ela contém o sistema operacional em uso agora. Inicie o computador por um pendrive live para apagá-la."
 
-#: big-mount/usr/lib/big-mount/cli.sh:959
+#: big-mount/usr/lib/big-mount/cli.sh:960
 msgid "Secure Erase is only offered for drives connected inside the computer, not through USB."
 msgstr "O Secure Erase só é oferecido para unidades conectadas dentro do computador, não por USB."
 
-#: big-mount/usr/lib/big-mount/cli.sh:960
+#: big-mount/usr/lib/big-mount/cli.sh:961
 msgid "Secure Erase is only available for SATA drives."
 msgstr "O Secure Erase só está disponível para unidades SATA."
 
-#: big-mount/usr/lib/big-mount/cli.sh:961
+#: big-mount/usr/lib/big-mount/cli.sh:962
 msgid "This drive does not support Secure Erase."
 msgstr "Esta unidade não tem suporte a Secure Erase."
 
-#: big-mount/usr/lib/big-mount/cli.sh:962
+#: big-mount/usr/lib/big-mount/cli.sh:963
 msgid "A security password is set on this drive. Remove it first, in the firmware setup (BIOS) or with the tool of the manufacturer."
 msgstr "Esta unidade tem uma senha de segurança definida. Remova-a antes, na configuração do firmware (BIOS) ou com a ferramenta do fabricante."
 
-#: big-mount/usr/lib/big-mount/cli.sh:963
+#: big-mount/usr/lib/big-mount/cli.sh:964
 msgid "This drive cannot be erased."
 msgstr "Esta unidade não pode ser apagada."
 
-#: big-mount/usr/lib/big-mount/cli.sh:971
+#: big-mount/usr/lib/big-mount/cli.sh:972
 msgid "Erase the whole drive"
 msgstr "Apagar a unidade inteira"
 
-#: big-mount/usr/lib/big-mount/cli.sh:973
+#: big-mount/usr/lib/big-mount/cli.sh:974
 msgid "The drive will erase itself completely, with its own Secure Erase command. Every partition and every file on it will be lost for good. This cannot be undone."
 msgstr "A unidade vai se apagar por completo, com o próprio comando Secure Erase. Todas as partições e todos os arquivos nela serão perdidos para sempre. Isso não pode ser desfeito."
 
-#: big-mount/usr/lib/big-mount/cli.sh:981
+#: big-mount/usr/lib/big-mount/cli.sh:982
 msgid "These partitions will be lost:"
 msgstr "Estas partições serão perdidas:"
 
-#: big-mount/usr/lib/big-mount/cli.sh:985
+#: big-mount/usr/lib/big-mount/cli.sh:986
 msgid "The drive announces that erasing takes more than 8 hours."
 msgstr "A unidade informa que o apagamento leva mais de 8 horas."
 
-#: big-mount/usr/lib/big-mount/cli.sh:987
+#: big-mount/usr/lib/big-mount/cli.sh:988
 msgid "The drive announces that erasing takes about %d minutes."
 msgstr "A unidade informa que o apagamento leva cerca de %d minutos."
 
-#: big-mount/usr/lib/big-mount/cli.sh:991
+#: big-mount/usr/lib/big-mount/cli.sh:992
 msgid "Afterwards an empty %s partition table is written and read back, to check that the drive keeps what is written again."
 msgstr "Depois, uma tabela de partições %s vazia é gravada e lida de volta, para conferir se a unidade voltou a guardar o que é gravado."
 
-#: big-mount/usr/lib/big-mount/cli.sh:993
+#: big-mount/usr/lib/big-mount/cli.sh:994
 msgid "Use it to bring back an SSD that no longer keeps what is written, or before giving a drive away. It is not a repair: if the drive fails again, replace it."
 msgstr "Use para recuperar um SSD que não guarda mais o que é gravado, ou antes de passar uma unidade adiante. Não é um conserto: se a unidade falhar de novo, troque-a."
 
-#: big-mount/usr/lib/big-mount/cli.sh:994
+#: big-mount/usr/lib/big-mount/cli.sh:995
 msgid "The computer may have to sleep for a moment first."
 msgstr "Talvez o computador precise entrar em suspensão por um instante antes."
 
-#: big-mount/usr/lib/big-mount/cli.sh:995
+#: big-mount/usr/lib/big-mount/cli.sh:996
 msgid "The administrator password will be requested."
 msgstr "A senha de administrador será solicitada."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1000
+#: big-mount/usr/lib/big-mount/cli.sh:1001
 msgid "The drive is locked against erasing"
 msgstr "A unidade está travada contra apagamento"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1003
+#: big-mount/usr/lib/big-mount/cli.sh:1004
 msgid "When the computer starts, its firmware locks the security commands of the drives (they are frozen). Sleeping once usually unlocks them."
 msgstr "Quando o computador liga, o firmware trava os comandos de segurança das unidades (elas ficam congeladas, \"frozen\"). Entrar em suspensão uma vez normalmente as destrava."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1005
+#: big-mount/usr/lib/big-mount/cli.sh:1006
 msgid "The computer will sleep and wake up by itself after about 20 seconds."
 msgstr "O computador vai entrar em suspensão e acordar sozinho depois de cerca de 20 segundos."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1007
+#: big-mount/usr/lib/big-mount/cli.sh:1008
 msgid "The computer will go to sleep. Wake it up with the power button, and unlock the session if asked: the erase continues afterwards."
 msgstr "O computador vai entrar em suspensão. Acorde-o com o botão de energia e desbloqueie a sessão se for pedido: o apagamento continua em seguida."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1015
+#: big-mount/usr/lib/big-mount/cli.sh:1016
 msgid "Unable to erase the drive"
 msgstr "Não foi possível apagar a unidade"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1019
+#: big-mount/usr/lib/big-mount/cli.sh:1020
 msgid "Drive erased"
 msgstr "Unidade apagada"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1022
+#: big-mount/usr/lib/big-mount/cli.sh:1023
 msgid "The drive was erased and keeps what is written again. It now has an empty %s partition table: you can install a system or create partitions on it."
 msgstr "A unidade foi apagada e voltou a guardar o que é gravado. Agora ela tem uma tabela de partições %s vazia: você pode instalar um sistema ou criar partições nela."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1024
+#: big-mount/usr/lib/big-mount/cli.sh:1025
 msgid "It failed once: keep a copy of what you store on it, and replace it if the errors come back."
 msgstr "Ela já falhou uma vez: mantenha uma cópia do que guardar nela, e troque-a se os erros voltarem."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1027
+#: big-mount/usr/lib/big-mount/cli.sh:1028
 msgid "The drive is still locked"
 msgstr "A unidade continua travada"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1029
+#: big-mount/usr/lib/big-mount/cli.sh:1030
 msgid "The drive is still locked against erasing. Nothing was erased."
 msgstr "A unidade continua travada contra apagamento. Nada foi apagado."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1030
+#: big-mount/usr/lib/big-mount/cli.sh:1031
 msgid "Some computers lock the drives again when they wake up. Try once more, or erase the drive in another computer."
 msgstr "Alguns computadores travam as unidades de novo ao acordar. Tente mais uma vez, ou apague a unidade em outro computador."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1031
+#: big-mount/usr/lib/big-mount/cli.sh:1032
 msgid "If the computer supports hot-plugging SATA drives, disconnecting and connecting the drive while the computer is on also unlocks it."
 msgstr "Se o computador permitir conectar unidades SATA com ele ligado (hot-plug), desconectar e conectar a unidade com o computador ligado também a destrava."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1036
+#: big-mount/usr/lib/big-mount/cli.sh:1037
 msgid "Drive erased, not verified"
 msgstr "Unidade apagada, sem verificação"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1038
+#: big-mount/usr/lib/big-mount/cli.sh:1039
 msgid "The drive was erased, but writing a new partition table failed (%s), so it could not be checked."
 msgstr "A unidade foi apagada, mas a gravação de uma nova tabela de partições falhou (%s), então não foi possível conferi-la."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1040
+#: big-mount/usr/lib/big-mount/cli.sh:1041
 msgid "Create a partition table with KDE Partition Manager, and check that it is still there after a restart."
 msgstr "Crie uma tabela de partições com o Gerenciador de Partições do KDE e confira se ela continua lá depois de reiniciar."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1043
-#: big-mount/usr/lib/big-mount/cli.sh:1048
+#: big-mount/usr/lib/big-mount/cli.sh:1044
+#: big-mount/usr/lib/big-mount/cli.sh:1049
 msgid "The drive is failing"
 msgstr "A unidade está falhando"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1045
+#: big-mount/usr/lib/big-mount/cli.sh:1046
 msgid "The drive accepted the erase command, but its old contents are still there: it no longer does what it is told. Replace it."
 msgstr "A unidade aceitou o comando de apagamento, mas o conteúdo antigo continua lá: ela não faz mais o que é pedido. Troque-a."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1050
+#: big-mount/usr/lib/big-mount/cli.sh:1051
 msgid "The drive was erased, but it still does not keep what is written. Replace it."
 msgstr "A unidade foi apagada, mas continua sem guardar o que é gravado. Troque-a."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1054
+#: big-mount/usr/lib/big-mount/cli.sh:1055
 msgid "The drive is still in use. Nothing was erased."
 msgstr "A unidade continua em uso. Nada foi apagado."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1055
+#: big-mount/usr/lib/big-mount/cli.sh:1056
 msgid "It holds the operating system that is running now. Nothing was erased."
 msgstr "Ela contém o sistema operacional em uso agora. Nada foi apagado."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1056
+#: big-mount/usr/lib/big-mount/cli.sh:1057
 msgid "Permission was not granted. Nothing was erased."
 msgstr "A permissão não foi concedida. Nada foi apagado."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1059
+#: big-mount/usr/lib/big-mount/cli.sh:1060
 msgid "The drive could not be erased."
 msgstr "Não foi possível apagar a unidade."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1077
+#: big-mount/usr/lib/big-mount/cli.sh:1078
 #: big-mount/usr/lib/big-mount/drive-erase.sh:56
 msgid "bigmount: Secure Erase works on a whole drive: name the drive itself (%s)"
 msgstr "bigmount: o Secure Erase atua sobre uma unidade inteira: informe a própria unidade (%s)"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1087
+#: big-mount/usr/lib/big-mount/cli.sh:1088
 msgid "bigmount: --secure-erase asks for confirmation and needs a terminal"
 msgstr "bigmount: --secure-erase pede confirmação e precisa de um terminal"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1091
+#: big-mount/usr/lib/big-mount/cli.sh:1092
 #: big-mount/usr/lib/big-mount/drive-erase.sh:197
 msgid "Another operation on this drive is in progress. Nothing was done."
 msgstr "Outra operação nesta unidade está em andamento. Nada foi feito."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1105
+#: big-mount/usr/lib/big-mount/cli.sh:1106
 msgid "To confirm, type the name of the drive (%s):"
 msgstr "Para confirmar, digite o nome da unidade (%s):"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1107
-#: big-mount/usr/lib/big-mount/cli.sh:1116
+#: big-mount/usr/lib/big-mount/cli.sh:1108
+#: big-mount/usr/lib/big-mount/cli.sh:1117
 #: big-mount/usr/lib/big-mount/drive-erase.sh:143
 msgid "Nothing was erased."
 msgstr "Nada foi apagado."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1118
+#: big-mount/usr/lib/big-mount/cli.sh:1119
 msgid "These services use the drive and will be stopped:"
 msgstr "Estes serviços usam a unidade e serão parados:"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1134
+#: big-mount/usr/lib/big-mount/cli.sh:1135
 msgid "Sleep now"
 msgstr "Suspender agora"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1141
+#: big-mount/usr/lib/big-mount/cli.sh:1142
 msgid "Erasing %s. Do not turn off the computer or disconnect the drive."
 msgstr "Apagando %s. Não desligue o computador nem desconecte a unidade."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1147
+#: big-mount/usr/lib/big-mount/cli.sh:1148
 msgid "Without a graphical session, run it as administrator: sudo bigmount --secure-erase DISK"
 msgstr "Sem uma sessão gráfica, execute como administrador: sudo bigmount --secure-erase DISCO"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1168
-#: big-mount/usr/lib/big-mount/cli.sh:1171
-#: big-mount/usr/lib/big-mount/cli.sh:1215
-#: big-mount/usr/lib/big-mount/cli.sh:1225
-#: big-mount/usr/lib/big-mount/cli.sh:1233
+#: big-mount/usr/lib/big-mount/cli.sh:1169
+#: big-mount/usr/lib/big-mount/cli.sh:1172
+#: big-mount/usr/lib/big-mount/cli.sh:1216
+#: big-mount/usr/lib/big-mount/cli.sh:1226
+#: big-mount/usr/lib/big-mount/cli.sh:1234
 msgid "Storage diagnostics"
 msgstr "Diagnóstico de armazenamento"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1168
+#: big-mount/usr/lib/big-mount/cli.sh:1169
 msgid "No storage device to diagnose was found."
 msgstr "Nenhum dispositivo de armazenamento para diagnosticar foi encontrado."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1171
-#: big-mount/usr/lib/big-mount/cli.sh:1225
+#: big-mount/usr/lib/big-mount/cli.sh:1172
+#: big-mount/usr/lib/big-mount/cli.sh:1226
 msgid "Choose a device:"
 msgstr "Escolha um dispositivo:"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1192
-#: big-mount/usr/lib/big-mount/cli.sh:1195
+#: big-mount/usr/lib/big-mount/cli.sh:1193
+#: big-mount/usr/lib/big-mount/cli.sh:1196
 msgid "Unable to access storage device"
 msgstr "Não foi possível acessar o dispositivo de armazenamento"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1193
+#: big-mount/usr/lib/big-mount/cli.sh:1194
 msgid "Big-Mount could not identify this storage device. It may have been disconnected or become temporarily unavailable."
 msgstr "O Big-Mount não conseguiu identificar este dispositivo de armazenamento. Ele pode ter sido desconectado ou estar temporariamente indisponível."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1194
+#: big-mount/usr/lib/big-mount/cli.sh:1195
 msgid "If you disconnected it, connect it again and choose Try again."
 msgstr "Se você o desconectou, conecte-o novamente e escolha Tentar novamente."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1195
-#: big-mount/usr/lib/big-mount/cli.sh:1337
+#: big-mount/usr/lib/big-mount/cli.sh:1196
+#: big-mount/usr/lib/big-mount/cli.sh:1338
 msgid "Try again"
 msgstr "Tentar novamente"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1195
-#: big-mount/usr/lib/big-mount/cli.sh:1202
-#: big-mount/usr/lib/big-mount/cli.sh:1241
-#: big-mount/usr/lib/big-mount/cli.sh:1243
-#: big-mount/usr/lib/big-mount/cli.sh:1246
-#: big-mount/usr/lib/big-mount/cli.sh:1248
-#: big-mount/usr/lib/big-mount/cli.sh:1257
-#: big-mount/usr/lib/big-mount/cli.sh:1350
+#: big-mount/usr/lib/big-mount/cli.sh:1196
+#: big-mount/usr/lib/big-mount/cli.sh:1203
+#: big-mount/usr/lib/big-mount/cli.sh:1242
+#: big-mount/usr/lib/big-mount/cli.sh:1244
+#: big-mount/usr/lib/big-mount/cli.sh:1247
+#: big-mount/usr/lib/big-mount/cli.sh:1249
+#: big-mount/usr/lib/big-mount/cli.sh:1258
+#: big-mount/usr/lib/big-mount/cli.sh:1351
 msgid "Technical details"
 msgstr "Detalhes técnicos"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1195
-#: big-mount/usr/lib/big-mount/cli.sh:1241
-#: big-mount/usr/lib/big-mount/cli.sh:1243
-#: big-mount/usr/lib/big-mount/cli.sh:1246
-#: big-mount/usr/lib/big-mount/cli.sh:1248
-#: big-mount/usr/lib/big-mount/cli.sh:1522
+#: big-mount/usr/lib/big-mount/cli.sh:1196
+#: big-mount/usr/lib/big-mount/cli.sh:1242
+#: big-mount/usr/lib/big-mount/cli.sh:1244
+#: big-mount/usr/lib/big-mount/cli.sh:1247
+#: big-mount/usr/lib/big-mount/cli.sh:1249
+#: big-mount/usr/lib/big-mount/cli.sh:1523
 #: big-mount/usr/lib/big-mount/ui.sh:234
 msgid "Close"
 msgstr "Fechar"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1215
+#: big-mount/usr/lib/big-mount/cli.sh:1216
 msgid "This folder is not on a local storage device."
 msgstr "Esta pasta não está em um dispositivo de armazenamento local."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1243
+#: big-mount/usr/lib/big-mount/cli.sh:1244
 msgid "Check the drive…"
 msgstr "Verificar a unidade…"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1246
+#: big-mount/usr/lib/big-mount/cli.sh:1247
 msgid "Safely remove…"
 msgstr "Remover com segurança…"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1272
-#: big-mount/usr/lib/big-mount/cli.sh:1562
+#: big-mount/usr/lib/big-mount/cli.sh:1273
+#: big-mount/usr/lib/big-mount/cli.sh:1563
 msgid "How to solve"
 msgstr "Como resolver"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1293
+#: big-mount/usr/lib/big-mount/cli.sh:1294
 msgid "Another operation on this drive is in progress. Try again when it finishes."
 msgstr "Outra operação nesta unidade está em andamento. Tente novamente quando ela terminar."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1311
+#: big-mount/usr/lib/big-mount/cli.sh:1312
 msgid "You can now write to this device."
 msgstr "Agora você pode gravar neste dispositivo."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1313
+#: big-mount/usr/lib/big-mount/cli.sh:1314
 msgid "Unable to fix the device"
 msgstr "Não foi possível corrigir o dispositivo"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1314
+#: big-mount/usr/lib/big-mount/cli.sh:1315
 msgid "Nothing was changed on the device. See the technical details for more information."
 msgstr "Nada foi alterado no dispositivo. Veja os detalhes técnicos para mais informações."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1337
-#: big-mount/usr/lib/big-mount/cli.sh:1346
+#: big-mount/usr/lib/big-mount/cli.sh:1338
+#: big-mount/usr/lib/big-mount/cli.sh:1347
 msgid "Device is busy"
 msgstr "Dispositivo ocupado"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1337
+#: big-mount/usr/lib/big-mount/cli.sh:1338
 msgid "More options…"
 msgstr "Mais opções…"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1342
+#: big-mount/usr/lib/big-mount/cli.sh:1343
 msgid "Refresh the list"
 msgstr "Atualizar a lista"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1342
+#: big-mount/usr/lib/big-mount/cli.sh:1343
 msgid "Show technical details"
 msgstr "Mostrar detalhes técnicos"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1344
+#: big-mount/usr/lib/big-mount/cli.sh:1345
 msgid "Close the listed programs…"
 msgstr "Fechar os programas listados…"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1345
+#: big-mount/usr/lib/big-mount/cli.sh:1346
 msgid "Show programs of all users (administrator)"
 msgstr "Mostrar programas de todos os usuários (administrador)"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1346
+#: big-mount/usr/lib/big-mount/cli.sh:1347
 msgid "What do you want to do?"
 msgstr "O que você deseja fazer?"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1354
+#: big-mount/usr/lib/big-mount/cli.sh:1355
 msgid "Close these programs?"
 msgstr "Fechar estes programas?"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1356
+#: big-mount/usr/lib/big-mount/cli.sh:1357
 msgid "They will be asked to close, as when you close their windows. Unsaved changes in them may be lost: if possible, close them yourself instead."
 msgstr "Eles receberão um pedido para fechar, como quando você fecha as janelas deles. Alterações não salvas podem ser perdidas: se possível, feche-os você mesmo."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1358
+#: big-mount/usr/lib/big-mount/cli.sh:1359
 msgid "These will not be closed:"
 msgstr "Estes não serão fechados:"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1361
+#: big-mount/usr/lib/big-mount/cli.sh:1362
 msgid "Close programs"
 msgstr "Fechar programas"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1390
+#: big-mount/usr/lib/big-mount/cli.sh:1391
 msgid "Writing pending data to the device. Do not disconnect it yet."
 msgstr "Gravando os dados pendentes no dispositivo. Não o desconecte ainda."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1395
-#: big-mount/usr/lib/big-mount/cli.sh:1401
+#: big-mount/usr/lib/big-mount/cli.sh:1396
+#: big-mount/usr/lib/big-mount/cli.sh:1402
 msgid "Safely remove"
 msgstr "Remover com segurança"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1395
+#: big-mount/usr/lib/big-mount/cli.sh:1396
 msgid "This folder is not on a removable storage device."
 msgstr "Esta pasta não está em um dispositivo de armazenamento removível."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1401
+#: big-mount/usr/lib/big-mount/cli.sh:1402
 msgid "The removal of this drive is already in progress."
 msgstr "A remoção desta unidade já está em andamento."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1410
-#: big-mount/usr/lib/big-mount/cli.sh:1413
-#: big-mount/usr/lib/big-mount/cli.sh:1422
+#: big-mount/usr/lib/big-mount/cli.sh:1411
+#: big-mount/usr/lib/big-mount/cli.sh:1414
+#: big-mount/usr/lib/big-mount/cli.sh:1423
 msgid "Safe to disconnect"
 msgstr "Pronto para desconectar"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1411
+#: big-mount/usr/lib/big-mount/cli.sh:1412
 msgid "Successfully unmounted and powered off. You can disconnect it now."
 msgstr "Desmontado e desligado com sucesso. Você já pode desconectá-lo."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1414
+#: big-mount/usr/lib/big-mount/cli.sh:1415
 msgid "Successfully unmounted. You can disconnect it now."
 msgstr "Desmontado com sucesso. Você já pode desconectá-lo."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1416
+#: big-mount/usr/lib/big-mount/cli.sh:1417
 msgid "Device unmounted"
 msgstr "Dispositivo desmontado"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1417
+#: big-mount/usr/lib/big-mount/cli.sh:1418
 msgid "All pending data was written and its filesystems were unmounted."
 msgstr "Todos os dados pendentes foram gravados e os sistemas de arquivos foram desmontados."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1423
+#: big-mount/usr/lib/big-mount/cli.sh:1424
 msgid "Successfully unmounted. This drive cannot be powered off by the computer, but you can disconnect it now."
 msgstr "Desmontado com sucesso. Esta unidade não pode ser desligada pelo computador, mas você já pode desconectá-la."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1430
-#: big-mount/usr/lib/big-mount/cli.sh:1434
+#: big-mount/usr/lib/big-mount/cli.sh:1431
+#: big-mount/usr/lib/big-mount/cli.sh:1435
 #: big-mount/usr/lib/big-mount/drive-erase.sh:212
 msgid "Services use this device"
 msgstr "Serviços usam este dispositivo"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1431
+#: big-mount/usr/lib/big-mount/cli.sh:1432
 msgid "Removing it will stop these services:"
 msgstr "Remover o dispositivo vai parar estes serviços:"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1434
+#: big-mount/usr/lib/big-mount/cli.sh:1435
 msgid "Stop them and remove"
 msgstr "Parar e remover"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1441
-#: big-mount/usr/lib/big-mount/cli.sh:1456
+#: big-mount/usr/lib/big-mount/cli.sh:1442
+#: big-mount/usr/lib/big-mount/cli.sh:1457
 msgid "Unable to power off device"
 msgstr "Não foi possível desligar o dispositivo"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1442
+#: big-mount/usr/lib/big-mount/cli.sh:1443
 msgid "It was unmounted, but powering it off failed. Wait a moment before disconnecting it."
 msgstr "Ele foi desmontado, mas não foi possível desligá-lo. Aguarde um momento antes de desconectá-lo."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1446
+#: big-mount/usr/lib/big-mount/cli.sh:1447
 msgid "Unable to remove device"
 msgstr "Não foi possível remover o dispositivo"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1447
+#: big-mount/usr/lib/big-mount/cli.sh:1448
 msgid "It holds the operating system that is running now."
 msgstr "Ele contém o sistema operacional que está em execução agora."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1451
-#: big-mount/usr/lib/big-mount/cli.sh:1465
+#: big-mount/usr/lib/big-mount/cli.sh:1452
+#: big-mount/usr/lib/big-mount/cli.sh:1466
 msgid "Unable to unmount device"
 msgstr "Não foi possível desmontar o dispositivo"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1452
+#: big-mount/usr/lib/big-mount/cli.sh:1453
 msgid "Permission was not granted. The device remains mounted."
 msgstr "A permissão não foi concedida. O dispositivo continua montado."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1457
+#: big-mount/usr/lib/big-mount/cli.sh:1458
 msgid "Its filesystems were unmounted, but the drive is still in use, so it was not powered off. Do not disconnect it yet."
 msgstr "Os sistemas de arquivos foram desmontados, mas a unidade ainda está em uso, por isso não foi desligada. Não a desconecte ainda."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1462
+#: big-mount/usr/lib/big-mount/cli.sh:1463
 msgid "Device disconnected"
 msgstr "Dispositivo desconectado"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1463
+#: big-mount/usr/lib/big-mount/cli.sh:1464
 msgid "The device was disconnected before the removal finished. If files were being written to it, check them when you connect it again."
 msgstr "O dispositivo foi desconectado antes de a remoção terminar. Se havia arquivos sendo gravados nele, confira-os quando conectá-lo novamente."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1466
+#: big-mount/usr/lib/big-mount/cli.sh:1467
 msgid "It remains mounted. Nothing was forced."
 msgstr "Ele continua montado. Nada foi forçado."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1512
+#: big-mount/usr/lib/big-mount/cli.sh:1513
 msgid "%s: %s"
 msgstr "%s: %s"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1515
+#: big-mount/usr/lib/big-mount/cli.sh:1516
 msgid "This drive reported serious problems. Copy your files to another drive before trying any repair."
 msgstr "Este disco relatou problemas sérios. Copie seus arquivos para outro disco antes de tentar qualquer reparo."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1517
+#: big-mount/usr/lib/big-mount/cli.sh:1518
 msgid "This drive reported problems. Copy what matters to another place."
 msgstr "Este disco relatou problemas. Copie o que importa para outro lugar."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1520
+#: big-mount/usr/lib/big-mount/cli.sh:1521
 msgid "Big-Mount shows what was found and how to rescue the files without writing to the drive."
 msgstr "O Big-Mount mostra o que foi encontrado e como resgatar os arquivos sem gravar nada no disco."
 
-#: big-mount/usr/lib/big-mount/cli.sh:1522
+#: big-mount/usr/lib/big-mount/cli.sh:1523
 msgid "A drive needs attention"
 msgstr "Um disco precisa de atenção"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1522
+#: big-mount/usr/lib/big-mount/cli.sh:1523
 msgid "Open Big-Mount"
 msgstr "Abrir o Big-Mount"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1560
+#: big-mount/usr/lib/big-mount/cli.sh:1561
 msgid "Device: %s\\nFilesystem: %s\\nPossible reason: %s"
 msgstr "Dispositivo: %s\\nSistema de arquivos: %s\\nPossível motivo: %s"
 
-#: big-mount/usr/lib/big-mount/cli.sh:1562
+#: big-mount/usr/lib/big-mount/cli.sh:1563
 msgid "View details"
 msgstr "Ver detalhes"
 
@@ -2645,7 +2649,7 @@ msgstr "O nome não confere. Nada foi apagado."
 
 #: big-mount/usr/lib/big-mount/drive-erase.sh:185
 #: big-mount/usr/lib/big-mount/drive-erase.sh:188
-#: big-mount/usr/lib/big-mount/lib.sh:1292
+#: big-mount/usr/lib/big-mount/lib.sh:1297
 msgid "The drive was disconnected or replaced. Nothing was erased."
 msgstr "A unidade foi desconectada ou substituída. Nada foi apagado."
 
@@ -3491,19 +3495,19 @@ msgstr "%s foi desmontado, mas o driver do sistema de arquivos ainda está grava
 msgid "%s is still mounted at %s after being unmounted"
 msgstr "%s continua montado em %s depois de ser desmontado"
 
-#: big-mount/usr/lib/big-mount/lib.sh:1300
+#: big-mount/usr/lib/big-mount/lib.sh:1305
 msgid "%s is mounted at %s"
 msgstr "%s está montado em %s"
 
-#: big-mount/usr/lib/big-mount/lib.sh:1303
+#: big-mount/usr/lib/big-mount/lib.sh:1308
 msgid "%s is in use (encryption, LVM or RAID)"
 msgstr "%s está em uso (criptografia, LVM ou RAID)"
 
-#: big-mount/usr/lib/big-mount/lib.sh:1317
+#: big-mount/usr/lib/big-mount/lib.sh:1322
 msgid "%s belongs to a filesystem that spans several drives"
 msgstr "%s faz parte de um sistema de arquivos que ocupa várias unidades"
 
-#: big-mount/usr/lib/big-mount/lib.sh:1323
+#: big-mount/usr/lib/big-mount/lib.sh:1328
 msgid "UDisks2 does not know this drive."
 msgstr "O UDisks2 não conhece esta unidade."
 

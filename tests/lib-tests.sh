@@ -762,6 +762,7 @@ check "an estimate that is not a number is ignored" eq "$DH_ERASE_MIN" 0
 
 begin "who may be erased"
 bm_system_use() { return 1; }
+bm_diskseq() { REPLY=7; }
 erase_facts() { F=([NAME]=/dev/sda [DISK]=/dev/sda [TYPE]=disk [TRAN]=sata [HOTPLUG]=0 [RM]=0); }
 erase_facts; sata_up; bm_drive_health /dev/sda
 bm_erase_check /dev/sda; check "an internal SATA drive with security support" eq "$?:$ER_WHY" "0:"
@@ -777,7 +778,9 @@ FAKE_UP=([ID_ATA]=1 [ID_BUS]=ata); bm_drive_health /dev/sda
 bm_erase_check /dev/sda; check "no ATA security feature set" eq "$ER_WHY" unsupported
 sata_up; FAKE_UP[ID_ATA_FEATURE_SET_SECURITY_ENABLED]=1; bm_drive_health /dev/sda
 bm_erase_check /dev/sda; check "a password is already set: refused, it could lock the drive" eq "$ER_WHY" password
-unset -f bm_drive_port bm_drive_kmsg bm_udisks_drive busctl erase_facts bm_system_use
+sata_up; bm_drive_health /dev/sda; bm_diskseq() { REPLY=""; }
+bm_erase_check /dev/sda; check "no disk sequence number: refused" eq "$ER_WHY" no-seq
+unset -f bm_drive_port bm_drive_kmsg bm_udisks_drive busctl erase_facts bm_system_use bm_diskseq
 
 begin "Secure Erase: only what was confirmed, and checked afterwards"
 # lsblk answers what a probe of the drive would read at each stage

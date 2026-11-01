@@ -95,6 +95,7 @@ mount events, and a periodic scan would cost power for every user.
 | Refusal | Why |
 | --- | --- |
 | a partition, or a folder | the command erases a whole drive; the drive must be named |
+| a drive without a disk sequence number (`/sys/block/*/diskseq`) | the confirmation is bound to it; without it another drive under the same name could not be told apart |
 | the drive of the running system (a system mount point, active swap) | start from a live USB drive instead |
 | a removable or hot-plug drive (USB, FireWire, eSATA bay) | USB-SATA bridges may not pass security commands through safely, and a bad one can lock the drive |
 | not an ATA drive on an ATA port (`ID_BUS=ata`) | NVMe has other commands (format, sanitize), not covered here |
