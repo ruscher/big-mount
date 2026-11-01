@@ -125,6 +125,13 @@ bm_ui_choice() {
    fi
 }
 
+# bm_ui_is_yes ANSWER: y, or the first letter of yes in the language of the
+# messages (j, s, o, д...). Anything else, Enter included, is no.
+bm_ui_is_yes() {
+   local yes=$"y"
+   [[ ${1,,} == y* || ${1,,} == "${yes,,}"* ]]
+}
+
 # bm_ui_confirm TITLE ICON YES NO: the current document as a yes/no question
 bm_ui_confirm() {
    local title="$1" yes="$3" no="$4" ans
@@ -136,9 +143,9 @@ bm_ui_confirm() {
    bm_doc_render_text
    printf '%s' "$REPLY"
    [ -t 0 ] || return 1
-   printf '%s [%s/%s] ' "$yes?" "y" "N"
+   printf '%s [%s/%s] ' "$yes?" $"y" $"N"
    read -r ans || return 1
-   [[ $ans == [yYsS]* ]]
+   bm_ui_is_yes "$ans"
 }
 
 # bm_ui_confirm_risky TITLE ICON YES NO: like bm_ui_confirm, but for a

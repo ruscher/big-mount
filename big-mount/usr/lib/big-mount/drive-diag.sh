@@ -192,15 +192,15 @@ bm_ds_grade_label() {
 
 # bm_ds_note_text KEY: one sentence for a person
 bm_ds_note_text() {
-   local years
+   local years pct
    case "$1" in
       smart-unread) REPLY=$"Only the system log was consulted. Without the drive's own report (SMART) it cannot be called healthy." ;;
-      worn-out) printf -v REPLY $"It has used %s%% of the life its maker rates it for: it is near or past its end." "$SM_NVME_USED" ;;
-      wear) printf -v REPLY $"It has used %s%% of the life its maker rates it for." "$SM_NVME_USED" ;;
+      worn-out) printf -v pct $"%s%%" "$SM_NVME_USED"; printf -v REPLY $"It has used %s of the life its maker rates it for: it is near or past its end." "$pct" ;;
+      wear) printf -v pct $"%s%%" "$SM_NVME_USED"; printf -v REPLY $"It has used %s of the life its maker rates it for." "$pct" ;;
       attrs-past) REPLY=$"Some of its SMART values were below their safe limit in the past." ;;
       old)
          years=$(((SM_HOURS + 4380) / 8760))
-         printf -v REPLY $"Powered on for %s hours, about %s years of use: failures become more likely." "$SM_HOURS" "$years"
+         bm_nfmt "Powered on for %s hours, about %s year of use: failures become more likely." "Powered on for %s hours, about %s years of use: failures become more likely." "$years" "$SM_HOURS" "$years"
          ;;
       hot) printf -v REPLY $"It is hot now (%s °C). Heat shortens its life: give it air." "$SM_TEMP" ;;
       *) REPLY="$1" ;;
@@ -228,15 +228,15 @@ bm_ds_why_text() {
       smart-failing) REPLY=$"The drive itself reports that it is failing (SMART)." ;;
       pending-sectors) printf -v REPLY $"The drive has sectors it can no longer read (%s pending), even if its overall verdict says PASSED." "${SM_PENDING:-${SM_OFFLINE:-?}}" ;;
       nvme-warning) printf -v REPLY $"The NVMe drive raised a critical warning (%s)." "$SM_NVME_WARN" ;;
-      nvme-media) printf -v REPLY $"The NVMe drive recorded %s media or data integrity errors." "$SM_NVME_MEDIA" ;;
-      io-errors) printf -v REPLY $"Since the computer was started, reading or writing failed (%s kernel messages)." "${DH_COUNT[io-errors]:-0}" ;;
-      timeouts) printf -v REPLY $"Since the computer was started, it stopped answering and the connection had to be reset (%s kernel messages)." "${DH_COUNT[timeouts]:-0}" ;;
-      usb-resets) printf -v REPLY $"Since the computer was started, the USB connection was reset or lost %s times." "${DH_COUNT[usb-resets]:-0}" ;;
+      nvme-media) bm_nfmt "The NVMe drive recorded %s media or data integrity error." "The NVMe drive recorded %s media or data integrity errors." "$SM_NVME_MEDIA" "$SM_NVME_MEDIA" ;;
+      io-errors) bm_nfmt "Since the computer was started, reading or writing failed (%s kernel message)." "Since the computer was started, reading or writing failed (%s kernel messages)." "${DH_COUNT[io-errors]:-0}" "${DH_COUNT[io-errors]:-0}" ;;
+      timeouts) bm_nfmt "Since the computer was started, it stopped answering and the connection had to be reset (%s kernel message)." "Since the computer was started, it stopped answering and the connection had to be reset (%s kernel messages)." "${DH_COUNT[timeouts]:-0}" "${DH_COUNT[timeouts]:-0}" ;;
+      usb-resets) bm_nfmt "Since the computer was started, the USB connection was reset or lost %s time." "Since the computer was started, the USB connection was reset or lost %s times." "${DH_COUNT[usb-resets]:-0}" "${DH_COUNT[usb-resets]:-0}" ;;
       slow-link) REPLY=$"Since the computer was started, the connection was slowed down after errors." ;;
       reallocated) REPLY=$"The drive already replaced damaged sectors with spare ones." ;;
-      uncorrectable) printf -v REPLY $"The drive reported %s errors it could not correct." "${SM_UNCORR:-?}" ;;
-      link-errors) printf -v REPLY $"The cable or adapter corrupted data in transit %s times (CRC errors)." "${SM_CRC:-?}" ;;
-      attrs-failing) printf -v REPLY $"%s of its SMART values are below their safe limit now." "${DH_ATTR_FAIL:-?}" ;;
+      uncorrectable) bm_nfmt "The drive reported %s error it could not correct." "The drive reported %s errors it could not correct." "${SM_UNCORR:-?}" "${SM_UNCORR:-?}" ;;
+      link-errors) bm_nfmt "The cable or adapter corrupted data in transit %s time (CRC errors)." "The cable or adapter corrupted data in transit %s times (CRC errors)." "${SM_CRC:-?}" "${SM_CRC:-?}" ;;
+      attrs-failing) bm_nfmt "%s of its SMART values is below its safe limit now." "%s of its SMART values are below their safe limit now." "${DH_ATTR_FAIL:-?}" "${DH_ATTR_FAIL:-?}" ;;
       *) REPLY="$1" ;;
    esac
 }

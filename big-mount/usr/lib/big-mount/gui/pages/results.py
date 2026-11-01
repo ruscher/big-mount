@@ -489,7 +489,10 @@ class ResultsPage(Adw.NavigationPage):
 
     def _update_count(self):
         shown = len(self.model.visible)
-        text = _("%(shown)d shown, %(sel)d selected (%(size)s)") % {"shown": shown, "sel": len(self.selected), "size": human_size(self.selected_bytes)}
+        sel = len(self.selected)
+        text = _("%(shown)s, %(sel)s (%(size)s)") % {"shown": ngettext("%d shown", "%d shown", shown) % shown,
+                                                      "sel": ngettext("%d selected", "%d selected", sel) % sel,
+                                                      "size": human_size(self.selected_bytes)}
         self.count.set_text(text)
         self.save_btn.set_sensitive(bool(self.selected))
 

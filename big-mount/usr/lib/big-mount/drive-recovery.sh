@@ -886,7 +886,7 @@ bm_rec_carve() {
       photorec /d "$dest/recup_dir" "$src"
       local rc=$? n
       n="$(find "$dest" -path "$dest/recup_dir.*" -type f ! -name report.xml 2>/dev/null | wc -l)"
-      printf $"%s files found by content in %s. Their original names and folders could not be kept."'\n' "$n" "$dest"
+      bm_nfmt "%s file found by content in %s. Its original name and folder could not be kept." "%s files found by content in %s. Their original names and folders could not be kept." "$n" "$n" "$dest"; printf '%s\n' "$REPLY"
       return "$rc"
    fi
    bm_job_id; id="$REPLY"
@@ -932,20 +932,20 @@ bm_rec_carve() {
 
 # bm_rec_status_text: the terminal view of a list or a search (state loaded)
 bm_rec_status_text() {
-   printf '%-22s %s\n' $"Source:" "${JC[SOURCE]//[[:cntrl:]]/?}"
+   bm_tty_line $"Source:" "${JC[SOURCE]//[[:cntrl:]]/?}"
    if [ "${JC[KIND]}" = scan ]; then
-      printf '%-22s %s\n' $"Files listed:" "${JS[FILES_DONE]:-0}"
-      printf '%-22s %s\n' $"Files examined:" "${JS[SCANNED]:-0}"
+      bm_tty_line $"Files listed:" "${JS[FILES_DONE]:-0}"
+      bm_tty_line $"Files examined:" "${JS[SCANNED]:-0}"
    else
-      printf '%-22s %s\n' $"Destination:" "${JC[DEST]//[[:cntrl:]]/?}"
-      printf '%-22s %s\n' $"Candidates found:" "${JS[FILES_DONE]:-0}"
+      bm_tty_line $"Destination:" "${JC[DEST]//[[:cntrl:]]/?}"
+      bm_tty_line $"Candidates found:" "${JS[FILES_DONE]:-0}"
       if [ "${JS[BYTES_TOTAL]:-0}" -gt 0 ]; then
          bm_human_size "${JS[BYTES_NOW]:-0}"; local a="$REPLY"
          bm_human_size "${JS[BYTES_TOTAL]}"
-         printf '%-22s %s / %s\n' $"Read:" "$a" "$REPLY"
+         bm_tty_line $"Read:" "$a / $REPLY"
       fi
    fi
-   bm_fmt_time "${JS[ELAPSED]:-0}"; printf '%-22s %s\n' $"Elapsed:" "$REPLY"
+   bm_fmt_time "${JS[ELAPSED]:-0}"; bm_tty_line $"Elapsed:" "$REPLY"
    bm_job_reason_text "${JS[REASON]:-}"
    [ -n "$REPLY" ] && printf '%s\n' "$REPLY"
    return 0

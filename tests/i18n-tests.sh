@@ -42,13 +42,17 @@ for po in locale/*.po; do
     check "$lang: no obsolete message left behind (#~)" bash -c '! grep -q "^#~" "$1"' _ "$po"
     check "$lang: every msgid of the template exists in the translation" \
         test -z "$(comm -23 <(msgids locale/big-mount.pot) <(msgids "$po"))"
-    # The same printf directives, in the same order, in msgid and msgstr
+    # The same printf directives, in the same order, in msgid and msgstr. A
+    # literal %% takes no argument, so it may move (Turkish writes %80)
     bad="$(python3 -I - "$po" <<'EOF'
 import re, sys
 text = open(sys.argv[1], encoding="utf-8").read()
 spec = re.compile(r"%[-+ #0]*[0-9]*(?:\.[0-9]+)?[sdiuxXfc%]")
+def args(s):
+    found = spec.findall(s)
+    return [d for d in found if d != "%%"], found.count("%%")
 for mid, mstr in re.findall(r'^msgid "(.*)"\nmsgstr "(.*)"$', text, re.M):
-    if mid and mstr and spec.findall(mid) != spec.findall(mstr):
+    if mid and mstr and args(mid) != args(mstr):
         print(mid)
 EOF
 )"
@@ -141,6 +145,14 @@ check "long Unicode label is kept whole in the terminal" grep -qF "$long" <<< "$
 check "long Unicode label is kept whole in dialogs" grep -qF "Fotos da Família — viagem ao Japão 東京" <<< "$(bm_doc_nul | tr '\0' '\n')"
 LANGUAGE=pt_BR LC_ALL=pt_BR.UTF-8 printf -v t $"%s is still in use" "$long"
 check "translated format with a Unicode argument" bash -c '[[ $1 == *"Japão"*"em uso" || $1 == *"Japão"*"in use" ]]' _ "$t"
+
+begin "plural forms and answers in the language of the messages"
+L="$REPO/big-mount/usr/lib/big-mount"
+plural() { LANGUAGE=pt_BR BIGMOUNT_LIB="$L" bash -c '. "$BIGMOUNT_LIB/cli.sh"; bm_nfmt "%s file differs" "%s files differ" "$1" "$1"; printf "%s" "$REPLY"' _ "$1"; }
+check "Portuguese, one: the singular" test "$(plural 1)" = "1 arquivo difere"
+check "Portuguese, three: the plural" test "$(plural 3)" = "3 arquivos diferem"
+check "a Portuguese s answers yes" env LANGUAGE=pt_BR BIGMOUNT_LIB="$L" bash -c '. "$BIGMOUNT_LIB/cli.sh"; bm_ui_is_yes sim'
+check "  ... a German j too" env LANGUAGE=de BIGMOUNT_LIB="$L" bash -c '. "$BIGMOUNT_LIB/cli.sh"; bm_ui_is_yes ja'
 
 echo ""
 echo "========================================="
