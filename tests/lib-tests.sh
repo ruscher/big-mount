@@ -654,6 +654,7 @@ bm_pad "Ação" 3; check "  ... also when the cut falls on an accent" eq "$REPLY
 bm_pad $'A\033[31mB' 8; check "  ... and control characters are neutralized" eq "$REPLY" "A?[31mB "
 bm_pad "日本語" 8; check "wide characters take two columns" eq "$REPLY" "日本語  "
 bm_pad "日本語テキスト" 8; check "  ... and are cut by columns" eq "$REPLY" "日本語… "
+bm_width "𠀀𠀁"; check "  ... rare ideographs of plane 2 too" eq "$REPLY" 4
 bm_fill "日本語" 8; check "a label is padded by columns" eq "$REPLY" "日本語  "
 bm_fill "Kandydaci znalezieni w pliku:" 8; check "  ... and never cut" eq "$REPLY" "Kandydaci znalezieni w pliku:"
 bm_nfmt "%s file differs" "%s files differ" 1 1; check "one: the singular form" eq "$REPLY" "1 file differs"

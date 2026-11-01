@@ -37,9 +37,9 @@ BM_SHELL_COMM=" bash zsh fish sh dash ksh mksh tcsh csh nu elvish xonsh "
 
 bm_warn() { printf 'bigmount: %s\n' "$*" >&2; }
 
-# Everything but the East Asian wide characters (CJK, kana, Hangul, full-width
-# forms), which take two terminal columns
-BM_NARROW=$'[!\u1100-\u115f\u2e80-\ua4cf\uac00-\ud7a3\uf900-\ufaff\ufe30-\ufe4f\uff00-\uff60\uffe0-\uffe6]'
+# Everything but the East Asian wide characters (CJK, its rarer ideographs in
+# planes 2 and 3, kana, Hangul, full-width forms), which take two columns
+BM_NARROW=$'[!\u1100-\u115f\u2e80-\ua4cf\uac00-\ud7a3\uf900-\ufaff\ufe30-\ufe4f\uff00-\uff60\uffe0-\uffe6\U00020000-\U0003fffd]'
 
 # bm_width TEXT: the terminal columns TEXT takes, in REPLY
 bm_width() {
