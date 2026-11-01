@@ -240,6 +240,11 @@ bm_rec_image_cmd() {
       bm_rec_refusal "$json" image-other-disk
       return
    fi
+   # Only an image started here is continued: ddrescue writes over any other file
+   if { [ -e "$img" ] || [ -L "$img" ]; } && { [ ! -f "$img.source" ] || [ ! -f "$map" ]; }; then
+      bm_rec_refusal "$json" image-exists
+      return
+   fi
    bm_cp_avail "${img%/*}"
    [ -d "${img%/*}" ] || { bm_rec_probe "$img"; bm_cp_avail "$REPLY"; }
    local have=0 avail="$REPLY" warns=()

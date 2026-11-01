@@ -120,6 +120,7 @@ bm_cp_err_text() {
       not-readable) REPLY=$"This device cannot be read by your user. Make a disk image first (bigmount --drive image), and search in the image: it also spares the disk." ;;
       image-same-disk) REPLY=$"The image cannot be stored on the disk being read." ;;
       image-other-disk) REPLY=$"An image of another disk already exists in that place. Continuing it would mix the two: choose another name." ;;
+      image-exists) REPLY=$"A file with this name already exists and is not an image started here. Choose another name." ;;
       source-replaced) REPLY=$"The device was disconnected or replaced. Nothing was done." ;;
       no-driver) REPLY=$"This computer has no driver for this filesystem. Installing the right package may solve it." ;;
       locked) REPLY=$"This volume is encrypted. Unlock it first." ;;

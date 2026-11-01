@@ -423,6 +423,9 @@ check "the whole disk" eq "$REPLY" /dev/sda
 JC=([DEVICE]=/dev/sda1 [SERIAL]=GONE [PART]=1 [SIZE]=500000000000); bm_rec_image_device
 check "a missing serial: no name fallback" eq "$REPLY" ""
 bm_is_block() { [ -b "$1" ]; }
+out="$(ddrescue() { :; }; bm_resolve() { R_DEV="$1"; }; bm_rec_check_dest() { REC_ERR=""; }
+   : > "$WORK/old.img"; bm_rec_image_cmd --source /dev/sda1 --image "$WORK/old.img" --dry-run --json)"
+check "an existing file is never imaged over" grep -q '"error":"image-exists"' <<< "$out"
 
 begin "jobs: state on disk"
 d="$BM_JOBS/20261030-140000-abcd"; mkdir -p "$d"
