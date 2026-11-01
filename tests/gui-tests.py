@@ -1248,6 +1248,12 @@ class ResultIndex(unittest.TestCase):
         self.assertEqual(list(ix.order(set(), "", "size")), [1, 2, 0])
         self.assertEqual(list(ix.order(set(), "", "name")), [1, 0, 2])
 
+    def test_search_ignores_case_and_accents(self):
+        ix = Index(str(write_index(["1\t0\tdocuments\tRELATÓRIO.pdf".encode(), b"2\t0\tdocuments\trelatorio.txt", b"3\t0\tphotos\tfoto.jpg"])))
+        ix.load()
+        self.assertEqual(list(ix.order(set(), "relatório", "folder")), [0, 1])
+        self.assertEqual(list(ix.order(set(), "RELATORIO", "folder")), [0, 1])
+
     def test_a_million_records_stay_small(self):
         import resource
         records = [b"%d\t0\tphotos\trecup_dir.1/f%07d.jpg" % (i, i) for i in range(200000)]

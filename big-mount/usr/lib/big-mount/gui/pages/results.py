@@ -14,7 +14,7 @@ from gi.repository import Adw, Gdk, Gio, GLib, GObject, Gtk
 from .. import actions
 from .. import widgets as w
 from ..common import _, human_size, ngettext
-from ..models import RESULT_CARVED
+from ..models import RESULT_CARVED, fold
 
 try:
     from gi.repository import GdkPixbuf
@@ -81,15 +81,19 @@ class Index:
         return self.raw(i).decode("utf-8", "replace")
 
     def order(self, cats, query, sort):
-        """The records to show, as indexes. Runs in a thread."""
-        q = query.casefold().encode("utf-8") if query else None
+        """The records to show, as indexes. Runs in a thread. The search ignores
+        case and accents, as on Home."""
+        q = fold(query) if query else None
         wanted = {CATEGORIES.index(c) for c in cats} if cats else None
         out = array("L")
         for i in range(len(self.starts)):
             if wanted is not None and self.cats[i] not in wanted:
                 continue
-            if q is not None and q not in self.raw(i).lower():
-                continue
+            if q is not None:
+                name = self.raw(i)
+                # Most names are ASCII: folding them is only lowering them
+                if q not in (name.lower().decode() if name.isascii() else fold(name.decode("utf-8", "replace"))):
+                    continue
             out.append(i)
         if sort == "size":
             out = array("L", sorted(out, key=lambda i: -self.sizes[i]))
