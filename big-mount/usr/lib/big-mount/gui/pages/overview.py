@@ -5,7 +5,7 @@ from gi.repository import Adw, Gtk
 
 from .. import actions
 from .. import widgets as w
-from ..common import _, human_size, save_setting, setting
+from ..common import _, human_size, ngettext, save_setting, setting
 
 VIEWS = ("list", "grid")
 CARD_WIDTH = 300
@@ -44,7 +44,8 @@ def volumes_line(dev):
             bits.append(_("%s free") % human_size(vol.avail))
         parts.append(" · ".join(b for b in bits if b))
     if len(dev.content_volumes) > 3:
-        parts.append(_("and %d more") % (len(dev.content_volumes) - 3))
+        more = len(dev.content_volumes) - 3
+        parts.append(ngettext("and %d more", "and %d more", more) % more)
     return "\n".join(parts) or _("No volume recognized")
 
 

@@ -17,7 +17,9 @@ try:
 except locale.Error:
     pass
 
-_ = gettext.translation("big-mount", LOCALE_DIR, fallback=True).gettext
+_translation = gettext.translation("big-mount", LOCALE_DIR, fallback=True)
+_ = _translation.gettext
+ngettext = _translation.ngettext
 
 WEBSITE = "https://github.com/biglinux/big-mount"
 ISSUES = "https://github.com/biglinux/big-mount/issues"

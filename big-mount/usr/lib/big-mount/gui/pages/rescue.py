@@ -9,7 +9,7 @@ import time
 from gi.repository import Adw, Gio, GLib, GObject, Gtk
 
 from .. import widgets as w
-from ..common import _, human_size, human_time
+from ..common import _, human_size, human_time, ngettext
 from ..models import Methods
 from .device import mount_volume, run_mount
 
@@ -251,7 +251,8 @@ class FilePicker(Gtk.Box):
 
     def _sync(self):
         n = len(self.marked)
-        self.count.set_text(_("%d items marked. The total is measured in the next steps.") % n if n else _("Nothing was marked."))
+        self.count.set_text(ngettext("%d item marked. The total is measured in the next steps.",
+                                     "%d items marked. The total is measured in the next steps.", n) % n if n else _("Nothing was marked."))
 
     def items(self):
         return sorted(os.path.relpath(p, self.root) for p in self.marked)
@@ -987,7 +988,7 @@ class RescueWizard(Adw.NavigationPage):
     def _what_text(self):
         plan = self.plan
         if plan.method == "copy":
-            return _("%d items you marked") % len(plan.items) if plan.items else _("Everything")
+            return ngettext("%d item you marked", "%d items you marked", len(plan.items)) % len(plan.items) if plan.items else _("Everything")
         if "all" in plan.categories:
             return _("All types")
         labels = {c["id"]: c["label"] for c in plan.methods.categories}

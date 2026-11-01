@@ -7,7 +7,7 @@ from gi.repository import Adw, Gio, GLib, Gtk
 
 from .. import actions
 from .. import widgets as w
-from ..common import _, human_size
+from ..common import _, human_size, ngettext
 
 
 def unlock_volume(window, vol, done):
@@ -284,7 +284,8 @@ class HealthView(Gtk.Box):
             group.add_row(serial)
         lines = (self.diag or {}).get("kernel") or []
         if lines:
-            r = w.row(_("Messages from the system log"), _("%d recent messages about this drive") % len(lines), activatable=True)
+            r = w.row(_("Messages from the system log"),
+                      ngettext("%d recent message about this drive", "%d recent messages about this drive", len(lines)) % len(lines), activatable=True)
             r.add_suffix(w.icon("go-next-symbolic"))
             r.connect("activated", lambda *_a: w.TextDialog(_("Messages from the system log"), "\n".join(lines)).present(self.window))
             group.add_row(r)

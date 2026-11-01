@@ -13,7 +13,7 @@ from gi.repository import Adw, Gdk, Gio, GLib, GObject, Gtk
 
 from .. import actions
 from .. import widgets as w
-from ..common import _, human_size
+from ..common import _, human_size, ngettext
 from ..models import RESULT_CARVED
 
 try:
@@ -578,7 +578,8 @@ class ResultsPage(Adw.NavigationPage):
             w.alert(self.window, _("It cannot be copied"), _("A path has a line break in its name. It cannot be handled safely."))
             return
         if skipped:
-            self.window.notify_text(_("%d files with a line break in their names were left out. They cannot be handled safely.") % skipped)
+            self.window.notify_text(ngettext("%d file with a line break in its name was left out. It cannot be handled safely.",
+                                             "%d files with a line break in their names were left out. They cannot be handled safely.", skipped) % skipped)
         hint = self.job.get("copy_to") or ""
         if hint:
             self._copy_to(kept, hint)

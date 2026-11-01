@@ -5,7 +5,7 @@ from gi.repository import Adw, GLib, Gtk
 
 from . import widgets as w
 from .about import create_about
-from .common import _
+from .common import _, ngettext
 from .engine import Engine
 from .models import Device, Job, find_device
 from .monitor import DeviceMonitor
@@ -120,7 +120,7 @@ class MainWindow(Adw.ApplicationWindow):
     def _side_row(self, kind, value, title, icon_name, subtitle=None, level=None):
         row = Route(kind, value)
         if kind == "jobs" and value[1]:
-            subtitle = _("%d running") % value[1]
+            subtitle = ngettext("%d running", "%d running", value[1]) % value[1]
         inner = w.hbox(10)
         inner.set_margin_top(6)
         inner.set_margin_bottom(6)
