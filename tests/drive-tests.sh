@@ -498,6 +498,12 @@ run_b --drive status nope >/dev/null 2>&1; check "a job that does not exist: exi
 run_b --drive mount sda1 >/dev/null 2>&1; check "mount of something that is not a device: exit 2" eq "$?" 2
 run_b --drive mount /dev/nonexistent >/dev/null 2>&1; check "mount of a device that is not there: exit 24" eq "$?" 24
 run_b --drive protect /etc >/dev/null 2>&1; check "protect of a folder: exit 2" eq "$?" 2
+r="$WORK/report.txt"; printf 'old\n' > "$r"
+run_b --drive report 20261030-140000-abcd --output "$r" >/dev/null 2>&1; check "an existing report is kept" eq "$?:$(cat "$r")" "20:old"
+run_b --drive report 20261030-140000-abcd --output "$r" --replace >/dev/null 2>&1; rc=$?
+check "  ... replaced with --replace" bash -c '[ "$1" = 0 ] && ! grep -qx old "$2"' _ "$rc" "$r"
+mkdir -p "$WORK/rdir"; run_b --drive report 20261030-140000-abcd --output "$WORK/rdir" --replace >/dev/null 2>&1
+check "  ... never into a folder" eq "$?:$(find "$WORK/rdir" -mindepth 1 | wc -l)" "20:0"
 for c in "unmount --dry-run" "safe-remove --dry-run" busy close-apps; do
    # shellcheck disable=SC2086  # the command and its option
    (cd "$WORK" && run_b --drive $c --json >/dev/null 2>&1); check "${c%% *} without a target: exit 2" eq "$?" 2

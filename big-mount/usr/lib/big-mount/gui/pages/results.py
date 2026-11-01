@@ -11,6 +11,7 @@ from array import array
 
 from gi.repository import Adw, Gdk, Gio, GLib, GObject, Gtk
 
+from .. import actions
 from .. import widgets as w
 from ..common import _, human_size
 from ..models import RESULT_CARVED
@@ -633,27 +634,7 @@ class ResultsPage(Adw.NavigationPage):
             w.open_folder(self.window, root)
 
     def _save_report(self):
-        dialog = Gtk.FileDialog(title=_("Save report"), initial_name=f"big-mount-{self.job_id}.txt")
-
-        def saved(d, res):
-            try:
-                target = d.save_finish(res)
-            except GLib.Error:
-                return
-            path = target.get_path()
-            if not path:
-                return
-            if os.path.exists(path):
-                try:
-                    os.unlink(path)
-                except OSError as exc:
-                    self.window.notify_text(str(exc))
-                    return
-
-            def written(result):
-                self.window.notify_text((result.out or result.err).strip() or _("Report written."))
-            self.window.engine.report_file(self.job_id, path, True, written)
-        dialog.save(self.window, None, saved)
+        actions.save_report(self.window, self.job_id, _("Save report"), f"big-mount-{self.job_id}.txt", True)
 
     def _other_method(self):
         self.window.open_wizard()

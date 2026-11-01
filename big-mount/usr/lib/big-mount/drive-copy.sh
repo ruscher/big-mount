@@ -1130,12 +1130,13 @@ bm_anon_filter() {
 }
 
 bm_job_cmd_report() {
-   local json=0 anon=0 target="" output="" a
+   local json=0 anon=0 target="" output="" replace=0 a tmp rc
    while [ "$#" -gt 0 ]; do
       case "$1" in
          --json) json=1 ;;
          --anonymize) anon=1 ;;
          --output) output="${2:-}"; shift ;;
+         --replace) replace=1 ;;
          -*) bm_drive_badarg "$1"; return 2 ;;
          *) target="$1" ;;
       esac
@@ -1144,7 +1145,7 @@ bm_job_cmd_report() {
    [ -n "$target" ] || { bm_drive_usage >&2; return 2; }
    if [ -n "$output" ]; then
       bm_drive_abs "$output"; output="$REPLY"
-      if [ -e "$output" ]; then
+      if [ "$replace" = 0 ] && { [ -e "$output" ] || [ -L "$output" ]; }; then
          printf $"'%s' already exists. Nothing was written."'\n' "$output" >&2
          return 20
       fi
@@ -1168,7 +1169,15 @@ bm_job_cmd_report() {
       fi
    }
    if [ -n "$output" ]; then
-      if [ "$anon" = 1 ]; then _bm_report_body | bm_anon_filter > "$output"; else _bm_report_body > "$output"; fi
+      # Written beside it and renamed: a failed report never replaces a good one
+      [ ! -d "$output" ] || { printf $"'%s' is a folder. Nothing was written."'\n' "$output" >&2; return 20; }
+      tmp="$output.$$.part"
+      ( set -o noclobber; : > "$tmp" ) 2>/dev/null || return 20
+      if [ "$anon" = 1 ]; then _bm_report_body | bm_anon_filter > "$tmp"; rc="${PIPESTATUS[0]}"; else _bm_report_body > "$tmp"; rc=$?; fi
+      if [ "$rc" -ne 0 ] || ! mv -fT -- "$tmp" "$output"; then
+         rm -f -- "$tmp"
+         return "$((rc ? rc : 20))"
+      fi
       printf $"Report written to %s"'\n' "$output"
    elif [ "$anon" = 1 ]; then
       _bm_report_body | bm_anon_filter

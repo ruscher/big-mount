@@ -1103,7 +1103,7 @@ bigmount --drive resume ID --retry-deferred    # also what was set aside: more s
 | `status ID [--watch]` | progress of one of them |
 | `pause ID`, `cancel ID` | stop safely; either can be resumed |
 | `resume ID [--retry-deferred]` | goes on; optionally tries what was set aside |
-| `report TARGET\|ID` | report of a drive or a copy; `--output FILE`, `--anonymize` |
+| `report TARGET\|ID` | report of a drive or a copy; `--output FILE [--replace]`, `--anonymize` |
 | `image --source DEV --image FILE [--map FILE] [--retries N]` | disk image with GNU ddrescue |
 | `partitions TARGET` | looks for partitions with TestDisk, changing nothing |
 | `carve --source DEV\|IMAGE --destination FOLDER` | searches for files by content with PhotoRec |
@@ -1234,8 +1234,9 @@ bigmount --drive report /dev/sdb --anonymize --output drive.txt
 
 `--anonymize` hides serial numbers, UUIDs, volume labels (also in mount points), your
 home folder and your user name. The names of the files of a copy stay, because they
-are what the report is about, so read it before you post it. An existing file is never
-overwritten by `--output`.
+are what the report is about, so read it before you post it. An existing file is
+overwritten by `--output` only with `--replace`, and only once the new report is
+written whole.
 
 Details: [architecture](docs/15-drive-architecture.md),
 [copy engine](docs/16-drive-copy-engine.md), [security](docs/17-drive-security.md),

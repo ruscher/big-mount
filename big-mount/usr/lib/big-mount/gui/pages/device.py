@@ -1,7 +1,6 @@
 """One drive: what is on it, how it is doing, what can be recovered and what was
 already done. Details are one click away and risks are never hidden."""
 
-import os
 import time
 
 from gi.repository import Adw, Gio, GLib, Gtk
@@ -547,30 +546,8 @@ class DevicePage(Adw.NavigationPage):
         dev = self.dev
 
         def answered(rid):
-            if rid == "cancel":
-                return
-            dialog = Gtk.FileDialog(title=_("Export diagnosis"), initial_name=f"big-mount-{dev.device.rsplit('/', 1)[-1]}.txt")
-
-            def saved(d, res):
-                try:
-                    target = d.save_finish(res)
-                except GLib.Error:
-                    return
-                path = target.get_path()
-                if not path:
-                    return
-                # The dialog already asked about replacing it; the engine never overwrites
-                if os.path.exists(path):
-                    try:
-                        os.unlink(path)
-                    except OSError as exc:
-                        self.window.notify_text(str(exc))
-                        return
-
-                def written(result):
-                    self.window.notify_text((result.out or result.err).strip() or _("Report written."))
-                self.window.engine.report_file(dev.device, path, rid == "hide", written)
-            dialog.save(self.window, None, saved)
+            if rid != "cancel":
+                actions.save_report(self.window, dev.device, _("Export diagnosis"), f"big-mount-{dev.device.rsplit('/', 1)[-1]}.txt", rid == "hide")
 
         w.alert(self.window, _("Export diagnosis"), _("Hide serial numbers, labels and your user name?"),
                 responses=(("cancel", _("Cancel")), ("keep", _("Keep them")), ("hide", _("Hide them"))),

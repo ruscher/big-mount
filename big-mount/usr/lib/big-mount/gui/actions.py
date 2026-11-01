@@ -4,7 +4,7 @@ through the engine, and nothing is forced: a busy volume is never unmounted
 behind the back of the programs using it (no forced or lazy unmount). The
 person sees who uses it and decides whether those programs are asked to close."""
 
-from gi.repository import Gio, Gtk
+from gi.repository import Gio, GLib, Gtk
 
 from . import widgets as w
 from .common import _
@@ -126,6 +126,22 @@ def erase(window, dev):
               "Copy what you want to keep first. The next page checks whether this drive can be erased, and asks for confirmation twice more."),
             responses=(("cancel", _("Cancel")), ("continue", _("I understand, continue"))),
             default="cancel", close="cancel", destructive=("continue",), callback=answered)
+
+
+def save_report(window, target, title, name, anonymize):
+    """The report of TARGET (a drive or a job) in a file the person chooses."""
+    def saved(dialog, res):
+        try:
+            path = dialog.save_finish(res).get_path()
+        except GLib.Error:
+            return
+        if not path:
+            return
+        # The dialog already asked about replacing it. The engine replaces it only
+        # with a report that was written whole
+        window.engine.report_file(target, path, anonymize,
+                                  lambda result: window.notify_text((result.out or result.err).strip() or _("Report written.")))
+    Gtk.FileDialog(title=title, initial_name=name).save(window, None, saved)
 
 
 def drive_target(dev):

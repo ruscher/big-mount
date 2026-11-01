@@ -145,7 +145,7 @@ bm_drive_usage() {
       "status ID [--watch]" $"progress of one of them" \
       "pause ID | cancel ID" $"stop it safely (it can be resumed later)" \
       "resume ID [--retry-deferred]" $"continue it, also after a shutdown; optionally try what was set aside" \
-      "report TARGET|ID [--anonymize]" $"report of a drive or of a copy (--output FILE)" \
+      "report TARGET|ID [--anonymize]" $"report of a drive or of a copy (--output FILE [--replace])" \
       "methods TARGET" $"which ways of recovering files can be used on it, and which is advised" \
       "image --source DEV --image FILE" $"make a disk image with GNU ddrescue" \
       "partitions TARGET [--search]" $"read the partition table with TestDisk; --search also looks for lost ones. Nothing is changed" \

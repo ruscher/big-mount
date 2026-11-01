@@ -141,7 +141,7 @@ class Engine:
         self.run(["report", target], cb, json_output=False)
 
     def report_file(self, target, path, anonymize, cb):
-        self.run(["report", target, "--output", path, *(["--anonymize"] if anonymize else [])], cb, json_output=False)
+        self.run(["report", target, "--output", path, "--replace", *(["--anonymize"] if anonymize else [])], cb, json_output=False)
 
     # ----- operations
     def mount(self, device, cb, protect=False, remount=False, diskseq=None):
