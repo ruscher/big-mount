@@ -1084,7 +1084,7 @@ msgid "bigmount: --secure-erase asks for confirmation and needs a terminal"
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/cli.sh:1095
-#: big-mount/usr/lib/big-mount/drive-erase.sh:197
+#: big-mount/usr/lib/big-mount/drive-erase.sh:205
 msgid "Another operation on this drive is in progress. Nothing was done."
 msgstr ""
 
@@ -1094,13 +1094,15 @@ msgstr ""
 
 #: big-mount/usr/lib/big-mount/cli.sh:1112
 #: big-mount/usr/lib/big-mount/cli.sh:1127
-#: big-mount/usr/lib/big-mount/drive-erase.sh:143
+#: big-mount/usr/lib/big-mount/drive-erase.sh:151
 msgid "Nothing was erased."
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/cli.sh:1118
-#: big-mount/usr/lib/big-mount/drive-erase.sh:185
-#: big-mount/usr/lib/big-mount/drive-erase.sh:188
+#: big-mount/usr/lib/big-mount/drive-erase.sh:120
+#: big-mount/usr/lib/big-mount/drive-erase.sh:193
+#: big-mount/usr/lib/big-mount/drive-erase.sh:196
+#: big-mount/usr/lib/big-mount/drive-erase.sh:213
 #: big-mount/usr/lib/big-mount/lib.sh:1297
 msgid "The drive was disconnected or replaced. Nothing was erased."
 msgstr ""
@@ -1300,7 +1302,7 @@ msgstr ""
 
 #: big-mount/usr/lib/big-mount/cli.sh:1441
 #: big-mount/usr/lib/big-mount/cli.sh:1445
-#: big-mount/usr/lib/big-mount/drive-erase.sh:212
+#: big-mount/usr/lib/big-mount/drive-erase.sh:227
 msgid "Services use this device"
 msgstr ""
 
@@ -2638,16 +2640,16 @@ msgstr ""
 msgid "The reason could not be determined. Nothing was changed on the device. See the technical details."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-erase.sh:167
-#: big-mount/usr/lib/big-mount/drive-erase.sh:174
+#: big-mount/usr/lib/big-mount/drive-erase.sh:175
+#: big-mount/usr/lib/big-mount/drive-erase.sh:182
 msgid "The confirmation is no longer valid. Nothing was erased. Start again."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-erase.sh:179
+#: big-mount/usr/lib/big-mount/drive-erase.sh:187
 msgid "The name did not match. Nothing was erased."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-erase.sh:214
+#: big-mount/usr/lib/big-mount/drive-erase.sh:229
 msgid "Erasing it will stop these services:"
 msgstr ""
 

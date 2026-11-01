@@ -1091,7 +1091,7 @@ msgid "bigmount: --secure-erase asks for confirmation and needs a terminal"
 msgstr "bigmount: --secure-erase pede confirmação e precisa de um terminal"
 
 #: big-mount/usr/lib/big-mount/cli.sh:1095
-#: big-mount/usr/lib/big-mount/drive-erase.sh:197
+#: big-mount/usr/lib/big-mount/drive-erase.sh:205
 msgid "Another operation on this drive is in progress. Nothing was done."
 msgstr "Outra operação nesta unidade está em andamento. Nada foi feito."
 
@@ -1101,13 +1101,15 @@ msgstr "Para confirmar, digite o nome da unidade (%s):"
 
 #: big-mount/usr/lib/big-mount/cli.sh:1112
 #: big-mount/usr/lib/big-mount/cli.sh:1127
-#: big-mount/usr/lib/big-mount/drive-erase.sh:143
+#: big-mount/usr/lib/big-mount/drive-erase.sh:151
 msgid "Nothing was erased."
 msgstr "Nada foi apagado."
 
 #: big-mount/usr/lib/big-mount/cli.sh:1118
-#: big-mount/usr/lib/big-mount/drive-erase.sh:185
-#: big-mount/usr/lib/big-mount/drive-erase.sh:188
+#: big-mount/usr/lib/big-mount/drive-erase.sh:120
+#: big-mount/usr/lib/big-mount/drive-erase.sh:193
+#: big-mount/usr/lib/big-mount/drive-erase.sh:196
+#: big-mount/usr/lib/big-mount/drive-erase.sh:213
 #: big-mount/usr/lib/big-mount/lib.sh:1297
 msgid "The drive was disconnected or replaced. Nothing was erased."
 msgstr "A unidade foi desconectada ou substituída. Nada foi apagado."
@@ -1307,7 +1309,7 @@ msgstr "Desmontado com sucesso. Esta unidade não pode ser desligada pelo comput
 
 #: big-mount/usr/lib/big-mount/cli.sh:1441
 #: big-mount/usr/lib/big-mount/cli.sh:1445
-#: big-mount/usr/lib/big-mount/drive-erase.sh:212
+#: big-mount/usr/lib/big-mount/drive-erase.sh:227
 msgid "Services use this device"
 msgstr "Serviços usam este dispositivo"
 
@@ -2645,16 +2647,16 @@ msgstr "A gravação não pode ser bloqueada na unidade do sistema em execução
 msgid "The reason could not be determined. Nothing was changed on the device. See the technical details."
 msgstr "Não foi possível determinar o motivo. Nada foi alterado no dispositivo. Veja os detalhes técnicos."
 
-#: big-mount/usr/lib/big-mount/drive-erase.sh:167
-#: big-mount/usr/lib/big-mount/drive-erase.sh:174
+#: big-mount/usr/lib/big-mount/drive-erase.sh:175
+#: big-mount/usr/lib/big-mount/drive-erase.sh:182
 msgid "The confirmation is no longer valid. Nothing was erased. Start again."
 msgstr "A confirmação não vale mais. Nada foi apagado. Comece de novo."
 
-#: big-mount/usr/lib/big-mount/drive-erase.sh:179
+#: big-mount/usr/lib/big-mount/drive-erase.sh:187
 msgid "The name did not match. Nothing was erased."
 msgstr "O nome não confere. Nada foi apagado."
 
-#: big-mount/usr/lib/big-mount/drive-erase.sh:214
+#: big-mount/usr/lib/big-mount/drive-erase.sh:229
 msgid "Erasing it will stop these services:"
 msgstr "Apagá-la vai parar estes serviços:"
 

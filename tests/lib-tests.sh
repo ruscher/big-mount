@@ -922,6 +922,13 @@ begin "Secure Erase from the application: a ticket, the typed name, and nothing 
    check "another drive took the name: refused" eq "$rc:${#SE_CALLS[@]}" "24:0"
    T="$(new_ticket)"; FAKE_SERIAL=SN2; SE_CALLS=(); bm_er_cmd_run "$T" --typed sda >/dev/null; rc=$?; FAKE_SERIAL=""
    check "  ... another serial: refused" eq "$rc:${#SE_CALLS[@]}" "24:0"
+   T="$(new_ticket)"; bm_drive_lock() { FAKE_SEQ=8; }; SE_CALLS=(); bm_er_cmd_run "$T" --typed sda >/dev/null; rc=$?; FAKE_SEQ=7
+   bm_drive_lock() { [ -z "${FAKE_HELD:-}" ]; }
+   check "  ... another drive took it before the release: nothing released" eq "$rc:${SE_CALLS[*]}" "24:unlock"
+   out="$(bm_er_cmd_prepare /dev/sda --expect-diskseq 8 --json)"; rc=$?
+   check "no ticket for a drive other than the one shown" eq "$rc:$(token_of <<< "$out")" "24:"
+   out="$(bm_er_cmd_prepare /dev/sda --expect-diskseq 7 --json)"
+   check "  ... the drive shown gets one" bash -c '[[ $1 =~ ^[0-9a-f]{32}$ ]]' _ "$(token_of <<< "$out")"
    T="$(new_ticket)"; printf '/dev/sda\n7|SN1\n1000\n' > "$XDG_RUNTIME_DIR/big-mount/erase-$T"; SE_CALLS=(); bm_er_cmd_run "$T" --typed sda >/dev/null; rc=$?
    check "an expired ticket: refused" eq "$rc:${#SE_CALLS[@]}" "20:0"
    T="$(new_ticket)"; FAKE_SYSTEM=1; SE_CALLS=(); bm_er_cmd_run "$T" --typed sda >/dev/null; rc=$?; FAKE_SYSTEM=""

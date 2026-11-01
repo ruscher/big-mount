@@ -1508,6 +1508,16 @@ class Erase(Base):
         pump(timeout=0.2)
         self.assertFalse(any("__erase-run" in c or "erase-prepare" in c for c in calls()))
 
+    def test_ticket_only_for_drive_shown(self):
+        page = self.open()
+        forget_calls()
+        fix("erase-prepare", {"device": "/dev/sdb", "why": "replaced", "why_text": "The drive was disconnected or replaced. Nothing was erased.", "eligible": False}, rc=24)
+        click(page, "Continue…")
+        self.dialog().emit("response", "continue")
+        self.see("The drive was disconnected or replaced. Nothing was erased.", page)
+        self.assertIn("--expect-diskseq 7", next(c for c in calls() if "erase-prepare" in c))
+        self.assertIsNone(page.token)
+
     def refusal(self, why, text_):
         forget_calls()
         page = self.open({**ERASE_OK, "eligible": False, "why": why, "why_text": text_})

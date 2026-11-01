@@ -94,7 +94,7 @@ class MaintenancePage(Adw.NavigationPage):
     def _first_confirmation(self):
         def answered(rid):
             if rid == "continue":
-                self.window.engine.erase_prepare(self.dev.device, self._prepared)
+                self.window.engine.erase_prepare(self.dev.device, self._prepared, diskseq=self.check.get("diskseq"))
         w.alert(self.window, _("Erase the whole drive?"),
                 _("Every file on %s will be lost for good. Have you copied what you need?") % self.check.get("name", ""),
                 responses=(("cancel", _("Cancel")), ("continue", _("Continue…"))),

@@ -254,8 +254,11 @@ class Engine:
     def erase_check(self, device, cb):
         self.run(["erase-check", device], cb)
 
-    def erase_prepare(self, device, cb):
-        self.run(["erase-prepare", device], cb)
+    def erase_prepare(self, device, cb, diskseq=None):
+        args = ["erase-prepare", device]
+        if diskseq is not None:
+            args += ["--expect-diskseq", str(diskseq)]
+        self.run(args, cb)
 
     def erase_run(self, token, typed, cb, allow_services=False, unfreeze=False):
         args = ["__erase-run", token, "--typed", typed]

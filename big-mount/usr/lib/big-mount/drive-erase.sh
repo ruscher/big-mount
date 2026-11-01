@@ -101,10 +101,12 @@ bm_er_identity() {
 }
 
 bm_er_cmd_prepare() {
-   local target="" a rc token dir f
+   local target="" a rc token dir f expect="" next=""
    for a in "$@"; do
+      if [ "$next" = seq ]; then expect="$a"; next=""; continue; fi
       case "$a" in
          --json) ;;
+         --expect-diskseq) next=seq ;;
          -*) bm_drive_badarg "$a"; return 2 ;;
          *) target="$a" ;;
       esac
@@ -112,6 +114,12 @@ bm_er_cmd_prepare() {
    [ -n "$target" ] || { bm_drive_usage >&2; return 2; }
    bm_er_facts "$target"; rc=$?
    [ "$rc" -eq 0 ] || return "$rc"
+   # The window names the drive it showed: no ticket for another one under that name
+   bm_diskseq "$DD_DISK"
+   if [ -n "$expect" ] && [ "$REPLY" != "$expect" ]; then
+      printf '{%s,%s}\n' "$(bm_jo_inner device "$DD_DISK" why replaced why_text $"The drive was disconnected or replaced. Nothing was erased.")" "$(bm_jb eligible 0)"
+      return 24
+   fi
    if ! bm_erase_check "$DD_DISK"; then
       bm_er_check_json "$DD_DISK"
       return 20
@@ -197,7 +205,14 @@ bm_er_cmd_run() {
       bm_er_refuse locked 10 $"Another operation on this drive is in progress. Nothing was done."
       return
    fi
-   bm_diskseq "$disk"; seq="$REPLY"
+   # The drive of the ticket, compared again before anything is unmounted
+   seq="${identity%%|*}"
+   bm_diskseq "$disk"
+   if [ "$REPLY" != "$seq" ]; then
+      bm_drive_unlock
+      bm_er_refuse replaced 24 $"The drive was disconnected or replaced. Nothing was erased."
+      return
+   fi
    RM_ALLOW_SERVICES="$services"
    bm_remove_core release "$disk"; rc=$?
    case "$rc" in

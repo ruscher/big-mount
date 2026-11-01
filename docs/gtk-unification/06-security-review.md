@@ -43,12 +43,14 @@ Motor intocado: `bm_erase_check` decide quem pode, `bm_erase_run` apaga via
 1. `erase-check` — elegibilidade e partições; não altera nada.
 2. Confirmação 1 na janela: explicação em vermelho, “NÃO É RECUPERAÇÃO”, Cancelar
    como padrão e Escape.
-3. `erase-prepare` — revalida e cria um **ticket** aleatório de 128 bits, `0600`,
+3. `erase-prepare --expect-diskseq N` — revalida, recusa um disco que não é o
+   que a janela mostrou e cria um **ticket** aleatório de 128 bits, `0600`,
    amarrado a disco + diskseq + serial, válido 10 minutos, de uso único.
 4. Confirmação 2: o nome do disco digitado; o botão só habilita com o nome exato, e
    Enter não apaga.
 5. `__erase-run TICKET --typed NOME` — compara o nome **no Shell**, revalida
-   identidade e elegibilidade, trava o disco, libera (montagens/LUKS), e para em
+   identidade e elegibilidade, trava o disco, confere de novo o diskseq do ticket,
+   libera (montagens/LUKS), e para em
    serviços dependentes ou estado *frozen* devolvendo a pergunta; só continua com
    `--allow-services`/`--unfreeze` depois de uma decisão explícita. polkit pede a
    senha de administrador como sempre.
