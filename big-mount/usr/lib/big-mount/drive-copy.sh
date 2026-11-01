@@ -543,23 +543,24 @@ bm_job_out_line() {
    esac
 }
 
-# What rsync added to both records since the last look. Errors first: they
-# are about attempts already logged, or about to be.
+# What rsync added to both records since the last look. The log first: an
+# attempt is logged before the error about it, and both often arrive in the
+# same look (the retry of a file and its ERROR)
 bm_job_read_log() {
    local line
-   if [ -n "${BM_OUT_FD:-}" ]; then
-      while IFS= read -r -u "$BM_OUT_FD" line; do
-         bm_job_out_line "$BM_OUT_PART$line"
-         BM_OUT_PART=""
-      done
-      BM_OUT_PART+="$line"
-   fi
    if [ -n "${BM_LOG_FD:-}" ]; then
       while IFS= read -r -u "$BM_LOG_FD" line; do
          bm_job_log_line "$BM_LOG_PART$line"
          BM_LOG_PART=""
       done
       BM_LOG_PART+="$line"
+   fi
+   if [ -n "${BM_OUT_FD:-}" ]; then
+      while IFS= read -r -u "$BM_OUT_FD" line; do
+         bm_job_out_line "$BM_OUT_PART$line"
+         BM_OUT_PART=""
+      done
+      BM_OUT_PART+="$line"
    fi
 }
 

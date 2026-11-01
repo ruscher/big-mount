@@ -418,6 +418,19 @@ bm_job_out_line 'rsync: [sender] send_files failed to open "/src/segredo": Permi
 check "no permission" eq "${BM_FAILED[segredo]:-}" "Permission denied"
 bm_job_out_line 'rsync error: some files/attrs were not transferred (see previous errors) (code 23)'
 check "a summary line is not a file" eq "${#BM_FAILED[@]}" 3
+# rsync 3.5 logs both attempts of a file it cannot read and then says ERROR,
+# and both records are read once a second: the retry and its verdict often
+# arrive in the same look
+mkdir -p "$WORK/tick"; : > "$WORK/tick/events.log"; : > "$WORK/tick/rsync.out"
+( BM_RUN_DIR="$WORK/tick" JS=([FILES_DONE]=0 [BYTES_DONE]=0) BM_RECENT_A=() BM_RECENT_B=() BM_LOG_PART="" BM_OUT_PART=""
+  exec {BM_LOG_FD}<"$WORK/tick/events.log" {BM_OUT_FD}<"$WORK/tick/rsync.out"
+  printf '2026/10/30 14:37:02 [1] >f+++++++++|1000|ruim.bin\n' >> "$WORK/tick/events.log"
+  bm_job_read_log
+  printf '2026/10/30 14:37:03 [1] >f+++++++++|1000|ruim.bin\n' >> "$WORK/tick/events.log"
+  printf 'ERROR: ruim.bin failed verification -- update discarded.\n' >> "$WORK/tick/rsync.out"
+  bm_job_read_log
+  printf '%s %s\n' "${JS[FILES_DONE]}" "${JS[BYTES_DONE]}" > "$WORK/tick/result" )
+check "retry and error together: not counted" eq "$(cat "$WORK/tick/result")" "0 0"
 bm_pwned() { : > "$WORK/pwned"; }
 ll '>f+++++++++|7|$(bm_pwned)'
 bm_job_out_line 'WARNING: $(bm_pwned) failed verification -- update discarded (will try again).'
