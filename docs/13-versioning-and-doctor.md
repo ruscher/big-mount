@@ -5,36 +5,18 @@ Round 7, item F10 of [12](12-field-report.md). The question it answers is:
 
 ## 1. The problem
 
-`pkgbuild/PKGBUILD` used `pkgver=$(date +%y.%m.%d)` and
-`pkgrel=$(date +%H%M)`, which is the time of the **build**. Two builds of
-the same commit got different versions, and nothing in a package said
-which commit it came from. On the development machine,
-`big-mount 26.10.22-1342` is installed. The integration suite shows that it
-predates v2.1.3 (it fails the v2.1.3 tests), but its version cannot tell
-which commit it is. The same problem hid the six months in which the
-stable repository kept the December 2025 script (12, E1–E2).
+The package version is the time of the **build**, as in every BigLinux
+package, and says nothing about the commit a package came from:
+`/usr/lib/big-mount/version` does. Without it, nothing showed the six months in
+which the stable repository kept the December 2025 script (12, E1–E2).
 
 ## 2. Versioning
 
-- `pkgver()` returns the UTC date and time of the **commit**, as
-  `YY.MM.DD.HHMM`, and `pkgrel=1`.
-- Ordering with the versions already published (checked with `vercmp` in
-  `tests/package-check.sh`):
-  `26.10.25.1342-1 > 26.10.22-1342 > 26.04.24-0149 > 25.12.23-2237`. A
-  version with one more numeric field is newer, so no `epoch` is needed,
-  and the BigLinux convention (dates) is kept. The real build
-  `26.10.26.0139-1` was checked with `vercmp` against the three published
-  versions.
-- The same commit always gives the same version. Commits less than a
-  minute apart would share it, which is acceptable for a repository
-  updated by hand.
-- The static `pkgver=` is a single word. makepkg writes the result of
-  `pkgver()` back with `${line/#pkgver=*([^ ])/…}`
-  (`/usr/bin/makepkg`, `update_pkgver`), which stops at the first space. A
-  first draft used `pkgver=$(date -u …)`: the first build worked, and the
-  second failed with a syntax error. Two real `makepkg` runs in a row now
-  give the same `26.10.26.0139-1`, and `package-check.sh` applies the same
-  substitution twice.
+- The package version is the build date and time, as in every BigLinux
+  package: `pkgver=$(date +%y.%m.%d)` and `pkgrel=$(date +%H%M)`. Each build
+  of the BigLinux build service is newer than the one before, including a
+  rebuild of the same commit. There is no `pkgver()`: makepkg only rewrites
+  the `pkgver=` line when one exists.
 - `package()` writes `/usr/lib/big-mount/version`:
 
   ```text

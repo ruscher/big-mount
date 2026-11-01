@@ -1,15 +1,11 @@
 # Maintainer: Bruno Goncalves <bigbruno@gmail.com>
 
 pkgname=big-mount
-# The version is the date and time (UTC) of the commit the package is built
-# from, set by pkgver() below: the same source always gives the same
-# version, and it keeps growing like the build dates used before
-# (26.10.25.1342 > 26.10.22-1342). The commit itself goes into
+# The build date and time, as every BigLinux package: each build of the build
+# service is newer than the last. The commit it was built from goes into
 # /usr/lib/big-mount/version, shown by "bigmount --version".
-# makepkg writes the result of pkgver() on the next line with
-# ${line/#pkgver=*([^ ])/...}: it must stay a single word, never $(date ...)
-pkgver=26.10.31.0128
-pkgrel=1
+pkgver=$(date +%y.%m.%d)
+pkgrel=$(date +%H%M)
 arch=('any')
 license=('GPL')
 # The boot path needs only bash, util-linux, udisks2 and ntfs-3g. The rest is the
@@ -33,11 +29,6 @@ pkgdesc="Mounts internal partitions at boot; diagnoses drives, rescues files fro
 source=("git+https://github.com/biglinux/big-mount.git")
 makedepends=("git")
 md5sums=(SKIP)
-
-pkgver() {
-    cd "${srcdir}/${pkgname}" || return 1
-    TZ=UTC git log -1 --date=format-local:%y.%m.%d.%H%M --format=%cd
-}
 
 package() {
     # Verify default folder

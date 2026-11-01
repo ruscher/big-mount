@@ -252,12 +252,9 @@ Big-Mount 2.2.0
   source:   https://github.com/ruscher/big-mount
 ```
 
-The package version is the UTC date and time of the commit it was built
-from (`YY.MM.DD.HHMM`), so the same source always gives the same version
-(two builds of `0cbac17` both gave `26.10.26.0139-1`),
-and the full commit is stored in `/usr/lib/big-mount/version`. Packages
-built before this change used the build time instead (`26.10.22-1342`) and
-cannot be traced to a commit.
+The package version is the build date and time, as in every BigLinux
+package (`26.10.22-1342`), and the full commit it was built from is stored in
+`/usr/lib/big-mount/version`.
 
 ### 2.5 Requirements
 
@@ -1801,9 +1798,9 @@ downloads `biglinux/big-mount` (`url`/`source`). `pkgbuild/big-mount.install`
 only prints messages; it restarts nothing.
 
 The version of Big-Mount itself (`BM_VERSION` in `doctor.sh`, shown by
-`bigmount --version`) follows `MAJOR.MINOR.PATCH`. The package version comes
-from `pkgver()`: the UTC date and time of the commit, never the build time, and
-`package()` writes the commit to `/usr/lib/big-mount/version`
+`bigmount --version`) follows `MAJOR.MINOR.PATCH`. The package version is the
+build date and time, as in every BigLinux package, and `package()` writes the
+commit it was built from to `/usr/lib/big-mount/version`
 ([2.4](#24-what-happens-on-installation-and-updates)). Every picture of the
 application and of its dialogs in this README comes from
 `tests/readme-screenshots.py`, with sample drives. To test a branch, use
