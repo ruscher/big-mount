@@ -189,8 +189,8 @@ The build service also attaches every package it builds to a
 sudo pacman -U ./big-mount-*.pkg.tar.zst
 ```
 
-The release name is the package version, the date and time of the commit it was
-built from ([2.4](#24-what-happens-on-installation-and-updates)). After
+The release name is the package version, the date and time it was built
+([2.4](#24-what-happens-on-installation-and-updates)). After
 installing, `bigmount --version` says which Big-Mount it is: the application
 needs 2.4.0 or later, its Home 2.5.0, and the welcome and the GTK dialogs 2.6.0.
 
