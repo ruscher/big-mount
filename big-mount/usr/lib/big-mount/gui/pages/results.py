@@ -80,13 +80,15 @@ class Index:
     def text(self, i):
         return self.raw(i).decode("utf-8", "replace")
 
-    def order(self, cats, query, sort):
-        """The records to show, as indexes. Runs in a thread. The search ignores
-        case and accents, as on Home."""
+    def order(self, cats, query, sort, keep_going=lambda: True):
+        """The records to show, as indexes, or None when keep_going() said to stop.
+        Runs in a thread. The search ignores case and accents, as on Home."""
         q = fold(query) if query else None
         wanted = {CATEGORIES.index(c) for c in cats} if cats else None
         out = array("L")
         for i in range(len(self.starts)):
+            if i % 20000 == 0 and not keep_going():
+                return None
             if wanted is not None and self.cats[i] not in wanted:
                 continue
             if q is not None:
@@ -407,8 +409,10 @@ class ResultsPage(Adw.NavigationPage):
                 self.all_chip.set_active(False)
         else:
             self.filters.discard(cat)
-            if not self.filters and not self.all_chip.get_active():
-                self.all_chip.set_active(True)
+            if not self.filters:
+                # Turning "All" on refilters by itself
+                if not self.all_chip.get_active():
+                    self.all_chip.set_active(True)
                 return
         self._refilter()
 
@@ -435,8 +439,10 @@ class ResultsPage(Adw.NavigationPage):
         index, filters, query, sort = self.index, set(self.filters), self.query, self.sort
 
         def work():
-            order = index.order(filters, query, sort)
-            GLib.idle_add(self._show_order, generation, order)
+            # A newer filter makes this one useless: it stops instead of competing
+            order = index.order(filters, query, sort, lambda: generation == self.generation)
+            if order is not None:
+                GLib.idle_add(self._show_order, generation, order)
         threading.Thread(target=work, daemon=True).start()
 
     def _show_order(self, generation, order):
