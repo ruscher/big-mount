@@ -190,7 +190,7 @@ msgstr "TARGET — это устройство (/dev/sdb1) или любая п�
 #: big-mount/usr/lib/big-mount/cli.sh:106
 #: big-mount/usr/lib/big-mount/cli.sh:799
 #: big-mount/usr/lib/big-mount/cli.sh:1070
-#: big-mount/usr/lib/big-mount/doctor.sh:449
+#: big-mount/usr/lib/big-mount/doctor.sh:447
 #: big-mount/usr/lib/big-mount/drive.sh:227
 msgid "bigmount: unknown option '%s' (see bigmount --help)"
 msgstr "bigmount: неизвестный параметр «%s» (см. bigmount --help)"
@@ -421,7 +421,7 @@ msgstr "Не удалось определить состояние этого �
 
 #: big-mount/usr/lib/big-mount/cli.sh:218
 #: big-mount/usr/lib/big-mount/cli.sh:880
-#: big-mount/usr/lib/big-mount/doctor.sh:57
+#: big-mount/usr/lib/big-mount/doctor.sh:55
 msgid "unknown"
 msgstr "неизвестно"
 
@@ -1084,7 +1084,7 @@ msgstr "Ничего не стёрто."
 #: big-mount/usr/lib/big-mount/drive-erase.sh:201
 #: big-mount/usr/lib/big-mount/drive-erase.sh:204
 #: big-mount/usr/lib/big-mount/drive-erase.sh:221
-#: big-mount/usr/lib/big-mount/lib.sh:1331
+#: big-mount/usr/lib/big-mount/lib.sh:1339
 msgid "The drive was disconnected or replaced. Nothing was erased."
 msgstr "Диск был отсоединён или заменён. Ничего не стёрто."
 
@@ -1385,375 +1385,375 @@ msgstr "ревизия:"
 msgid "source:"
 msgstr "источник:"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:125
+#: big-mount/usr/lib/big-mount/doctor.sh:123
 msgid "%s is the legacy script (2025 or earlier): it cuts NVMe and SD card names (nvme0n1p1 becomes nvme)"
 msgstr "%s — устаревший сценарий (2025 года или ранее): он обрезает имена NVMe и SD-карт (nvme0n1p1 превращается в nvme)"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:127
+#: big-mount/usr/lib/big-mount/doctor.sh:125
 msgid "Symptoms: 'cat: /sys/block/nvme/removable' and 'Error looking up object for device /dev/nvme'. Update the big-mount package."
 msgstr "Признаки: «cat: /sys/block/nvme/removable» и «Error looking up object for device /dev/nvme». Обновите пакет big-mount."
 
-#: big-mount/usr/lib/big-mount/doctor.sh:130
+#: big-mount/usr/lib/big-mount/doctor.sh:128
 msgid "%s reads /var/lib/sddm/state.conf without checking it may: 'Permission denied' when a user runs it"
 msgstr "%s читает /var/lib/sddm/state.conf, не проверив, есть ли у него доступ: «Permission denied», когда его запускает пользователь"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:132
+#: big-mount/usr/lib/big-mount/doctor.sh:130
 msgid "Update the big-mount package. Never change the permissions of the files of SDDM to work around it."
 msgstr "Обновите пакет big-mount. Никогда не меняйте права доступа к файлам SDDM, чтобы обойти это."
 
-#: big-mount/usr/lib/big-mount/doctor.sh:135
+#: big-mount/usr/lib/big-mount/doctor.sh:133
 msgid "%s has no diagnosis or safe removal: every option is ignored and it tries to mount the internal partitions instead"
 msgstr "В %s нет диагностики и безопасного извлечения: все параметры игнорируются, и вместо этого он пытается смонтировать внутренние разделы"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:137
+#: big-mount/usr/lib/big-mount/doctor.sh:135
 msgid "Commands such as 'bigmount --diagnose' do not diagnose anything and may print permission errors. Update the big-mount package."
 msgstr "Команды вроде «bigmount --diagnose» ничего не диагностируют и могут выводить ошибки прав доступа. Обновите пакет big-mount."
 
-#: big-mount/usr/lib/big-mount/doctor.sh:145
+#: big-mount/usr/lib/big-mount/doctor.sh:143
 #: big-mount/usr/lib/big-mount/drive.sh:692
 msgid "Big-Mount"
 msgstr "Big-Mount"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:149
+#: big-mount/usr/lib/big-mount/doctor.sh:147
 msgid "This is not the installed copy (a source checkout or an unpacked package); the installed one is checked below."
 msgstr "Это не установленная копия (рабочая копия исходного кода или распакованный пакет); установленная проверяется ниже."
 
-#: big-mount/usr/lib/big-mount/doctor.sh:156
+#: big-mount/usr/lib/big-mount/doctor.sh:154
 msgid "bigmount is not in PATH"
 msgstr "bigmount не найден в PATH"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:156
-#: big-mount/usr/lib/big-mount/doctor.sh:169
+#: big-mount/usr/lib/big-mount/doctor.sh:154
+#: big-mount/usr/lib/big-mount/doctor.sh:167
 msgid "Install the big-mount package."
 msgstr "Установите пакет big-mount."
 
-#: big-mount/usr/lib/big-mount/doctor.sh:162
+#: big-mount/usr/lib/big-mount/doctor.sh:160
 msgid "Another copy of bigmount is found in PATH before or besides the package"
 msgstr "В PATH найдена другая копия bigmount, раньше пакетной или помимо неё"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:167
+#: big-mount/usr/lib/big-mount/doctor.sh:165
 msgid "/usr/bin/bigmount is the current generation (no known defect of older versions)"
 msgstr "/usr/bin/bigmount — текущее поколение (без известных дефектов старых версий)"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:169
+#: big-mount/usr/lib/big-mount/doctor.sh:167
 msgid "/usr/bin/bigmount is missing"
 msgstr "/usr/bin/bigmount отсутствует"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:180
+#: big-mount/usr/lib/big-mount/doctor.sh:178
 msgid "The installed package is older than Big-Mount %s (it has no bigmount --doctor)"
 msgstr "Установленный пакет старше Big-Mount %s (в нём нет bigmount --doctor)"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:181
+#: big-mount/usr/lib/big-mount/doctor.sh:179
 msgid "Update the big-mount package."
 msgstr "Обновите пакет big-mount."
 
-#: big-mount/usr/lib/big-mount/doctor.sh:184
+#: big-mount/usr/lib/big-mount/doctor.sh:182
 msgid "Missing file of the package: %s"
 msgstr "Отсутствует файл пакета: %s"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:185
-#: big-mount/usr/lib/big-mount/doctor.sh:197
-#: big-mount/usr/lib/big-mount/doctor.sh:249
+#: big-mount/usr/lib/big-mount/doctor.sh:183
+#: big-mount/usr/lib/big-mount/doctor.sh:195
+#: big-mount/usr/lib/big-mount/doctor.sh:247
 msgid "Reinstall the big-mount package."
 msgstr "Переустановите пакет big-mount."
 
-#: big-mount/usr/lib/big-mount/doctor.sh:196
+#: big-mount/usr/lib/big-mount/doctor.sh:194
 msgid "Unsafe owner or permissions: %s (%s)"
 msgstr "Небезопасный владелец или права доступа: %s (%s)"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:205
+#: big-mount/usr/lib/big-mount/doctor.sh:203
 msgid "Installed files differ from the package"
 msgstr "Установленные файлы отличаются от пакета"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:207
+#: big-mount/usr/lib/big-mount/doctor.sh:205
 msgid "Installed files match the package"
 msgstr "Установленные файлы совпадают с пакетом"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:211
+#: big-mount/usr/lib/big-mount/doctor.sh:209
 msgid "Package built from %s"
 msgstr "Пакет собран из %s"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:218
+#: big-mount/usr/lib/big-mount/doctor.sh:216
 msgid "A newer version is in the repository (%s: %s); installed: %s"
 msgstr "В репозитории есть более новая версия (%s: %s); установлена: %s"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:219
+#: big-mount/usr/lib/big-mount/doctor.sh:217
 msgid "Update the whole system: sudo pacman -Syu"
 msgstr "Обновите всю систему: sudo pacman -Syu"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:222
+#: big-mount/usr/lib/big-mount/doctor.sh:220
 msgid "The installed version (%s) is newer than the one of the repository (%s: %s)"
 msgstr "Установленная версия (%s) новее версии из репозитория (%s: %s)"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:228
+#: big-mount/usr/lib/big-mount/doctor.sh:226
 msgid "The obsolete package big-mount-git is also installed"
 msgstr "Также установлен устаревший пакет big-mount-git"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:234
+#: big-mount/usr/lib/big-mount/doctor.sh:232
 msgid "Boot service (big-mount.service)"
 msgstr "Служба загрузки (big-mount.service)"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:236
+#: big-mount/usr/lib/big-mount/doctor.sh:234
 msgid "/etc/bigmountall-no exists: mounting at boot is disabled on purpose"
 msgstr "Существует /etc/bigmountall-no: монтирование при загрузке отключено намеренно"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:248
+#: big-mount/usr/lib/big-mount/doctor.sh:246
 msgid "Enabled at boot"
 msgstr "Включена при загрузке"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:249
+#: big-mount/usr/lib/big-mount/doctor.sh:247
 msgid "Not found by systemd"
 msgstr "Не найдена systemd"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:250
+#: big-mount/usr/lib/big-mount/doctor.sh:248
 msgid "Not enabled at boot (%s)"
 msgstr "Не включена при загрузке (%s)"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:250
+#: big-mount/usr/lib/big-mount/doctor.sh:248
 msgid "Enable it: sudo systemctl enable big-mount"
 msgstr "Включите её: sudo systemctl enable big-mount"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:253
+#: big-mount/usr/lib/big-mount/doctor.sh:251
 msgid "Ran in this boot"
 msgstr "Выполнялась при этой загрузке"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:255
+#: big-mount/usr/lib/big-mount/doctor.sh:253
 msgid "State in this boot: %s (%s)"
 msgstr "Состояние при этой загрузке: %s (%s)"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:256
+#: big-mount/usr/lib/big-mount/doctor.sh:254
 msgid "See: journalctl -b -u big-mount"
 msgstr "См.: journalctl -b -u big-mount"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:259
+#: big-mount/usr/lib/big-mount/doctor.sh:257
 msgid "The unit is replaced by %s"
 msgstr "Модуль заменён на %s"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:260
+#: big-mount/usr/lib/big-mount/doctor.sh:258
 msgid "A copy in /etc/systemd/system overrides the package: remove it unless it is intended."
 msgstr "Копия в /etc/systemd/system переопределяет пакет: удалите её, если это не сделано намеренно."
 
-#: big-mount/usr/lib/big-mount/doctor.sh:262
+#: big-mount/usr/lib/big-mount/doctor.sh:260
 msgid "Drop-in files change the unit: %s"
 msgstr "Модуль изменён дополнительными файлами (drop-in): %s"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:272
+#: big-mount/usr/lib/big-mount/doctor.sh:270
 msgid "Partitions handled by Big-Mount at boot: %d"
 msgstr "Разделов, обработанных Big-Mount при загрузке: %d"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:273
+#: big-mount/usr/lib/big-mount/doctor.sh:271
 msgid "Failed at boot"
 msgstr "Сбой при загрузке"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:274
+#: big-mount/usr/lib/big-mount/doctor.sh:272
 msgid "Mounted read-only at boot"
 msgstr "Смонтированы только для чтения при загрузке"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:280
+#: big-mount/usr/lib/big-mount/doctor.sh:278
 msgid "Configuration: PERMISSIONS=%s"
 msgstr "Конфигурация: PERMISSIONS=%s"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:281
+#: big-mount/usr/lib/big-mount/doctor.sh:279
 msgid "Configuration: unknown PERMISSIONS value, shared is used"
 msgstr "Конфигурация: неизвестное значение PERMISSIONS, используется shared"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:289
+#: big-mount/usr/lib/big-mount/doctor.sh:287
 msgid "Warnings in the journal of this boot"
 msgstr "Предупреждения в журнале этой загрузки"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:292
+#: big-mount/usr/lib/big-mount/doctor.sh:290
 msgid "The journal is not readable by this user: boot messages not checked"
 msgstr "Этот пользователь не может читать журнал: сообщения загрузки не проверены"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:298
+#: big-mount/usr/lib/big-mount/doctor.sh:296
 msgid "Desktop session"
 msgstr "Сеанс рабочего стола"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:299
+#: big-mount/usr/lib/big-mount/doctor.sh:297
 msgid "Session: %s, desktop: %s, language: %s"
 msgstr "Сеанс: %s, рабочий стол: %s, язык: %s"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:303
+#: big-mount/usr/lib/big-mount/doctor.sh:301
 msgid "copying files off a drive"
 msgstr "копирование файлов с диска"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:303
+#: big-mount/usr/lib/big-mount/doctor.sh:301
 msgid "SMART details"
 msgstr "подробности SMART"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:303
+#: big-mount/usr/lib/big-mount/doctor.sh:301
 msgid "disk images"
 msgstr "образы дисков"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:303
+#: big-mount/usr/lib/big-mount/doctor.sh:301
 msgid "lost partitions"
 msgstr "потерянные разделы"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:303
+#: big-mount/usr/lib/big-mount/doctor.sh:301
 msgid "search by content"
 msgstr "поиск по содержимому"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:305
+#: big-mount/usr/lib/big-mount/doctor.sh:303
 msgid "Drive manager, %s: %s"
 msgstr "Управление дисками, %s: %s"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:306
+#: big-mount/usr/lib/big-mount/doctor.sh:304
 msgid "Drive manager, %s: %s is not installed"
 msgstr "Управление дисками, %s: %s не установлен"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:309
+#: big-mount/usr/lib/big-mount/doctor.sh:307
 msgid "Application and dialogs: GTK 4 and libadwaita"
 msgstr "Приложение и диалоги: GTK 4 и libadwaita"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:310
+#: big-mount/usr/lib/big-mount/doctor.sh:308
 msgid "The application and the dialogs need gtk4, libadwaita 1.5 or later and python-gobject: bigmount --gui-drive cannot open and questions are asked in the terminal. bigmount --drive works without them"
 msgstr "Приложению и диалогам нужны gtk4, libadwaita 1.5 или новее и python-gobject: bigmount --gui-drive не может открыться, а вопросы задаются в терминале. bigmount --drive работает без них"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:312
+#: big-mount/usr/lib/big-mount/doctor.sh:310
 msgid "Notifications: notify-send"
 msgstr "Уведомления: notify-send"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:313
+#: big-mount/usr/lib/big-mount/doctor.sh:311
 msgid "notify-send (libnotify) is not installed: no notifications"
 msgstr "notify-send (libnotify) не установлен: уведомлений не будет"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:313
+#: big-mount/usr/lib/big-mount/doctor.sh:311
 msgid "Install libnotify."
 msgstr "Установите libnotify."
 
-#: big-mount/usr/lib/big-mount/doctor.sh:316
+#: big-mount/usr/lib/big-mount/doctor.sh:314
 msgid "No session D-Bus: notifications cannot be shown"
 msgstr "Нет сеансовой шины D-Bus: уведомления не могут быть показаны"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:321
+#: big-mount/usr/lib/big-mount/doctor.sh:319
 msgid "The read-only notifier is off (it can be turned on in the menu of the application)"
 msgstr "Служба уведомлений о режиме только для чтения выключена (её можно включить в меню приложения)"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:323
+#: big-mount/usr/lib/big-mount/doctor.sh:321
 msgid "The read-only notifier is running"
 msgstr "Служба уведомлений о режиме только для чтения работает"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:325
+#: big-mount/usr/lib/big-mount/doctor.sh:323
 msgid "The read-only notifier is on but not running"
 msgstr "Служба уведомлений о режиме только для чтения включена, но не работает"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:325
+#: big-mount/usr/lib/big-mount/doctor.sh:323
 msgid "It starts at the next login."
 msgstr "Она запустится при следующем входе в систему."
 
-#: big-mount/usr/lib/big-mount/doctor.sh:336
+#: big-mount/usr/lib/big-mount/doctor.sh:334
 msgid "Storage stack"
 msgstr "Подсистема хранения"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:347
+#: big-mount/usr/lib/big-mount/doctor.sh:345
 msgid "Missing program: %s"
 msgstr "Отсутствует программа: %s"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:348
+#: big-mount/usr/lib/big-mount/doctor.sh:346
 msgid "Install the dependencies of big-mount (util-linux, udisks2, lsof, glib2)."
 msgstr "Установите зависимости big-mount (util-linux, udisks2, lsof, glib2)."
 
-#: big-mount/usr/lib/big-mount/doctor.sh:351
+#: big-mount/usr/lib/big-mount/doctor.sh:349
 msgid "UDisks2 answers on the system D-Bus"
 msgstr "UDisks2 отвечает на системной шине D-Bus"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:353
+#: big-mount/usr/lib/big-mount/doctor.sh:351
 msgid "UDisks2 does not answer on the system D-Bus"
 msgstr "UDisks2 не отвечает на системной шине D-Bus"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:353
+#: big-mount/usr/lib/big-mount/doctor.sh:351
 msgid "Plasma and Big-Mount cannot mount or remove devices. Check: systemctl status udisks2"
 msgstr "Plasma и Big-Mount не могут монтировать или извлекать устройства. Проверьте: systemctl status udisks2"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:357
+#: big-mount/usr/lib/big-mount/doctor.sh:355
 msgid "Polkit knows the action of Big-Mount"
 msgstr "Polkit знает действие Big-Mount"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:359
+#: big-mount/usr/lib/big-mount/doctor.sh:357
 msgid "Polkit does not know org.biglinux.big-mount.inspect-processes"
 msgstr "Polkit не знает org.biglinux.big-mount.inspect-processes"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:359
+#: big-mount/usr/lib/big-mount/doctor.sh:357
 msgid "'Show programs of all users' will not work. Reinstall the big-mount package."
 msgstr "«Показать программы всех пользователей» не будет работать. Переустановите пакет big-mount."
 
-#: big-mount/usr/lib/big-mount/doctor.sh:363
+#: big-mount/usr/lib/big-mount/doctor.sh:361
 msgid "Kernel log readable (needed to explain read-only devices)"
 msgstr "Журнал ядра доступен для чтения (нужен, чтобы объяснить, почему устройства только для чтения)"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:365
+#: big-mount/usr/lib/big-mount/doctor.sh:363
 msgid "Kernel log not readable by this user: read-only causes are explained with fewer details"
 msgstr "Этот пользователь не может читать журнал ядра: причины режима только для чтения объясняются с меньшими подробностями"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:378
+#: big-mount/usr/lib/big-mount/doctor.sh:376
 msgid "%s: %s, %s, removable"
 msgstr "%s: %s, %s, съёмный"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:380
+#: big-mount/usr/lib/big-mount/doctor.sh:378
 msgid "%s: %s, %s, internal"
 msgstr "%s: %s, %s, внутренний"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:384
+#: big-mount/usr/lib/big-mount/doctor.sh:382
 msgid "The kernel has no /sys/block entry for it"
 msgstr "У ядра нет записи /sys/block для него"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:386
+#: big-mount/usr/lib/big-mount/doctor.sh:384
 msgid "UDisks2 does not know this device: Plasma and Big-Mount cannot manage it"
 msgstr "UDisks2 не знает это устройство: Plasma и Big-Mount не могут им управлять"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:393
+#: big-mount/usr/lib/big-mount/doctor.sh:391
 msgid "%s: the drive reports problems (%s)"
 msgstr "%s: диск сообщает о проблемах (%s)"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:394
+#: big-mount/usr/lib/big-mount/doctor.sh:392
 msgid "For details: bigmount --diagnose %s"
 msgstr "Подробности: bigmount --diagnose %s"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:405
+#: big-mount/usr/lib/big-mount/doctor.sh:403
 msgid "NVMe controller /dev/%s: storage %s"
 msgstr "Контроллер NVMe /dev/%s: накопитель %s"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:418
+#: big-mount/usr/lib/big-mount/doctor.sh:416
 msgid "Mounted read-only: %s"
 msgstr "Смонтировано только для чтения: %s"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:418
+#: big-mount/usr/lib/big-mount/doctor.sh:416
 msgid "To know why: bigmount --diagnose DEVICE"
 msgstr "Чтобы узнать причину: bigmount --diagnose УСТРОЙСТВО"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:426
+#: big-mount/usr/lib/big-mount/doctor.sh:424
 msgid "Outside Big-Mount (for reference)"
 msgstr "Вне Big-Mount (для справки)"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:432
+#: big-mount/usr/lib/big-mount/doctor.sh:430
 msgid "Settings files that do not belong to you (Plasma cannot save them, so settings seem to reset)"
 msgstr "Файлы настроек, которые вам не принадлежат (Plasma не может их сохранить, поэтому настройки будто сбрасываются)"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:433
+#: big-mount/usr/lib/big-mount/doctor.sh:431
 msgid "Usually left by a graphical program run with sudo. An administrator can give them back with chown."
 msgstr "Обычно остаются после графической программы, запущенной через sudo. Администратор может вернуть их вам с помощью chown."
 
-#: big-mount/usr/lib/big-mount/doctor.sh:435
+#: big-mount/usr/lib/big-mount/doctor.sh:433
 msgid "All your settings files belong to you"
 msgstr "Все ваши файлы настроек принадлежат вам"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:442
+#: big-mount/usr/lib/big-mount/doctor.sh:440
 msgid "Keep the system consistent: update everything at once (sudo pacman -Syu), never only some packages."
 msgstr "Поддерживайте систему согласованной: обновляйте всё сразу (sudo pacman -Syu), никогда не обновляйте только отдельные пакеты."
 
-#: big-mount/usr/lib/big-mount/doctor.sh:455
+#: big-mount/usr/lib/big-mount/doctor.sh:453
 msgid "Big-Mount check (nothing is changed; labels, serial numbers, UUIDs and personal paths are left out)"
 msgstr "Проверка Big-Mount (ничего не изменяется; метки, серийные номера, UUID и личные пути не выводятся)"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:465
+#: big-mount/usr/lib/big-mount/doctor.sh:463
 msgid "Result: %s, %s."
 msgstr "Итог: %s, %s."
 
-#: big-mount/usr/lib/big-mount/doctor.sh:466
+#: big-mount/usr/lib/big-mount/doctor.sh:464
 msgid "Big-Mount and the storage stack look healthy."
 msgstr "Big-Mount и подсистема хранения в порядке."
 
-#: big-mount/usr/lib/big-mount/doctor.sh:467
+#: big-mount/usr/lib/big-mount/doctor.sh:465
 msgid "To report a problem, attach this output: bigmount --doctor > big-mount-report.txt"
 msgstr "Чтобы сообщить о проблеме, приложите этот вывод: bigmount --doctor > big-mount-report.txt"
 
@@ -2676,10 +2676,6 @@ msgstr "Среди результатов могут оказаться файл
 msgid "Search started: %s"
 msgstr "Поиск начат: %s"
 
-#: big-mount/usr/lib/big-mount/drive-recovery.sh:928
-msgid "%s files found by content in %s. Their original names and folders could not be kept."
-msgstr "Найдено по содержимому файлов: %s (папка: %s). Их исходные имена и папки сохранить не удалось."
-
 #: big-mount/usr/lib/big-mount/drive-recovery.sh:937
 msgid "Files listed:"
 msgstr "Файлов в списке:"
@@ -3278,187 +3274,187 @@ msgstr "Следить за ходом выполнения?"
 msgid "Resume it?"
 msgstr "Продолжить?"
 
-#: big-mount/usr/lib/big-mount/lib.sh:176
+#: big-mount/usr/lib/big-mount/lib.sh:184
 msgid "No device or folder was given."
 msgstr "Не указано ни устройство, ни папка."
 
-#: big-mount/usr/lib/big-mount/lib.sh:177
+#: big-mount/usr/lib/big-mount/lib.sh:185
 msgid "'%s' does not exist. If it is a removable device, it may have been disconnected."
 msgstr "«%s» не существует. Если это съёмное устройство, возможно, оно было отсоединено."
 
-#: big-mount/usr/lib/big-mount/lib.sh:178
+#: big-mount/usr/lib/big-mount/lib.sh:186
 msgid "'%s' is not available. If it is a removable device, it may have been disconnected."
 msgstr "«%s» недоступно. Если это съёмное устройство, возможно, оно было отсоединено."
 
-#: big-mount/usr/lib/big-mount/lib.sh:185
+#: big-mount/usr/lib/big-mount/lib.sh:193
 msgid "'%s' is an NVMe controller, not a storage device. Its storage is: %s"
 msgstr "«%s» — это контроллер NVMe, а не устройство хранения. Его накопитель: %s"
 
-#: big-mount/usr/lib/big-mount/lib.sh:187
+#: big-mount/usr/lib/big-mount/lib.sh:195
 msgid "'%s' is not a storage device."
 msgstr "«%s» не является устройством хранения."
 
-#: big-mount/usr/lib/big-mount/lib.sh:188
+#: big-mount/usr/lib/big-mount/lib.sh:196
 msgid "'%s' is not on a local storage device (it may be a network share or a memory filesystem)."
 msgstr "«%s» находится не на локальном устройстве хранения (возможно, это сетевой ресурс или файловая система в памяти)."
 
-#: big-mount/usr/lib/big-mount/lib.sh:189
+#: big-mount/usr/lib/big-mount/lib.sh:197
 msgid "'%s' is not a local storage device or a folder on one"
 msgstr "«%s» не является локальным устройством хранения или папкой на нём"
 
-#: big-mount/usr/lib/big-mount/lib.sh:534
+#: big-mount/usr/lib/big-mount/lib.sh:542
 msgid "Dolphin (file manager)"
 msgstr "Dolphin (диспетчер файлов)"
 
-#: big-mount/usr/lib/big-mount/lib.sh:537
+#: big-mount/usr/lib/big-mount/lib.sh:545
 msgid "KDE thumbnail generator"
 msgstr "Генератор миниатюр KDE"
 
-#: big-mount/usr/lib/big-mount/lib.sh:538
+#: big-mount/usr/lib/big-mount/lib.sh:546
 msgid "KDE trash"
 msgstr "Корзина KDE"
 
-#: big-mount/usr/lib/big-mount/lib.sh:539
+#: big-mount/usr/lib/big-mount/lib.sh:547
 msgid "KDE file service (kioworker)"
 msgstr "Файловая служба KDE (kioworker)"
 
-#: big-mount/usr/lib/big-mount/lib.sh:540
+#: big-mount/usr/lib/big-mount/lib.sh:548
 msgid "KDE file service (%s)"
 msgstr "Файловая служба KDE (%s)"
 
-#: big-mount/usr/lib/big-mount/lib.sh:543
+#: big-mount/usr/lib/big-mount/lib.sh:551
 msgid "Baloo file indexer"
 msgstr "Индексатор файлов Baloo"
 
-#: big-mount/usr/lib/big-mount/lib.sh:544
+#: big-mount/usr/lib/big-mount/lib.sh:552
 msgid "File indexer (Tracker)"
 msgstr "Индексатор файлов (Tracker)"
 
-#: big-mount/usr/lib/big-mount/lib.sh:546
+#: big-mount/usr/lib/big-mount/lib.sh:554
 msgid "Terminal"
 msgstr "Терминал"
 
-#: big-mount/usr/lib/big-mount/lib.sh:548
+#: big-mount/usr/lib/big-mount/lib.sh:556
 msgid "Command shell (terminal)"
 msgstr "Командная оболочка (терминал)"
 
-#: big-mount/usr/lib/big-mount/lib.sh:550
+#: big-mount/usr/lib/big-mount/lib.sh:558
 msgid "Media player"
 msgstr "Медиаплеер"
 
-#: big-mount/usr/lib/big-mount/lib.sh:551
+#: big-mount/usr/lib/big-mount/lib.sh:559
 msgid "Thumbnail generator"
 msgstr "Генератор миниатюр"
 
-#: big-mount/usr/lib/big-mount/lib.sh:552
+#: big-mount/usr/lib/big-mount/lib.sh:560
 msgid "Document viewer"
 msgstr "Просмотрщик документов"
 
-#: big-mount/usr/lib/big-mount/lib.sh:553
+#: big-mount/usr/lib/big-mount/lib.sh:561
 msgid "Image viewer"
 msgstr "Просмотрщик изображений"
 
-#: big-mount/usr/lib/big-mount/lib.sh:554
+#: big-mount/usr/lib/big-mount/lib.sh:562
 msgid "Text editor"
 msgstr "Текстовый редактор"
 
-#: big-mount/usr/lib/big-mount/lib.sh:556
+#: big-mount/usr/lib/big-mount/lib.sh:564
 msgid "Web browser"
 msgstr "Веб-браузер"
 
-#: big-mount/usr/lib/big-mount/lib.sh:557
+#: big-mount/usr/lib/big-mount/lib.sh:565
 msgid "File manager"
 msgstr "Диспетчер файлов"
 
-#: big-mount/usr/lib/big-mount/lib.sh:559
+#: big-mount/usr/lib/big-mount/lib.sh:567
 msgid "Copy or archive operation"
 msgstr "Операция копирования или архивации"
 
-#: big-mount/usr/lib/big-mount/lib.sh:560
+#: big-mount/usr/lib/big-mount/lib.sh:568
 msgid "Synchronization service"
 msgstr "Служба синхронизации"
 
-#: big-mount/usr/lib/big-mount/lib.sh:561
+#: big-mount/usr/lib/big-mount/lib.sh:569
 msgid "Backup"
 msgstr "Резервное копирование"
 
-#: big-mount/usr/lib/big-mount/lib.sh:571
+#: big-mount/usr/lib/big-mount/lib.sh:579
 msgid "Current folder is on the device"
 msgstr "Текущая папка находится на устройстве"
 
-#: big-mount/usr/lib/big-mount/lib.sh:572
+#: big-mount/usr/lib/big-mount/lib.sh:580
 msgid "Root folder (chroot) is on the device"
 msgstr "Корневая папка (chroot) находится на устройстве"
 
-#: big-mount/usr/lib/big-mount/lib.sh:573
+#: big-mount/usr/lib/big-mount/lib.sh:581
 msgid "Program running from the device"
 msgstr "Программа запущена с устройства"
 
-#: big-mount/usr/lib/big-mount/lib.sh:574
+#: big-mount/usr/lib/big-mount/lib.sh:582
 msgid "File mapped in memory"
 msgstr "Файл отображён в память"
 
-#: big-mount/usr/lib/big-mount/lib.sh:577
+#: big-mount/usr/lib/big-mount/lib.sh:585
 msgid "Open for writing"
 msgstr "Открыт для записи"
 
-#: big-mount/usr/lib/big-mount/lib.sh:578
+#: big-mount/usr/lib/big-mount/lib.sh:586
 msgid "Open for reading and writing"
 msgstr "Открыт для чтения и записи"
 
-#: big-mount/usr/lib/big-mount/lib.sh:579
+#: big-mount/usr/lib/big-mount/lib.sh:587
 msgid "Folder open"
 msgstr "Открыта папка"
 
-#: big-mount/usr/lib/big-mount/lib.sh:579
+#: big-mount/usr/lib/big-mount/lib.sh:587
 msgid "Open for reading"
 msgstr "Открыт для чтения"
 
-#: big-mount/usr/lib/big-mount/lib.sh:686
+#: big-mount/usr/lib/big-mount/lib.sh:694
 msgid "belongs to another user or to the system"
 msgstr "принадлежит другому пользователю или системе"
 
-#: big-mount/usr/lib/big-mount/lib.sh:689
+#: big-mount/usr/lib/big-mount/lib.sh:697
 msgid "part of the desktop session"
 msgstr "часть сеанса рабочего стола"
 
-#: big-mount/usr/lib/big-mount/lib.sh:692
+#: big-mount/usr/lib/big-mount/lib.sh:700
 msgid "a terminal: type 'cd' in it or close the tab"
 msgstr "терминал: введите в нём «cd» или закройте вкладку"
 
-#: big-mount/usr/lib/big-mount/lib.sh:695
+#: big-mount/usr/lib/big-mount/lib.sh:703
 msgid "this tool"
 msgstr "эта программа"
 
-#: big-mount/usr/lib/big-mount/lib.sh:700
+#: big-mount/usr/lib/big-mount/lib.sh:708
 msgid "has a file open for writing: finish or cancel the operation in the application"
 msgstr "держит открытым файл для записи: завершите или отмените операцию в приложении"
 
-#: big-mount/usr/lib/big-mount/lib.sh:965
+#: big-mount/usr/lib/big-mount/lib.sh:973
 msgid "%s is unmounted here, but %s (PID %s) still has it mounted at %s"
 msgstr "%s отмонтировано здесь, но %s (PID %s) всё ещё держит его смонтированным в %s"
 
-#: big-mount/usr/lib/big-mount/lib.sh:969
+#: big-mount/usr/lib/big-mount/lib.sh:977
 msgid "%s is unmounted, but its filesystem driver is still writing to it"
 msgstr "%s отмонтировано, но драйвер его файловой системы всё ещё записывает на него"
 
-#: big-mount/usr/lib/big-mount/lib.sh:995
+#: big-mount/usr/lib/big-mount/lib.sh:1003
 msgid "%s is still mounted at %s after being unmounted"
 msgstr "%s всё ещё смонтировано в %s после отмонтирования"
 
-#: big-mount/usr/lib/big-mount/lib.sh:1339
+#: big-mount/usr/lib/big-mount/lib.sh:1347
 msgid "%s is mounted at %s"
 msgstr "%s смонтировано в %s"
 
-#: big-mount/usr/lib/big-mount/lib.sh:1342
+#: big-mount/usr/lib/big-mount/lib.sh:1350
 msgid "%s is in use (encryption, LVM or RAID)"
 msgstr "%s используется (шифрование, LVM или RAID)"
 
-#: big-mount/usr/lib/big-mount/lib.sh:1356
+#: big-mount/usr/lib/big-mount/lib.sh:1364
 msgid "%s belongs to a filesystem that spans several drives"
 msgstr "%s принадлежит файловой системе, занимающей несколько дисков"
 
-#: big-mount/usr/lib/big-mount/lib.sh:1362
+#: big-mount/usr/lib/big-mount/lib.sh:1370
 msgid "UDisks2 does not know this drive."
 msgstr "UDisks2 не знает этот диск."
 
@@ -3513,7 +3509,7 @@ msgstr[0] "Диск сообщает, что стирание займёт пр�
 msgstr[1] "Диск сообщает, что стирание займёт примерно %d минуты."
 msgstr[2] "Диск сообщает, что стирание займёт примерно %d минут."
 
-#: big-mount/usr/lib/big-mount/doctor.sh:441
+#: big-mount/usr/lib/big-mount/doctor.sh:439
 #, sh-printf-format
 msgid "%d package has a newer version in the last synchronized package list"
 msgid_plural "%d packages have newer versions in the last synchronized package list"
@@ -3521,7 +3517,7 @@ msgstr[0] "%d пакет имеет более новую версию в пос
 msgstr[1] "%d пакета имеют более новые версии в последнем синхронизированном списке пакетов"
 msgstr[2] "%d пакетов имеют более новые версии в последнем синхронизированном списке пакетов"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:463
+#: big-mount/usr/lib/big-mount/doctor.sh:461
 #, sh-printf-format
 msgid "%d problem"
 msgid_plural "%d problems"
@@ -3529,7 +3525,7 @@ msgstr[0] "%d проблема"
 msgstr[1] "%d проблемы"
 msgstr[2] "%d проблем"
 
-#: big-mount/usr/lib/big-mount/doctor.sh:464
+#: big-mount/usr/lib/big-mount/doctor.sh:462
 #, sh-printf-format
 msgid "%d warning"
 msgid_plural "%d warnings"
@@ -3618,6 +3614,7 @@ msgstr[1] "%s значения SMART сейчас ниже безопасног�
 msgstr[2] "%s значений SMART сейчас ниже безопасного предела."
 
 #: big-mount/usr/lib/big-mount/drive-recovery.sh:889
+#: big-mount/usr/lib/big-mount/drive-recovery.sh:928
 #, sh-printf-format
 msgid "%s file found by content in %s. Its original name and folder could not be kept."
 msgid_plural "%s files found by content in %s. Their original names and folders could not be kept."
@@ -4501,11 +4498,6 @@ msgstr "На диске под угрозой общий объём не изм�
 #, python-format
 msgid "%s could not be read."
 msgstr "Не удалось прочитать %s."
-
-#: big-mount/usr/lib/big-mount/gui/pages/job.py:205
-#, python-format
-msgid "Waiting for the disk to answer, for %s seconds"
-msgstr "Ожидание ответа диска: %s с"
 
 #: big-mount/usr/lib/big-mount/gui/pages/job.py:219
 msgid "Search again"

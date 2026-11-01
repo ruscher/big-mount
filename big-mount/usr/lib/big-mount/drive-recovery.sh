@@ -925,7 +925,7 @@ bm_rec_carve() {
    if [ "$json" = 1 ]; then
       printf '{%s,%s,%s}\n' "$(bm_jo_inner id "$id" destination "$dest" state "${JS[STATE]}")" "$(bm_jn recovered "${JS[FILES_DONE]:-0}" exit "$rc2")" "$(bm_jb ok "$ok")"
    else
-      printf $"%s files found by content in %s. Their original names and folders could not be kept."'\n' "${JS[FILES_DONE]:-0}" "$dest"
+      bm_nfmt "%s file found by content in %s. Its original name and folder could not be kept." "%s files found by content in %s. Their original names and folders could not be kept." "${JS[FILES_DONE]:-0}" "${JS[FILES_DONE]:-0}" "$dest"; printf '%s\n' "$REPLY"
    fi
    return "$rc2"
 }
