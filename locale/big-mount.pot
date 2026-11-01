@@ -2076,224 +2076,224 @@ msgstr ""
 msgid "its content could not be read"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:972
+#: big-mount/usr/lib/big-mount/drive-copy.sh:976
 #: big-mount/usr/lib/big-mount/drive-recovery.sh:900
 msgid "Source:"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:972
+#: big-mount/usr/lib/big-mount/drive-copy.sh:976
 #: big-mount/usr/lib/big-mount/drive-recovery.sh:905
 msgid "Destination:"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:974
-#: big-mount/usr/lib/big-mount/drive-copy.sh:976
+#: big-mount/usr/lib/big-mount/drive-copy.sh:978
+#: big-mount/usr/lib/big-mount/drive-copy.sh:980
 msgid "Files:"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:986
-#: big-mount/usr/lib/big-mount/drive-copy.sh:987
+#: big-mount/usr/lib/big-mount/drive-copy.sh:990
+#: big-mount/usr/lib/big-mount/drive-copy.sh:991
 msgid "Copied:"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:991
+#: big-mount/usr/lib/big-mount/drive-copy.sh:995
 msgid "Speed:"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:991
+#: big-mount/usr/lib/big-mount/drive-copy.sh:995
 msgid "average"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:992
+#: big-mount/usr/lib/big-mount/drive-copy.sh:996
 #: big-mount/usr/lib/big-mount/drive-recovery.sh:913
 msgid "Elapsed:"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:993
+#: big-mount/usr/lib/big-mount/drive-copy.sh:997
 msgid "Remaining:"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:994
+#: big-mount/usr/lib/big-mount/drive-copy.sh:998
 msgid "Waiting for the disk to answer, for %s seconds"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:995
+#: big-mount/usr/lib/big-mount/drive-copy.sh:999
 msgid "Current file:"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:996
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1000
 msgid "Set aside:"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:997
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1001
 msgid "Failed:"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1037
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1041
 msgid "Cancelled. Files already copied stay at the destination, and the copy can be resumed."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1053
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1057
 msgid "Source"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1058
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1062
 #: big-mount/usr/lib/big-mount/drive-recovery.sh:927
 msgid "Destination"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1059
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1063
 msgid "Files copied"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1060
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1064
 msgid "Data copied"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1061
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1065
 #: big-mount/usr/lib/big-mount/drive-recovery.sh:931
 msgid "Elapsed"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1063
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1064
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1065
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1067
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1068
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1069
 msgid "Check"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1063
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1067
 msgid "source and destination match"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1064
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1068
 msgid "%s files differ"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1065
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1069
 msgid "rsync confirmed each file as it was copied; no second comparison was made"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1067
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1071
 msgid "Already at the destination, with different content"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1071
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1075
 msgid "Set aside because they did not advance (damaged area of the disk):"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1074
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1078
 msgid "To try them again, which puts more strain on the disk: bigmount --drive resume %s --retry-deferred"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1078
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1082
 msgid "Not copied:"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1083
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1087
 msgid "Different at the destination:"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1086
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1090
 msgid "Log:"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1110
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1114
 #: big-mount/usr/lib/big-mount/drive.sh:239
 msgid "Serial number"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1110
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1114
 #: big-mount/usr/lib/big-mount/drive.sh:255
 msgid "Label"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1141
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1145
 msgid "'%s' already exists. Nothing was written."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1157
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1161
 msgid "Kernel messages:"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1165
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1169
 msgid "Report written to %s"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1218
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1225
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1222
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1229
 msgid "free"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1221
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1225
 msgid "drive with critical alerts"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1222
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1226
 msgid "same physical disk as the source"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1223
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1227
 msgid "not enough space"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1239
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1243
 msgid "Home folder"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1285
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1438
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1450
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1495
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1289
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1442
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1454
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1499
 #: big-mount/usr/lib/big-mount/drive-recovery.sh:951
 msgid "There is no job '%s'."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1288
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1292
 msgid "Only the results of a search by content can be copied this way."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1295
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1299
 #: big-mount/usr/lib/big-mount/drive-recovery.sh:521
 #: big-mount/usr/lib/big-mount/drive-recovery.sh:812
 msgid "Both --source and --destination are needed."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1363
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1367
 msgid "%s files, %s to copy; %s already exist with different content."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1386
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1390
 msgid "The copy could not be started."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1391
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1522
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1395
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1526
 #: big-mount/usr/lib/big-mount/drive-recovery.sh:291
 msgid "Copy started: %s"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1393
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1397
 #: big-mount/usr/lib/big-mount/drive-recovery.sh:293
 msgid "To follow it: bigmount --drive status %s --watch"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1424
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1428
 msgid "No copies or images yet."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1458
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1462
 msgid "A search cannot be paused, only cancelled. What was found stays."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1478
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1482
 msgid "It is not running."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1501
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1505
 msgid "It is already running."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive-copy.sh:1505
+#: big-mount/usr/lib/big-mount/drive-copy.sh:1509
 msgid "It is already complete."
 msgstr ""
 

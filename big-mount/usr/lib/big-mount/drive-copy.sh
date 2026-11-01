@@ -632,7 +632,6 @@ bm_job_pass() {
          BM_PASS_END="$ctl"
          JS[STATE]=stopping
          bm_job_state_save "$dir"
-         kill -TERM "$pid" 2>/dev/null
          break
       fi
       if [ $((tick % 5)) -eq 0 ]; then
@@ -642,7 +641,6 @@ bm_job_pass() {
             BM_PASS_END="dest-gone"
          fi
          if [ "$BM_PASS_END" != "done" ]; then
-            kill -TERM "$pid" 2>/dev/null
             break
          fi
       fi
@@ -655,9 +653,6 @@ bm_job_pass() {
             BM_PASS_END="deferred"
             JS[STATE]=running
             bm_job_state_save "$dir"
-            # Never SIGKILL: the temporary file is removed by rsync, and it
-            # exits as soon as the read that is stuck comes back
-            kill -TERM "$pid" 2>/dev/null
             break
          fi
       else
@@ -666,10 +661,19 @@ bm_job_pass() {
       fi
       last_file="$SND_FILE" last_pos="$SND_POS"
    done
+   # Stopped here, never with SIGKILL: rsync removes its temporary file, and
+   # exits as soon as a read stuck in the driver comes back. Its helpers end
+   # after it; they are listed first, as they get another parent when it exits
+   local kids="" k
+   if kill -0 "$pid" 2>/dev/null; then
+      kids="$(pgrep -P "$pid")"
+      kill -TERM "$pid" 2>/dev/null
+   fi
    wait "$pid"
    local rc=$?
-   # rsync's helpers end with it; a read stuck in the driver can delay that
-   while pgrep -P "$pid" >/dev/null 2>&1; do sleep 1; done
+   for k in $kids; do
+      while kill -0 "$k" 2>/dev/null; do sleep 1; done
+   done
    bm_job_read_log
    JS[STUCK_SECONDS]=0
    return "$rc"
