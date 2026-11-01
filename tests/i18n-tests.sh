@@ -42,13 +42,17 @@ for po in locale/*.po; do
     check "$lang: no obsolete message left behind (#~)" bash -c '! grep -q "^#~" "$1"' _ "$po"
     check "$lang: every msgid of the template exists in the translation" \
         test -z "$(comm -23 <(msgids locale/big-mount.pot) <(msgids "$po"))"
-    # The same printf directives, in the same order, in msgid and msgstr
+    # The same printf directives, in the same order, in msgid and msgstr. A
+    # literal %% takes no argument, so it may move (Turkish writes %80)
     bad="$(python3 -I - "$po" <<'EOF'
 import re, sys
 text = open(sys.argv[1], encoding="utf-8").read()
 spec = re.compile(r"%[-+ #0]*[0-9]*(?:\.[0-9]+)?[sdiuxXfc%]")
+def args(s):
+    found = spec.findall(s)
+    return [d for d in found if d != "%%"], found.count("%%")
 for mid, mstr in re.findall(r'^msgid "(.*)"\nmsgstr "(.*)"$', text, re.M):
-    if mid and mstr and spec.findall(mid) != spec.findall(mstr):
+    if mid and mstr and args(mid) != args(mstr):
         print(mid)
 EOF
 )"
@@ -71,6 +75,8 @@ check "service menu: submenu and actions translated" \
     test "$(grep -c '\[pt_BR\]=' big-mount/usr/share/kio/servicemenus/big-mount.desktop)" -eq 4
 check "polkit: description and message translated (pt_BR form)" \
     test "$(grep -c 'xml:lang="pt_BR"' big-mount/usr/share/polkit-1/actions/org.biglinux.big-mount.policy)" -eq 4
+check "polkit: every language as a POSIX locale name (zh_CN, not zh-Hans-CN)" \
+    bash -c '! grep -q "xml:lang=\"[^\"]*-" "$1"' _ big-mount/usr/share/polkit-1/actions/org.biglinux.big-mount.policy
 
 begin "no user-visible text outside the translation system"
 # Exit 1 only: a match (0) fails, and so does an error of grep (2), which prints nothing
@@ -83,9 +89,9 @@ help_line() { env -i PATH="$PATH" "$@" bash "$BM" --help 2>/dev/null | head -n1;
 check "LANG=C: English" test "$(help_line LANG=C)" = "Usage: bigmount [OPTION] [DEVICE|FOLDER]"
 check "LANG=en_US.UTF-8: English" test "$(help_line LANG=en_US.UTF-8)" = "Usage: bigmount [OPTION] [DEVICE|FOLDER]"
 check "LANG=pt_BR.UTF-8: Portuguese" test "$(help_line LANG=pt_BR.UTF-8)" = "Uso: bigmount [OPÇÃO] [DISPOSITIVO|PASTA]"
-check "language without translation (de_DE): English" test "$(help_line LANG=de_DE.UTF-8)" = "Usage: bigmount [OPTION] [DEVICE|FOLDER]"
-check "LANGUAGE=fr:pt_BR falls back to the next language" \
-    test "$(help_line LANG=pt_BR.UTF-8 LANGUAGE=fr:pt_BR)" = "Uso: bigmount [OPÇÃO] [DISPOSITIVO|PASTA]"
+check "language without translation (Esperanto): English" test "$(help_line LANG=pt_BR.UTF-8 LANGUAGE=eo)" = "Usage: bigmount [OPTION] [DEVICE|FOLDER]"
+check "LANGUAGE=eo:pt_BR falls back to the next language" \
+    test "$(help_line LANG=pt_BR.UTF-8 LANGUAGE=eo:pt_BR)" = "Uso: bigmount [OPÇÃO] [DISPOSITIVO|PASTA]"
 check "errors are translated too" \
     bash -c 'env -i PATH="$PATH" LANG=pt_BR.UTF-8 bash "$1" --bogus 2>&1 | grep -q "opção desconhecida"' _ "$BM"
 # bash translates $"..." while parsing a command: a text domain chosen inside
@@ -99,6 +105,7 @@ check "--version: translated labels aligned by characters, not bytes" env LC_ALL
     cols="$(env -i PATH="$PATH" LANG=pt_BR.UTF-8 bash "$1" --version | tail -n +2 | while IFS= read -r l; do
         [[ $l =~ ^([^:]*:\ +) ]] && echo "${#BASH_REMATCH[1]}"; done | sort -u | wc -l)"
     [ "$cols" -eq 1 ]' _ "$BM"
+check "--version: Japanese labels kept whole" bash -c 'env -i PATH="$PATH" LC_ALL=pt_BR.UTF-8 LANGUAGE=ja bash "$1" --version | grep -q "リビジョン:"' _ "$BM"
 check "--doctor translated" bash -c 'env -i PATH="$PATH" LANG=pt_BR.UTF-8 HOME="$HOME" bash "$1" --doctor 2>/dev/null | grep -q "^Resultado: "' _ "$BM"
 
 # A translation that lacks one message: that one stays English, the rest is translated
@@ -141,6 +148,14 @@ check "long Unicode label is kept whole in the terminal" grep -qF "$long" <<< "$
 check "long Unicode label is kept whole in dialogs" grep -qF "Fotos da Família — viagem ao Japão 東京" <<< "$(bm_doc_nul | tr '\0' '\n')"
 LANGUAGE=pt_BR LC_ALL=pt_BR.UTF-8 printf -v t $"%s is still in use" "$long"
 check "translated format with a Unicode argument" bash -c '[[ $1 == *"Japão"*"em uso" || $1 == *"Japão"*"in use" ]]' _ "$t"
+
+begin "plural forms and answers in the language of the messages"
+L="$REPO/big-mount/usr/lib/big-mount"
+plural() { LC_ALL=pt_BR.UTF-8 LANGUAGE=pt_BR BIGMOUNT_LIB="$L" bash -c '. "$BIGMOUNT_LIB/cli.sh"; bm_nfmt "%s file differs" "%s files differ" "$1" "$1"; printf "%s" "$REPLY"' _ "$1"; }
+check "Portuguese, one: the singular" test "$(plural 1)" = "1 arquivo difere"
+check "Portuguese, three: the plural" test "$(plural 3)" = "3 arquivos diferem"
+check "a Portuguese s answers yes" env LC_ALL=pt_BR.UTF-8 LANGUAGE=pt_BR BIGMOUNT_LIB="$L" bash -c '. "$BIGMOUNT_LIB/cli.sh"; bm_ui_is_yes sim'
+check "  ... a German j too" env LC_ALL=pt_BR.UTF-8 LANGUAGE=de BIGMOUNT_LIB="$L" bash -c '. "$BIGMOUNT_LIB/cli.sh"; bm_ui_is_yes ja'
 
 echo ""
 echo "========================================="

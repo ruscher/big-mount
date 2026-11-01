@@ -34,4 +34,6 @@ policy="$dest/usr/share/polkit-1/actions/org.biglinux.big-mount.policy"
 # locale/its holds the polkit ITS rules, for systems without polkit (CI)
 GETTEXTDATADIRS="$PWD/locale${GETTEXTDATADIRS:+:$GETTEXTDATADIRS}" \
     msgfmt --xml --template locale/templates/org.biglinux.big-mount.policy.in -d locale -o "$policy"
-sed -i -E 's/xml:lang="([a-z]{2,3})-([A-Z]{2})"/xml:lang="\1_\2"/g' "$policy"
+# A script subtag (zh-Hans-CN, be-Cyrl) is dropped: with it polkit matches nothing
+sed -i -E 's/xml:lang="([a-z]{2,3})(-[A-Z][a-z]{3})?-([A-Z]{2})"/xml:lang="\1_\3"/g
+           s/xml:lang="([a-z]{2,3})-[A-Z][a-z]{3}"/xml:lang="\1"/g' "$policy"

@@ -22,6 +22,11 @@ trap 'rm -rf -- "$tmp"' EXIT
         bash --dump-po-strings "$f"
     done
 } | msguniq --no-wrap -o "$tmp/shell.pot" -
+# Messages with plural forms: $"..." has none, so the scripts pass both forms
+# to bm_nfmt, which asks ngettext(1). xgettext also finds every $"..." again
+# (already in shell.pot) and warns that the syntax is deprecated.
+LC_ALL=C xgettext --no-wrap --from-code=UTF-8 -L Shell -k -kbm_nfmt:1,2 -o "$tmp/plural.pot" \
+    big-mount/usr/lib/big-mount/*.sh 2> >(grep -v 'is deprecated due to security reasons' >&2)
 
 xgettext --no-wrap --from-code=UTF-8 -L Python -k_ -o "$tmp/gui.pot" \
     big-mount/usr/lib/big-mount/drive-gui.py big-mount/usr/lib/big-mount/gui/*.py big-mount/usr/lib/big-mount/gui/pages/*.py
@@ -30,7 +35,7 @@ xgettext --no-wrap --from-code=UTF-8 -L Desktop -k -kName -kGenericName -kCommen
 xgettext --no-wrap --from-code=UTF-8 --its=locale/its/polkit.its \
     -o "$tmp/polkit.pot" locale/templates/*.policy.in
 
-msgcat --no-wrap --use-first -o "$pot" "$tmp/shell.pot" "$tmp/gui.pot" "$tmp/desktop.pot" "$tmp/polkit.pot"
+msgcat --no-wrap --use-first -o "$pot" "$tmp/shell.pot" "$tmp/plural.pot" "$tmp/gui.pot" "$tmp/desktop.pot" "$tmp/polkit.pot"
 [ -z "${POT:-}" ] || exit 0
 for po in locale/*.po; do
     [ -e "$po" ] || continue

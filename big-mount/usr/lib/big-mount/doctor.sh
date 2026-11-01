@@ -46,17 +46,15 @@ bm_version_info() {
 }
 
 bm_cmd_version() {
-   local l_pkg=$"package:" l_rev=$"revision:" l_src=$"source:" w
+   local l_pkg=$"package:" l_rev=$"revision:" l_src=$"source:" w=0 l
    bm_version_info
-   # Labels are aligned by characters (translations have accents)
-   w="${#l_pkg}"
-   [ "${#l_rev}" -gt "$w" ] && w="${#l_rev}"
-   [ "${#l_src}" -gt "$w" ] && w="${#l_src}"
+   # Labels are aligned by terminal columns (accents, CJK)
+   for l in "$l_pkg" "$l_rev" "$l_src"; do bm_width "$l"; [ "$REPLY" -gt "$w" ] && w="$REPLY"; done
    printf 'Big-Mount %s\n' "$BM_VERSION"
-   [ -n "$V_PKG" ] && { bm_pad "$l_pkg" "$w"; printf '  %s %s\n' "$REPLY" "$V_PKG"; }
+   [ -n "$V_PKG" ] && { bm_fill "$l_pkg" "$w"; printf '  %s %s\n' "$REPLY" "$V_PKG"; }
    [ -n "$V_REVISION" ] || V_REVISION=$"unknown"
-   bm_pad "$l_rev" "$w"; printf '  %s %s\n' "$REPLY" "$V_REVISION${V_DATE:+ ($V_DATE)}"
-   [ -n "$V_SOURCE" ] && { bm_pad "$l_src" "$w"; printf '  %s %s\n' "$REPLY" "$V_SOURCE"; }
+   bm_fill "$l_rev" "$w"; printf '  %s %s\n' "$REPLY" "$V_REVISION${V_DATE:+ ($V_DATE)}"
+   [ -n "$V_SOURCE" ] && { bm_fill "$l_src" "$w"; printf '  %s %s\n' "$REPLY" "$V_SOURCE"; }
    return 0
 }
 
@@ -438,7 +436,7 @@ bm_dr_outside() {
    if command -v pacman >/dev/null; then
       n="$(pacman -Qu 2>/dev/null | wc -l)"
       if [ "$n" -gt 0 ]; then
-         bm_fmt $"%d packages have newer versions in the last synchronized package list" "$n"
+         bm_nfmt "%d package has a newer version in the last synchronized package list" "%d packages have newer versions in the last synchronized package list" "$n" "$n"
          bm_dr info "$REPLY" $"Keep the system consistent: update everything at once (sudo pacman -Syu), never only some packages."
       fi
    fi
@@ -459,7 +457,10 @@ bm_cmd_doctor() {
    bm_dr_storage
    bm_dr_outside
    printf '\n'
-   printf $"Result: %d problem(s), %d warning(s)."'\n' "$DR_FAIL" "$DR_WARN"
+   local problems warnings
+   bm_nfmt "%d problem" "%d problems" "$DR_FAIL" "$DR_FAIL"; problems="$REPLY"
+   bm_nfmt "%d warning" "%d warnings" "$DR_WARN" "$DR_WARN"; warnings="$REPLY"
+   printf $"Result: %s, %s."'\n' "$problems" "$warnings"
    [ "$DR_FAIL" -eq 0 ] && [ "$DR_WARN" -eq 0 ] && printf '%s\n' $"Big-Mount and the storage stack look healthy."
    printf '%s\n' $"To report a problem, attach this output: bigmount --doctor > big-mount-report.txt"
    [ "$DR_FAIL" -eq 0 ]

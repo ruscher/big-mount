@@ -13,7 +13,7 @@ license=('GPL')
 # application of --gui-drive and every dialog (--gui, --gui-remove, the notifier),
 # and are loaded only by them; libnotify sends the notifications; pkexec (polkit)
 # starts the helper; rsync does every copy and smartctl reads the health of a drive.
-# Commands of the base system (coreutils, findutils, gawk, systemd) are not listed.
+# Commands of the base system (coreutils, findutils, gawk, gettext, systemd) are not listed.
 depends=('bash' 'util-linux' 'udisks2' 'polkit' 'ntfs-3g' 'lsof' 'rsync' 'smartmontools'
          'python' 'python-gobject' 'gtk4' 'libadwaita>=1.5' 'libnotify')
 optdepends=('ddrescue: disk images of a failing drive, before a deep analysis'

@@ -37,14 +37,58 @@ BM_SHELL_COMM=" bash zsh fish sh dash ksh mksh tcsh csh nu elvish xonsh "
 
 bm_warn() { printf 'bigmount: %s\n' "$*" >&2; }
 
-# Pad or cut TEXT to WIDTH characters for terminal tables. printf counts
-# bytes: "%-18.18s" misaligns accented labels and can cut one in the middle
-# of a character. Control characters (from device data) become "?".
+# Everything but the East Asian wide characters (CJK, its rarer ideographs in
+# planes 2 and 3, kana, Hangul, full-width forms), which take two columns
+BM_NARROW=$'[!\u1100-\u115f\u2e80-\ua4cf\uac00-\ud7a3\uf900-\ufaff\ufe30-\ufe4f\uff00-\uff60\uffe0-\uffe6\U00020000-\U0003fffd]'
+
+# bm_width TEXT: the terminal columns TEXT takes, in REPLY
+bm_width() {
+   local wide="${1//$BM_NARROW/}"
+   REPLY=$((${#1} + ${#wide}))
+}
+
+# Pad or cut TEXT to WIDTH terminal columns for tables. printf counts bytes:
+# "%-18.18s" misaligns accented labels, cuts one in the middle of a
+# character, and gives CJK text half its width. Control characters (from
+# device data) become "?".
 bm_pad() {
    local s="${1//[[:cntrl:]]/?}" w="$2"
-   [ "${#s}" -gt "$w" ] && s="${s:0:w-1}…"
-   printf -v REPLY '%s%*s' "$s" $((w - ${#s})) ""
+   bm_width "$s"
+   if [ "$REPLY" -gt "$w" ]; then
+      while bm_width "$s…"; [ "$REPLY" -gt "$w" ]; do s="${s:0:-1}"; done
+      s+="…"
+   fi
+   bm_width "$s"
+   printf -v REPLY '%s%*s' "$s" $((w - REPLY)) ""
 }
+
+# bm_nfmt SINGULAR PLURAL N [ARG]...: the translated form of the message for N,
+# its %s and %d filled with ARG in order, in REPLY. bash's $"..." has no
+# plural forms; ngettext(1) reads the same catalog. An N that is not a whole
+# number ("?") takes the plural.
+bm_nfmt() {
+   local s n="$3" a head out=""
+   [[ $n =~ ^[0-9]+$ ]] || n=2
+   s="$(ngettext "$1" "$2" "$n")"
+   shift 3
+   for a in "$@"; do
+      [[ $s == *%[sd]* ]] || break
+      head="${s%%\%[sd]*}"
+      out+="$head$a" s="${s:${#head}+2}"
+   done
+   REPLY="$out$s"
+}
+
+# bm_fill LABEL WIDTH: LABEL padded to at least WIDTH terminal columns, in
+# REPLY. Unlike bm_pad it never cuts: a label is translated text, and a
+# longer one only pushes its value to the right.
+bm_fill() {
+   bm_width "$1"
+   printf -v REPLY '%s%*s' "$1" $((REPLY < $2 ? $2 - REPLY : 0)) ""
+}
+
+# bm_tty_line LABEL TEXT: one line of a terminal report
+bm_tty_line() { bm_fill "$1" 22; printf '%s %s\n' "$REPLY" "$2"; }
 
 # Decode the \xHH escapes used by lsblk -P and findmnt -P
 bm_unescape() { printf -v REPLY '%b' "$1"; }
@@ -547,15 +591,13 @@ bm_access_label() {
 }
 
 bm_proc_state() {
-   local stat rest
+   local stat fields
    REPLY="" PROC_START=""
    # The process may end at any moment: that is not an error
    { read -r stat < "/proc/$1/stat"; } 2>/dev/null || return 1
-   rest="${stat##*) }"
-   # shellcheck disable=SC2086
-   set -- $rest
-   REPLY="$1"
-   PROC_START="${20:-}"
+   read -r -a fields <<< "${stat##*) }"
+   REPLY="${fields[0]:-}"
+   PROC_START="${fields[19]:-}"
 }
 
 # bm_holders MOUNTPOINT [LSOF_OUTPUT_FILE]: processes using the filesystem

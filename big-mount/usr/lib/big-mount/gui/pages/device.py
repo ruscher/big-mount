@@ -239,9 +239,7 @@ class HealthView(Gtk.Box):
         years = (int(hours) + 4380) // 8760
         if years < 1:
             return str(hours)
-        if years == 1:
-            return _("%s (about a year of use)") % hours
-        return _("%(h)s (about %(y)d years of use)") % {"h": hours, "y": years}
+        return ngettext("%(h)s (about %(y)d year of use)", "%(h)s (about %(y)d years of use)", years) % {"h": hours, "y": years}
 
     def _read_smart(self):
         if self.smart_busy or not self.dev:

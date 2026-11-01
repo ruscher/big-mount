@@ -23,8 +23,8 @@ BM_LIB_DIR="${BIGMOUNT_LIB:-/usr/lib/big-mount}"
 bm_usage() {
    printf $"Usage: bigmount [OPTION] [DEVICE|FOLDER]"'\n\n'
    # shellcheck disable=SC2247  # $"(none)" is a translatable string
+   bm_fill $"(none)" 28; printf '  %s %s\n' "$REPLY" $"mount internal partitions (run at boot by big-mount.service)"
    printf '  %-28s %s\n' \
-      $"(none)" $"mount internal partitions (run at boot by big-mount.service)" \
       "--dry-run" $"show what would be mounted, change nothing" \
       "--diagnose [TARGET]" $"storage overview, or details of one device (a whole disk: drive errors)" \
       "--busy TARGET" $"show what keeps a device busy" \
@@ -399,7 +399,7 @@ bm_overview() {
    for r in "${rows[@]}"; do
       IFS=$'\t' read -r -a c <<< "$r"
       for i in 0 1 2 3 4 5; do
-         [ "${#c[i]}" -gt "${w[i]:-0}" ] && w[i]="${#c[i]}"
+         bm_width "${c[i]}"; [ "$REPLY" -gt "${w[i]:-0}" ] && w[i]="$REPLY"
          [ "${w[i]}" -gt "${max[i]}" ] && w[i]="${max[i]}"
       done
    done
@@ -410,7 +410,7 @@ bm_overview() {
       for i in 0 1 2 3 4 5; do
          if [ "$i" -eq 2 ]; then
             # Sizes are right-aligned
-            printf -v line '%*s' $((w[i] - ${#c[i]})) ""; out+=" $line${c[i]}"
+            bm_width "${c[i]}"; printf -v line '%*s' $((w[i] - REPLY)) ""; out+=" $line${c[i]}"
          else
             bm_pad "${c[i]}" "${w[i]}"; out+=" $REPLY"
          fi
@@ -429,7 +429,7 @@ bm_overview() {
       if command -v "$s" >/dev/null; then printf '  %-28s %s\n' "$s" $"installed"; else printf '  %-28s %s\n' "$s" $"missing"; fi
    done
    if journalctl -k -b -n 1 -q >/dev/null 2>&1 && [ -n "$(journalctl -k -b -n 1 -q 2>/dev/null)" ]; then s=$"readable"; else s=$"not readable (fewer details for errors)"; fi
-   printf '  %-28s %s\n' $"kernel log" "$s"
+   bm_fill $"kernel log" 28; printf '  %s %s\n' "$REPLY" "$s"
 }
 
 # ---------------------------------------------------------------------------
@@ -527,8 +527,8 @@ bm_busy_summary() {
          BUSY_ADVICE=$"Close that program, then try again." ;;
    esac
    if [ "$n" -gt 1 ]; then
-      printf -v r $"In total, %d programs are using it." "$n"
-      BUSY_SUMMARY+=" $r"
+      bm_nfmt "In total, %d program is using it." "In total, %d programs are using it." "$n" "$n"
+      BUSY_SUMMARY+=" $REPLY"
    fi
 }
 
@@ -895,7 +895,7 @@ bm_drive_doc() {
       *) s=$"not available" ;;
    esac
    if [ "$DH_SMART" = ok ] && [ "$DH_BAD" -gt 0 ]; then
-      printf -v s $"no failure predicted (%s damaged sectors were replaced by spare ones)" "$DH_BAD"
+      bm_nfmt "no failure predicted (%s damaged sector was replaced by a spare one)" "no failure predicted (%s damaged sectors were replaced by spare ones)" "$DH_BAD" "$DH_BAD"; s="$REPLY"
    fi
    bm_doc_kv $"SMART status" "$s"
    if [ "${#DH_FIND[@]}" -eq 0 ]; then
@@ -910,10 +910,10 @@ bm_drive_doc() {
    for k in "${DH_FIND[@]}"; do
       case "$k" in
          smart-failing) bm_doc_li $"The drive itself reports that it is failing (SMART)." ;;
-         timeouts) printf -v s $"Since the computer was started, it stopped answering and the connection had to be reset (%s kernel messages)." "${DH_COUNT[$k]}"; bm_doc_li "$s" ;;
-         io-errors) printf -v s $"Since the computer was started, reading or writing failed (%s kernel messages)." "${DH_COUNT[$k]}"; bm_doc_li "$s" ;;
+         timeouts) bm_nfmt "Since the computer was started, it stopped answering and the connection had to be reset (%s kernel message)." "Since the computer was started, it stopped answering and the connection had to be reset (%s kernel messages)." "${DH_COUNT[$k]}" "${DH_COUNT[$k]}"; bm_doc_li "$REPLY" ;;
+         io-errors) bm_nfmt "Since the computer was started, reading or writing failed (%s kernel message)." "Since the computer was started, reading or writing failed (%s kernel messages)." "${DH_COUNT[$k]}" "${DH_COUNT[$k]}"; bm_doc_li "$REPLY" ;;
          slow-link) bm_doc_li $"Since the computer was started, the connection was slowed down after errors." ;;
-         usb-resets) printf -v s $"Since the computer was started, the USB connection was reset or lost %s times." "${DH_COUNT[$k]}"; bm_doc_li "$s" ;;
+         usb-resets) bm_nfmt "Since the computer was started, the USB connection was reset or lost %s time." "Since the computer was started, the USB connection was reset or lost %s times." "${DH_COUNT[$k]}" "${DH_COUNT[$k]}"; bm_doc_li "$REPLY" ;;
       esac
    done
    bm_doc_p $"How to solve:"
@@ -985,7 +985,7 @@ bm_erase_intro_doc() {
    if [ "$DH_ERASE_MIN" -ge 508 ]; then
       bm_doc_p $"The drive announces that erasing takes more than 8 hours."
    elif [ "$DH_ERASE_MIN" -gt 0 ]; then
-      printf -v s $"The drive announces that erasing takes about %d minutes." "$DH_ERASE_MIN"; bm_doc_p "$s"
+      bm_nfmt "The drive announces that erasing takes about %d minute." "The drive announces that erasing takes about %d minutes." "$DH_ERASE_MIN" "$DH_ERASE_MIN"; bm_doc_p "$REPLY"
    fi
    bm_erase_table
    if [ "$REPLY" = gpt ]; then s="GPT"; else s="MBR"; fi

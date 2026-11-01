@@ -652,6 +652,18 @@ bm_pad "Não" 5; check "accented text padded to 5 columns" eq "$REPLY" "Não  "
 bm_pad "Fotografias" 6; check "long text shortened with an ellipsis, never cut mid-character" eq "$REPLY" "Fotog…"
 bm_pad "Ação" 3; check "  ... also when the cut falls on an accent" eq "$REPLY" "Aç…"
 bm_pad $'A\033[31mB' 8; check "  ... and control characters are neutralized" eq "$REPLY" "A?[31mB "
+bm_pad "日本語" 8; check "wide characters take two columns" eq "$REPLY" "日本語  "
+bm_pad "日本語テキスト" 8; check "  ... and are cut by columns" eq "$REPLY" "日本語… "
+bm_width "𠀀𠀁"; check "  ... rare ideographs of plane 2 too" eq "$REPLY" 4
+bm_fill "日本語" 8; check "a label is padded by columns" eq "$REPLY" "日本語  "
+bm_fill "Kandydaci znalezieni w pliku:" 8; check "  ... and never cut" eq "$REPLY" "Kandydaci znalezieni w pliku:"
+bm_nfmt "%s file differs" "%s files differ" 1 1; check "one: the singular form" eq "$REPLY" "1 file differs"
+bm_nfmt "%s file differs" "%s files differ" 3 3; check "three: the plural form" eq "$REPLY" "3 files differ"
+bm_nfmt "%s file differs" "%s files differ" "?" "?"; check "unknown count: the plural form" eq "$REPLY" "? files differ"
+bm_nfmt "%s file in %s" "%s files in %s" 2 2 "/a%s"; check "values are never read as placeholders" eq "$REPLY" "2 files in /a%s"
+bm_ui_is_yes "Yes"; check "y answers yes" eq "$?" 0
+bm_ui_is_yes ""; check "  ... Enter answers no" eq "$?" 1
+bm_ui_is_yes "sim"; check "  ... s is not yes in English" eq "$?" 1
 
 begin "graphical commands: a device that cannot be found"
 bm_ui_choice() { CHOICE_TITLE="$1"; CHOICES=$((CHOICES + 1)); REPLY="${PICK[CHOICES-1]:-3}"; }

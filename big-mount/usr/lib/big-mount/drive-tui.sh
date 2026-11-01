@@ -39,9 +39,9 @@ bm_tui_pause() {
 # bm_tui_yes PROMPT: the safe answer is the default
 bm_tui_yes() {
    local a
-   printf '%s [%s/%s] ' "$1" "y" "N"
+   printf '%s [%s/%s] ' "$1" $"y" $"N"
    read -r a || return 1
-   [[ $a == [yYsS]* ]]
+   bm_ui_is_yes "$a"
 }
 
 bm_tui_main() {

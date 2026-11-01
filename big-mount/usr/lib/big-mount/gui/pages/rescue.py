@@ -972,7 +972,8 @@ class RescueWizard(Adw.NavigationPage):
         if plan.method == "image" or plan.carve_first_image:
             group.add_row(w.fact_row(_("Space it will use"), human_size(total)))
         elif data.get("scanned") and plan.method == "copy":
-            group.add_row(w.fact_row(_("To copy"), _("%(files)s files, %(size)s") % {"files": data.get("total_files", 0), "size": human_size(total)}))
+            files = data.get("total_files", 0)
+            group.add_row(w.fact_row(_("To copy"), ngettext("%(files)s file, %(size)s", "%(files)s files, %(size)s", files) % {"files": files, "size": human_size(total)}))
         elif data.get("total_estimate"):
             group.add_row(w.fact_row(_("To copy"), "≈ " + human_size(total)))
         if data.get("avail") is not None:

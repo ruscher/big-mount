@@ -6,7 +6,7 @@ import os
 from gi.repository import Adw, GLib, Gtk
 
 from .. import widgets as w
-from ..common import _, human_duration, human_size, human_time
+from ..common import _, human_duration, human_size, human_time, ngettext
 from ..models import Job
 from .device import job_row
 
@@ -202,7 +202,7 @@ class JobPage(Adw.NavigationPage):
         self.reason.set_visible(bool(reason))
         current = job.current if running else ""
         if running and (job.stuck or 0) > 5:
-            what = _("Waiting for the disk to answer, for %s seconds") % job.stuck
+            what = ngettext("Waiting for the disk to answer, for %s second", "Waiting for the disk to answer, for %s seconds", job.stuck) % job.stuck
             current = f"{what} — {current}" if current else what
         self.current.set_text(current)
         self.current.set_visible(bool(current))

@@ -550,8 +550,8 @@ fi
 NOTE_POLL="$(pgrep -P "$P_NOTE" -x findmnt | tr '\n' ' ')"
 check "the notifier waits on findmnt --poll" test -n "$NOTE_POLL"
 kill "$P_NOTE" 2>/dev/null; sleep 0.5
-# shellcheck disable=SC2086  # a list of PIDs
-check "a stopped notifier leaves no findmnt behind" bash -c '! kill -0 "$@" 2>/dev/null' _ $NOTE_POLL
+read -r -a NOTE_POLL_PIDS <<< "$NOTE_POLL"
+check "a stopped notifier leaves no findmnt behind" bash -c '! kill -0 "$@" 2>/dev/null' _ "${NOTE_POLL_PIDS[@]}"
 NOTE_LOCK_HELD=0
 for f in /proc/[0-9]*/fd/*; do
     [ "$(readlink "$f" 2>/dev/null)" = "$NOTE_HOME/big-mount-notifier.lock" ] && NOTE_LOCK_HELD=1

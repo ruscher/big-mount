@@ -425,7 +425,7 @@ bm_job_reason_text() {
       source-gone) REPLY=$"The source drive was disconnected or unmounted. Connect and mount it again, then resume." ;;
       dest-gone) REPLY=$"The destination was disconnected or unmounted. Connect and mount it again, then resume." ;;
       no-space) REPLY=$"The destination ran out of space. Free some space or choose another place, then resume." ;;
-      too-many-deferred) printf -v REPLY $"%s files were set aside because they did not advance. The drive may be getting worse, so the copy stopped." "$BM_MAX_DEFERRED" ;;
+      too-many-deferred) bm_nfmt "%s file was set aside because it did not advance. The drive may be getting worse, so the copy stopped." "%s files were set aside because they did not advance. The drive may be getting worse, so the copy stopped." "$BM_MAX_DEFERRED" "$BM_MAX_DEFERRED" ;;
       files-left) REPLY=$"Some files were not copied. See the list below." ;;
       differences) REPLY=$"The check found differences between source and destination." ;;
       not-verified) REPLY=$"Everything was copied, but the check did not finish: it was cancelled or failed." ;;
@@ -996,11 +996,12 @@ bm_job_status_text() {
       bm_rec_status_text
       return 0
    fi
-   printf '%-22s %s\n' $"Source:" "${JC[SOURCE]//[[:cntrl:]]/?}" $"Destination:" "${JC[DEST]//[[:cntrl:]]/?}"
+   bm_tty_line $"Source:" "${JC[SOURCE]//[[:cntrl:]]/?}"
+   bm_tty_line $"Destination:" "${JC[DEST]//[[:cntrl:]]/?}"
    if [ "${JS[FILES_TOTAL]:-0}" -gt 0 ]; then
-      printf '%-22s %s / %s\n' $"Files:" "${JS[FILES_DONE]:-0}" "${JS[FILES_TOTAL]}"
+      bm_tty_line $"Files:" "${JS[FILES_DONE]:-0} / ${JS[FILES_TOTAL]}"
    else
-      printf '%-22s %s\n' $"Files:" "${JS[FILES_DONE]:-0}"
+      bm_tty_line $"Files:" "${JS[FILES_DONE]:-0}"
    fi
    if [ "$total" -gt 0 ]; then
       pct=$((done_ * 100 / total))
@@ -1010,18 +1011,20 @@ bm_job_status_text() {
    fi
    bm_human_size "$done_"; local c="$REPLY"
    bm_human_size "$total"
-   if [ "$total" -gt 0 ]; then printf '%-22s %s / %s\n' $"Copied:" "$c" "$REPLY"
-   else printf '%-22s %s\n' $"Copied:" "$c"
+   if [ "$total" -gt 0 ]; then bm_tty_line $"Copied:" "$c / $REPLY"
+   else bm_tty_line $"Copied:" "$c"
    fi
    bm_human_size "${JS[RATE_NOW]:-0}"; local rn="$REPLY"
    bm_human_size "${JS[RATE_AVG]:-0}"
-   printf '%-22s %s/s (%s %s/s)\n' $"Speed:" "$rn" $"average" "$REPLY"
-   bm_fmt_time "${JS[ELAPSED]:-0}"; printf '%-22s %s\n' $"Elapsed:" "$REPLY"
-   if [ -n "${JS[ETA]:-}" ]; then bm_fmt_time "${JS[ETA]}"; printf '%-22s %s\n' $"Remaining:" "$REPLY"; fi
-   [ "${JS[STUCK_SECONDS]:-0}" -gt 5 ] && printf $"Waiting for the disk to answer, for %s seconds"'\n' "${JS[STUCK_SECONDS]}"
-   [ -n "${JS[CURRENT]:-}" ] && printf '%-22s %s\n' $"Current file:" "${JS[CURRENT]//[[:cntrl:]]/?}"
-   [ "${JS[DEFERRED]:-0}" -gt 0 ] && printf '%-22s %s\n' $"Set aside:" "${JS[DEFERRED]}"
-   [ "${JS[FAILED]:-0}" -gt 0 ] && printf '%-22s %s\n' $"Failed:" "${JS[FAILED]}"
+   printf -v REPLY '%s/s (%s %s/s)' "$rn" $"average" "$REPLY"; bm_tty_line $"Speed:" "$REPLY"
+   bm_fmt_time "${JS[ELAPSED]:-0}"; bm_tty_line $"Elapsed:" "$REPLY"
+   if [ -n "${JS[ETA]:-}" ]; then bm_fmt_time "${JS[ETA]}"; bm_tty_line $"Remaining:" "$REPLY"; fi
+   if [ "${JS[STUCK_SECONDS]:-0}" -gt 5 ]; then
+      bm_nfmt "Waiting for the disk to answer, for %s second" "Waiting for the disk to answer, for %s seconds" "${JS[STUCK_SECONDS]}" "${JS[STUCK_SECONDS]}"; printf '%s\n' "$REPLY"
+   fi
+   [ -n "${JS[CURRENT]:-}" ] && bm_tty_line $"Current file:" "${JS[CURRENT]//[[:cntrl:]]/?}"
+   [ "${JS[DEFERRED]:-0}" -gt 0 ] && bm_tty_line $"Set aside:" "${JS[DEFERRED]}"
+   [ "${JS[FAILED]:-0}" -gt 0 ] && bm_tty_line $"Failed:" "${JS[FAILED]}"
    bm_job_reason_text "${JS[REASON]:-}"
    [ -n "$REPLY" ] && printf '%s\n' "$REPLY"
    return 0
@@ -1088,7 +1091,7 @@ bm_job_report_text() {
    bm_fmt_time "${JS[ELAPSED]:-0}"; bm_doc_kv $"Elapsed" "$REPLY"
    case "${JS[VERIFY_RESULT]:-}" in
       ok) bm_doc_kv $"Check" $"source and destination match" ;;
-      differences) printf -v REPLY $"%s files differ" "${JS[DIFFER]:-?}"; bm_doc_kv $"Check" "$REPLY" ;;
+      differences) bm_nfmt "%s file differs" "%s files differ" "${JS[DIFFER]:-?}" "${JS[DIFFER]:-?}"; bm_doc_kv $"Check" "$REPLY" ;;
       failed) bm_doc_kv $"Check" $"did not finish" ;;
       *) bm_doc_kv $"Check" $"rsync confirmed each file as it was copied; no second comparison was made" ;;
    esac
@@ -1397,8 +1400,11 @@ bm_cp_cmd() {
       for w in "${CK_WARN[@]}"; do bm_cp_warn_text "$w"; printf '%s\n' "$REPLY"; done
       printf 'dry-run: %s → %s\n' "$CP_S" "$CP_D"
       if [ "$scan" = yes ]; then
-         bm_human_size "$total"
-         printf $"%s files, %s to copy; %s already exist with different content."'\n' "$files" "$REPLY" "${conflicts:-0}"
+         local size count
+         bm_human_size "$total"; size="$REPLY"
+         bm_nfmt "%s file, %s to copy" "%s files, %s to copy" "$files" "$files" "$size"; count="$REPLY"
+         bm_nfmt "%s already exists with different content." "%s already exist with different content." "${conflicts:-0}" "${conflicts:-0}"
+         printf '%s; %s\n' "$count" "$REPLY"
       fi
       return 0
    fi
