@@ -150,11 +150,11 @@ check "translated format with a Unicode argument" bash -c '[[ $1 == *"Japão"*"e
 
 begin "plural forms and answers in the language of the messages"
 L="$REPO/big-mount/usr/lib/big-mount"
-plural() { LANGUAGE=pt_BR BIGMOUNT_LIB="$L" bash -c '. "$BIGMOUNT_LIB/cli.sh"; bm_nfmt "%s file differs" "%s files differ" "$1" "$1"; printf "%s" "$REPLY"' _ "$1"; }
+plural() { LC_ALL=pt_BR.UTF-8 LANGUAGE=pt_BR BIGMOUNT_LIB="$L" bash -c '. "$BIGMOUNT_LIB/cli.sh"; bm_nfmt "%s file differs" "%s files differ" "$1" "$1"; printf "%s" "$REPLY"' _ "$1"; }
 check "Portuguese, one: the singular" test "$(plural 1)" = "1 arquivo difere"
 check "Portuguese, three: the plural" test "$(plural 3)" = "3 arquivos diferem"
-check "a Portuguese s answers yes" env LANGUAGE=pt_BR BIGMOUNT_LIB="$L" bash -c '. "$BIGMOUNT_LIB/cli.sh"; bm_ui_is_yes sim'
-check "  ... a German j too" env LANGUAGE=de BIGMOUNT_LIB="$L" bash -c '. "$BIGMOUNT_LIB/cli.sh"; bm_ui_is_yes ja'
+check "a Portuguese s answers yes" env LC_ALL=pt_BR.UTF-8 LANGUAGE=pt_BR BIGMOUNT_LIB="$L" bash -c '. "$BIGMOUNT_LIB/cli.sh"; bm_ui_is_yes sim'
+check "  ... a German j too" env LC_ALL=pt_BR.UTF-8 LANGUAGE=de BIGMOUNT_LIB="$L" bash -c '. "$BIGMOUNT_LIB/cli.sh"; bm_ui_is_yes ja'
 
 echo ""
 echo "========================================="
