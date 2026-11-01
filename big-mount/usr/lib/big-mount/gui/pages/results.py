@@ -114,8 +114,6 @@ class Index:
             out = array("L", sorted(out, key=lambda i: -self.sizes[i]))
         elif sort == "name":
             out = array("L", sorted(out, key=lambda i: self.raw(i).lower()))
-        elif sort == "date":
-            out = array("L", sorted(out, key=lambda i: -self.mtimes[i]))
         return out
 
 

@@ -6,14 +6,13 @@ physical disk, above all) have no button that overrides them."""
 import os
 import time
 
-from gi.repository import Adw, Gio, GLib, GObject, Gtk
+from gi.repository import Adw, Gio, GLib, Gtk
 
 from .. import widgets as w
 from ..common import _, human_size, human_time, ngettext
 from ..models import Methods
 from .device import mount_volume, run_mount
 
-STEPS = ("source", "what", "how", "pick", "where", "confirm")
 STEP_NUMBER = {"source": 1, "what": 2, "how": 3, "pick": 3, "where": 4, "confirm": 5}
 STEP_TITLES = {
     "source": lambda: _("Where should files be recovered from?"),
@@ -800,12 +799,11 @@ class RescueWizard(Adw.NavigationPage):
         self.dest_status = w.box(spacing=6)
         box.append(self.dest_status)
         kwargs = {"need": need}
-        if plan.image:
-            pass
-        elif plan.mountpoint:
-            kwargs["source"] = plan.mountpoint
-        else:
-            kwargs["device"] = plan.target
+        if not plan.image:
+            if plan.mountpoint:
+                kwargs["source"] = plan.mountpoint
+            else:
+                kwargs["device"] = plan.target
         self.window.engine.destinations(self._got_destinations, **kwargs)
         if plan.dest_base:
             self._run_preflight()
@@ -1165,6 +1163,3 @@ class PartitionsPage(Adw.NavigationPage):
             self.results.append(w.label(_("The analysis did not recognize any partition. That does not prove there is no data: a search by content may still find files.")))
         else:
             self.results.append(w.label(_("The partition table is empty or unreadable. Analyzing the whole disk may find what it no longer lists.")))
-
-
-__all__ = ["RescueWizard", "PartitionsPage", "GObject"]

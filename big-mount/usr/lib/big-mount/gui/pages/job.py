@@ -7,7 +7,7 @@ from gi.repository import Adw, GLib, Gtk
 
 from .. import widgets as w
 from ..common import _, human_duration, human_size, human_time
-from ..models import Job, RESULT_CARVED, RESULT_EXISTING
+from ..models import Job
 from .device import job_row
 
 POLL_MS = 1500
@@ -323,6 +323,3 @@ class JobsPage(Adw.NavigationPage):
             self.group.add_row(job_row(self.window, job))
         self.empty.set_visible(not self.window.jobs)
         self.group.set_visible(bool(self.window.jobs))
-
-
-__all__ = ["JobPage", "JobsPage", "RESULT_CARVED", "RESULT_EXISTING"]

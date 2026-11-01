@@ -117,7 +117,6 @@ class Dialog:
                 self.dialog.set_response_appearance(key, appearance[key])
         self.dialog.set_default_response(default)
         self.dialog.set_close_response(cancel)
-        self.cancel = cancel
 
     def _message(self, doc):
         self._respond([("close", _("Close"))], "close", "close")

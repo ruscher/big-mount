@@ -3,12 +3,10 @@ goes to the window that is already open, at what it asked for."""
 
 import argparse
 import os
-import sys
 
 from gi.repository import Adw, Gdk, Gio, GLib, Gtk
 
 from . import welcome
-from .common import _
 from .window import MainWindow
 
 APP_ID = "org.biglinux.big-mount"
@@ -82,6 +80,3 @@ def run(argv):
     Adw.init()
     app = Application()
     return app.run(argv)
-
-
-__all__ = ["run", "Application", "APP_ID", "load_style", "_", "sys"]

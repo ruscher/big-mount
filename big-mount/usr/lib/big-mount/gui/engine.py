@@ -42,7 +42,7 @@ class Result:
 
 class Engine:
     def __init__(self, program=None):
-        self.program = program or os.environ.get("BM_GUI_BIN") or BIGMOUNT
+        self.program = program or BIGMOUNT
         self._questions = set()
         # Changes to a drive in flight: the window stays open until they end
         self.operations = set()
@@ -115,9 +115,6 @@ class Engine:
     # ----- questions
     def list_devices(self, cb):
         self.run(["list"], cb)
-
-    def inspect(self, target, cb):
-        self.run(["inspect", target], cb)
 
     def diagnose(self, target, cb, smart=False):
         self.run(["diagnose", target, *(["--smart"] if smart else [])], cb, limit=None if smart else ASK_SECONDS)

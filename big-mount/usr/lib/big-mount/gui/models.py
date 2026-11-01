@@ -9,31 +9,22 @@ from .common import _
 
 
 class UiState(str, Enum):
-    """The state of anything on screen. The same words everywhere."""
+    """The state of a job on screen. The same words everywhere."""
 
     IDLE = "idle"
-    LOADING = "loading"
-    READY = "ready"
-    ATTENTION = "attention"
     ERROR = "error"
     RUNNING = "running"
     PAUSED = "paused"
     CANCELLED = "cancelled"
     PARTIAL = "partial"
     COMPLETED = "completed"
-    DEVICE_DISCONNECTED = "device-disconnected"
-    AUTHORIZATION_REQUIRED = "authorization-required"
 
 
 RUNNING_STATES = {"pending", "analyzing", "running", "verifying", "stopping"}
 RESUMABLE_STATES = {"paused", "interrupted", "cancelled", "needs-attention"}
 
-# What a result means. A list of what exists, candidates rebuilt from content and
-# copied files must never be called the same thing.
-RESULT_EXISTING = "existing-files"
+# Candidates rebuilt from content are never called files that exist
 RESULT_CARVED = "carved-candidates"
-RESULT_COPIED = "copied-files"
-RESULT_IMAGE = "disk-image"
 
 SYMBOLIC_ICONS = {
     "nvme": "drive-harddisk-solidstate-symbolic",
@@ -56,9 +47,8 @@ LEVEL_ICONS = {
 
 RISKY_LEVELS = {"critical", "attention"}
 
-# The grade the engine gives a drive, worst first. "healthy" needs the drive's own
-# report (SMART): without it the best is "good".
-GRADES = ("critical", "poor", "good", "healthy", "unknown", "na")
+# The grade the engine gives a drive. "healthy" needs the drive's own report
+# (SMART): without it the best is "good".
 GRADE_ICONS = {
     "critical": "dialog-error-symbolic",
     "poor": "dialog-warning-symbolic",
