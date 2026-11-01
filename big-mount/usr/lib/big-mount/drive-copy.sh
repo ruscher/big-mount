@@ -830,14 +830,18 @@ bm_job_supervise() {
       bm_job_state_save "$dir"
       local out f b c
       bm_cp_scan_cmd "$s" "$d" > "$dir/scan.out" &
-      local spid=$!
+      local spid=$! ctl=""
       while kill -0 "$spid" 2>/dev/null; do
          sleep "$BM_TICK"
-         local ctl=""
          { read -r ctl < "$dir/control"; } 2>/dev/null
-         if [ "$ctl" = cancel ] || [ "$ctl" = pause ]; then kill -TERM "$spid" 2>/dev/null; pkill -TERM -P "$spid" 2>/dev/null; break; fi
+         # The children first: once the subshell is gone they have another parent
+         if [ "$ctl" = cancel ] || [ "$ctl" = pause ]; then pkill -TERM -P "$spid" 2>/dev/null; kill -TERM "$spid" 2>/dev/null; break; fi
       done
       wait "$spid" 2>/dev/null
+      case "$ctl" in
+         cancel) bm_job_finish "$dir" cancelled; return 0 ;;
+         pause) bm_job_finish "$dir" paused; return 0 ;;
+      esac
       read -r f b c < "$dir/scan.out" 2>/dev/null
       if [[ ${b:-} =~ ^[0-9]+$ ]] && [ "${JS[FILES_TOTAL]:-0}" -eq 0 ]; then
          JS[FILES_TOTAL]=$((JS[FILES_DONE] + f)) JS[BYTES_TOTAL]=$((JS[BYTES_DONE] + b)) JS[CONFLICTS]="${c:-0}" JS[TOTAL_ESTIMATE]=0
