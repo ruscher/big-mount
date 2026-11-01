@@ -822,7 +822,9 @@ follows the light or dark style of the system and its language.
   where possible, and optionally blocking writes on the device itself. Repair tools
   are never run: they write, and can destroy what is still readable.
 - **One bad sector does not hold the rest.** A file that stops advancing is set
-  aside after 90 seconds and the copy goes on. Good files are saved first.
+  aside after 90 seconds and the copy goes on. Good files are saved first. While the
+  destination is still writing, a file gets four times as long, so a slow USB drive
+  syncing a large file does not get the next one set aside.
 - **A power cut loses nothing.** A file gets its final name only after it was fully
   written and synced, and the job resumes, also with the drive under another name.
 - **It says what really happened.** Without a measured total there is no percentage:
@@ -1127,7 +1129,7 @@ Options of `copy`:
 | `--item PATH` | everything | only this file or folder of the source; can be repeated |
 | `--on-conflict skip\|backup\|overwrite` | `skip` | files that already exist: keep them, keep the old ones in `.big-mount-backup-ID`, or replace them |
 | `--verify basic\|metadata\|full` | `basic` | `basic`: rsync checks each file as it copies. `metadata`: names, sizes and dates at the end. `full`: the content at the end, which **reads everything again** |
-| `--stall-seconds N` | `90` | sets aside a file that does not advance for N seconds; `0` never |
+| `--stall-seconds N` | `90` | sets aside a file that does not advance for N seconds, or 4×N while the destination is still writing; `0` never |
 | `--bwlimit KBPS` | no limit | limits the reading speed |
 | `--scan auto\|yes\|no` | `auto` | measures the total first; `auto` does not on a drive at risk |
 | `--allow-same-disk` | off | accepts a destination on the same physical disk |

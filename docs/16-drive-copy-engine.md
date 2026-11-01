@@ -8,7 +8,7 @@ is that procedure made general. Each rule comes from something that happened:
 
 | What happened | Rule |
 | --- | --- |
-| One unreadable 4 KiB page took 3 min 36 s to fail, and the next one the same. A single 3.7 MB photo held the copy for ten minutes | A file that does not advance for `--stall-seconds` (90) is set aside, and the copy goes on. 15,464 files got through this way, with one set aside |
+| One unreadable 4 KiB page took 3 min 36 s to fail, and the next one the same. A single 3.7 MB photo held the copy for ten minutes | A file that does not advance for `--stall-seconds` (90) is set aside, and the copy goes on; while the destination is still writing it gets four times as long. 15,464 files got through this way, with one set aside |
 | `ntfs-3g` serves one request at a time: even `stat` and `mountpoint` hung behind that read | The mount table is read from `/proc`. Everything else that touches the source has a time limit, including `lsblk` for free space |
 | A click in Dolphin mounted the disk read-write, and `ntfs-3g` tried to write its MFT at once | `--protect` blocks writing on the block device (`blockdev --setro`), and a read-only mount is what the manager offers. Rescue never needs writing |
 | Dolphin copied in place: after the power cut, truncated files had their final names | rsync writes to a temporary folder, syncs (`--fsync`) and renames. A file with its final name is complete |

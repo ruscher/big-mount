@@ -620,8 +620,17 @@ bm_job_write_failed() {
 # Run one rsync pass and watch it. Returns its exit code. Sets BM_PASS_END:
 # done | deferred | cancel | pause | source-gone | dest-gone
 bm_job_pass() {
-   local dir="$1" s="$2" d="$3" stall="$4" last_file="" last_pos=-1 still=0 tick=0 ctl
+   local dir="$1" s="$2" d="$3" stall="$4" last_file="" last_pos=-1 still=0 idle=0 tick=0 ctl
+   local wstat="" wnow="" wlast="" wdev
    BM_PASS_END="done"
+   # The sectors written to the destination device: while they grow, a file
+   # that does not advance waits for the destination (a slow drive syncing
+   # the file before it), not for a damaged source
+   wdev="$(findmnt -n -o SOURCE -T "$d" 2>/dev/null)"; wdev="${wdev%%\[*}"
+   if [ -b "$wdev" ]; then
+      wdev="$(readlink -f -- "$wdev")"
+      [ -r "/sys/class/block/${wdev##*/}/stat" ] && wstat="/sys/class/block/${wdev##*/}/stat"
+   fi
    ionice -c 2 -n 6 nice -n 5 rsync "${RS[@]}" "${SEL[@]}" "$s/" "$d/" >> "$dir/rsync.out" 2>&1 &
    local pid=$!
    while kill -0 "$pid" 2>/dev/null; do
@@ -651,11 +660,16 @@ bm_job_pass() {
             break
          fi
       fi
-      # The file did not advance: set it aside and go on with the others
+      # The file did not advance: set it aside and go on with the others. A
+      # destination still writing gets four times the limit: other programs
+      # can keep a shared one busy all the time
+      wnow=""
+      [ -n "$wstat" ] && { read -r _ _ _ _ _ _ wnow _ < "$wstat"; } 2>/dev/null
       if [ "$stall" -gt 0 ] && [ -n "$SND_FILE" ] && [ "$SND_FILE" = "$last_file" ] && [ "$SND_POS" = "$last_pos" ]; then
          still=$((still + BM_TICK))
+         [ "$wnow" = "$wlast" ] && idle=$((idle + BM_TICK))
          JS[STUCK_SECONDS]="$still"
-         if [ "$still" -ge "$stall" ]; then
+         if [ "$idle" -ge "$stall" ] || [ "$still" -ge $((stall * 4)) ]; then
             bm_job_defer "$dir" "$SND_FILE"
             BM_PASS_END="deferred"
             JS[STATE]=running
@@ -663,10 +677,10 @@ bm_job_pass() {
             break
          fi
       else
-         still=0
+         still=0 idle=0
          JS[STUCK_SECONDS]=0
       fi
-      last_file="$SND_FILE" last_pos="$SND_POS"
+      last_file="$SND_FILE" last_pos="$SND_POS" wlast="$wnow"
    done
    # Stopped here, never with SIGKILL: rsync removes its temporary file, and
    # exits as soon as a read stuck in the driver comes back. Its helpers end
