@@ -196,5 +196,6 @@ See the end of 09. Notably:
   notifier, the Dolphin menu, the launcher, the pt_BR translation,
   `/etc/big-mount.conf`, and the test suites.
 
-Since round 3, `pkgbuild/PKGBUILD` builds `ruscher/big-mount`. Point it back
-to `biglinux/big-mount` once the official repository carries this code.
+From round 3 to 2.6.0, `pkgbuild/PKGBUILD` built `ruscher/big-mount`. With the
+pull request that brings this work to `biglinux/big-mount`, it builds the
+official repository again.

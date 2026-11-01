@@ -191,19 +191,34 @@ shot(win, OUT / f"app-about{suffix}.png")
 win.get_visible_dialog().force_close()
 pump(timeout=0.3)
 
-# A dialog of bigmount --gui-remove, as dialog.py draws it
+# The dialogs of bigmount --gui and --gui-remove, as dialog.py draws them
 import dialog as shell_dialog  # noqa: E402
 from gui import dialogs as shell_dialogs  # noqa: E402
-busy = shell_dialogs.Dialog(shell_dialog.parse(["question", "--title=Device is busy", "--button=3=Cancel", "--button=2=More options\u2026",
-                                                "--button=1=Try again", "--default=1", "--cancel=3", "--suggested=1"]),
-                            [("h", "Backup is still in use"), ("p", "Dolphin has a folder of this device open. Close that program, then try again."),
-                             ("kv", "Device\tBackup (2 TB)"), ("kv", "Mounted at\t/run/media/maria/Backup"),
-                             ("th", "Application\x1fprocess\tPID\tUser\tActivity"), ("tr", "Dolphin\x1fdolphin\t4182\tmaria\tCurrent folder is on the device")])
-busy.dialog.present(None)
-pump(timeout=0.8)
-shot(busy.dialog.get_root(), OUT / f"app-dialog-busy{suffix}.png")
-busy.dialog.force_close()
-pump(timeout=0.2)
+
+
+def shell_shot(name, argv, doc):
+    d = shell_dialogs.Dialog(shell_dialog.parse(argv), doc)
+    d.dialog.present(None)
+    pump(timeout=0.8)
+    shot(d.dialog.get_root(), OUT / f"{name}{suffix}.png")
+    d.dialog.force_close()
+    pump(timeout=0.2)
+
+
+shell_shot("app-dialog-busy", ["question", "--title=Device is busy", "--button=3=Cancel", "--button=2=More options\u2026",
+                               "--button=1=Try again", "--default=1", "--cancel=3", "--suggested=1"],
+           [("h", "Backup is still in use"), ("p", "Dolphin has a folder of this device open. Close that program, then try again."),
+            ("kv", "Device\tBackup (2 TB)"), ("kv", "Mounted at\t/run/media/maria/Backup"),
+            ("th", "Application\x1fprocess\tPID\tUser\tActivity"), ("tr", "Dolphin\x1fdolphin\t4182\tmaria\tCurrent folder is on the device")])
+shell_shot("app-dialog-read-only", ["question", "--title=Read-only device", "--button=no=Close", "--button=yes=Technical details",
+                                    "--default=yes", "--cancel=no", "--suggested=yes"],
+           [("h", "Read-only device"), ("kv", "Device\tCAMERA (32 GB)"), ("kv", "Filesystem\texFAT"),
+            ("kv", "Mounted at\t/run/media/maria/CAMERA"),
+            ("p", "The device itself is write-protected, so no system can write to it."), ("p", "How to solve:"),
+            ("li", "SD cards and some USB drives have a small lock switch on the side. Remove the device, move the switch "
+                   "to the unlocked position and connect it again."),
+            ("li", "If there is no switch, the device may have locked itself because of wear. Copy your files to another "
+                   "place as soon as possible.")])
 
 # The same window where there is little room
 small = MainWindow(app)

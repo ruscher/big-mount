@@ -159,31 +159,18 @@ How it was designed, tested and reviewed:
 
 ## 2. Installation
 
-### 2.1 From a release (recommended for this version)
-
-Every [release](https://github.com/ruscher/big-mount/releases) has a ready
-package attached:
-
-```bash
-# download big-mount-<version>-any.pkg.tar.zst from the release page, then
-sudo pacman -U ./big-mount-*-any.pkg.tar.zst
-```
-
-Check the version of the release: the single application of the drive manager (GTK 4
-and libadwaita) needs 2.4.0 or later, and its new Home 2.5.0. Until there is a release of it,
-[build the package](#23-build-the-package-yourself).
-
-### 2.2 From the BigLinux repository
+### 2.1 From the BigLinux repository (recommended)
 
 Big-Mount is part of BigLinux. To install or update it:
 
 ```bash
 sudo pacman -Syu big-mount
+bigmount --version          # Big-Mount 2.6.0 or later has everything in this README
 ```
 
-The BigLinux repository is built from
-[biglinux/big-mount](https://github.com/biglinux/big-mount), so it gets this
-version once the work has been merged there.
+The BigLinux build service builds the package from the `master` branch of
+[biglinux/big-mount](https://github.com/biglinux/big-mount). A new package
+reaches `biglinux-testing` first, and `biglinux-stable` later.
 
 > **Check what you have.** On 2026-10-25 the `biglinux-stable` repository
 > still shipped `big-mount 25.12.23-2237`, the script from December 2025
@@ -192,13 +179,29 @@ version once the work has been merged there.
 > `Error looking up object for device /dev/nvme`, and ignores every option.
 > See [12.1](#121-errors-about-sddm-or-devnvme).
 
-### 2.3 Build the package yourself
+### 2.2 From a release
 
-`pkgbuild/PKGBUILD` builds the `master` branch of this repository, downloading
-it from GitHub, so it builds what was pushed and not your local changes:
+The build service also attaches every package it builds to a
+[release of biglinux/big-mount](https://github.com/biglinux/big-mount/releases):
 
 ```bash
-git clone https://github.com/ruscher/big-mount.git
+# download big-mount-<version>-x86_64.pkg.tar.zst from the release page, then
+sudo pacman -U ./big-mount-*.pkg.tar.zst
+```
+
+The release name is the package version, the date and time of the commit it was
+built from ([2.4](#24-what-happens-on-installation-and-updates)). After
+installing, `bigmount --version` says which Big-Mount it is: the application
+needs 2.4.0 or later, its Home 2.5.0, and the welcome and the GTK dialogs 2.6.0.
+
+### 2.3 Build the package yourself
+
+`pkgbuild/PKGBUILD` builds the `master` branch of
+[biglinux/big-mount](https://github.com/biglinux/big-mount), downloading it from
+GitHub, so it builds what was pushed and not your local changes:
+
+```bash
+git clone https://github.com/biglinux/big-mount.git
 cd big-mount/pkgbuild
 makepkg -f
 sudo pacman -U ./big-mount-*.pkg.tar*
@@ -237,9 +240,10 @@ pacman -Qi big-mount
 systemctl is-enabled big-mount
 ```
 
-Output of the package built from commit `0cbac17` of this repository
-(`big-mount 26.10.26.0139-1`); once it is installed by pacman, a
-`package:` line with the installed package and version is added:
+Output of the package built from commit `0cbac17` of the development fork
+(`big-mount 26.10.26.0139-1`); a package built from `biglinux/big-mount`
+names it as its `source:`. Once it is installed by pacman, a `package:` line
+with the installed package and version is added:
 
 ```text
 $ bigmount --version
@@ -522,7 +526,7 @@ bigmount --gui /dev/sdX1            # in a dialog
 ```
 
 <p align="center">
-  <img src="docs/images/read-only-device.png" width="420" alt="Diagnosis of a write-protected device (real Plasma screenshot)">
+  <img src="docs/images/app-dialog-read-only.png" width="420" alt="The diagnosis of a write-protected SD card, in the GTK dialog of bigmount --gui: how to solve it, with Technical details">
 </p>
 
 ### 5.1 Causes
@@ -676,7 +680,7 @@ An open file does not necessarily mean that something is being copied.
 ```
 
 <p align="center">
-  <img src="docs/images/busy-device.png" width="420" alt="Busy device dialog">
+  <img src="docs/images/app-dialog-busy.png" width="420" alt="The busy device dialog of bigmount --gui-remove: which program keeps it busy, with Try again as the main button">
 </p>
 
 The dialog starts with a plain-language summary and advice, chosen from the
@@ -1554,7 +1558,7 @@ checking whether it may, and it cuts device names at the first digit, so
 `nvme0n1p1` becomes `nvme`, a device that does not exist. It also ignores
 every option, so `bigmount --diagnose` runs the boot mount instead. **Your
 disks and data are not affected by these messages.** Update the package
-(`sudo pacman -Syu`, or install a [release](#21-from-a-release-recommended-for-this-version))
+(`sudo pacman -Syu`, or install a [release](#22-from-a-release))
 and check with `bigmount --version`. Do not change the permissions of the
 SDDM files, and there is no need to reinstall the system. Details in
 [`docs/12-field-report.md`](docs/12-field-report.md).
@@ -1788,20 +1792,20 @@ bash tests/manual-check.sh --after-boot # after rebooting with the package insta
 
 ### 14.3 Packaging, releases, the fork and the build workflow
 
-`ruscher/big-mount` is the development fork of `biglinux/big-mount`.
-`pkgbuild/PKGBUILD` builds this fork (`url`/`source` point to it, with a
-comment explaining why). When the work is merged into `biglinux/big-mount`,
-point them back there. `pkgbuild/big-mount.install` only prints messages; it
-restarts nothing.
+`biglinux/big-mount` is the official repository, and the BigLinux packages are
+built from its `master` branch. Work is done in forks (versions 2.0 to 2.6 were
+made in `ruscher/big-mount`) and comes in by pull request. `pkgbuild/PKGBUILD`
+downloads `biglinux/big-mount` (`url`/`source`). `pkgbuild/big-mount.install`
+only prints messages; it restarts nothing.
 
-Releases are tagged on `master` (`vMAJOR.MINOR.PATCH`), and each one carries
-the package built from that tag by `pkgbuild/PKGBUILD`. The package version
-comes from `pkgver()`: the UTC date and time of the commit, never the build
-time, and `package()` writes the commit to `/usr/lib/big-mount/version`
-([2.4](#24-what-happens-on-installation-and-updates)). The screenshots of the
-dialogs in this README are real captures on Plasma 6 (Breeze, dark), and those of the
-drive manager come from `tests/readme-screenshots.py`. To test a branch,
-use [section 2.3](#23-build-the-package-yourself).
+The version of Big-Mount itself (`BM_VERSION` in `doctor.sh`, shown by
+`bigmount --version`) follows `MAJOR.MINOR.PATCH`. The package version comes
+from `pkgver()`: the UTC date and time of the commit, never the build time, and
+`package()` writes the commit to `/usr/lib/big-mount/version`
+([2.4](#24-what-happens-on-installation-and-updates)). Every picture of the
+application and of its dialogs in this README comes from
+`tests/readme-screenshots.py`, with sample drives. To test a branch, use
+[section 2.3](#23-build-the-package-yourself).
 
 `build-package.yml` asks the BigLinux build service to build the package on
 pushes. Its filter `branches: ["*"]` does not match names that contain `/`,
@@ -1893,7 +1897,10 @@ failing disk took 0.15 s on the development machine, because it reads nothing fr
   - a USB SSD connected during boot (left to UDisks), an encrypted drive,
     the Dolphin menu through Dolphin's own code, the accessibility tree
     read by Orca, Breeze dark and light at 100–200 %, X11, and the Zenity
-    dialogs of the GNOME edition.
+    dialogs of the GNOME edition (before 2.6.0, when the dialogs were KDialog
+    and Zenity).
+- The GTK dialogs of 2.6.0 are tested and pictured on a private display. A
+  person has not checked them yet in a real Plasma or GNOME session, or on X11.
 - Not verified in round 7 (see [`docs/12-field-report.md`](docs/12-field-report.md)):
   the **Unable to access storage device** dialog on screen (it was driven
   by scripted KDialog calls), and the Plasma symptoms of the reporter's

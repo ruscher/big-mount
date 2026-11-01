@@ -79,7 +79,7 @@ check "the PKGBUILD survives makepkg writing pkgver twice (second build)" \
 rev="$(git -C "$WORK/src/big-mount" rev-parse HEAD)"
 check "version file names the exact commit (bigmount --version)" \
     grep -qx "revision=$rev" "$WORK/pkg/usr/lib/big-mount/version"
-check "  ... its date and the source URL" bash -c 'grep -qx "date=2026-10-25T13:42:07Z" "$1" && grep -qx "source=https://github.com/ruscher/big-mount" "$1"' _ "$WORK/pkg/usr/lib/big-mount/version"
+check "  ... its date and the source URL" bash -c 'grep -qx "date=2026-10-25T13:42:07Z" "$1" && grep -qx "source=https://github.com/biglinux/big-mount" "$1"' _ "$WORK/pkg/usr/lib/big-mount/version"
 check "bigmount --version of the package shows that commit" \
     bash -c 'BIGMOUNT_LIB="$1/usr/lib/big-mount" bash "$1/usr/bin/bigmount" --version | grep -q "${2:0:12}"' _ "$WORK/pkg" "$rev"
 P="$WORK/pkg"
@@ -143,8 +143,8 @@ check "every translation in locale/LINGUAS is installed" \
 
 begin "metadata"
 pkginfo="$(source pkgbuild/PKGBUILD 2>/dev/null; printf 'source=%s\n' "${source[*]}"; printf 'depends=%s\n' "${depends[*]}"; printf 'backup=%s\n' "${backup[*]}"; printf 'install=%s\n' "${install:-}"; printf 'url=%s\n' "$url")"
-check "source is the development repository (ruscher/big-mount)" grep -q "^source=git+https://github.com/ruscher/big-mount.git$" <<< "$pkginfo"
-check "url matches the source" grep -q "^url=https://github.com/ruscher/big-mount$" <<< "$pkginfo"
+check "source is the official repository (biglinux/big-mount)" grep -q "^source=git+https://github.com/biglinux/big-mount.git$" <<< "$pkginfo"
+check "url matches the source" grep -q "^url=https://github.com/biglinux/big-mount$" <<< "$pkginfo"
 check "install script exists and is valid" bash -c '[ "$1" = "install=big-mount.install" ] && bash -n pkgbuild/big-mount.install' _ "$(grep ^install= <<< "$pkginfo")"
 check "install script restarts nothing by itself" bash -c '! grep -vE "^\s*(#|echo)" pkgbuild/big-mount.install | grep -qE "systemctl|kill|mount"' 
 check "configuration preserved on upgrades (backup=)" grep -q "^backup=etc/big-mount.conf" <<< "$pkginfo"

@@ -38,7 +38,7 @@ reading", "Open for writing"). Paths, users and states are in **Technical
 details**. There are never percentages, speeds or remaining times, because
 an open file is not a transfer.
 
-![Busy device dialog](images/busy-device.png)
+![The busy device dialog, drawn with GTK 4 since 2.6.0](images/app-dialog-busy.png)
 
 ## Why Plasma sometimes only says "one or more files are open"
 
