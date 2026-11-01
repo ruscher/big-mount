@@ -317,7 +317,7 @@ bm_dr_session() {
       local running=0
       [ -e "$rundir/big-mount-notifier.lock" ] && ! flock -n "$rundir/big-mount-notifier.lock" true 2>/dev/null && running=1
       local entry="${XDG_CONFIG_HOME:-$HOME/.config}/autostart/big-mount-notifier.desktop"
-      if [ ! -e "$entry" ] || grep -qx 'Hidden=true' "$entry"; then
+      if [ ! -e "$entry" ] || grep -qx -e 'Hidden=true' -e 'X-GNOME-Autostart-enabled=false' "$entry"; then
          bm_dr info $"The read-only notifier is off (it can be turned on in the menu of the application)"
       elif [ "$running" = 1 ]; then
          bm_dr ok $"The read-only notifier is running"
