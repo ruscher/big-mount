@@ -1266,7 +1266,7 @@ bm_erase_unfreeze() {
 bm_is_block() { [ -b "$1" ]; }
 
 bm_erase_run() {
-   local disk="$1" seq="$2" ptable="$3" d dobj blk old t u min
+   local disk="$1" seq="$2" ptable="$3" d i b member dobj blk old t u min
    ER_REASON="" ER_STAGE=""
    bm_diskseq "$disk"
    if [ "$REPLY" != "$seq" ] || ! bm_is_block "$disk"; then
@@ -1274,13 +1274,28 @@ bm_erase_run() {
       return 1
    fi
    bm_drive_members "$disk"
-   for d in "${DRIVE_DEVS[@]}"; do
+   for i in "${!DRIVE_DEVS[@]}"; do
+      d="${DRIVE_DEVS[i]}"
       bm_mounts "$d"
       if [ "${#M_TARGET[@]}" -gt 0 ]; then
          printf -v ER_REASON $"%s is mounted at %s" "$d" "${M_TARGET[0]}"; return 3
       fi
       if bm_has_holders "$d"; then
          printf -v ER_REASON $"%s is in use (encryption, LVM or RAID)" "$d"; return 3
+      fi
+      # A filesystem over several devices is mounted from only one of them:
+      # btrfs and bcachefs list every member in sysfs; a ZFS member is
+      # refused while the ZFS module is loaded
+      member=0
+      compgen -G "/sys/fs/btrfs/*/devices/${d##*/}" >/dev/null && member=1
+      for b in /sys/fs/bcachefs/*/dev-*/block; do
+         [ -e "$b" ] || continue
+         t="$(readlink -f -- "$b")"
+         [ "${t##*/}" = "${d##*/}" ] && member=1
+      done
+      [ "${DRIVE_FSTYPES[i]:-}" = zfs_member ] && [ -d /sys/module/zfs ] && member=1
+      if [ "$member" = 1 ]; then
+         printf -v ER_REASON $"%s belongs to a filesystem that spans several drives" "$d"; return 3
       fi
    done
    bm_udev_props "$disk"

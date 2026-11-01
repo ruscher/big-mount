@@ -3474,15 +3474,19 @@ msgstr "%s foi desmontado, mas o driver do sistema de arquivos ainda está grava
 msgid "%s is still mounted at %s after being unmounted"
 msgstr "%s continua montado em %s depois de ser desmontado"
 
-#: big-mount/usr/lib/big-mount/lib.sh:1280
+#: big-mount/usr/lib/big-mount/lib.sh:1281
 msgid "%s is mounted at %s"
 msgstr "%s está montado em %s"
 
-#: big-mount/usr/lib/big-mount/lib.sh:1283
+#: big-mount/usr/lib/big-mount/lib.sh:1284
 msgid "%s is in use (encryption, LVM or RAID)"
 msgstr "%s está em uso (criptografia, LVM ou RAID)"
 
-#: big-mount/usr/lib/big-mount/lib.sh:1289
+#: big-mount/usr/lib/big-mount/lib.sh:1298
+msgid "%s belongs to a filesystem that spans several drives"
+msgstr "%s faz parte de um sistema de arquivos que ocupa várias unidades"
+
+#: big-mount/usr/lib/big-mount/lib.sh:1304
 msgid "UDisks2 does not know this drive."
 msgstr "O UDisks2 não conhece esta unidade."
 

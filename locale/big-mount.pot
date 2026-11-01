@@ -3467,15 +3467,19 @@ msgstr ""
 msgid "%s is still mounted at %s after being unmounted"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/lib.sh:1280
+#: big-mount/usr/lib/big-mount/lib.sh:1281
 msgid "%s is mounted at %s"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/lib.sh:1283
+#: big-mount/usr/lib/big-mount/lib.sh:1284
 msgid "%s is in use (encryption, LVM or RAID)"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/lib.sh:1289
+#: big-mount/usr/lib/big-mount/lib.sh:1298
+msgid "%s belongs to a filesystem that spans several drives"
+msgstr ""
+
+#: big-mount/usr/lib/big-mount/lib.sh:1304
 msgid "UDisks2 does not know this drive."
 msgstr ""
 
