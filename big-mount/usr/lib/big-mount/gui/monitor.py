@@ -45,7 +45,10 @@ class DeviceMonitor(GObject.Object):
             return
         if line is None:
             return
-        self.poke()
+        # An event is "UDEV  [time] action path (block)"; the header lines it
+        # prints first are not
+        if line.startswith(b"UDEV  ["):
+            self.poke()
         self._read_line()
 
     def _start_mounts(self):
