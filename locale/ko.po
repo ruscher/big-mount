@@ -502,7 +502,7 @@ msgstr "크기"
 
 #: big-mount/usr/lib/big-mount/cli.sh:374
 msgid "FS"
-msgstr "파일 시스템"
+msgstr "형식"
 
 #: big-mount/usr/lib/big-mount/cli.sh:374
 msgid "MANAGED BY"
