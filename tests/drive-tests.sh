@@ -402,6 +402,10 @@ bm_job_out_line 'rsync: [sender] send_files failed to open "/src/segredo": Permi
 check "no permission" eq "${BM_FAILED[segredo]:-}" "Permission denied"
 bm_job_out_line 'rsync error: some files/attrs were not transferred (see previous errors) (code 23)'
 check "a summary line is not a file" eq "${#BM_FAILED[@]}" 3
+bm_pwned() { : > "$WORK/pwned"; }
+ll '>f+++++++++|7|$(bm_pwned)'
+bm_job_out_line 'WARNING: $(bm_pwned) failed verification -- update discarded (will try again).'
+check "a file name is never run" test ! -e "$WORK/pwned"
 
 begin "jobs: state on disk"
 d="$BM_JOBS/20261030-140000-abcd"; mkdir -p "$d"

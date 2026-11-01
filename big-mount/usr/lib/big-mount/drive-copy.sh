@@ -461,8 +461,8 @@ BM_RECENT_MAX=128
 # Take one logged attempt of NAME back from the counters
 bm_job_uncount() {
    local LC_ALL=C name="$1" size="" l
-   if [ -n "${BM_RECENT_A[$name]+set}" ]; then size="${BM_RECENT_A[$name]}"; unset "BM_RECENT_A[$name]"
-   elif [ -n "${BM_RECENT_B[$name]+set}" ]; then size="${BM_RECENT_B[$name]}"; unset "BM_RECENT_B[$name]"
+   if [ -n "${BM_RECENT_A[$name]+set}" ]; then size="${BM_RECENT_A[$name]}"; unset -v 'BM_RECENT_A[$name]'
+   elif [ -n "${BM_RECENT_B[$name]+set}" ]; then size="${BM_RECENT_B[$name]}"; unset -v 'BM_RECENT_B[$name]'
    else
       l="$(grep -aF -- "|$name" "$BM_RUN_DIR/events.log" | tail -n 1)"
       l="${l#*|}"
