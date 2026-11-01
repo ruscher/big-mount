@@ -61,8 +61,7 @@ class WelcomeDialog(Adw.Dialog):
         head = w.box(spacing=12)
         head.set_halign(Gtk.Align.CENTER)
         head.append(w.icon("big-mount", 64))
-        title = w.label(_("Welcome to Big-Mount"), css=("title-1",), xalign=0.5)
-        title.set_accessible_role(Gtk.AccessibleRole.HEADING)
+        title = w.label(_("Welcome to Big-Mount"), css=("title-1",), xalign=0.5, role=Gtk.AccessibleRole.HEADING)
         head.append(title)
         head.append(w.label(_("Your drives, how they are doing, and your files safe on another disk."),
                             css=("title-4", "dim-label"), xalign=0.5))

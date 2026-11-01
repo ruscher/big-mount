@@ -7,8 +7,10 @@ from .common import _, human_size
 from .models import GRADE_ICONS, LEVEL_ICONS
 
 
-def label(text="", css=(), wrap=True, xalign=0.0, ellipsize=False, selectable=False):
-    w = Gtk.Label(label=text, xalign=xalign, use_markup=False)
+def label(text="", css=(), wrap=True, xalign=0.0, ellipsize=False, selectable=False, role=Gtk.AccessibleRole.LABEL):
+    # The role is set on this label only: Gtk.Widget.set_accessible_role() would
+    # change the role of every label in the process
+    w = Gtk.Label(label=text, xalign=xalign, use_markup=False, accessible_role=role)
     if wrap and not ellipsize:
         w.set_wrap(True)
         w.set_wrap_mode(Pango.WrapMode.WORD_CHAR)
@@ -21,12 +23,11 @@ def label(text="", css=(), wrap=True, xalign=0.0, ellipsize=False, selectable=Fa
 
 
 def icon(name, size=None, css=()):
-    w = Gtk.Image.new_from_icon_name(name)
+    w = Gtk.Image(icon_name=name, accessible_role=Gtk.AccessibleRole.PRESENTATION)
     if size:
         w.set_pixel_size(size)
     for c in css:
         w.add_css_class(c)
-    w.set_accessible_role(Gtk.AccessibleRole.PRESENTATION)
     return w
 
 
@@ -189,7 +190,8 @@ class GradeBadge(Gtk.Box):
     tooltip says what the grade rests on."""
 
     def __init__(self, health):
-        super().__init__(orientation=Gtk.Orientation.HORIZONTAL, spacing=5, valign=Gtk.Align.CENTER)
+        super().__init__(orientation=Gtk.Orientation.HORIZONTAL, spacing=5, valign=Gtk.Align.CENTER,
+                         accessible_role=Gtk.AccessibleRole.LABEL)
         self.add_css_class("grade-pill")
         self.add_css_class(f"grade-{health.grade}")
         self.append(icon(GRADE_ICONS.get(health.grade, GRADE_ICONS["unknown"]), 14))
@@ -198,7 +200,6 @@ class GradeBadge(Gtk.Box):
         if health.notes:
             tip += "\n" + "\n".join(n.get("text", "") for n in health.notes)
         self.set_tooltip_text(tip)
-        self.set_accessible_role(Gtk.AccessibleRole.LABEL)
         self.update_property([Gtk.AccessibleProperty.LABEL], [_("Health") + ": " + health.grade_label])
 
 

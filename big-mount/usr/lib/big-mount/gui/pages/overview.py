@@ -242,8 +242,7 @@ class OverviewPage(Adw.NavigationPage):
             if not devs:
                 continue
             section = w.box(spacing=8)
-            head = w.label(f"{GROUP_TITLES[key]()} · {len(devs)}", css=("heading",))
-            head.set_accessible_role(Gtk.AccessibleRole.HEADING)
+            head = w.label(f"{GROUP_TITLES[key]()} · {len(devs)}", css=("heading",), role=Gtk.AccessibleRole.HEADING)
             section.append(head)
             if self.view == "list":
                 box = Gtk.ListBox(selection_mode=Gtk.SelectionMode.NONE, css_classes=["boxed-list"])

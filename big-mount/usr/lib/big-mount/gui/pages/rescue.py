@@ -302,10 +302,9 @@ class RescueWizard(Adw.NavigationPage):
             if i < 5:
                 line = Gtk.Box(css_classes=["step-line"], valign=Gtk.Align.CENTER)
                 self.stepper.append(line)
-        self.heading = w.label("", css=("title-2",), xalign=0.5)
+        self.heading = w.label("", css=("title-2",), xalign=0.5, role=Gtk.AccessibleRole.HEADING)
         self.heading.set_margin_start(16)
         self.heading.set_margin_end(16)
-        self.heading.set_accessible_role(Gtk.AccessibleRole.HEADING)
         self.heading.set_margin_bottom(6)
         top = w.box(children=(self.stepper, self.heading))
 

@@ -303,6 +303,13 @@ class Home(Base):
         pump(timeout=0.4)
         self.assertTrue(self.win.get_mapped())
 
+    def test_role_stays_on_one_widget(self):
+        heads = [x for x in widgets(self.win) if isinstance(x, Gtk.Label) and x.get_mapped() and x.get_text().startswith("On this computer")]
+        self.assertTrue(heads)
+        self.assertEqual(heads[0].get_accessible_role(), Gtk.AccessibleRole.HEADING)
+        self.assertEqual(Gtk.Label().get_accessible_role(), Gtk.AccessibleRole.LABEL)
+        self.assertEqual(Gtk.Image().get_accessible_role(), Gtk.AccessibleRole.IMG)
+
     def test_hostile_label_is_text(self):
         evil = "<b>&amp;<span foreground='red'>x"
         dev = drive("/dev/sdx", evil, volumes=[vol("/dev/sdx1", label=evil)], serial="EVIL")
