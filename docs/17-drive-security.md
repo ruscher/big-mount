@@ -26,6 +26,17 @@ that user or to root (an earlier run). It refuses a file on the disk being read,
 and hands the files to the user at the end. The user cannot signal a root process,
 so `cancel` creates a stop file that the helper watches.
 
+The folder is the user's, so a name could be swapped for a link while root works.
+The image, the map and `MAP.bak` are therefore opened once (a new file with
+`O_EXCL`, which never follows a link), checked through `/proc/PID/fd` (the path
+they really are, a regular file with one name, of the user or new), and only those
+descriptors are used afterwards, by `ddrescue`, `chmod` and `chown`. ddrescue keeps
+its own map in a folder of root under `/run`, where it can make its backup, and the
+helper copies it to the user's map every 2 s, the previous one first to `MAP.bak`.
+A map cut by a power failure is resumed from `MAP.bak`. `tests/drive-integration.sh`
+swaps the names for links to a file of root during a run, and checks that file did
+not change.
+
 ## 2. What is never done
 
 No `fsck`, `mkfs`, `wipefs`, `dd`, `umount -f`, `umount -l`, `kill -9`, `fuser -k`,

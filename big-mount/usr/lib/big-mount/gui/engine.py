@@ -186,7 +186,14 @@ class Engine:
             args += ["--bwlimit", str(bwlimit)]
         path = None
         if items:
-            path = write_items(items)
+            try:
+                path = write_items(items)
+            except OSError as exc:
+                # The runtime folder is full or cannot be written: the usual failure
+                if cb:
+                    failure = Result(None, 1, "", f"{exc.filename or ''}: {exc.strerror}")
+                    GLib.idle_add(lambda: cb(failure) and False)
+                return
             args += ["--items-from", path]
         if scan:
             args += ["--scan", scan]
@@ -256,7 +263,11 @@ def write_items(items):
     folder = os.path.join(GLib.get_user_runtime_dir(), "big-mount")
     os.makedirs(folder, mode=0o700, exist_ok=True)
     fd, path = tempfile.mkstemp(prefix="items-", dir=folder)
-    with os.fdopen(fd, "wb") as handle:
-        for item in items:
-            handle.write(item + b"\0")
+    try:
+        with os.fdopen(fd, "wb") as handle:
+            for item in items:
+                handle.write(item + b"\0")
+    except OSError:
+        os.unlink(path)
+        raise
     return path

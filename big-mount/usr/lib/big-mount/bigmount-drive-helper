@@ -14,7 +14,8 @@
 #                   print what `testdisk /list` finds, or what its analysis of
 #                   the disk finds. Fixed commands: never one that writes
 #   image DEV FILE MAP RETRIES STOPFILE
-#                   read DEV into FILE with GNU ddrescue
+#                   read DEV into FILE with GNU ddrescue, its map in MAP (and
+#                   the previous one in MAP.bak)
 #
 # pkexec gives it a clean environment. Exit codes: 0 done, 1 failed, 2 bad
 # arguments, 3 another volume of the drive is mounted with writing enabled,
@@ -144,19 +145,47 @@ case "$verb" in
       }
       open_own "$file"; ofile="$REPLY"
       open_own "$map"; omap="$REPLY"
+      open_own "$map.bak"; obak="$REPLY"
+      # ddrescue renames and creates files next to its map (MAP.bak, kept in case
+      # a save is cut): it works on a copy in a folder of root, and that copy goes
+      # to the user's map through what was opened above
+      work="$(mktemp -d /run/big-mount-image.XXXXXXXX)" || die "no working folder" 1
+      trap 'rm -rf -- "$work"' EXIT
+      # A whole map: it ends with a line break, has the status line and ends with a block
+      whole_map() {
+         [ -s "$1" ] && [ "$(tail -c 1 -- "$1" | wc -l)" = 1 ] &&
+            grep -qE '^0x[0-9A-Fa-f]+[[:space:]]+[-?*/+FGRB]([[:space:]]+[0-9]+)?[[:space:]]*$' -- "$1" &&
+            [[ $(tail -n 1 -- "$1") =~ ^0x[0-9A-Fa-f]+[[:space:]]+0x[0-9A-Fa-f]+[[:space:]]+[-?*/+][[:space:]]*$ ]]
+      }
+      # Resuming: from the map, or from its backup when the map was cut
+      if whole_map "$omap"; then cat -- "$omap" > "$work/map"
+      elif whole_map "$obak"; then cat -- "$obak" > "$work/map"
+      fi
+      # The previous map goes to MAP.bak before the map is overwritten, as ddrescue does
+      mirror() {
+         cp -- "$work/map" "$work/snap" 2>/dev/null && whole_map "$work/snap" || return 0
+         cmp -s -- "$work/snap" "$omap" && return 0
+         if whole_map "$omap"; then cat -- "$omap" >| "$obak" && sync -- "$obak"; fi
+         cat -- "$work/snap" >| "$omap" && sync -- "$omap"
+      }
       # Hand the files over to the user whatever happens next
-      give_back() { chown "$uid" -- "$ofile" "$omap" 2>/dev/null; chmod 600 -- "$ofile" 2>/dev/null; chmod 644 -- "$omap" 2>/dev/null; }
+      give_back() {
+         chown "$uid" -- "$ofile" "$omap" "$obak" 2>/dev/null
+         chmod 600 -- "$ofile" 2>/dev/null; chmod 644 -- "$omap" "$obak" 2>/dev/null
+      }
       args=(--idirect --no-scrape)
       [ "$retries" -gt 0 ] && args=(--idirect "--retry-passes=$retries")
-      ddrescue "${args[@]}" -- "$dev" "$ofile" "$omap" &
+      ddrescue "${args[@]}" -- "$dev" "$ofile" "$work/map" &
       pid=$!
       trap 'kill -TERM "$pid" 2>/dev/null' TERM INT HUP
       while kill -0 "$pid" 2>/dev/null; do
          [ -e "$stop" ] && kill -TERM "$pid" 2>/dev/null
+         mirror
          chmod 644 -- "$omap" 2>/dev/null
          sleep 2
       done
       wait "$pid"; rc=$?
+      mirror
       give_back
       exit "$rc"
       ;;

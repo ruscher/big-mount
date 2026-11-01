@@ -1292,6 +1292,21 @@ class Results(Base):
         self.assertTrue(pump(lambda: not os.path.exists(path), 3), "the selection is removed once the engine has it")
         self.assertEqual(leftover_items(), [], "the check before it left nothing behind either")
 
+    def test_a_selection_that_cannot_be_written_is_an_answer(self):
+        folder = WORK / "big-mount"
+        shutil.rmtree(folder, ignore_errors=True)
+        folder.write_text("not a folder")
+        try:
+            forget_calls()
+            got = []
+            self.win.engine.copy(got.append, source="/src", destination=str(DEST), items=[b"a"], dry_run=True)
+            self.assertTrue(pump(lambda: got, 3), "the caller always gets an answer")
+            self.assertFalse(got[0].ok)
+            self.assertTrue(got[0].message)
+            self.assertFalse(calls(), "nothing was started without its selection")
+        finally:
+            folder.unlink()
+
     def test_carved_copy_goes_through_results_of(self):
         page = self.open()
         page._select_all()

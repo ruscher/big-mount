@@ -696,13 +696,25 @@ sudo -n "$H" image "$d" "$DSTMP/img/l.img" "$DSTMP/img/l.map" 9 "$DSTMP/img/s" >
 # The folder is the user's: while root works, the names become links to a file of root
 victim="$WORK/victim"; sudo -n sh -c 'umask 077; echo secret > "$1"' _ "$victim"
 SR="$WORK/race-bin"; mkdir -p "$SR"
-printf '#!/bin/bash\nfor n in "%s" "%s"; do rm -f -- "$n"; ln -s -- "%s" "$n"; done\nsleep 3\n' \
-   "$DSTMP/img/race.img" "$DSTMP/img/race.img.map" "$victim" > "$SR/ddrescue"; chmod +x "$SR/ddrescue"
+# ... and the stand-in writes through what it was given, as ddrescue would
+printf '#!/bin/bash\nfor n in "%s" "%s" "%s"; do rm -f -- "$n"; ln -s -- "%s" "$n"; done\necho pwned >> "${@: -2:1}"; echo pwned >> "${@: -1}"\nsleep 3\n' \
+   "$DSTMP/img/race.img" "$DSTMP/img/race.img.map" "$DSTMP/img/race.img.map.bak" "$victim" > "$SR/ddrescue"; chmod +x "$SR/ddrescue"
 sed -e "s|^export PATH=.*|export PATH=$SR:/usr/bin:/bin:/usr/sbin:/sbin|" "$H" > "$H.race"; chmod +x "$H.race"
 sudo -n env PKEXEC_UID="$EUID" "$H.race" image "$d" "$DSTMP/img/race.img" "$DSTMP/img/race.img.map" 0 "$DSTMP/img/race.stop" >/dev/null 2>&1
 check "names swapped for links during the run: root's file keeps its owner and mode" \
    eq "$(sudo -n stat -c '%u %a' -- "$victim")" "0 600"
 check "  ... and its content" eq "$(sudo -n cat -- "$victim")" secret
+# A map cut by a power failure: ddrescue starts from MAP.bak, and the map is whole again
+SS="$WORK/seen-bin"; mkdir -p "$SS"
+printf '#!/bin/bash\ncp -- "${@: -1}" "%s"\n' "$WORK/seen-map" > "$SS/ddrescue"; chmod +x "$SS/ddrescue"
+sed -e "s|^export PATH=.*|export PATH=$SS:/usr/bin:/bin:/usr/sbin:/sbin|" "$H" > "$H.seen"; chmod +x "$H.seen"
+printf '# Mapfile\n0x00100000     ?               1\n0x00000000  0x00100000  +\n0x00100000  0x01F00000  ?\n' > "$DSTMP/img/cut.img.map.bak"
+printf '# Mapfile\n0x00200000     ?               1\n0x00000000  0x002' > "$DSTMP/img/cut.img.map"
+: > "$DSTMP/img/cut.img"
+sudo -n env PKEXEC_UID="$EUID" "$H.seen" image "$d" "$DSTMP/img/cut.img" "$DSTMP/img/cut.img.map" 0 "$DSTMP/img/cut.stop" >/dev/null 2>&1
+check "a map that was cut: ddrescue resumes from MAP.bak" cmp -s "$WORK/seen-map" "$DSTMP/img/cut.img.map.bak"
+check "  ... and the map is whole again, the user's" \
+   bash -c 'cmp -s "$1" "$2" && [ "$(stat -c %u "$1")" = "$3" ]' _ "$DSTMP/img/cut.img.map" "$DSTMP/img/cut.img.map.bak" "$EUID"
 ln -s /etc/bm-should-not-exist "$DSTMP/img/dangling.map"
 sudo -n env PKEXEC_UID="$EUID" "$H" image "$d" "$DSTMP/img/dangling.img" "$DSTMP/img/dangling.map" 0 "$DSTMP/img/s" >/dev/null 2>&1
 check "a map that is a link: refused (exit 2), nothing created through it" \

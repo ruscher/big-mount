@@ -522,7 +522,12 @@ img note.img; mkfs.ext4 -q -F -L BMNOTE "$IMG/note.img"
         XDG_RUNTIME_DIR="$NOTE_HOME" XDG_STATE_HOME="$NOTE_HOME/state" "$BM" --notifier
 ) 2> "$NOTE_HOME/notes" &
 P_NOTE=$!; PIDS+=("$P_NOTE")
-sleep 1
+# The listener (findmnt --poll) starts after the initial scan: a device attached
+# before it would be seen by the scan, not as a hot-plug
+for _ in $(seq 40); do
+    pgrep -P "$P_NOTE" -x findmnt >/dev/null && break
+    sleep 0.5
+done
 attach "$IMG/note.img" ro && mountdev "$DEV"
 notes_for() { grep -c "^Read-only device: Device: $1 " "$NOTE_HOME/notes"; }
 # The notifier also reads the real drives of this computer, and a failing one is
