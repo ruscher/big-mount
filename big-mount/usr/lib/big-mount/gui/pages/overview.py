@@ -148,6 +148,7 @@ class OverviewPage(Adw.NavigationPage):
         super().__init__(title=_("Big-Mount"), tag="home")
         self.window = window
         self._signature = None
+        self._running_signature = None
         self.view = load_view()
         self.query = ""
 
@@ -215,20 +216,28 @@ class OverviewPage(Adw.NavigationPage):
             self.stack.set_visible_child_name("empty")
         else:
             self.stack.set_visible_child_name("list")
-        signature = repr(win.devices) + repr([(j.id, j.state, j.bytes_done) for j in win.jobs if j.running]) + str(win.partial)
-        if signature == self._signature:
+        # Rebuilt only when what is listed changes: progress is updated in place, so
+        # the focus and an open menu stay where they are
+        signature = repr(win.devices) + str(win.partial)
+        if signature != self._signature:
+            self._signature = signature
+            self._render_drives()
+            w.clear(self.alerts)
+            for dev in win.devices:
+                if dev.health.level == "critical":
+                    self.alerts.append(self._alert(dev, _("%s reported serious problems. Copy your files to another drive before trying any repair.") % dev.name))
+            if win.partial:
+                self.alerts.append(self._plain_alert(_("A mounted device did not answer in time, so free space is not shown.")))
+        running = [j for j in win.jobs if j.running]
+        signature = repr([(j.id, j.state_label) for j in running])
+        if signature != self._running_signature:
+            self._running_signature = signature
+            w.clear(self.running)
+            for job in running:
+                self.running.append(self._running_row(job))
             return
-        self._signature = signature
-        self._render_drives()
-        w.clear(self.alerts)
-        for dev in win.devices:
-            if dev.health.level == "critical":
-                self.alerts.append(self._alert(dev, _("%s reported serious problems. Copy your files to another drive before trying any repair.") % dev.name))
-        if win.partial:
-            self.alerts.append(self._plain_alert(_("A mounted device did not answer in time, so free space is not shown.")))
-        w.clear(self.running)
-        for job in [j for j in win.jobs if j.running]:
-            self.running.append(self._running_row(job))
+        for group, job in zip(self._running_groups(), running, strict=True):
+            self._show_progress(group, job)
 
     def _render_drives(self):
         w.clear(self.groups)
@@ -266,13 +275,25 @@ class OverviewPage(Adw.NavigationPage):
     def _plain_alert(self, text):
         return w.notice(text)
 
+    def _running_groups(self):
+        child = self.running.get_first_child()
+        while child:
+            yield child
+            child = child.get_next_sibling()
+
     def _running_row(self, job):
         group = w.Group()
-        done = human_size(job.bytes_done)
-        r = w.row(f"{job.state_label}", f"{job.source} — {done}", activatable=True, icon_name="media-playback-start-symbolic")
-        if job.percent is not None:
-            r.add_suffix(w.label(job.percent_text, css=("numeric", "heading"), wrap=False))
-        r.add_suffix(w.icon("go-next-symbolic"))
-        r.connect("activated", lambda *_a: self.window.open_job(job.id))
-        group.add_row(r)
+        group.row = w.row(job.state_label, activatable=True, icon_name="media-playback-start-symbolic")
+        group.pct = w.label("", css=("numeric", "heading"), wrap=False)
+        group.row.add_suffix(group.pct)
+        group.row.add_suffix(w.icon("go-next-symbolic"))
+        group.row.connect("activated", lambda *_a: self.window.open_job(job.id))
+        group.add_row(group.row)
+        self._show_progress(group, job)
         return group
+
+    @staticmethod
+    def _show_progress(group, job):
+        group.row.set_subtitle(f"{job.source} — {human_size(job.bytes_done)}")
+        group.pct.set_text(job.percent_text)
+        group.pct.set_visible(job.percent is not None)

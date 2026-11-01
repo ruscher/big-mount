@@ -43,6 +43,7 @@ class MainWindow(Adw.ApplicationWindow):
         self._relist = False
         self._jobs_timer = 0
         self._jobs_busy = False
+        self._side_signature = None
         self.erase_running = False
         self._closing = False
         self._inhibit = 0
@@ -158,32 +159,50 @@ class MainWindow(Adw.ApplicationWindow):
         name = w.label(job.title, css=("caption",), ellipsize=True)
         name.set_hexpand(True)
         top.append(name)
-        pct = w.label(job.percent_text, css=("caption", "numeric"), wrap=False)
-        top.append(pct)
+        row.pct = w.label("", css=("caption", "numeric"), wrap=False)
+        top.append(row.pct)
         inner.append(top)
-        bar = Gtk.ProgressBar()
-        if job.percent is not None:
-            bar.set_fraction(job.percent / 100)
-        else:
-            # No measured total: a bar that says it is working, never a made-up share
-            bar.pulse()
-        inner.append(bar)
-        inner.append(w.label(job.state_label, css=("caption", "dim-label"), ellipsize=True))
+        row.bar = Gtk.ProgressBar()
+        inner.append(row.bar)
+        row.state = w.label("", css=("caption", "dim-label"), ellipsize=True)
+        inner.append(row.state)
         row.set_child(inner)
-        text = f"{job.state_label}: {job.title}" + (f", {job.percent_text}" if job.percent_text else "")
-        bar.update_property([Gtk.AccessibleProperty.LABEL], [text])
-        row.update_property([Gtk.AccessibleProperty.LABEL], [text])
-        row.set_tooltip_text(text)
+        self._show_progress(row, job)
         return row
 
+    @staticmethod
+    def _show_progress(row, job):
+        row.pct.set_text(job.percent_text)
+        if job.percent is not None:
+            row.bar.set_fraction(job.percent / 100)
+        else:
+            # No measured total: a bar that says it is working, never a made-up share
+            row.bar.pulse()
+        row.state.set_text(job.state_label)
+        text = f"{job.state_label}: {job.title}" + (f", {job.percent_text}" if job.percent_text else "")
+        row.bar.update_property([Gtk.AccessibleProperty.LABEL], [text])
+        row.update_property([Gtk.AccessibleProperty.LABEL], [text])
+        row.set_tooltip_text(text)
+
     def _fill_sidebar(self):
+        """Rebuilt only when what it lists changes: progress is updated in place, so
+        the focus and the selection stay where the person left them."""
+        running = {j.id: j for j in self.jobs if j.running}
+        signature = repr((self.devices, len(self.jobs), [(j.id, j.title) for j in running.values()]))
+        if signature == self._side_signature:
+            index = 0
+            while (row := self.side_list.get_row_at_index(index)) is not None:
+                if row.kind == "job":
+                    self._show_progress(row, running[row.value])
+                index += 1
+            return
+        self._side_signature = signature
         w.clear(self.side_list)
         self.side_list.append(self._side_row("home", None, _("Home"), "go-home-symbolic"))
         for dev in self.devices:
             self.side_list.append(self._side_row("device", dev.stable_id, dev.name, dev.symbolic_icon, dev.subtitle, dev.health.level))
-        running = [j for j in self.jobs if j.running]
         self.side_list.append(self._side_row("jobs", (len(self.jobs), len(running)), _("Copies and searches"), "folder-download-symbolic"))
-        for job in running:
+        for job in running.values():
             self.side_list.append(self._job_row(job))
         self._mark_sidebar()
 

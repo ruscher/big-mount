@@ -312,6 +312,7 @@ class DevicePage(Adw.NavigationPage):
         self.dev = None
         self.stable_id = None
         self._signature = None
+        self._history_signature = None
 
         self.header = Adw.HeaderBar()
         self.stack = Adw.ViewStack()
@@ -516,11 +517,16 @@ class DevicePage(Adw.NavigationPage):
 
     def _render_history(self):
         box = self.history_box
-        w.clear(box)
         dev = self.dev
         mounts = [v.mountpoint for v in dev.volumes if v.mountpoint]
         names = [v.device for v in dev.volumes]
         jobs = [j for j in self.window.jobs if j.source in names or any(j.source == m or j.source.startswith(m + "/") for m in mounts)]
+        # What a row shows, without progress: the History tab keeps its focus while a job runs
+        signature = repr((dev.stable_id, [(j.id, j.state, j.state_label, j.source, j.destination) for j in jobs]))
+        if signature == self._history_signature:
+            return
+        self._history_signature = signature
+        w.clear(box)
         group = w.Group(_("Copies and searches of this drive"))
         for job in jobs:
             group.add_row(job_row(self.window, job))
