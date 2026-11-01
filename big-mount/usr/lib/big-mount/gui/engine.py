@@ -11,7 +11,7 @@ import tempfile
 
 from gi.repository import Gio, GLib
 
-from .common import BIGMOUNT
+from .common import BIGMOUNT, ngettext
 
 # A question about the system has a limit; an operation does not
 ASK_SECONDS = 60
@@ -66,15 +66,21 @@ class Engine:
             return None
         running = self.operations if operation else self._questions
         running.add(proc)
-        timer = None
+        timer = 0
+        timed_out = False
+
+        def give_up():
+            nonlocal timer, timed_out
+            timer = 0
+            timed_out = True
+            proc.send_signal(signal.SIGTERM)
+            return False
         if limit and not operation:
-            timer = GLib.timeout_add_seconds(limit, self._give_up, proc)
+            timer = GLib.timeout_add_seconds(limit, give_up)
 
         def finished(p, res):
-            nonlocal timer
             if timer:
                 GLib.source_remove(timer)
-                timer = None
             running.discard(p)
             out, err = b"", b""
             try:
@@ -91,15 +97,14 @@ class Engine:
                 except ValueError:
                     data = None
             code = p.get_exit_status() if p.get_if_exited() else 128
+            err = err.decode("utf-8", "replace") if err else ""
+            if timed_out:
+                err = ngettext("No answer from the system in %d second.", "No answer from the system in %d seconds.", limit) % limit
             if callback:
-                callback(Result(data, code, text, err.decode("utf-8", "replace") if err else ""))
+                callback(Result(data, code, text, err))
 
         proc.communicate_async(None, None, finished)
         return proc
-
-    def _give_up(self, proc):
-        proc.send_signal(signal.SIGTERM)
-        return False
 
     def shutdown(self):
         """Questions still being asked have nobody left to answer to."""
