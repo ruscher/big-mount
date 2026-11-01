@@ -849,22 +849,22 @@ bm_diskseq() { REPLY=7; }
 lsblk() { :; }
 bm_erase_table() { REPLY=dos; }
 se_case() { SE_CALLS=() FAKE_RELEASE=0 FAKE_RUN=0 TYPED=sda; sata_up; F=([NAME]=/dev/sda [DISK]=/dev/sda [TYPE]=disk [TRAN]=sata [SIZE]=256060514304 [MODEL]=AL-SSD-256); }
-se_case; TYPED=sdb; bm_secure_erase_tty /dev/sda > /dev/null 2>&1; rc=$?
+se_case; TYPED=sdb; bm_secure_erase_tty /dev/sda 7 > /dev/null 2>&1; rc=$?
 check "terminal: another name typed -> nothing done, 5" eq "$rc:${#SE_CALLS[@]}" "5:0"
-se_case; TYPED=""; bm_secure_erase_tty /dev/sda > /dev/null 2>&1; rc=$?
+se_case; TYPED=""; bm_secure_erase_tty /dev/sda 7 > /dev/null 2>&1; rc=$?
 check "  ... no answer (no terminal) -> nothing done" eq "$rc:${#SE_CALLS[@]}" "5:0"
-se_case; bm_ui_confirm() { return 1; }; bm_secure_erase_tty /dev/sda > /dev/null 2>&1; rc=$?
+se_case; bm_ui_confirm() { return 1; }; bm_secure_erase_tty /dev/sda 7 > /dev/null 2>&1; rc=$?
 check "  ... frozen, the user does not want the computer to sleep -> 11, no erase" eq "$rc:${SE_CALLS[*]}" "11:release:/dev/sda:0"
-se_case; bm_ui_confirm() { return 0; }; bm_secure_erase_tty /dev/sda > "$WORK/se.out" 2>&1; rc=$?
+se_case; bm_ui_confirm() { return 0; }; bm_secure_erase_tty /dev/sda 7 > "$WORK/se.out" 2>&1; rc=$?
 check "  ... frozen, sleep accepted: release, unfreeze, erase with the table of this computer" eq "$rc:${SE_CALLS[*]}" "0:release:/dev/sda:0 unfreeze erase:dos"
 check "  ... and the result says the drive keeps what is written" grep -q "keeps what is written again" "$WORK/se.out"
-se_case; FAKE_RUN=12 ER_STAGE=erase-ignored; bm_secure_erase_tty /dev/sda > "$WORK/se.out" 2>&1; rc=$?
+se_case; FAKE_RUN=12 ER_STAGE=erase-ignored; bm_secure_erase_tty /dev/sda 7 > "$WORK/se.out" 2>&1; rc=$?
 check "  ... a drive that ignored the erase is called failing" eq "$rc:$(grep -c 'Replace it' "$WORK/se.out")" "12:1"
-se_case; FAKE_RELEASE=4 RM_REASON="/dev/sda2 → /"; bm_secure_erase_tty /dev/sda > /dev/null 2>&1; rc=$?
+se_case; FAKE_RELEASE=4 RM_REASON="/dev/sda2 → /"; bm_secure_erase_tty /dev/sda 7 > /dev/null 2>&1; rc=$?
 check "  ... the system appeared on it meanwhile -> 4, no erase" eq "$rc:${#SE_CALLS[@]}" "4:1"
-se_case; SEQ=7; bm_diskseq() { REPLY="$SEQ"; }; bm_ui_input() { SEQ=8 REPLY=sda; }; bm_erase_run() { SE_CALLS+=("erase:$2"); }
-bm_secure_erase_tty /dev/sda > /dev/null 2>&1
-check "  ... erased only as the drive shown" eq "${SE_CALLS[*]: -1}" "erase:7"
+se_case; SEQ=7; bm_diskseq() { REPLY="$SEQ"; }; bm_ui_input() { SEQ=8 REPLY=sda; }
+bm_secure_erase_tty /dev/sda 7 > /dev/null 2>&1; rc=$?
+check "  ... another drive took the name meanwhile -> 1, nothing released" eq "$rc:${#SE_CALLS[@]}" "1:0"
 
 begin "Secure Erase from the application: a ticket, the typed name, and nothing else"
 (

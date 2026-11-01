@@ -1064,7 +1064,7 @@ bm_erase_result_doc() {
 
 # bigmount --secure-erase DISK
 bm_cmd_secure_erase() {
-   local target="" a disk rc
+   local target="" a disk seq rc
    for a in "$@"; do
       case "$a" in
          -*) printf $"bigmount: unknown option '%s' (see bigmount --help)"'\n' "$a" >&2; return 2 ;;
@@ -1072,6 +1072,9 @@ bm_cmd_secure_erase() {
       esac
    done
    bm_resolve "$target" || { bm_resolve_fail "$target"; return 1; }
+   # Read before the facts that are checked and shown: the drive erased is the
+   # one they describe, and another one that takes its name has another number
+   bm_diskseq "$R_DEV"; seq="$REPLY"
    bm_facts "$R_DEV" || { R_ERR=unavailable; bm_resolve_fail "$R_DEV"; return 1; }
    disk="${F[DISK]}"
    if [ "$R_DEV" != "$disk" ] || [ -n "$R_PATH" ]; then
@@ -1092,17 +1095,15 @@ bm_cmd_secure_erase() {
       printf '%s\n' $"Another operation on this drive is in progress. Nothing was done." >&2
       return 10
    fi
-   bm_secure_erase_tty "$disk"; rc=$?
+   bm_secure_erase_tty "$disk" "$seq"; rc=$?
    bm_drive_unlock
    return "$rc"
 }
 
-# The terminal dialogue of bm_cmd_secure_erase, with the drive locked
+# The terminal dialogue of bm_cmd_secure_erase, with the drive locked. SEQ is
+# the disk sequence number of the drive that was checked
 bm_secure_erase_tty() {
-   local disk="$1" seq rc a table
-   # The drive shown is the one erased: another one that takes its name while
-   # the question is open has another sequence number
-   bm_diskseq "$disk"; seq="$REPLY"
+   local disk="$1" seq="$2" rc a table
    bm_erase_intro_doc "$disk"
    bm_ui_show info ""
    printf '\n'
@@ -1110,6 +1111,13 @@ bm_secure_erase_tty() {
    if ! bm_ui_input "" "$a" || [ "$REPLY" != "${disk##*/}" ]; then
       printf '%s\n' $"Nothing was erased." >&2
       return 5
+   fi
+   # Nothing is unmounted on a drive that took the name while the question was open
+   bm_diskseq "$disk"
+   if [ "$REPLY" != "$seq" ]; then
+      ER_REASON=$"The drive was disconnected or replaced. Nothing was erased."
+      bm_erase_result_doc 1 ""; bm_ui_show "$E_KIND" "" >&2
+      return 1
    fi
    RM_ALLOW_SERVICES=0
    while :; do
