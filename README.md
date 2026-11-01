@@ -1675,20 +1675,22 @@ the journal.
 ```text
 locale/
   big-mount.pot          template with every message
-  pt_BR.po               Brazilian Portuguese
-  LINGUAS                languages to build
+  <lang>.po              one catalog per language
+  LINGUAS                languages to build (31)
   templates/             English .desktop and polkit templates
   its/                   polkit ITS rules (so the catalog builds without polkit installed)
   update-pot.sh          extract the messages and merge them into every .po
   compile.sh             build the .mo files, .desktop files and the policy
 ```
 
-To add a language, for example Spanish:
+To add a language, for example Catalan:
 
 ```bash
-msginit --no-translator -l es -i locale/big-mount.pot -o locale/es.po
-echo es >> locale/LINGUAS
-# translate locale/es.po
+msginit --no-translator -l ca -i locale/big-mount.pot -o locale/ca.po
+echo ca >> locale/LINGUAS
+# set Plural-Forms as in the language's GTK catalog:
+msgunfmt /usr/share/locale/ca/LC_MESSAGES/gtk40.mo | grep -m1 Plural-Forms
+# translate locale/ca.po
 bash locale/compile.sh
 bash tests/i18n-tests.sh
 ```
