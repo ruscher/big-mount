@@ -422,6 +422,7 @@ bm_job_reason_text() {
       too-many-deferred) printf -v REPLY $"%s files were set aside because they did not advance. The drive may be getting worse, so the copy stopped." "$BM_MAX_DEFERRED" ;;
       files-left) REPLY=$"Some files were not copied. See the list below." ;;
       differences) REPLY=$"The check found differences between source and destination." ;;
+      not-verified) REPLY=$"Everything was copied, but the check did not finish: it was cancelled or failed." ;;
       rsync-error) REPLY=$"rsync stopped with an error. See the log." ;;
       not-authorized) REPLY=$"Permission was not granted." ;;
       no-ddrescue) REPLY=$"GNU ddrescue is not installed (package ddrescue). It makes the disk image." ;;
@@ -733,7 +734,7 @@ bm_job_finish() {
 }
 
 # The source and destination compared, after the copy. Nothing is changed.
-# JS[VERIFY_RESULT]: ok | differences | skipped
+# JS[VERIFY_RESULT]: ok | differences | skipped | failed (cancelled or an error)
 bm_job_verify() {
    local dir="$1" s="$2" d="$3" level="${JC[VERIFY]}" a args=() rc
    JS[VERIFY_RESULT]=skipped
@@ -748,18 +749,17 @@ bm_job_verify() {
    done
    [ "$level" = full ] && args+=(--checksum)
    LC_ALL=C rsync -n --out-format='%i|%n' "${args[@]}" "${SEL[@]}" "$s/" "$d/" > "$dir/verify.out" 2>&1 &
-   local pid=$!
+   local pid=$! ctl=""
    while kill -0 "$pid" 2>/dev/null; do
       sleep "$BM_TICK"
-      local ctl=""
       { read -r ctl < "$dir/control"; } 2>/dev/null
       if [ "$ctl" = cancel ]; then kill -TERM "$pid" 2>/dev/null; break; fi
    done
    wait "$pid"; rc=$?
    grep -E '^>f|^cL' "$dir/verify.out" | cut -d'|' -f2- > "$dir/differences.txt"
    JS[DIFFER]="$(wc -l < "$dir/differences.txt")"
-   if [ "$rc" -ne 0 ] && [ "$rc" -ne 23 ] && [ "$rc" -ne 24 ]; then
-      JS[VERIFY_RESULT]=skipped
+   if [ "$ctl" = cancel ] || { [ "$rc" -ne 0 ] && [ "$rc" -ne 23 ] && [ "$rc" -ne 24 ]; }; then
+      JS[VERIFY_RESULT]=failed
    elif [ "${JS[DIFFER]}" -gt 0 ]; then
       JS[VERIFY_RESULT]=differences
    else
@@ -891,6 +891,8 @@ bm_job_supervise() {
       bm_job_finish "$dir" needs-attention files-left
    elif [ "${JS[VERIFY_RESULT]}" = differences ]; then
       bm_job_finish "$dir" needs-attention differences
+   elif [ "${JS[VERIFY_RESULT]}" = failed ]; then
+      bm_job_finish "$dir" needs-attention not-verified
    else
       bm_job_finish "$dir" completed
    fi
@@ -1066,6 +1068,7 @@ bm_job_report_text() {
    case "${JS[VERIFY_RESULT]:-}" in
       ok) bm_doc_kv $"Check" $"source and destination match" ;;
       differences) printf -v REPLY $"%s files differ" "${JS[DIFFER]:-?}"; bm_doc_kv $"Check" "$REPLY" ;;
+      failed) bm_doc_kv $"Check" $"did not finish" ;;
       *) bm_doc_kv $"Check" $"rsync confirmed each file as it was copied; no second comparison was made" ;;
    esac
    [ "${JS[CONFLICTS]:-0}" -gt 0 ] && bm_doc_kv $"Already at the destination, with different content" "${JS[CONFLICTS]}"
