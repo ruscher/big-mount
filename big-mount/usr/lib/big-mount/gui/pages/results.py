@@ -26,6 +26,19 @@ THUMB_TYPES = (".jpg", ".jpeg", ".png", ".gif", ".webp", ".bmp")
 THUMB_MAX_BYTES = 32 * 1000 * 1000
 PREVIEW_MAX_BYTES = 128 * 1000 * 1000
 THUMB_CACHE = 256
+# The first bytes of the formats offered. gdk-pixbuf picks its loader by content:
+# only files that start like one of these reach a loader
+PICTURE_MAGIC = (b"\xff\xd8\xff", b"\x89PNG\r\n\x1a\n", b"GIF87a", b"GIF89a", b"BM")
+
+
+def picture(path, size):
+    """The picture at PATH, at most SIZE pixels wide and high. ValueError when it is
+    not one of the formats offered."""
+    with open(path, "rb") as handle:
+        head = handle.read(12)
+    if not (head.startswith(PICTURE_MAGIC) or (head[:4] == b"RIFF" and head[8:12] == b"WEBP")):
+        raise ValueError(path)
+    return Gdk.Texture.new_for_pixbuf(GdkPixbuf.Pixbuf.new_from_file_at_scale(path, size, size, True))
 
 
 class Index:
@@ -183,9 +196,8 @@ class Thumbnails:
                     return
                 path, callback = self.queue.popleft()
             try:
-                pix = GdkPixbuf.Pixbuf.new_from_file_at_scale(path, 64, 64, True)
-                texture = Gdk.Texture.new_for_pixbuf(pix)
-            except (GLib.Error, TypeError):
+                texture = picture(path, 64)
+            except (GLib.Error, OSError, TypeError, ValueError):
                 continue
             GLib.idle_add(self._deliver, path, texture, callback)
 
@@ -225,9 +237,8 @@ class PreviewDialog(Adw.Dialog):
 
     def _load(self, path):
         try:
-            pix = GdkPixbuf.Pixbuf.new_from_file_at_scale(path, 1280, 1280, True)
-            texture = Gdk.Texture.new_for_pixbuf(pix)
-        except (GLib.Error, TypeError, AttributeError):
+            texture = picture(path, 1280)
+        except (GLib.Error, OSError, TypeError, ValueError):
             GLib.idle_add(self.stack.set_visible_child_name, "problem")
             return
         GLib.idle_add(self._show, texture)

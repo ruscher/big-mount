@@ -3922,7 +3922,7 @@ msgstr ""
 
 #: big-mount/usr/lib/big-mount/gui/pages/device.py:83
 #: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1061
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:618
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:629
 msgid "The reason could not be determined."
 msgstr ""
 
@@ -3977,8 +3977,8 @@ msgid "Export diagnosis…"
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/gui/pages/device.py:164
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:243
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:281
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:254
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:292
 msgid "What was found"
 msgstr ""
 
@@ -4305,7 +4305,7 @@ msgid "Search this image for files"
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/gui/pages/job.py:91
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:311
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:322
 msgid "Open destination"
 msgstr ""
 
@@ -4757,7 +4757,7 @@ msgid "Looking for places…"
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/gui/pages/rescue.py:795
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:636
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:647
 msgid "Choose another folder…"
 msgstr ""
 
@@ -4766,8 +4766,8 @@ msgid "No other disk is mounted. Connect one, or choose a folder."
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/gui/pages/rescue.py:851
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:597
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:625
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:608
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:636
 msgid "Choose where to save"
 msgstr ""
 
@@ -4902,7 +4902,7 @@ msgid "Starting…"
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/gui/pages/rescue.py:1061
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:618
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:629
 msgid "It did not start"
 msgstr ""
 
@@ -4967,122 +4967,122 @@ msgstr ""
 msgid "The partition table is empty or unreadable. Analyzing the whole disk may find what it no longer lists."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:218
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:230
 msgid "This picture cannot be shown"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:219
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:231
 msgid "It may be incomplete. That is common with files found by content."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:265
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:266
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:276
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:277
 msgid "Search by name"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:268
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:279
 msgid "As found"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:268
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:279
 msgid "Largest first"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:268
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:279
 msgid "By name"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:269
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:280
 msgid "Order"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:283
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:294
 msgid "Name"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:287
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:298
 msgid "Date"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:292
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:303
 msgid "Reading the list…"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:294
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:305
 msgid "Nothing to show"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:295
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:306
 msgid "No file matches what you asked for."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:302
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:313
 msgid "Recover selected"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:304
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:315
 msgid "Select all shown"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:305
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:316
 msgid "Clear selection"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:312
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:648
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:323
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:659
 msgid "Save report"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:313
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:324
 msgid "Try another method"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:349
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:360
 msgid "Candidates found by content. They are saved in the destination folder, without their names and folders, and some may be incomplete. Check them before deleting anything."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:350
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:361
 msgid "Copy selected to another folder"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:352
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:363
 msgid "These files exist on the volume and have not been copied yet. Deleted files are not on this list."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:365
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:376
 #, python-format
 msgid "All (%d)"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:385
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:396
 msgid "The list could not be read."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:483
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:494
 #, python-format
 msgid "%(shown)d shown, %(sel)d selected (%(size)s)"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:500
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:511
 msgid "Select"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:522
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:533
 msgid "Preview"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:588
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:599
 msgid "It cannot be copied"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:591
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:602
 #, python-format
 msgid "%d file with a line break in its name was left out. It cannot be handled safely."
 msgid_plural "%d files with a line break in their names were left out. They cannot be handled safely."
 msgstr[0] ""
 msgstr[1] ""
 
-#: big-mount/usr/lib/big-mount/gui/pages/results.py:635
+#: big-mount/usr/lib/big-mount/gui/pages/results.py:646
 msgid "It cannot be saved here"
 msgstr ""
 
