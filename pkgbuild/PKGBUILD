@@ -13,16 +13,14 @@ pkgrel=1
 arch=('any')
 license=('GPL')
 # The boot path needs only bash, util-linux, udisks2 and ntfs-3g. The rest is the
-# drive manager: python, python-gobject, gtk4 and libadwaita (>= 1.5) are the
-# application of --gui-drive and are loaded only by it; pkexec (polkit) starts the
-# helper; rsync does every copy and smartctl reads the health of a drive.
+# desktop side: python, python-gobject, gtk4 and libadwaita (>= 1.5) draw the
+# application of --gui-drive and every dialog (--gui, --gui-remove, the notifier),
+# and are loaded only by them; libnotify sends the notifications; pkexec (polkit)
+# starts the helper; rsync does every copy and smartctl reads the health of a drive.
 # Commands of the base system (coreutils, findutils, gawk, systemd) are not listed.
 depends=('bash' 'util-linux' 'udisks2' 'polkit' 'ntfs-3g' 'lsof' 'rsync' 'smartmontools'
-         'python' 'python-gobject' 'gtk4' 'libadwaita>=1.5')
-optdepends=('kdialog: dialogs on KDE Plasma'
-            'zenity: dialogs on GNOME and other desktops'
-            'libnotify: desktop notifications (otherwise kdialog --passivepopup is used)'
-            'ddrescue: disk images of a failing drive, before a deep analysis'
+         'python' 'python-gobject' 'gtk4' 'libadwaita>=1.5' 'libnotify')
+optdepends=('ddrescue: disk images of a failing drive, before a deep analysis'
             'testdisk: find lost partitions, search files by content (PhotoRec)')
 provides=('big-mount-git')
 conflicts=('big-mount-git')

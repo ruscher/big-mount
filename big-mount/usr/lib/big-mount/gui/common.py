@@ -3,6 +3,9 @@
 import gettext
 import locale
 import os
+import re
+
+from gi.repository import GLib
 
 LIB_DIR = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 PREFIX = os.path.normpath(os.path.join(LIB_DIR, "..", ".."))
@@ -15,6 +18,48 @@ except locale.Error:
     pass
 
 _ = gettext.translation("big-mount", LOCALE_DIR, fallback=True).gettext
+
+WEBSITE = "https://github.com/biglinux/big-mount"
+ISSUES = "https://github.com/biglinux/big-mount/issues"
+
+
+def version():
+    """The version of Big-Mount, from the one place the engine keeps it."""
+    try:
+        with open(os.path.join(LIB_DIR, "doctor.sh"), encoding="utf-8") as f:
+            found = re.search(r"^BM_VERSION=([0-9][0-9A-Za-z.+-]*)$", f.read(), re.M)
+    except OSError:
+        return ""
+    return found.group(1) if found else ""
+
+
+def _settings_file():
+    return os.path.join(GLib.get_user_config_dir(), "big-mount", "gui.ini")
+
+
+def setting(group, key, default=""):
+    """A preference of the window. Never an error: without it, the default."""
+    keys = GLib.KeyFile()
+    try:
+        keys.load_from_file(_settings_file(), GLib.KeyFileFlags.NONE)
+        return keys.get_string(group, key)
+    except GLib.Error:
+        return default
+
+
+def save_setting(group, key, value):
+    keys = GLib.KeyFile()
+    path = _settings_file()
+    try:
+        keys.load_from_file(path, GLib.KeyFileFlags.KEEP_COMMENTS)
+    except GLib.Error:
+        pass
+    keys.set_string(group, key, value)
+    try:
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        keys.save_to_file(path)
+    except (GLib.Error, OSError):
+        pass
 
 
 def _decimal(text):

@@ -11,7 +11,7 @@
 # volume labels, serial numbers, UUIDs, the user name, the home folder or
 # the folders where devices are mounted (they usually carry the label).
 
-BM_VERSION=2.5.0
+BM_VERSION=2.6.0
 
 # ---------------------------------------------------------------------------
 # --version
@@ -298,10 +298,6 @@ bm_dr_session() {
    bm_dr_section $"Desktop session"
    bm_fmt $"Session: %s, desktop: %s, language: %s" "${XDG_SESSION_TYPE:-?}" "${XDG_CURRENT_DESKTOP:-?}" "${LC_ALL:-${LC_MESSAGES:-${LANG:-?}}}"
    bm_dr info "$REPLY"
-   if command -v kdialog >/dev/null; then bm_dr_ver kdialog --version; bm_fmt $"Dialogs: %s" "$REPLY"; bm_dr ok "$REPLY"
-   elif command -v zenity >/dev/null; then bm_dr_ver zenity --version; bm_fmt $"Dialogs: %s" "zenity $REPLY"; bm_dr ok "$REPLY"
-   else bm_dr warn $"Neither kdialog nor zenity is installed: no dialogs, terminal only" $"Install kdialog (Plasma) or zenity (GNOME)."
-   fi
    # Drive manager: only what it offers depends on these
    local dt=0 dt_tools=(rsync smartctl ddrescue testdisk photorec)
    local dt_uses=($"copying files off a drive" $"SMART details" $"disk images" $"lost partitions" $"search by content")
@@ -310,11 +306,11 @@ bm_dr_session() {
       else bm_fmt $"Drive manager, %s: %s is not installed" "${dt_uses[dt]}" "${dt_tools[dt]}"; bm_dr info "$REPLY"
       fi
    done
-   if command -v python3 >/dev/null && python3 -I -c 'import gi; gi.require_version("Gtk", "4.0"); gi.require_version("Adw", "1"); from gi.repository import Adw; raise SystemExit((Adw.MAJOR_VERSION, Adw.MINOR_VERSION) < (1, 5))' 2>/dev/null; then bm_dr ok $"Application: GTK 4 and libadwaita"
-   else bm_dr warn $"The application needs gtk4, libadwaita 1.5 or later and python-gobject: bigmount --gui-drive cannot open. bigmount --drive works without them"
+   if command -v python3 >/dev/null && python3 -I -c 'import gi; gi.require_version("Gtk", "4.0"); gi.require_version("Adw", "1"); from gi.repository import Adw; raise SystemExit((Adw.MAJOR_VERSION, Adw.MINOR_VERSION) < (1, 5))' 2>/dev/null; then bm_dr ok $"Application and dialogs: GTK 4 and libadwaita"
+   else bm_dr warn $"The application and the dialogs need gtk4, libadwaita 1.5 or later and python-gobject: bigmount --gui-drive cannot open and questions are asked in the terminal. bigmount --drive works without them"
    fi
    if command -v notify-send >/dev/null; then bm_dr ok $"Notifications: notify-send"
-   else bm_dr info $"notify-send (libnotify) is not installed: kdialog popups are used instead"
+   else bm_dr warn $"notify-send (libnotify) is not installed: no notifications" $"Install libnotify."
    fi
    if [ -n "${WAYLAND_DISPLAY:-}${DISPLAY:-}" ]; then
       [ -n "${DBUS_SESSION_BUS_ADDRESS:-}" ] || bm_dr warn $"No session D-Bus: notifications cannot be shown"

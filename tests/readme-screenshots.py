@@ -178,6 +178,33 @@ win.open_maintenance(win.device_by_id(BK["stable_id"]))
 pump(timeout=0.5)
 shot(win, OUT / f"app-erase{suffix}.png")
 
+win.show_overview()
+pump(timeout=0.2)
+win.show_welcome()
+pump(timeout=0.8)
+shot(win, OUT / f"app-welcome{suffix}.png")
+win.get_visible_dialog().force_close()
+pump(timeout=0.3)
+win.show_about()
+pump(timeout=0.8)
+shot(win, OUT / f"app-about{suffix}.png")
+win.get_visible_dialog().force_close()
+pump(timeout=0.3)
+
+# A dialog of bigmount --gui-remove, as dialog.py draws it
+import dialog as shell_dialog  # noqa: E402
+from gui import dialogs as shell_dialogs  # noqa: E402
+busy = shell_dialogs.Dialog(shell_dialog.parse(["question", "--title=Device is busy", "--button=3=Cancel", "--button=2=More options\u2026",
+                                                "--button=1=Try again", "--default=1", "--cancel=3", "--suggested=1"]),
+                            [("h", "Backup is still in use"), ("p", "Dolphin has a folder of this device open. Close that program, then try again."),
+                             ("kv", "Device\tBackup (2 TB)"), ("kv", "Mounted at\t/run/media/maria/Backup"),
+                             ("th", "Application\x1fprocess\tPID\tUser\tActivity"), ("tr", "Dolphin\x1fdolphin\t4182\tmaria\tCurrent folder is on the device")])
+busy.dialog.present(None)
+pump(timeout=0.8)
+shot(busy.dialog.get_root(), OUT / f"app-dialog-busy{suffix}.png")
+busy.dialog.force_close()
+pump(timeout=0.2)
+
 # The same window where there is little room
 small = MainWindow(app)
 small.set_default_size(420, 700)

@@ -425,7 +425,7 @@ bm_overview() {
    [ -e /etc/bigmountall-no ] && printf '  %-28s %s\n' "/etc/bigmountall-no" $"present: automount disabled"
    if busctl --system --no-pager status org.freedesktop.UDisks2 >/dev/null 2>&1; then s=$"available"; else s=$"not available"; fi
    printf '  %-28s %s\n' "UDisks2" "$s"
-   for s in lsof kdialog notify-send; do
+   for s in lsof python3 notify-send; do
       if command -v "$s" >/dev/null; then printf '  %-28s %s\n' "$s" $"installed"; else printf '  %-28s %s\n' "$s" $"missing"; fi
    done
    if journalctl -k -b -n 1 -q >/dev/null 2>&1 && [ -n "$(journalctl -k -b -n 1 -q 2>/dev/null)" ]; then s=$"readable"; else s=$"not readable (fewer details for errors)"; fi

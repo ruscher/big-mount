@@ -137,8 +137,7 @@ BM_UI="tty"; bm_ui_init
 long="Fotos da Família — viagem ao Japão 東京 2026 ✓ $(printf 'x%.0s' {1..120})"
 bm_doc_new; bm_doc_kv "Device" "$long"; bm_doc_render_text
 check "long Unicode label is kept whole in the terminal" grep -qF "$long" <<< "$REPLY"
-bm_doc_render_markup html
-check "long Unicode label is kept whole in dialogs" grep -qF "Fotos da Família — viagem ao Japão 東京" <<< "$REPLY"
+check "long Unicode label is kept whole in dialogs" grep -qF "Fotos da Família — viagem ao Japão 東京" <<< "$(bm_doc_nul | tr '\0' '\n')"
 LANGUAGE=pt_BR LC_ALL=pt_BR.UTF-8 printf -v t $"%s is still in use" "$long"
 check "translated format with a Unicode argument" bash -c '[[ $1 == *"Japão"*"em uso" || $1 == *"Japão"*"in use" ]]' _ "$t"
 

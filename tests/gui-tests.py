@@ -30,12 +30,14 @@ if "--shots" in sys.argv:
     del sys.argv[i:i + 2]
 
 from gui_support import (Adw, CALLBACK_ERRORS, FIX, GB, Gtk, LIB, REPO, WORK, backup, calls, click, drive, find_button, find_row, fix, fix_text, forget_calls,  # noqa: E402
-                         make_app, pump, seagate, shot, system_disk, text, texts, vol, widgets)
+                         make_app, present_at, pump, seagate, shot, system_disk, text, texts, vol, widgets)
 
 app = make_app()
 
-from gui.application import parse  # noqa: E402
-from gui.common import human_duration, human_size, human_time  # noqa: E402
+import dialog as shell_dialog  # noqa: E402
+from gui import dialogs as shell_dialogs  # noqa: E402
+from gui.application import parse, welcome_at_start  # noqa: E402
+from gui.common import ISSUES, WEBSITE, human_duration, human_size, human_time, save_setting  # noqa: E402
 from gui.engine import Engine  # noqa: E402
 from gui.models import Device, Job, Methods, UiState, find_device  # noqa: E402
 from gui.pages.results import Index, ResultsModel  # noqa: E402
@@ -1593,6 +1595,186 @@ class Launcher(unittest.TestCase):
         boot = (REPO / "big-mount/usr/bin/bigmount").read_text()
         for bad in ("python", "gi.repository", "drive-gui", "gtk"):
             self.assertNotIn(bad, boot.lower())
+
+
+class AboutAndWelcome(Base):
+    def menu_actions(self):
+        menu, out = self.win._menu(), []
+        for i in range(menu.get_n_items()):
+            section = menu.get_item_link(i, "section")
+            for model, j in ([(section, k) for k in range(section.get_n_items())] if section else [(menu, i)]):
+                out.append(model.get_item_attribute_value(j, "action", None).unpack())
+        return out
+
+    def test_the_menu_has_the_welcome_screen_and_about(self):
+        actions = self.menu_actions()
+        self.assertIn("app.welcome", actions)
+        self.assertIn("app.about", actions)
+
+    def test_about_says_what_it_does_who_made_it_and_where_to_ask(self):
+        self.win.show_about()
+        self.assertTrue(pump(lambda: self.win.get_visible_dialog() is not None, 2))
+        about = self.win.get_visible_dialog()
+        self.assertIsInstance(about, Adw.AboutDialog)
+        self.assertEqual(WEBSITE, "https://github.com/biglinux/big-mount")
+        self.assertEqual(about.get_website(), WEBSITE)
+        self.assertEqual(about.get_issue_url(), "https://github.com/biglinux/big-mount/issues")
+        self.assertEqual(about.get_issue_url(), ISSUES)
+        self.assertEqual(about.get_developers(), ["Bruno Gonçalves <bigbruno@gmail.com>", "Rafael Ruscher <rruscher@gmail.com>"])
+        self.assertEqual(about.get_copyright(), "© 2026 BigLinux Team")
+        # "... comes with absolutely no warranty. See the GNU General Public License, version 3 or later"
+        self.assertEqual(about.get_license_type(), Gtk.License.GPL_3_0)
+        doctor = (LIB / "doctor.sh").read_text()
+        self.assertIn(f"\nBM_VERSION={about.get_version()}\n", doctor)
+        self.assertIn("rescues files from a failing disk", about.get_comments())
+        self.assertIn("mounts the partitions of internal disks at every boot", about.get_comments())
+
+    def test_welcome_shows_what_it_can_do(self):
+        self.win.show_welcome()
+        self.assertTrue(pump(lambda: "Welcome to Big-Mount" in text(self.win), 3))
+        welcome = self.win.get_visible_dialog()
+        for words in ("Health in one word", "Rescue your files", "Safe removal", "Secure Erase", "Also in the terminal"):
+            self.assertIn(words, text(welcome))
+        self.assertTrue(welcome.show_switch.get_active())
+        click(welcome, "Let's start")
+        self.assertTrue(pump(lambda: self.win.get_visible_dialog() is None, 2))
+        self.assertTrue(welcome_at_start(parse(["bigmount"])))
+
+    def test_welcome_can_stay_away(self):
+        self.win.show_welcome()
+        self.assertTrue(pump(lambda: self.win.get_visible_dialog() is not None, 2))
+        welcome = self.win.get_visible_dialog()
+        welcome.show_switch.set_active(False)
+        welcome.close()
+        self.assertTrue(pump(lambda: self.win.get_visible_dialog() is None, 2))
+        self.assertIn("show=false", (WORK / "config/big-mount/gui.ini").read_text())
+        self.assertFalse(welcome_at_start(parse(["bigmount"])))
+        # And it is still in the menu
+        self.win.show_welcome()
+        self.assertTrue(pump(lambda: self.win.get_visible_dialog() is not None, 2))
+        self.assertFalse(self.win.get_visible_dialog().show_switch.get_active())
+
+    def test_on_a_narrow_screen_the_button_stays_whole(self):
+        present_at(self.win, 360, 700)
+        self.win.show_welcome()
+        self.assertTrue(pump(lambda: "Welcome to Big-Mount" in text(self.win), 3))
+        # Otherwise the test would pass on a wide window and prove nothing
+        self.assertEqual(self.win.get_width(), 360)
+        welcome = self.win.get_visible_dialog()
+        pump(timeout=0.3)
+        ok, bounds = welcome.start.compute_bounds(welcome)
+        self.assertTrue(ok)
+        self.assertGreater(bounds.get_width(), 0)
+        self.assertLessEqual(bounds.get_x() + bounds.get_width(), welcome.get_width())
+
+    def test_never_over_a_drive_that_was_asked_for(self):
+        save_setting("welcome", "show", "true")
+        self.assertFalse(welcome_at_start(parse(["bigmount", "--target", "/dev/sdb"])))
+        self.assertFalse(welcome_at_start(parse(["bigmount", "--section", "health"])))
+
+
+class ShellDialogs(unittest.TestCase):
+    """dialog.py: what bigmount --gui, --gui-remove and the notifier show."""
+
+    def make(self, argv, doc=()):
+        d = shell_dialogs.Dialog(shell_dialog.parse(argv), list(doc))
+        d.dialog.present(None)
+        pump(timeout=0.05)
+        self.addCleanup(lambda: d.dialog.force_close() if d.dialog.get_root() else None)
+        return d
+
+    def labels(self, d):
+        return [x for x in widgets(d.dialog) if isinstance(x, Gtk.Label)]
+
+    def test_the_document_arrives_as_data(self):
+        doc = shell_dialog.read_document(b"h\0<b>Pen</b> is still in use\0p\0Close it.\0tr\0<i>App</i>\x1fcomm\t42\0kv\0Device\t/dev/sdz1\x1b[2J\0bogus\0x\0")
+        self.assertEqual([k for k, _t in doc], ["h", "p", "tr", "kv"])
+        self.assertNotIn("\x1b", doc[3][1])
+        d = self.make(["question", "--button=no=No", "--button=yes=Yes"], doc)
+        self.assertEqual(d.dialog.get_heading(), "<b>Pen</b> is still in use")
+        self.assertFalse(d.dialog.get_heading_use_markup())
+        self.assertEqual(d.dialog.get_body(), "Close it.")
+        labels = self.labels(d)
+        self.assertIn("<i>App</i>", [x.get_label() for x in labels])
+        self.assertFalse(any(x.get_use_markup() for x in labels))
+
+    def test_a_risky_question_defaults_to_the_safe_answer(self):
+        d = self.make(["question", "--button=no=Cancel", "--button=yes=Close them", "--default=no", "--cancel=no", "--destructive=yes"],
+                      [("h", "Close these programs?")])
+        self.assertEqual(d.dialog.get_default_response(), "no")
+        self.assertEqual(d.dialog.get_close_response(), "no")
+        self.assertEqual(d.dialog.get_response_appearance("yes"), Adw.ResponseAppearance.DESTRUCTIVE)
+        d.dialog.emit("response", "no")
+        self.assertEqual(d.answer, "no")
+
+    def test_the_answer_is_the_button_pressed(self):
+        d = self.make(["question", "--button=3=Cancel", "--button=2=More", "--button=1=Try again", "--default=1", "--cancel=3", "--suggested=1"])
+        self.assertEqual(d.dialog.get_response_appearance("1"), Adw.ResponseAppearance.SUGGESTED)
+        d.dialog.emit("response", "2")
+        self.assertEqual(d.answer, "2")
+
+    def test_closing_a_question_without_cancel_is_no_answer(self):
+        d = self.make(["question", "--button=yes=Open", "--button=other=Other"])
+        self.assertNotIn(d.dialog.get_close_response(), ("yes", "other"))
+        self.assertEqual(d.dialog.get_default_response(), "yes")
+        d.dialog.emit("response", d.dialog.get_close_response())
+        self.assertIsNone(d.answer)
+
+    def test_a_menu_answers_with_the_key_of_the_item(self):
+        d = self.make(["menu", "--title=Device is busy", "--text=What do you want to do?", "--item=refresh=Refresh the list", "--item=admin=All users"])
+        self.assertEqual(d.dialog.get_heading(), "Device is busy")
+        row = next(x for x in widgets(d.dialog) if isinstance(x, Adw.ActionRow) and x.get_title() == "All users")
+        row.emit("activate")
+        self.assertEqual(d.answer, "admin")
+        d2 = self.make(["menu", "--item=a=A"])
+        d2.dialog.emit("response", "cancel")
+        self.assertIsNone(d2.answer)
+
+    def test_input_gives_the_line_typed_or_nothing(self):
+        d = self.make(["input", "--title=Erase", "--text=Type the name:"])
+        d.entry.set_text("sdz")
+        d.dialog.emit("response", "ok")
+        self.assertEqual(d.answer, "sdz")
+        d2 = self.make(["input", "--text=Type:"])
+        d2.entry.set_text("sdz")
+        d2.dialog.emit("response", "cancel")
+        self.assertIsNone(d2.answer)
+
+    def test_technical_text_is_shown_whole(self):
+        path = WORK / "details.txt"
+        path.write_text("open files:\n  pid=7 comm=<b>x</b>\n")
+        args = shell_dialog.parse(["text", "--title=Technical details", f"--file={path}"])
+        args.content = path.read_text()
+        d = shell_dialogs.Dialog(args, [])
+        d.dialog.present(None)
+        pump(timeout=0.05)
+        self.addCleanup(d.dialog.force_close)
+        view = next(x for x in widgets(d.dialog) if isinstance(x, Gtk.TextView))
+        buf = view.get_buffer()
+        self.assertIn("comm=<b>x</b>", buf.get_text(buf.get_start_iter(), buf.get_end_iter(), False))
+        self.assertFalse(view.get_editable())
+
+    def test_wrong_arguments_and_no_display_are_never_an_answer(self):
+        def run(*a, env=None):
+            return subprocess.run([sys.executable, "-I", str(LIB / "dialog.py"), *a], capture_output=True, text=True, env=env, stdin=subprocess.DEVNULL)
+        self.assertEqual(run("question").returncode, 2)
+        self.assertEqual(run("question", "--button=nolabel").returncode, 2)
+        unreadable = run("text", f"--file={WORK / 'no-such-file'}")
+        self.assertEqual(unreadable.returncode, 2)
+        self.assertEqual(unreadable.stdout, "")
+        # No display at all: nothing to connect to, here or in the session of whoever runs this
+        nowhere = WORK / "no-session"
+        nowhere.mkdir(mode=0o700, exist_ok=True)
+        bare = {k: v for k, v in os.environ.items() if k not in ("DISPLAY", "WAYLAND_DISPLAY", "GDK_BACKEND", "BROADWAY_DISPLAY")}
+        bare["XDG_RUNTIME_DIR"] = str(nowhere)
+        done = run("question", "--button=yes=Yes", env=bare)
+        self.assertEqual(done.returncode, 25)
+        self.assertEqual(done.stdout, "")
+
+    def test_no_kdialog_or_zenity_anywhere(self):
+        for path in LIB.rglob("*"):
+            if path.is_file() and path.suffix in ("", ".sh", ".py"):
+                self.assertNotRegex(path.read_text(errors="replace"), r"\b(kdialog|zenity)\b", path)
 
 
 if SHOTS:

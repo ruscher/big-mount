@@ -29,8 +29,10 @@ eq() { [ "$1" = "$2" ] || { printf '      got: [%s]\n expected: [%s]\n' "$1" "$2
 begin() { echo "— $1"; }
 
 WORK="$(mktemp -d)"
+# Not /tmp: it is often mounted noexec, and the stand-in dialog must run
+EXE="$(mktemp -d -p "${TMPDIR:-/var/tmp}")"
 ORIG_HOME="$HOME"
-trap 'chmod -R u+w "$WORK" 2>/dev/null; rm -rf "$WORK"' EXIT
+trap 'chmod -R u+w "$WORK" 2>/dev/null; rm -rf "$WORK" "$EXE"' EXIT
 
 # ----- fake facts for bm_diagnose_write ----------------------------------------
 # fake DEV MP FSTYPE MOUNTTYPE VFSOPTS FSOPTS [PART_RO] [DISK_RO]
@@ -370,43 +372,117 @@ BM_SLOW_HOOK=""; unset -f udisksctl slow_hook
 
 begin "notifications: one path, durations from one place"
 notify-send() { printf 'notify-send %s\n' "$*" >> "$WORK/n.log"; }
-kdialog() { printf 'kdialog %s\n' "$*" >> "$WORK/n.log"; }
-: > "$WORK/n.log"; DBUS_SESSION_BUS_ADDRESS=fake BM_UI=kdialog bm_notify info drive-harddisk "Safe to disconnect" "Pen <b>"
+: > "$WORK/n.log"; DBUS_SESSION_BUS_ADDRESS=fake BM_UI=gtk bm_notify info drive-harddisk "Safe to disconnect" "Pen <b>"
 check "info: notify-send, 5000 ms, transient" grep -q -- "--expire-time 5000 --hint string:desktop-entry:big-mount --transient" "$WORK/n.log"
 check "  ... body escaped" grep -q "Pen &lt;b&gt;" "$WORK/n.log"
 check "  ... and never a second popup" eq "$(wc -l < "$WORK/n.log")" 1
 : > "$WORK/n.log"; DBUS_SESSION_BUS_ADDRESS=fake bm_notify warning dialog-warning "Read-only device" "x" "details=View details" >/dev/null
 check "warning: 15000 ms, kept in history, with actions" grep -q -- "--expire-time 15000 --hint string:desktop-entry:big-mount --action details=View details" "$WORK/n.log"
-: > "$WORK/n.log"; DBUS_SESSION_BUS_ADDRESS="" BM_UI=kdialog bm_notify info drive-harddisk "Safe to disconnect" "Pen"
-check "no session bus: kdialog --passivepopup for 5 s" grep -q -- "--passivepopup Pen 5" "$WORK/n.log"
-: > "$WORK/n.log"; out="$(DBUS_SESSION_BUS_ADDRESS="" BM_UI=tty bm_notify info x "Safe to disconnect" "Pen" 2>&1)"
-check "no desktop at all: plain text" eq "$out" "Safe to disconnect: Pen"
-check "  ... and no GUI program started" test ! -s "$WORK/n.log"
-unset -f notify-send kdialog
+: > "$WORK/n.log"; out="$(DBUS_SESSION_BUS_ADDRESS="" BM_UI=gtk bm_notify info drive-harddisk "Safe to disconnect" "Pen" 2>&1)"
+check "no session bus: plain text, no window instead" eq "$out" "Safe to disconnect: Pen"
+check "  ... and no notification program started" test ! -s "$WORK/n.log"
+notify-send() { return 1; }
+out="$(DBUS_SESSION_BUS_ADDRESS=fake bm_notify info x $'Pen\e[2J' $'Body\nForged line' 2>&1)"
+check "notify-send failed: the message goes to the terminal instead, on one line" eq "$out" "Pen?[2J: Body; Forged line"
+unset -f notify-send
+BM_UI="tty"
+
+begin "dialogs: GTK, one answer from a person, the terminal when there is no window"
+cat > "$EXE/fake-dialog" <<'EOF'
+#!/bin/bash
+printf '%s\n' "$*" >> "$FAKE_LOG"
+tr '\0' '|' >> "$FAKE_LOG"; echo >> "$FAKE_LOG"
+n=$(($(cat "$FAKE_N" 2>/dev/null || echo 0) + 1)); echo "$n" > "$FAKE_N"
+line="$(sed -n "${n}p" "$FAKE_ANSWERS")"
+[ -n "$line" ] || exit 1
+rc="${line%% *}"; out="${line#"$rc"}"; out="${out# }"
+[ -n "$out" ] && printf '%s\n' "$out"
+exit "$rc"
+EOF
+chmod +x "$EXE/fake-dialog"
+dlg() { # ANSWER... : the answers the fake dialog gives, in order ("RC [OUTPUT]")
+    printf '%s\n' "$@" > "$WORK/answers"; : > "$WORK/dlg.log"; rm -f "$WORK/dlg.n"
+}
+export FAKE_LOG="$WORK/dlg.log" FAKE_N="$WORK/dlg.n" FAKE_ANSWERS="$WORK/answers"
+BM_UI=""; BM_DIALOG_PROGRAM="$EXE/fake-dialog" WAYLAND_DISPLAY=fake bm_ui_init
+check "a graphical session uses the GTK dialogs" eq "$BM_UI" gtk
+BM_UI=""; WAYLAND_DISPLAY="" DISPLAY="" bm_ui_init
+check "no graphical session: the terminal" eq "$BM_UI" tty
+BM_UI=gtk BM_DIALOG_PROGRAM="$EXE/fake-dialog"
+bm_doc_new; bm_doc_h "Pen <b>x</b>"; bm_doc_kv "Device" $'/dev/sdz1\e[2J'
+dlg "0"; bm_ui_show info "Title"
+check "message: the document goes as data, kind and text" grep -qF "h|Pen <b>x</b>|kv|Device	/dev/sdz1" "$WORK/dlg.log"
+check "  ... with its title" grep -q -- "^message --title=Title$" "$WORK/dlg.log"
+dlg "0 yes"; bm_ui_confirm "T" "" "Open" "Close"; rc=$?
+check "confirm: yes when the person says yes" eq "$rc" 0
+check "  ... and yes is the default" grep -q -- "--button=no=Close --button=yes=Open --default=yes --cancel=no --suggested=yes" "$WORK/dlg.log"
+dlg "0 no"; bm_ui_confirm "T" "" "Open" "Close"; rc=$?
+check "confirm: no" eq "$rc" 1
+dlg "1"; bm_ui_confirm "T" "" "Open" "Close"; rc=$?
+check "confirm: a closed window is no" eq "$rc" 1
+dlg "0 yes"; bm_ui_confirm_risky "T" "" "Close them" "Cancel"; rc=$?
+check "risky: yes only when chosen" eq "$rc" 0
+check "  ... the safe answer is the default, the other marked as risky" grep -q -- "--default=no --cancel=no --destructive=yes" "$WORK/dlg.log"
+dlg "0 2"; bm_ui_choice "T" "" "Try again" "More" "Cancel"
+check "choice: the second button" eq "$REPLY" 2
+dlg "0 bogus"; bm_ui_choice "T" "" "Try again" "More" "Cancel"
+check "choice: anything unexpected is cancel" eq "$REPLY" 3
+dlg "0 admin"; bm_ui_menu "T" "Pick:" refresh "Refresh" admin "All users"
+check "menu: the key of the item" eq "$REPLY" admin
+check "  ... items as key=label, no document" grep -qxF "menu --title=T --text=Pick: --item=refresh=Refresh --item=admin=All users" "$WORK/dlg.log"
+dlg "1"; bm_ui_menu "T" "Pick:" refresh "Refresh"
+check "menu: closed is no choice" eq "$REPLY" ""
+dlg "0 sdz"; bm_ui_input "T" "Type:"; rc=$?
+check "input: the line typed" bash -c '[ "$1" = 0 ] && [ "$2" = sdz ]' _ "$rc" "$REPLY"
+dlg "1"; bm_ui_input "T" "Type:"; rc=$?
+check "input: cancel fails" eq "$rc" 1
+dlg "25"; bm_doc_new; bm_doc_p "fallback text"; out="$(bm_ui_confirm "T" "" "Yes" "No" < /dev/null)"; rc=$?
+check "no window after all: never a yes" eq "$rc" 1
+check "  ... the text is still shown" grep -q "fallback text" <<< "$out"
+dlg "25"; bm_ui_confirm "T" "" "Yes" "No" < /dev/null > /dev/null
+check "  ... and the terminal is used from then on" eq "$BM_UI" tty
+BM_UI=gtk BM_DIALOG_PROGRAM="$EXE/fake-dialog"
+notify-send() { return 1; }
+bm_doc_new; bm_doc_p "the caller's own document"
+# Not in a subshell: a change to the caller's document must show
+dlg "0 details"
+DBUS_SESSION_BUS_ADDRESS=fake bm_notify warning dialog-warning "Read-only device" "Pen" "details=View details" > "$WORK/notify.out" 2>/dev/null
+out="$(cat "$WORK/notify.out")"
+check "no notification server: a warning becomes a window" grep -qF -- "question --title=Read-only device --button=close=Close --button=details=View details --default=close --cancel=close" "$WORK/dlg.log"
+check "  ... with its text" grep -qF "p|Pen|" "$WORK/dlg.log"
+check "  ... and the action chosen is the answer, as with notify-send" eq "$out" details
+check "  ... the caller's document is untouched" eq "${DOC_TEXT[*]}" "the caller's own document"
+dlg "0 close"; out="$(DBUS_SESSION_BUS_ADDRESS="" bm_notify warning dialog-warning "Read-only device" "Pen" 2>/dev/null)"
+check "  ... Close is no action" eq "$out" ""
+dlg "0"; out="$(DBUS_SESSION_BUS_ADDRESS="" bm_notify info x "Safe to disconnect" "Pen" 2>&1)"
+check "information is never a window to close" bash -c '[ "$1" = "Safe to disconnect: Pen" ] && [ ! -s "$2" ]' _ "$out" "$WORK/dlg.log"
+unset -f notify-send
+unset BM_DIALOG_PROGRAM
 BM_UI="tty"
 
 begin "administrator view leaves no file behind"
 mkdir -p "$WORK/tmpdir"
 printf 'p77\ncsecret-app\nu0\nLroot\nfcwd\na \ntDIR\nn/home/other/private\n' > "$WORK/priv.out"
 pkexec() { cat "$WORK/priv.out"; }
-kdialog() { echo "$*" >> "$WORK/kd.log"; KD_N=$((KD_N + 1)); case "$KD_N" in 1) return 1 ;; 2) echo admin ;; 3) return 1 ;; 4) echo details; return 0 ;; *) return 2 ;; esac; }
 bm_busy_collect() {
-    BUSY_PID=() BUSY_PIDS=() BUSY_APP=() BUSY_COMM=() BUSY_FD=() BUSY_ACCESS=() BUSY_UID=() BUSY_USER=() O_KIND=() O_WHAT=() BUSY_COUNT=0
+    BUSY_PID=() BUSY_PIDS=() BUSY_APP=() BUSY_COMM=() BUSY_FD=() BUSY_ACCESS=() BUSY_UID=() BUSY_USER=() BUSY_STATE=() BUSY_PATH=() O_KIND=() O_WHAT=() BUSY_COUNT=0
     if [ -n "${2:-}" ] && grep -q secret "$2"; then
-        BUSY_PID=(77) BUSY_PIDS=(77) BUSY_APP=(secret-app) BUSY_COMM=(secret-app) BUSY_FD=(cwd) BUSY_ACCESS=("") BUSY_UID=(0) BUSY_USER=(root) BUSY_COUNT=1
+        BUSY_PID=(77) BUSY_PIDS=(77) BUSY_APP=(secret-app) BUSY_COMM=(secret-app) BUSY_FD=(cwd) BUSY_ACCESS=("") BUSY_UID=(0) BUSY_USER=(root) BUSY_STATE=(S) BUSY_PATH=(/run/media/u/X) BUSY_COUNT=1
     fi
 }
 bm_facts() { F=([NAME]=/dev/sdz1 [LABEL]=X [FSTYPE]=ext4); }
 bm_mounts() { M_TARGET=(/run/media/u/X) M_FSTYPE=() M_VFSOPT=() M_FSOPT=(); }
 bm_ui_text() { :; }
 command() { [ "$2" = pkexec ] && return 0; builtin command "$@"; }
-KD_N=0; : > "$WORK/kd.log"
+# More options, the list of all users, More options, technical details, Cancel
+dlg "0 2" "0 admin" "0 2" "0 details" "0 3"
 # A subshell on purpose: TMPDIR and BM_UI must not leak into the next tests
 # shellcheck disable=SC2030
-( export TMPDIR="$WORK/tmpdir"; BM_UI=kdialog; bm_gui_busy_dialog /dev/sdz1 ) > /dev/null 2>&1
-check "the privileged list was shown" grep -q "secret-app" "$WORK/kd.log"
+( export TMPDIR="$WORK/tmpdir" BM_DIALOG_PROGRAM="$EXE/fake-dialog"; BM_UI=gtk; bm_gui_busy_dialog /dev/sdz1 ) > /dev/null 2>&1
+check "the privileged list was shown" grep -q "secret-app" "$WORK/dlg.log"
 check "no temporary file left after the dialog" test -z "$(ls -A "$WORK/tmpdir")"
-unset -f pkexec kdialog bm_busy_collect bm_facts bm_mounts bm_ui_text command
+check "  ... after the technical details too, and Cancel ended it" eq "$(grep -cE "^(question|menu) " "$WORK/dlg.log")" 5
+unset -f pkexec bm_busy_collect bm_facts bm_mounts bm_ui_text command
 . "$BIGMOUNT_LIB/cli.sh"; BM_UI="tty"; bm_ui_init
 
 begin "busy summary speaks plain language"
@@ -474,11 +550,6 @@ bm_main_mountpoint $'/var/log\n/home\n/'
 check "system mount wins for the system disk" eq "$REPLY" /home
 
 begin "untrusted text is escaped"
-bm_doc_new; bm_doc_kv "Device" '<img src=x onerror=alert(1)> & "q"'
-bm_doc_render_markup html
-check "HTML: tags escaped" bash -c '[[ $1 == *"&lt;img src=x onerror=alert(1)&gt; &amp; &quot;q&quot;"* ]]' _ "$REPLY"
-bm_doc_render_markup pango
-check "Pango: tags escaped" bash -c '[[ $1 == *"&lt;img"* && $1 != *"<img"* ]]' _ "$REPLY"
 bm_doc_new; bm_doc_p $'evil\e[2J\e]0;title\a label'
 bm_doc_render_text
 check "terminal: escape sequences neutralised" bash -c '[[ $1 != *$'"'"'\e'"'"'* ]]' _ "$REPLY"
@@ -491,11 +562,6 @@ check "pairs: multiple mount points" eq "${KV[MOUNTPOINTS]}" $'/a\n/b'
 bm_doc_new; bm_doc_tr "App"$'\n'"comm" 42 "Open"
 bm_doc_render_text
 check "terminal: table keeps the second line of a cell" bash -c '[[ $1 == *"App  |  comm  |  42  |  Open"* ]]' _ "$REPLY"
-
-begin "Zenity (Pango): a block of lines is followed by an empty line, as in KDialog"
-bm_doc_new; bm_doc_kv A 1; bm_doc_kv B 2; bm_doc_p para; bm_doc_li x; bm_doc_li y; bm_doc_p end
-bm_doc_render_markup pango
-check "key/value, list and paragraphs are separated" eq "$REPLY" "<b>A:</b> 1"$'\n'"<b>B:</b> 2"$'\n\n'"para"$'\n\n'"  • x"$'\n'"  • y"$'\n\n'"end"
 
 begin "an empty target is refused (it must not mean the current folder)"
 ( cd / && bm_main --busy "" >/dev/null 2>&1 ); rc=$?

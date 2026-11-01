@@ -72,6 +72,29 @@ The one operation that erases data, the Secure Erase of a whole drive
 ([5.4](#54-drive-errors-and-secure-erase)), runs only when you ask for it,
 confirm it, type the name of the drive and give the administrator password.
 
+### New in 2.6.0: a welcome, an About that says what it does, and dialogs of its own
+
+- A **welcome screen** shows what Big-Mount can do the first time it opens on its home
+  (not when it opens on a drive that needs attention). **Show this screen on startup**
+  turns it off; it stays in the main menu, under **Welcome screen**.
+- **About Big-Mount** gives the version, what it does (in **Details**), the web page
+  ([github.com/biglinux/big-mount](https://github.com/biglinux/big-mount)), where to
+  **report an issue**, the credits (Bruno Gonçalves and Rafael Ruscher) and the license.
+- The dialogs of `--gui`, `--gui-remove` and the notifier are now drawn with **GTK 4 and
+  libadwaita**, like the application, on any desktop. **KDialog and Zenity are no longer
+  used**; `libnotify` became a dependency, so notifications always have one path. Labels
+  and program names reach the dialog as data and are shown as plain text. A risky
+  answer is never the default button, and a dialog that cannot be shown is never taken
+  as a yes: the question goes to the terminal instead.
+
+<p align="center">
+  <img src="docs/images/app-welcome.png" width="420" alt="The welcome screen: what Big-Mount can do, in two columns, with a switch to show it on startup">
+  <img src="docs/images/app-about-dark.png" width="420" alt="About Big-Mount, in the dark style: version, details, report an issue, credits and legal">
+</p>
+<p align="center">
+  <img src="docs/images/app-dialog-busy.png" width="420" alt="The busy device dialog of bigmount --gui-remove, drawn with GTK 4: which program keeps it busy, with Try again as the main button">
+</p>
+
 ### New in 2.5.0: a Home that shows everything, health in one word
 
 - **Home** is a list by default, or a grid, and remembers which. Drives are grouped:
@@ -244,17 +267,15 @@ cannot be traced to a commit.
 | `lsof` | required | find what keeps a device busy |
 | `rsync` | required | every copy off a drive, in the window and in `--drive copy` |
 | `smartmontools` | required | the SMART counters on the health page (read only when you ask) |
-| `python`, `python-gobject`, `gtk4`, `libadwaita` ≥ 1.5 | required | the application (`--gui-drive`, `--gui-drive-check`). Never loaded at boot |
-| `kdialog` | optional | dialogs on KDE Plasma (read-only device, busy device) |
-| `zenity` | optional | the same dialogs on GNOME and other desktops |
-| `libnotify` | optional | notifications (`notify-send`); without it `kdialog --passivepopup` is used |
+| `python`, `python-gobject`, `gtk4`, `libadwaita` ≥ 1.5 | required | the application (`--gui-drive`, `--gui-drive-check`) and every dialog (read-only device, busy device, a drive that needs attention). Never loaded at boot |
+| `libnotify` | required | notifications (`notify-send`) |
 | `ddrescue` | optional | disk images of a failing drive, before a deep analysis |
 | `testdisk` | optional | finding lost partitions, searching files by content (PhotoRec) |
 
 `coreutils`, `findutils`, `gawk` and `systemd` (`udevadm`, `journalctl`) come with every
 Arch-based system and are not listed.
 
-Without `kdialog` or `zenity`, everything works in the terminal. Optional packages
+Without a graphical session, everything works in the terminal. Optional packages
 are detected when they are needed, and what is missing is explained. Big-Mount
 never installs anything by itself. To have every way of rescuing files:
 
@@ -571,7 +592,7 @@ Environment
   big-mount.service            enabled
   UDisks2                      available
   lsof                         installed
-  kdialog                      installed
+  python3                      installed
   notify-send                  installed
   kernel log                   readable
 ```
@@ -1226,14 +1247,12 @@ Details: [architecture](docs/15-drive-architecture.md),
 | Launcher | application menu → **Big-Mount** | opens the drive manager (`bigmount --gui-drive`); its action **Storage Diagnostics** chooses a device from a list (`bigmount --gui`) |
 | Notifications | when a device you cannot write to is mounted, and when a removal ends | see below |
 | Application | GTK 4 and libadwaita (`--gui-drive`, `--gui-drive-check`) | one window; light/dark style, narrow windows, keyboard and screen readers come from the toolkit |
-| Dialogs | KDialog (Plasma) or Zenity (GNOME) | light/dark theme, HiDPI and screen readers come from the toolkit |
+| Dialogs | GTK 4 and libadwaita (`dialog.py`), the same look as the application | light/dark style, HiDPI, keyboard and screen readers come from the toolkit |
 
 ### 7.1 Notifications
 
-There is one notification path: `notify-send`, falling back to
-`kdialog --passivepopup` (which on Plasma 6 reaches the same notification
-server, without buttons), falling back to the terminal. A message is never
-shown twice.
+There is one notification path: `notify-send`, falling back to the terminal
+when there is no session bus. A message is never shown twice.
 
 | Kind | Duration |
 | --- | --- |
@@ -1415,7 +1434,8 @@ To mount a partition somewhere else or with other options, put it in
 | --- | --- |
 | `/usr/bin/bigmount` | automatic mounting and entry point of every command |
 | `/usr/lib/big-mount/lib.sh` | device facts, diagnosis, holders, closing programs, UDisks |
-| `/usr/lib/big-mount/ui.sh` | dialogs (KDialog/Zenity/terminal) and notifications |
+| `/usr/lib/big-mount/ui.sh` | dialogs (GTK or terminal) and notifications |
+| `/usr/lib/big-mount/dialog.py`, `gui/dialogs.py` | the dialogs of `--gui`, `--gui-remove` and the notifier (GTK 4, libadwaita) |
 | `/usr/lib/big-mount/cli.sh` | commands, texts, graphical flows and the notifier |
 | `/usr/lib/big-mount/doctor.sh` | `--version` and `--doctor` (loaded only by them) |
 | `/usr/lib/big-mount/drive.sh` | `--drive`: commands, JSON output, exit codes |
@@ -1424,7 +1444,7 @@ To mount a partition somewhere else or with other options, put it in
 | `/usr/lib/big-mount/drive-copy.sh` | checks before copying, jobs, supervisor, reports |
 | `/usr/lib/big-mount/drive-recovery.sh` | ddrescue, TestDisk, PhotoRec |
 | `/usr/lib/big-mount/drive-tui.sh` | the menus of `--drive` |
-| `/usr/lib/big-mount/drive-gui.py`, `gui/` | the application of `--gui-drive` (GTK 4, libadwaita) |
+| `/usr/lib/big-mount/drive-gui.py`, `gui/` | the application of `--gui-drive` (GTK 4, libadwaita), with its welcome screen and About |
 | `/usr/lib/big-mount/drive-erase.sh` | Secure Erase for the application: the check, a ticket, the erase |
 | `/usr/lib/big-mount/bigmount-drive-helper` | privileged helper of the drive manager (through `pkexec`) |
 | `/usr/lib/big-mount/version` | the git revision the package was built from |
@@ -1449,6 +1469,7 @@ Files created while running:
 | `/run/lock/big-mount.lock` | service | lock against simultaneous runs |
 | `$XDG_RUNTIME_DIR/big-mount-drive-<disk>.lock` | removal | one removal of a drive at a time (private to the user) |
 | `~/.local/state/big-mount/notified` | notifier | warnings already shown during this boot |
+| `~/.config/big-mount/gui.ini` | application | the view of the Home (list or grid) and whether the welcome screen is shown |
 | `~/.local/state/big-mount/jobs/ID/` | drive manager | one folder per copy or image (mode 700): settings, progress, logs, reports |
 
 ---
@@ -1459,7 +1480,7 @@ Files created while running:
 boot (root)                            user session (never root)
 big-mount.service ── writes ──▶  /run/big-mount/status ── reads ──▶  bigmount --notifier
                                                                      ├─ notify-send (session D-Bus)
-                                                                     └─ KDialog / Zenity
+                                                                     └─ dialog.py (GTK 4)
 
 user actions ── udisksctl/D-Bus ──▶ UDisks2 ── polkit decides (password if needed)
 "programs of all users" ── pkexec ──▶ /usr/lib/big-mount/bigmount-holders (read-only)
@@ -1492,8 +1513,11 @@ user actions ── udisksctl/D-Bus ──▶ UDisks2 ── polkit decides (pas
 - **Other users' data:** as a user, `lsof` sees only your processes. Other
   accounts appear only with the administrator password.
 - **Untrusted data** (labels, file and process names) never goes through
-  `eval` or a shell. It is escaped for HTML/Pango in dialogs and stripped of
-  escape sequences in the terminal. Translation catalogs are loaded with
+  `eval` or a shell. Dialogs receive it as data and show it in GTK labels with
+  markup off, after replacing control characters; notifications escape it for
+  their markup; in the terminal every control character, ESC included, becomes
+  `?`, so an escape sequence cannot act (what follows the ESC is shown as plain
+  text). Translation catalogs are loaded with
   `noexpand_translation`, and configuration values are never used as printf
   formats.
 - **Races:** `flock` at boot, a per-drive lock for removals (a double
@@ -1592,8 +1616,9 @@ users**, or look for a second mount (e.g. `/var/lib/os-prober/mount`).
 belongs to root. Use `bigmount --gui <folder>` → **Become owner of the main
 folder**.
 
-**No dialogs, only text.** Install `kdialog` (Plasma) or `zenity` (GNOME),
-and check that `WAYLAND_DISPLAY` or `DISPLAY` exists in the session.
+**No dialogs, only text.** Check that `WAYLAND_DISPLAY` or `DISPLAY` exists in
+the session, and that `bigmount --doctor` says **Application and dialogs: GTK 4
+and libadwaita**.
 
 **The diagnosis says "kernel log not readable".** Your user cannot read the
 journal (on Arch that needs the `wheel`, `adm` or `systemd-journal` groups).
