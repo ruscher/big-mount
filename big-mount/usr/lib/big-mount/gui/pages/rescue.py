@@ -339,7 +339,13 @@ class RescueWizard(Adw.NavigationPage):
         tool.add_bottom_bar(bar)
         self.set_child(tool)
         self.set_can_pop(True)
+        self.connect("hidden", self._hidden)
         self._enter("source")
+
+    def _hidden(self, *_a):
+        # Left for good (also by a gesture or a shortcut), not just covered
+        if self.window.wizard is self and self.window.nav.find_page(self.get_tag()) is None:
+            self.window.wizard = None
 
     # ----- moving
     def cancel(self):
