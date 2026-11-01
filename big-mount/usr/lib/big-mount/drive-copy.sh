@@ -414,6 +414,10 @@ bm_job_state_label() {
    esac
 }
 
+# File names in a list for the terminal, indented: control characters from a
+# name could otherwise move the cursor or retitle the terminal
+bm_printable_lines() { LC_ALL=C.UTF-8 sed 's/[[:cntrl:]]//g; s/^/  /'; }
+
 bm_job_reason_text() {
    case "$1" in
       source-gone) REPLY=$"The source drive was disconnected or unmounted. Connect and mount it again, then resume." ;;
@@ -1076,19 +1080,19 @@ bm_job_report_text() {
    n="${JS[DEFERRED]:-0}"
    if [ "$n" -gt 0 ]; then
       printf '\n%s\n' $"Set aside because they did not advance (damaged area of the disk):"
-      head -n 50 -- "$dir/deferred.txt" | sed 's/^/  /'
+      head -n 50 -- "$dir/deferred.txt" | bm_printable_lines
       [ "$n" -gt 50 ] && printf '  … %s\n' "$dir/deferred.txt"
       printf $"To try them again, which puts more strain on the disk: bigmount --drive resume %s --retry-deferred"'\n' "${dir##*/}"
    fi
    n="${JS[FAILED]:-0}"
    if [ "$n" -gt 0 ] && [ -s "$dir/failed.txt" ]; then
       printf '\n%s\n' $"Not copied:"
-      head -n 50 -- "$dir/failed.txt" | sed 's/^/  /'
+      head -n 50 -- "$dir/failed.txt" | bm_printable_lines
       [ "$n" -gt 50 ] && printf '  … %s\n' "$dir/failed.txt"
    fi
    if [ "${JS[DIFFER]:-0}" -gt 0 ] && [ -s "$dir/differences.txt" ]; then
       printf '\n%s\n' $"Different at the destination:"
-      head -n 50 -- "$dir/differences.txt" | sed 's/^/  /'
+      head -n 50 -- "$dir/differences.txt" | bm_printable_lines
    fi
    printf '\n%s %s\n' $"Log:" "$dir/events.log"
 }

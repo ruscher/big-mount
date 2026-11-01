@@ -932,7 +932,7 @@ bm_rec_report_text() {
    bm_ui_show info ""
    if [ -s "$dir/scan.err" ]; then
       printf '\n%s\n' $"Could not be read:"
-      head -n 50 -- "$dir/scan.err" | sed 's/^/  /'
+      head -n 50 -- "$dir/scan.err" | bm_printable_lines
    fi
 }
 
