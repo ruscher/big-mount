@@ -407,6 +407,13 @@ ll '>f+++++++++|7|$(bm_pwned)'
 bm_job_out_line 'WARNING: $(bm_pwned) failed verification -- update discarded (will try again).'
 check "a file name is never run" test ! -e "$WORK/pwned"
 
+begin "job.conf: one KEY=value per line"
+JC=([DEST]='/x/backup=' [NAME]=ok); bm_job_conf_save "$WORK"; bm_job_conf_load "$WORK"
+check "a trailing = survives" eq "${JC[DEST]}" '/x/backup='
+JC=([DEST]=/x [NAME]=$'Fotos\nDEST=/home/victim'); bm_job_conf_save "$WORK" 2>/dev/null
+check "a line break is refused" eq "$?" 1
+bm_job_conf_load "$WORK"; check "  ... and the saved job is unchanged" eq "${JC[DEST]}" '/x/backup='
+
 begin "jobs: state on disk"
 d="$BM_JOBS/20261030-140000-abcd"; mkdir -p "$d"
 JC=([ID]=20261030-140000-abcd [KIND]=copy [SOURCE]="/a b" [DEST]=/c [NAME]=x)

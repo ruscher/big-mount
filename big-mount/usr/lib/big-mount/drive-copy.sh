@@ -339,15 +339,21 @@ bm_job_dir() {
 
 declare -gA JC JS
 bm_job_conf_load() {
-   local k v
+   local k v l
    JC=()
-   while IFS='=' read -r k v; do
-      [ -n "$k" ] && JC[$k]="$v"
+   while IFS= read -r l; do
+      k="${l%%=*}" v="${l#*=}"
+      [ -n "$k" ] && [ "$k" != "$l" ] && JC[$k]="$v"
    done < "$1/job.conf"
 }
 
+# One KEY=value per line: a line break in a value (a volume label, a path)
+# would add a line of its own, so such a job is refused
 bm_job_conf_save() {
    local dir="$1" k
+   for k in "${!JC[@]}"; do
+      [[ ${JC[$k]} != *$'\n'* ]] || { printf $"Cannot record a name with a line break: %s"'\n' "${JC[$k]//$'\n'/?}" >&2; return 1; }
+   done
    for k in "${!JC[@]}"; do printf '%s=%s\n' "$k" "${JC[$k]}"; done > "$dir/job.conf.tmp"
    mv -f -- "$dir/job.conf.tmp" "$dir/job.conf"
 }
@@ -362,11 +368,12 @@ bm_job_state_save() {
 # Load the state, and say what is really happening: a job marked as running
 # whose supervisor no longer exists (power cut, killed) was interrupted
 bm_job_state_load() {
-   local dir="$1" k v
+   local dir="$1" k v l
    JS=()
    [ -f "$dir/state.env" ] || return 1
-   while IFS='=' read -r k v; do
-      [ -n "$k" ] && JS[$k]="$v"
+   while IFS= read -r l; do
+      k="${l%%=*}" v="${l#*=}"
+      [ -n "$k" ] && [ "$k" != "$l" ] && JS[$k]="$v"
    done < "$dir/state.env"
    case "${JS[STATE]:-}" in
       pending | analyzing | running | verifying | stopping)
@@ -1366,7 +1373,7 @@ bm_cp_cmd() {
    JC=([ID]="$id" [KIND]=copy [SOURCE]="$CP_S" [DEST]="$CP_D" [NAME]="$name" [SRC_UUID]="$CK_SRC_UUID" [DST_UUID]="$CK_DST_UUID"
       [SRC_MP]="$CK_SRC_MP" [DST_MP]="$CK_DST_MP" [SRC_FS]="$CK_SRC_FS" [DST_FS]="$CK_DST_FS" [ON_CONFLICT]="$conflict" [VERIFY]="$verify"
       [STALL]="$stall" [BWLIMIT]="$bw" [SCAN]="$scan" [LEVEL]="$CK_LEVEL" [CREATED]="$i" [RETRY]=0)
-   bm_job_conf_save "$dir"
+   bm_job_conf_save "$dir" || { rm -rf -- "$dir"; return 1; }
    JS=([STATE]=pending [PID]="" [FILES_TOTAL]="${files:-0}" [BYTES_TOTAL]="${total:-0}" [TOTAL_ESTIMATE]="$estimate" [CONFLICTS]="${conflicts:-0}")
    [ "$scan" = yes ] && JC[SCAN]=no
    bm_job_conf_save "$dir"

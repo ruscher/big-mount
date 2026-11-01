@@ -272,7 +272,7 @@ bm_rec_image_cmd() {
    JC=([ID]="$id" [KIND]=image [SOURCE]="$src" [DEVICE]="$src" [DEST]="$img" [MAP]="$map" [RETRIES]="$retries"
       [SIZE]="$size" [SERIAL]="${DV[$disk|SERIAL]:-}" [NAME]="${DV[$src|LABEL]:-${src##*/}}" [CREATED]="$now" [VERIFY]=basic
       [THEN_CARVE]="$then_carve" [CATEGORIES]="$cats")
-   bm_job_conf_save "$dir"
+   bm_job_conf_save "$dir" || { rm -rf -- "$dir"; return 1; }
    JS=([STATE]=pending [PID]="" [BYTES_TOTAL]="$size")
    bm_job_state_save "$dir"
    bm_rec_image_start "$id" || return 1
@@ -532,7 +532,7 @@ bm_rec_scan_cmd() {
    (umask 077; mkdir -p -- "$dir") || return 1
    printf -v now '%(%s)T' -1
    JC=([ID]="$id" [KIND]=scan [SOURCE]="$src" [DEST]="" [SRC_MP]="$mp" [CATEGORIES]="$cats" [CREATED]="$now" [NAME]="${src##*/}" [LEVEL]="$level" [COPY_TO]="$hint")
-   bm_job_conf_save "$dir"
+   bm_job_conf_save "$dir" || { rm -rf -- "$dir"; return 1; }
    JS=([STATE]=pending [PID]="")
    bm_job_state_save "$dir"
    bm_rec_image_start "$id" || return 1
@@ -848,7 +848,7 @@ bm_rec_carve() {
    (umask 077; mkdir -p -- "$dir") || return 1
    printf -v now '%(%s)T' -1
    JC=([ID]="$id" [KIND]=carve [SOURCE]="$src" [DEST]="$dest" [CATEGORIES]="$cats" [CREATED]="$now" [NAME]="${src##*/}" [VERIFY]=basic)
-   bm_job_conf_save "$dir"
+   bm_job_conf_save "$dir" || { rm -rf -- "$dir"; return 1; }
    JS=([STATE]=pending [PID]="")
    bm_job_state_save "$dir"
    bm_rec_image_start "$id" || return 1
