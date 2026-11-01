@@ -414,6 +414,16 @@ JC=([DEST]=/x [NAME]=$'Fotos\nDEST=/home/victim'); bm_job_conf_save "$WORK" 2>/d
 check "a line break is refused" eq "$?" 1
 bm_job_conf_load "$WORK"; check "  ... and the saved job is unchanged" eq "${JC[DEST]}" '/x/backup='
 
+begin "an image job finds its source again"
+bm_is_block() { :; }
+JC=([DEVICE]=/dev/sdz1 [SERIAL]=WD1 [PART]=1 [SIZE]=500000000000); bm_rec_image_device
+check "a renamed partition is found again" eq "$REPLY" /dev/sda1
+JC=([DEVICE]=/dev/sda [SERIAL]=WD1 [PART]="" [SIZE]=1000000000000); bm_rec_image_device
+check "the whole disk" eq "$REPLY" /dev/sda
+JC=([DEVICE]=/dev/sda1 [SERIAL]=GONE [PART]=1 [SIZE]=500000000000); bm_rec_image_device
+check "a missing serial: no name fallback" eq "$REPLY" ""
+bm_is_block() { [ -b "$1" ]; }
+
 begin "jobs: state on disk"
 d="$BM_JOBS/20261030-140000-abcd"; mkdir -p "$d"
 JC=([ID]=20261030-140000-abcd [KIND]=copy [SOURCE]="/a b" [DEST]=/c [NAME]=x)

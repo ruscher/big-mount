@@ -167,17 +167,20 @@ bm_rec_image_supervise() {
    bm_job_report_write "$dir"
 }
 
-# The device of an image job now. Matched by serial, then by the name it had.
+# The current device of an image job: the disk with the serial it had, and on it
+# the same partition (PART: "1" of sdb1, "p2" of nvme0n1p2, empty for the
+# disk). Without a serial, the name it had. Either way with the same size.
 bm_rec_image_device() {
-   local d
+   local d dev="${JC[DEVICE]}"
    REPLY=""
    bm_dv_scan
    if [ -n "${JC[SERIAL]:-}" ]; then
+      dev=""
       for d in "${DV_ORDER[@]}"; do
-         if [ "${DV[$d|SERIAL]:-}" = "${JC[SERIAL]}" ] && [ "${DV[$d|TYPE]}" = disk ]; then REPLY="$d"; return 0; fi
+         if [ "${DV[$d|SERIAL]:-}" = "${JC[SERIAL]}" ] && [ "${DV[$d|TYPE]}" = disk ]; then dev="$d${JC[PART]:-}"; break; fi
       done
    fi
-   [ -b "${JC[DEVICE]}" ] && [ "${DV[${JC[DEVICE]}|SIZE]:-}" = "${JC[SIZE]}" ] && REPLY="${JC[DEVICE]}"
+   [ -n "$dev" ] && bm_is_block "$dev" && [ "${DV[$dev|SIZE]:-}" = "${JC[SIZE]}" ] && REPLY="$dev"
 }
 
 bm_rec_image_cmd() {
@@ -270,8 +273,11 @@ bm_rec_image_cmd() {
    (umask 077; mkdir -p -- "$dir") || return 1
    printf -v now '%(%s)T' -1
    JC=([ID]="$id" [KIND]=image [SOURCE]="$src" [DEVICE]="$src" [DEST]="$img" [MAP]="$map" [RETRIES]="$retries"
-      [SIZE]="$size" [SERIAL]="${DV[$disk|SERIAL]:-}" [NAME]="${DV[$src|LABEL]:-${src##*/}}" [CREATED]="$now" [VERIFY]=basic
+      [SIZE]="$size" [SERIAL]="" [PART]="" [NAME]="${DV[$src|LABEL]:-${src##*/}}" [CREATED]="$now" [VERIFY]=basic
       [THEN_CARVE]="$then_carve" [CATEGORIES]="$cats")
+   # Found again by serial only when the source is the disk or one of its
+   # partitions; a volume stacked on it (LUKS, LVM) keeps its name
+   [[ $src == "$disk"* ]] && JC[SERIAL]="${DV[$disk|SERIAL]:-}" JC[PART]="${src#"$disk"}"
    bm_job_conf_save "$dir" || { rm -rf -- "$dir"; return 1; }
    JS=([STATE]=pending [PID]="" [BYTES_TOTAL]="$size")
    bm_job_state_save "$dir"
