@@ -758,7 +758,7 @@ msgid "They start again by themselves when the device is mounted again."
 msgstr "Eles voltam a funcionar sozinhos quando o dispositivo for montado de novo."
 
 #: big-mount/usr/lib/big-mount/cli.sh:805
-#: big-mount/usr/lib/big-mount/drive.sh:475
+#: big-mount/usr/lib/big-mount/drive.sh:476
 msgid "Another removal of this drive is in progress. Nothing was done."
 msgstr "Outra remoção desta unidade está em andamento. Nada foi feito."
 
@@ -767,7 +767,7 @@ msgid "Device removed safely. It can be disconnected now."
 msgstr "Dispositivo removido com segurança. Ele já pode ser desconectado."
 
 #: big-mount/usr/lib/big-mount/cli.sh:823
-#: big-mount/usr/lib/big-mount/drive.sh:494
+#: big-mount/usr/lib/big-mount/drive.sh:495
 msgid "Unmounted. Everything was written to the device."
 msgstr "Desmontado. Tudo foi gravado no dispositivo."
 
@@ -796,7 +796,7 @@ msgid "Still running: %s"
 msgstr "Ainda em execução: %s"
 
 #: big-mount/usr/lib/big-mount/cli.sh:845
-#: big-mount/usr/lib/big-mount/drive.sh:499
+#: big-mount/usr/lib/big-mount/drive.sh:500
 msgid "These services use the device and will be stopped when it is unmounted:"
 msgstr "Estes serviços usam o dispositivo e serão parados quando ele for desmontado:"
 
@@ -814,12 +814,12 @@ msgid "Unmounted, but powering the drive off failed (%s). Wait a moment before d
 msgstr "Desmontado, mas não foi possível desligar a unidade (%s). Aguarde um momento antes de desconectá-la."
 
 #: big-mount/usr/lib/big-mount/cli.sh:860
-#: big-mount/usr/lib/big-mount/drive.sh:496
+#: big-mount/usr/lib/big-mount/drive.sh:497
 msgid "Refused: this drive holds the running system (%s)."
 msgstr "Recusado: esta unidade contém o sistema em execução (%s)."
 
 #: big-mount/usr/lib/big-mount/cli.sh:861
-#: big-mount/usr/lib/big-mount/drive.sh:497
+#: big-mount/usr/lib/big-mount/drive.sh:498
 msgid "Permission to unmount was not granted."
 msgstr "A permissão para desmontar não foi concedida."
 
@@ -832,7 +832,7 @@ msgid "Unmounted. This drive cannot be powered off by the computer; it can be di
 msgstr "Desmontado. Esta unidade não pode ser desligada pelo computador; ela já pode ser desconectada."
 
 #: big-mount/usr/lib/big-mount/cli.sh:866
-#: big-mount/usr/lib/big-mount/drive.sh:503
+#: big-mount/usr/lib/big-mount/drive.sh:504
 msgid "Could not unmount: %s"
 msgstr "Não foi possível desmontar: %s"
 
@@ -1423,7 +1423,7 @@ msgid "Commands such as 'bigmount --diagnose' do not diagnose anything and may p
 msgstr "Comandos como 'bigmount --diagnose' não diagnosticam nada e podem mostrar erros de permissão. Atualize o pacote big-mount."
 
 #: big-mount/usr/lib/big-mount/doctor.sh:145
-#: big-mount/usr/lib/big-mount/drive.sh:686
+#: big-mount/usr/lib/big-mount/drive.sh:689
 msgid "Big-Mount"
 msgstr "Big-Mount"
 
@@ -1860,7 +1860,7 @@ msgstr "O TestDisk não está instalado (pacote testdisk)."
 #: big-mount/usr/lib/big-mount/drive-copy.sh:119
 #: big-mount/usr/lib/big-mount/drive-copy.sh:426
 #: big-mount/usr/lib/big-mount/drive-recovery.sh:641
-#: big-mount/usr/lib/big-mount/drive.sh:602
+#: big-mount/usr/lib/big-mount/drive.sh:605
 msgid "Permission was not granted."
 msgstr "A permissão não foi concedida."
 
@@ -3035,48 +3035,48 @@ msgid "Writing is also blocked on the device itself until it is disconnected."
 msgstr "A gravação também está bloqueada no próprio dispositivo até ele ser desconectado."
 
 #: big-mount/usr/lib/big-mount/drive.sh:432
-#: big-mount/usr/lib/big-mount/drive.sh:591
-#: big-mount/usr/lib/big-mount/drive.sh:610
+#: big-mount/usr/lib/big-mount/drive.sh:594
+#: big-mount/usr/lib/big-mount/drive.sh:613
 msgid "Name a device, such as /dev/sdb1."
 msgstr "Informe um dispositivo, como /dev/sdb1."
 
-#: big-mount/usr/lib/big-mount/drive.sh:501
+#: big-mount/usr/lib/big-mount/drive.sh:502
 msgid "Nothing was done. Use bigmount --unmount to confirm stopping them."
 msgstr "Nada foi feito. Use bigmount --unmount para confirmar a parada deles."
 
-#: big-mount/usr/lib/big-mount/drive.sh:596
+#: big-mount/usr/lib/big-mount/drive.sh:599
 msgid "Writing is now blocked on this device until it is disconnected."
 msgstr "A gravação agora está bloqueada neste dispositivo até ele ser desconectado."
 
-#: big-mount/usr/lib/big-mount/drive.sh:597
+#: big-mount/usr/lib/big-mount/drive.sh:600
 msgid "Writing is allowed on this device again."
 msgstr "A gravação está liberada de novo neste dispositivo."
 
-#: big-mount/usr/lib/big-mount/drive.sh:600
+#: big-mount/usr/lib/big-mount/drive.sh:603
 msgid "Another volume of this drive is mounted with writing enabled. Unmount it first."
 msgstr "Outro volume desta unidade está montado com gravação ativada. Desmonte-o primeiro."
 
-#: big-mount/usr/lib/big-mount/drive.sh:601
+#: big-mount/usr/lib/big-mount/drive.sh:604
 msgid "Refused: this drive holds the running system."
 msgstr "Recusado: esta unidade contém o sistema em execução."
 
-#: big-mount/usr/lib/big-mount/drive.sh:603
+#: big-mount/usr/lib/big-mount/drive.sh:606
 msgid "The helper failed (exit %s)."
 msgstr "O auxiliar falhou (saída %s)."
 
-#: big-mount/usr/lib/big-mount/drive.sh:612
+#: big-mount/usr/lib/big-mount/drive.sh:615
 msgid "Unlocking in the terminal needs an interactive terminal."
 msgstr "Desbloquear no terminal exige um terminal interativo."
 
-#: big-mount/usr/lib/big-mount/drive.sh:673
+#: big-mount/usr/lib/big-mount/drive.sh:676
 msgid "bigmount: the graphical application does not run as administrator. Open it as your user; it asks for the password when it needs it."
 msgstr "bigmount: o aplicativo gráfico não roda como administrador. Abra com o seu usuário; ele pede a senha quando precisar."
 
-#: big-mount/usr/lib/big-mount/drive.sh:677
+#: big-mount/usr/lib/big-mount/drive.sh:680
 msgid "bigmount: there is no graphical session here. Use the manager in the terminal: bigmount --drive"
 msgstr "bigmount: não há sessão gráfica aqui. Use o gerenciador no terminal: bigmount --drive"
 
-#: big-mount/usr/lib/big-mount/drive.sh:687
+#: big-mount/usr/lib/big-mount/drive.sh:690
 msgid "The application needs GTK 4, libadwaita 1.5 or later and PyGObject (packages gtk4, libadwaita and python-gobject). The same tools work in the terminal: bigmount --drive"
 msgstr "O aplicativo precisa de GTK 4, libadwaita 1.5 ou mais recente e PyGObject (pacotes gtk4, libadwaita e python-gobject). As mesmas ferramentas funcionam no terminal: bigmount --drive"
 

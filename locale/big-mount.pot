@@ -751,7 +751,7 @@ msgid "They start again by themselves when the device is mounted again."
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/cli.sh:805
-#: big-mount/usr/lib/big-mount/drive.sh:475
+#: big-mount/usr/lib/big-mount/drive.sh:476
 msgid "Another removal of this drive is in progress. Nothing was done."
 msgstr ""
 
@@ -760,7 +760,7 @@ msgid "Device removed safely. It can be disconnected now."
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/cli.sh:823
-#: big-mount/usr/lib/big-mount/drive.sh:494
+#: big-mount/usr/lib/big-mount/drive.sh:495
 msgid "Unmounted. Everything was written to the device."
 msgstr ""
 
@@ -789,7 +789,7 @@ msgid "Still running: %s"
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/cli.sh:845
-#: big-mount/usr/lib/big-mount/drive.sh:499
+#: big-mount/usr/lib/big-mount/drive.sh:500
 msgid "These services use the device and will be stopped when it is unmounted:"
 msgstr ""
 
@@ -807,12 +807,12 @@ msgid "Unmounted, but powering the drive off failed (%s). Wait a moment before d
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/cli.sh:860
-#: big-mount/usr/lib/big-mount/drive.sh:496
+#: big-mount/usr/lib/big-mount/drive.sh:497
 msgid "Refused: this drive holds the running system (%s)."
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/cli.sh:861
-#: big-mount/usr/lib/big-mount/drive.sh:497
+#: big-mount/usr/lib/big-mount/drive.sh:498
 msgid "Permission to unmount was not granted."
 msgstr ""
 
@@ -825,7 +825,7 @@ msgid "Unmounted. This drive cannot be powered off by the computer; it can be di
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/cli.sh:866
-#: big-mount/usr/lib/big-mount/drive.sh:503
+#: big-mount/usr/lib/big-mount/drive.sh:504
 msgid "Could not unmount: %s"
 msgstr ""
 
@@ -1416,7 +1416,7 @@ msgid "Commands such as 'bigmount --diagnose' do not diagnose anything and may p
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/doctor.sh:145
-#: big-mount/usr/lib/big-mount/drive.sh:686
+#: big-mount/usr/lib/big-mount/drive.sh:689
 msgid "Big-Mount"
 msgstr ""
 
@@ -1853,7 +1853,7 @@ msgstr ""
 #: big-mount/usr/lib/big-mount/drive-copy.sh:119
 #: big-mount/usr/lib/big-mount/drive-copy.sh:426
 #: big-mount/usr/lib/big-mount/drive-recovery.sh:641
-#: big-mount/usr/lib/big-mount/drive.sh:602
+#: big-mount/usr/lib/big-mount/drive.sh:605
 msgid "Permission was not granted."
 msgstr ""
 
@@ -3028,48 +3028,48 @@ msgid "Writing is also blocked on the device itself until it is disconnected."
 msgstr ""
 
 #: big-mount/usr/lib/big-mount/drive.sh:432
-#: big-mount/usr/lib/big-mount/drive.sh:591
-#: big-mount/usr/lib/big-mount/drive.sh:610
+#: big-mount/usr/lib/big-mount/drive.sh:594
+#: big-mount/usr/lib/big-mount/drive.sh:613
 msgid "Name a device, such as /dev/sdb1."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive.sh:501
+#: big-mount/usr/lib/big-mount/drive.sh:502
 msgid "Nothing was done. Use bigmount --unmount to confirm stopping them."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive.sh:596
+#: big-mount/usr/lib/big-mount/drive.sh:599
 msgid "Writing is now blocked on this device until it is disconnected."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive.sh:597
+#: big-mount/usr/lib/big-mount/drive.sh:600
 msgid "Writing is allowed on this device again."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive.sh:600
+#: big-mount/usr/lib/big-mount/drive.sh:603
 msgid "Another volume of this drive is mounted with writing enabled. Unmount it first."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive.sh:601
+#: big-mount/usr/lib/big-mount/drive.sh:604
 msgid "Refused: this drive holds the running system."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive.sh:603
+#: big-mount/usr/lib/big-mount/drive.sh:606
 msgid "The helper failed (exit %s)."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive.sh:612
+#: big-mount/usr/lib/big-mount/drive.sh:615
 msgid "Unlocking in the terminal needs an interactive terminal."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive.sh:673
+#: big-mount/usr/lib/big-mount/drive.sh:676
 msgid "bigmount: the graphical application does not run as administrator. Open it as your user; it asks for the password when it needs it."
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive.sh:677
+#: big-mount/usr/lib/big-mount/drive.sh:680
 msgid "bigmount: there is no graphical session here. Use the manager in the terminal: bigmount --drive"
 msgstr ""
 
-#: big-mount/usr/lib/big-mount/drive.sh:687
+#: big-mount/usr/lib/big-mount/drive.sh:690
 msgid "The application needs GTK 4, libadwaita 1.5 or later and PyGObject (packages gtk4, libadwaita and python-gobject). The same tools work in the terminal: bigmount --drive"
 msgstr ""
 

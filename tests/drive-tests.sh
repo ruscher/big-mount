@@ -498,6 +498,10 @@ run_b --drive status nope >/dev/null 2>&1; check "a job that does not exist: exi
 run_b --drive mount sda1 >/dev/null 2>&1; check "mount of something that is not a device: exit 2" eq "$?" 2
 run_b --drive mount /dev/nonexistent >/dev/null 2>&1; check "mount of a device that is not there: exit 24" eq "$?" 24
 run_b --drive protect /etc >/dev/null 2>&1; check "protect of a folder: exit 2" eq "$?" 2
+for c in "unmount --dry-run" "safe-remove --dry-run" busy close-apps; do
+   # shellcheck disable=SC2086  # the command and its option
+   (cd "$WORK" && run_b --drive $c --json >/dev/null 2>&1); check "${c%% *} without a target: exit 2" eq "$?" 2
+done
 run_b --drive </dev/null >/dev/null 2>&1; check "the interactive manager without a terminal: exit 2" eq "$?" 2
 out="$(NO_COLOR=1 run_b --drive --help | grep -c $'\033')"; check "NO_COLOR: no escape sequences" eq "$out" 0
 LC_ALL=C bash -c 'BIGMOUNT_X=1; "$0" --drive list >/dev/null' "$B"; check "a plain terminal locale works" eq "$?" 0

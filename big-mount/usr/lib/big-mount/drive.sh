@@ -468,6 +468,7 @@ bm_drive_unmount() {
          *) target="$a" ;;
       esac
    done
+   [ -n "$target" ] || { bm_drive_usage >&2; return 2; }
    bm_drive_abs "$target"
    bm_resolve "$REPLY" || { bm_resolve_fail "$target"; return 24; }
    if [ "$dry" = 1 ]; then printf 'dry-run: udisksctl unmount -b %q\n' "$R_DEV"; return 0; fi
@@ -537,6 +538,7 @@ bm_drive_busy() {
          *) target="$a" ;;
       esac
    done
+   [ -n "$target" ] || { bm_drive_usage >&2; return 2; }
    [ "$json" = 1 ] || { bm_cmd_busy "$target"; return; }
    bm_drive_busy_target "$target" || return 24
    bm_busy_collect "$R_DEV"
@@ -572,6 +574,7 @@ bm_drive_close_apps() {
          *) target="$a" ;;
       esac
    done
+   [ -n "$target" ] || { bm_drive_usage >&2; return 2; }
    bm_drive_busy_target "$target" || return 24
    bm_busy_collect "$R_DEV"
    bm_close_candidates
