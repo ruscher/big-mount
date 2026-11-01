@@ -142,6 +142,9 @@ class FilePicker(Gtk.Box):
         self.on_change = on_change
         self.marked = set()
         self.root = ""
+        # The rows on screen, to show what a marked folder covers
+        self._bound = set()
+        self._showing = False
         self.count = w.label("", css=("caption", "dim-label"))
         self.view = Gtk.ListView()
         self.view.add_css_class("navigation-sidebar")
@@ -221,31 +224,42 @@ class FilePicker(Gtk.Box):
         tree_row = item.get_item()
         expander.set_list_row(tree_row)
         info = tree_row.get_item()
-        path = self._path(info)
+        item.path = self._path(info)
         is_dir = info.get_file_type() == Gio.FileType.DIRECTORY
         image.set_from_icon_name("folder-symbolic" if is_dir else "text-x-generic-symbolic")
         name.set_text(info.get_display_name())
         size.set_text("" if is_dir else human_size(info.get_size()))
-        check.set_active(self._covered(path))
+        self._show_mark(item)
         check.update_property([Gtk.AccessibleProperty.LABEL], [info.get_display_name()])
-        item.handler = check.connect("toggled", self._toggled, path)
+        item.handler = check.connect("toggled", self._toggled, item.path)
+        self._bound.add(item)
 
     def _unbind(self, _f, item):
         _expander, check, *_rest = item.widgets
         if item.handler:
             check.disconnect(item.handler)
             item.handler = 0
+        self._bound.discard(item)
+
+    def _show_mark(self, item):
+        """Inside a marked folder a row is marked too, and only that folder unmarks it."""
+        check = item.widgets[1]
+        self._showing = True
+        check.set_active(self._covered(item.path))
+        check.set_sensitive(not self._covered(os.path.dirname(item.path)))
+        self._showing = False
 
     def _toggled(self, check, path):
+        if self._showing:
+            return
         if check.get_active():
             # What was marked inside is now covered by this one
             self.marked = {m for m in self.marked if not m.startswith(path + "/")}
             self.marked.add(path)
-        elif path in self.marked:
+        else:
             self.marked.discard(path)
-        elif self._covered(path):
-            check.set_active(True)
-            return
+        for item in self._bound:
+            self._show_mark(item)
         self._sync()
         self.on_change()
 

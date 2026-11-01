@@ -944,6 +944,36 @@ class Wizard(Base):
         self.assertEqual((WORK / "last-items").read_bytes(), b"pasta\0")
         self.assertTrue(pump(lambda: leftover_items() == [], 3), "each check removes its selection")
 
+    def test_marked_folder_covers_children(self):
+        wiz = self.wizard_to("how")
+        wiz.plan.method = "copy"
+        wiz.plan.scope = "choose"
+        self.mount_in_fixture(wiz)
+        wiz.go_next()
+        self.assertTrue(pump(lambda: wiz.step == "pick", 3))
+
+        def row(name):
+            for x in widgets(wiz.picker):
+                if isinstance(x, Gtk.TreeExpander) and x.get_mapped():
+                    check = x.get_child().get_first_child()
+                    if check.get_next_sibling().get_next_sibling().get_text() == name:
+                        return x, check
+            return None
+        self.assertTrue(pump(lambda: row("pasta"), 3))
+        row("pasta")[0].get_list_row().set_expanded(True)
+        self.assertTrue(pump(lambda: row("b.jpg"), 3))
+        row("pasta")[1].set_active(True)
+        pump(timeout=0.1)
+        child = row("b.jpg")[1]
+        self.assertTrue(child.get_active())
+        self.assertFalse(child.get_sensitive(), "only the folder unmarks it")
+        self.assertEqual(wiz.picker.items(), ["pasta"])
+        row("pasta")[1].set_active(False)
+        pump(timeout=0.1)
+        self.assertFalse(child.get_active())
+        self.assertTrue(child.get_sensitive())
+        self.assertEqual(wiz.picker.items(), [])
+
     def test_partitions_only_reads(self):
         wiz = self.wizard_to("how", method="partitions")
         fix("partitions", {"ok": True, "mode": "list", "found": [{"type": "Linux", "label": "LOST", "start": "0/32/33", "sectors": 2048, "size": 1048576}]})
