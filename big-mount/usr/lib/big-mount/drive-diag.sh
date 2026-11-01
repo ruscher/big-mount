@@ -479,6 +479,7 @@ bm_mnt_mount() {
    # The mount table is the judge: read-only was asked, and read-only it must be
    if [ "$mode" = ro ] && [ "$MNT_RO" != 1 ]; then
       MNT_WHY=unknown MNT_DETAIL="asked for ro, mounted ${M_VFSOPT[0]}"
+      bm_udisks unmount -b "$dev" || MNT_DETAIL+="; unmount failed: $UD_MESSAGE"
       return 1
    fi
    return 0
