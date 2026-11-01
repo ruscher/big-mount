@@ -79,8 +79,16 @@ bm_nfmt() {
    REPLY="$out$s"
 }
 
-# bm_tty_line LABEL TEXT: one line of a terminal report, LABEL padded to 22 columns
-bm_tty_line() { bm_pad "$1" 22; printf '%s %s\n' "$REPLY" "$2"; }
+# bm_fill LABEL WIDTH: LABEL padded to at least WIDTH terminal columns, in
+# REPLY. Unlike bm_pad it never cuts: a label is translated text, and a
+# longer one only pushes its value to the right.
+bm_fill() {
+   bm_width "$1"
+   printf -v REPLY '%s%*s' "$1" $((REPLY < $2 ? $2 - REPLY : 0)) ""
+}
+
+# bm_tty_line LABEL TEXT: one line of a terminal report
+bm_tty_line() { bm_fill "$1" 22; printf '%s %s\n' "$REPLY" "$2"; }
 
 # Decode the \xHH escapes used by lsblk -P and findmnt -P
 bm_unescape() { printf -v REPLY '%b' "$1"; }

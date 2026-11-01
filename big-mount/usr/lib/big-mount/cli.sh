@@ -23,7 +23,7 @@ BM_LIB_DIR="${BIGMOUNT_LIB:-/usr/lib/big-mount}"
 bm_usage() {
    printf $"Usage: bigmount [OPTION] [DEVICE|FOLDER]"'\n\n'
    # shellcheck disable=SC2247  # $"(none)" is a translatable string
-   bm_pad $"(none)" 28; printf '  %s %s\n' "$REPLY" $"mount internal partitions (run at boot by big-mount.service)"
+   bm_fill $"(none)" 28; printf '  %s %s\n' "$REPLY" $"mount internal partitions (run at boot by big-mount.service)"
    printf '  %-28s %s\n' \
       "--dry-run" $"show what would be mounted, change nothing" \
       "--diagnose [TARGET]" $"storage overview, or details of one device (a whole disk: drive errors)" \
@@ -429,7 +429,7 @@ bm_overview() {
       if command -v "$s" >/dev/null; then printf '  %-28s %s\n' "$s" $"installed"; else printf '  %-28s %s\n' "$s" $"missing"; fi
    done
    if journalctl -k -b -n 1 -q >/dev/null 2>&1 && [ -n "$(journalctl -k -b -n 1 -q 2>/dev/null)" ]; then s=$"readable"; else s=$"not readable (fewer details for errors)"; fi
-   bm_pad $"kernel log" 28; printf '  %s %s\n' "$REPLY" "$s"
+   bm_fill $"kernel log" 28; printf '  %s %s\n' "$REPLY" "$s"
 }
 
 # ---------------------------------------------------------------------------
