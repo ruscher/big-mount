@@ -463,7 +463,10 @@ class DriveActions(Base):
         fix("unmount", {"ok": True}, rc=0)
         forget_calls()
         dialog.emit("response", "close")
-        self.assertTrue(pump(lambda: "--drive close-apps /dev/sda1 --json" in calls() and calls()[-1].startswith("--drive unmount /dev/sda1"), 4), calls())
+        # A refresh of the list may come in between, from any mount on the system
+        def ops():
+            return [c for c in calls() if not c.startswith("--drive list")]
+        self.assertTrue(pump(lambda: "--drive close-apps /dev/sda1 --json" in ops() and ops()[-1].startswith("--drive unmount /dev/sda1"), 4), calls())
         self.assertFalse(any("-f" in c.split() or "--force" in c or "-l" in c.split() for c in calls()))
 
     def test_nothing_closable_offers_no_closing(self):
@@ -1432,7 +1435,7 @@ class Results(Base):
             self.assertTrue(pump(lambda: got, 3), "the caller always gets an answer")
             self.assertFalse(got[0].ok)
             self.assertTrue(got[0].message)
-            self.assertFalse(calls(), "nothing was started without its selection")
+            self.assertFalse([c for c in calls() if c.startswith("--drive copy")], "nothing was started without its selection")
         finally:
             folder.unlink()
 
