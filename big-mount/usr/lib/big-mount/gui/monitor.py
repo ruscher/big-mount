@@ -1,6 +1,8 @@
 """Connecting or removing a drive updates the list: udev and the mount table tell
 us, so nothing polls. Many events become one refresh."""
 
+import signal
+
 import gi
 from gi.repository import Gio, GLib, GObject
 
@@ -22,6 +24,7 @@ class DeviceMonitor(GObject.Object):
         self._proc = None
         self._stream = None
         self._mounts = None
+        self._mounts_handler = 0
         self._cancel = Gio.Cancellable()
         self._start_udev()
         self._start_mounts()
@@ -55,7 +58,7 @@ class DeviceMonitor(GObject.Object):
         try:
             cls = GioUnix.MountMonitor if GioUnix else Gio.UnixMountMonitor
             self._mounts = cls.get()
-            self._mounts.connect("mounts-changed", lambda *_a: self.poke())
+            self._mounts_handler = self._mounts.connect("mounts-changed", lambda *_a: self.poke())
         except (AttributeError, TypeError):
             self._mounts = None
 
@@ -70,7 +73,15 @@ class DeviceMonitor(GObject.Object):
         return False
 
     def stop(self):
+        """The mount monitor is one object for the whole process: its handler goes
+        with this monitor, as does udevadm."""
         self._cancel.cancel()
+        if self._mounts_handler:
+            self._mounts.disconnect(self._mounts_handler)
+            self._mounts_handler = 0
+        if self._proc:
+            self._proc.send_signal(signal.SIGTERM)
+            self._proc = None
         if self._timer:
             GLib.source_remove(self._timer)
             self._timer = 0

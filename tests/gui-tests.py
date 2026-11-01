@@ -599,6 +599,17 @@ class Routing(Base):
 
 
 class Hotplug(Base):
+    def test_a_closed_window_stops_listening(self):
+        # The mount monitor of GIO is one object for the whole process
+        mounts = self.win.monitor._mounts
+        self.win.close()
+        pump(timeout=0.1)
+        refreshed = []
+        self.win.refresh = lambda: refreshed.append(1)
+        mounts.emit("mounts-changed")
+        pump(timeout=1.5)
+        self.assertEqual(refreshed, [])
+
     def test_a_new_drive_appears(self):
         fix("list", {"partial": False, "devices": [seagate(), drive("/dev/sde", "New one", serial="NEW")]})
         self.win.monitor.poke()
