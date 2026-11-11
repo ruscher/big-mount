@@ -23,6 +23,7 @@ shopt -s noexpand_translation 2>/dev/null
 
 BM_VERSION=3.0.0
 BM_STATUS_FILE=/run/big-mount/status
+BM_PROC_MOUNTS="${BM_PROC_MOUNTS:-/proc/mounts}"
 
 bm_usage() {
    printf $"Usage: bigmount [OPTION]"'\n\n'
@@ -263,6 +264,26 @@ bm_dr_service() {
    fi
 }
 
+# Two partitions on the same folder under /mnt: the one below is hidden, and
+# its files look lost. Big-Mount 3.0.0 and older did it when a disk was added
+# and a reverse link of an earlier boot (/mnt/sda1 -> /mnt/Data) now had the
+# name of the new disk. Only device names are shown.
+bm_dr_stacked() {
+   local dev mp _r
+   local -A below=()
+   [ -r "$BM_PROC_MOUNTS" ] || return 0
+   while read -r dev mp _r; do
+      [[ $dev == /dev/* && ( $mp == /mnt/* || $mp == /media/* ) ]] || continue
+      if [ -n "${below[$mp]:-}" ] && [ "${below[$mp]}" != "$dev" ]; then
+         bm_fmt $"%s is mounted on top of %s, whose files are hidden under it" "$dev" "${below[$mp]}"
+         local what="$REPLY"
+         bm_fmt $"Unmount the one on top (sudo umount %s), then mount again: sudo systemctl restart big-mount" "$dev"
+         bm_dr warn "$what" "$REPLY"
+      fi
+      below[$mp]="$dev"
+   done < "$BM_PROC_MOUNTS"
+}
+
 bm_cmd_doctor() {
    if [ "$#" -gt 0 ]; then
       printf $"bigmount: unknown option '%s' (see bigmount --help)"'\n' "$1" >&2
@@ -273,6 +294,7 @@ bm_cmd_doctor() {
    printf '%s\n' $"Big-Mount check (nothing is changed; labels and mount points are left out)"
    bm_dr_install
    bm_dr_service
+   bm_dr_stacked
    printf '\n'
    printf $"Result: %d problem(s), %d warning(s)."'\n' "$DR_FAIL" "$DR_WARN"
    if command -v big-storage-rescue >/dev/null; then

@@ -43,236 +43,248 @@ msgstr "poslední přihlášení „%s“ nepatří žádnému známému účtu,
 msgid "/etc/big-mount.conf: unknown value '%s', using shared"
 msgstr "/etc/big-mount.conf: neznámá hodnota „%s“, použije se shared"
 
-#: big-mount/usr/bin/bigmount:284
+#: big-mount/usr/bin/bigmount:304
 msgid "%s: skipped, %s is not a filesystem"
 msgstr "%s: přeskočeno, %s není souborový systém"
 
-#: big-mount/usr/bin/bigmount:290
+#: big-mount/usr/bin/bigmount:310
 msgid "%s: skipped, virtual device"
 msgstr "%s: přeskočeno, virtuální zařízení"
 
-#: big-mount/usr/bin/bigmount:297
+#: big-mount/usr/bin/bigmount:317
 msgid "%s: skipped, already mounted"
 msgstr "%s: přeskočeno, již připojeno"
 
-#: big-mount/usr/bin/bigmount:333
+#: big-mount/usr/bin/bigmount:353
 msgid "waiting for udev to finish processing %s"
 msgstr "čekání, až udev dokončí zpracování %s"
 
-#: big-mount/usr/bin/bigmount:383
+#: big-mount/usr/bin/bigmount:420
 msgid "%s: udev has no information about it yet, not mounting"
 msgstr "%s: udev o něm zatím nemá informace, nepřipojuje se"
 
-#: big-mount/usr/bin/bigmount:387
+#: big-mount/usr/bin/bigmount:424
 msgid "%s: skipped, hidden by udev/UDisks (UDISKS_IGNORE)"
 msgstr "%s: přeskočeno, skryto pomocí udev/UDisks (UDISKS_IGNORE)"
 
-#: big-mount/usr/bin/bigmount:395
+#: big-mount/usr/bin/bigmount:432
 msgid "%s: left to UDisks, external device (%s)"
 msgstr "%s: ponecháno pro UDisks, externí zařízení (%s)"
 
-#: big-mount/usr/bin/bigmount:401
+#: big-mount/usr/bin/bigmount:438
 msgid "%s: skipped, listed in /etc/fstab"
 msgstr "%s: přeskočeno, uvedeno v /etc/fstab"
 
-#: big-mount/usr/bin/bigmount:453
+#: big-mount/usr/bin/bigmount:484
+msgid "%s: %s is a link or already in use, not mounting"
+msgstr "%s: %s je odkaz nebo se již používá, nepřipojuje se"
+
+#: big-mount/usr/bin/bigmount:494
 msgid "%s: device changed during the scan, not mounting"
 msgstr "%s: zařízení se během prohledávání změnilo, nepřipojuje se"
 
-#: big-mount/usr/bin/bigmount:479
+#: big-mount/usr/bin/bigmount:520
 msgid "%s: NTFS refused read-write mount (%s), retrying read-only"
 msgstr "%s: NTFS odmítl připojení pro čtení i zápis (%s), nový pokus jen ke čtení"
 
-#: big-mount/usr/bin/bigmount:496
+#: big-mount/usr/bin/bigmount:537
 msgid "%s: mount of %s on %s failed (exit %s)"
 msgstr "%s: připojení %s do %s selhalo (návratový kód %s)"
 
-#: big-mount/usr/bin/bigmount:517
+#: big-mount/usr/bin/bigmount:559
 msgid "%s: the driver mounted %s read-only on its own (%s)"
 msgstr "%s: ovladač sám připojil %s jen ke čtení (%s)"
 
-#: big-mount/usr/bin/bigmount:524
+#: big-mount/usr/bin/bigmount:566
 msgid "%s: would be mounted %s on %s (%s)"
 msgstr "%s: připojilo by se jako %s do %s (%s)"
 
-#: big-mount/usr/bin/bigmount:526
+#: big-mount/usr/bin/bigmount:568
 msgid "%s: mounted %s on %s (%s)"
 msgstr "%s: připojeno jako %s do %s (%s)"
 
-#: big-mount/usr/lib/big-mount/cli.sh:28
+#: big-mount/usr/lib/big-mount/cli.sh:29
 msgid "Usage: bigmount [OPTION]"
 msgstr "Použití: bigmount [VOLBA]"
 
-#: big-mount/usr/lib/big-mount/cli.sh:31
+#: big-mount/usr/lib/big-mount/cli.sh:32
 msgid "(none)"
 msgstr "(žádná)"
 
-#: big-mount/usr/lib/big-mount/cli.sh:31
+#: big-mount/usr/lib/big-mount/cli.sh:32
 msgid "mount internal partitions (run at boot by big-mount.service)"
 msgstr "připojí interní oddíly (při startu systému spouští big-mount.service)"
 
-#: big-mount/usr/lib/big-mount/cli.sh:33
+#: big-mount/usr/lib/big-mount/cli.sh:34
 msgid "show what would be mounted, change nothing"
 msgstr "zobrazí, co by se připojilo, nic nemění"
 
-#: big-mount/usr/lib/big-mount/cli.sh:34
+#: big-mount/usr/lib/big-mount/cli.sh:35
 msgid "check the boot service and what it did in this boot"
 msgstr "zkontroluje službu při startu systému a co při tomto startu udělala"
 
-#: big-mount/usr/lib/big-mount/cli.sh:35
+#: big-mount/usr/lib/big-mount/cli.sh:36
 msgid "show the version and the source revision"
 msgstr "zobrazí verzi a revizi zdrojového kódu"
 
-#: big-mount/usr/lib/big-mount/cli.sh:36
+#: big-mount/usr/lib/big-mount/cli.sh:37
 msgid "show this help"
 msgstr "zobrazí tuto nápovědu"
 
-#: big-mount/usr/lib/big-mount/cli.sh:37
+#: big-mount/usr/lib/big-mount/cli.sh:38
 msgid "Configuration: /etc/big-mount.conf. To mount again now: sudo systemctl restart big-mount"
 msgstr "Konfigurace: /etc/big-mount.conf. Pro okamžité opětovné připojení: sudo systemctl restart big-mount"
 
-#: big-mount/usr/lib/big-mount/cli.sh:38
+#: big-mount/usr/lib/big-mount/cli.sh:39
 msgid "Diagnosis of devices, safe removal and file rescue: big-storage-rescue (package big-storage-rescue)."
 msgstr "Diagnostika zařízení, bezpečné odebrání a záchrana souborů: big-storage-rescue (balíček big-storage-rescue)."
 
-#: big-mount/usr/lib/big-mount/cli.sh:56 big-mount/usr/lib/big-mount/cli.sh:268
+#: big-mount/usr/lib/big-mount/cli.sh:57 big-mount/usr/lib/big-mount/cli.sh:289
 msgid "bigmount: unknown option '%s' (see bigmount --help)"
 msgstr "bigmount: neznámá volba „%s“ (viz bigmount --help)"
 
-#: big-mount/usr/lib/big-mount/cli.sh:72
+#: big-mount/usr/lib/big-mount/cli.sh:73
 msgid "bigmount: Secure Erase is no longer part of Big-Mount."
 msgstr "bigmount: Secure Erase už není součástí Big-Mount."
 
-#: big-mount/usr/lib/big-mount/cli.sh:78
+#: big-mount/usr/lib/big-mount/cli.sh:79
 msgid "bigmount: %s moved to Big Storage Rescue. Use: %s"
 msgstr "bigmount: %s je nyní součástí Big Storage Rescue. Použijte: %s"
 
-#: big-mount/usr/lib/big-mount/cli.sh:80
+#: big-mount/usr/lib/big-mount/cli.sh:81
 msgid "Install it with: sudo pacman -S big-storage-rescue"
 msgstr "Nainstalujte jej příkazem: sudo pacman -S big-storage-rescue"
 
-#: big-mount/usr/lib/big-mount/cli.sh:127
+#: big-mount/usr/lib/big-mount/cli.sh:128
 msgid "source checkout (not installed by a package)"
 msgstr "pracovní kopie zdrojového kódu (nenainstalováno z balíčku)"
 
-#: big-mount/usr/lib/big-mount/cli.sh:136
+#: big-mount/usr/lib/big-mount/cli.sh:137
 msgid "package:"
 msgstr "balíček:"
 
-#: big-mount/usr/lib/big-mount/cli.sh:136
+#: big-mount/usr/lib/big-mount/cli.sh:137
 msgid "revision:"
 msgstr "revize:"
 
-#: big-mount/usr/lib/big-mount/cli.sh:136
+#: big-mount/usr/lib/big-mount/cli.sh:137
 msgid "source:"
 msgstr "zdroj:"
 
-#: big-mount/usr/lib/big-mount/cli.sh:144
+#: big-mount/usr/lib/big-mount/cli.sh:145
 msgid "unknown"
 msgstr "neznámý"
 
-#: big-mount/usr/lib/big-mount/cli.sh:187
+#: big-mount/usr/lib/big-mount/cli.sh:188
 msgid "Missing file of the package: %s"
 msgstr "Chybějící soubor balíčku: %s"
 
-#: big-mount/usr/lib/big-mount/cli.sh:188
-#: big-mount/usr/lib/big-mount/cli.sh:197
-#: big-mount/usr/lib/big-mount/cli.sh:219
+#: big-mount/usr/lib/big-mount/cli.sh:189
+#: big-mount/usr/lib/big-mount/cli.sh:198
+#: big-mount/usr/lib/big-mount/cli.sh:220
 msgid "Reinstall the big-mount package."
 msgstr "Přeinstalujte balíček big-mount."
 
-#: big-mount/usr/lib/big-mount/cli.sh:196
+#: big-mount/usr/lib/big-mount/cli.sh:197
 msgid "Unsafe owner or permissions: %s (%s)"
 msgstr "Nebezpečný vlastník nebo oprávnění: %s (%s)"
 
-#: big-mount/usr/lib/big-mount/cli.sh:204
+#: big-mount/usr/lib/big-mount/cli.sh:205
 msgid "Boot service (big-mount.service)"
 msgstr "Služba při startu systému (big-mount.service)"
 
-#: big-mount/usr/lib/big-mount/cli.sh:206
+#: big-mount/usr/lib/big-mount/cli.sh:207
 msgid "/etc/bigmountall-no exists: mounting at boot is disabled on purpose"
 msgstr "/etc/bigmountall-no existuje: připojování při startu systému je záměrně vypnuto"
 
-#: big-mount/usr/lib/big-mount/cli.sh:218
+#: big-mount/usr/lib/big-mount/cli.sh:219
 msgid "Enabled at boot"
 msgstr "Povolena při startu systému"
 
-#: big-mount/usr/lib/big-mount/cli.sh:219
+#: big-mount/usr/lib/big-mount/cli.sh:220
 msgid "Not found by systemd"
 msgstr "systemd ji nenašel"
 
-#: big-mount/usr/lib/big-mount/cli.sh:220
+#: big-mount/usr/lib/big-mount/cli.sh:221
 msgid "Not enabled at boot (%s)"
 msgstr "Nepovolena při startu systému (%s)"
 
-#: big-mount/usr/lib/big-mount/cli.sh:220
+#: big-mount/usr/lib/big-mount/cli.sh:221
 msgid "Enable it: sudo systemctl enable big-mount"
 msgstr "Povolte ji: sudo systemctl enable big-mount"
 
-#: big-mount/usr/lib/big-mount/cli.sh:223
+#: big-mount/usr/lib/big-mount/cli.sh:224
 msgid "Ran in this boot"
 msgstr "Při tomto startu systému proběhla"
 
-#: big-mount/usr/lib/big-mount/cli.sh:225
+#: big-mount/usr/lib/big-mount/cli.sh:226
 msgid "State in this boot: %s (%s)"
 msgstr "Stav při tomto startu systému: %s (%s)"
 
-#: big-mount/usr/lib/big-mount/cli.sh:226
+#: big-mount/usr/lib/big-mount/cli.sh:227
 msgid "See: journalctl -b -u big-mount"
 msgstr "Viz: journalctl -b -u big-mount"
 
-#: big-mount/usr/lib/big-mount/cli.sh:229
+#: big-mount/usr/lib/big-mount/cli.sh:230
 msgid "The unit is replaced by %s"
 msgstr "Jednotku nahrazuje %s"
 
-#: big-mount/usr/lib/big-mount/cli.sh:230
+#: big-mount/usr/lib/big-mount/cli.sh:231
 msgid "A copy in /etc/systemd/system overrides the package: remove it unless it is intended."
 msgstr "Kopie v /etc/systemd/system přepisuje balíček: odstraňte ji, pokud není záměrná."
 
-#: big-mount/usr/lib/big-mount/cli.sh:232
+#: big-mount/usr/lib/big-mount/cli.sh:233
 msgid "Drop-in files change the unit: %s"
 msgstr "Jednotku mění doplňkové soubory (drop-in): %s"
 
-#: big-mount/usr/lib/big-mount/cli.sh:242
+#: big-mount/usr/lib/big-mount/cli.sh:243
 msgid "Partitions handled by Big-Mount at boot: %d"
 msgstr "Oddíly, které Big-Mount zpracoval při startu systému: %d"
 
-#: big-mount/usr/lib/big-mount/cli.sh:243
+#: big-mount/usr/lib/big-mount/cli.sh:244
 msgid "Failed at boot"
 msgstr "Selhalo při startu systému"
 
-#: big-mount/usr/lib/big-mount/cli.sh:244
+#: big-mount/usr/lib/big-mount/cli.sh:245
 msgid "Mounted read-only at boot"
 msgstr "Při startu systému připojeno jen ke čtení"
 
-#: big-mount/usr/lib/big-mount/cli.sh:250
+#: big-mount/usr/lib/big-mount/cli.sh:251
 msgid "Configuration: PERMISSIONS=%s"
 msgstr "Konfigurace: PERMISSIONS=%s"
 
-#: big-mount/usr/lib/big-mount/cli.sh:251
+#: big-mount/usr/lib/big-mount/cli.sh:252
 msgid "Configuration: unknown PERMISSIONS value, shared is used"
 msgstr "Konfigurace: neznámá hodnota PERMISSIONS, použije se shared"
 
-#: big-mount/usr/lib/big-mount/cli.sh:259
+#: big-mount/usr/lib/big-mount/cli.sh:260
 msgid "Warnings in the journal of this boot"
 msgstr "Varování v žurnálu tohoto startu systému"
 
-#: big-mount/usr/lib/big-mount/cli.sh:262
+#: big-mount/usr/lib/big-mount/cli.sh:263
 msgid "The journal is not readable by this user: boot messages not checked"
 msgstr "Tento uživatel nemůže číst žurnál: zprávy ze startu systému nebyly zkontrolovány"
 
-#: big-mount/usr/lib/big-mount/cli.sh:273
+#: big-mount/usr/lib/big-mount/cli.sh:278
+msgid "%s is mounted on top of %s, whose files are hidden under it"
+msgstr "%s je připojen nad %s, jehož soubory jsou pod ním skryty"
+
+#: big-mount/usr/lib/big-mount/cli.sh:280
+msgid "Unmount the one on top (sudo umount %s), then mount again: sudo systemctl restart big-mount"
+msgstr "Odpojte horní (sudo umount %s) a pak znovu připojte: sudo systemctl restart big-mount"
+
+#: big-mount/usr/lib/big-mount/cli.sh:294
 msgid "Big-Mount check (nothing is changed; labels and mount points are left out)"
 msgstr "Kontrola Big-Mount (nic se nemění; jmenovky a přípojné body jsou vynechány)"
 
-#: big-mount/usr/lib/big-mount/cli.sh:277
+#: big-mount/usr/lib/big-mount/cli.sh:299
 msgid "Result: %d problem(s), %d warning(s)."
 msgstr "Výsledek: počet problémů %d, počet varování %d."
 
-#: big-mount/usr/lib/big-mount/cli.sh:279
+#: big-mount/usr/lib/big-mount/cli.sh:301
 msgid "Why a partition is read-only or failed to mount, and the health of its drive: big-storage-rescue --diagnose DEVICE"
 msgstr "Proč je oddíl jen ke čtení nebo proč se jej nepodařilo připojit, a stav zdraví jeho disku: big-storage-rescue --diagnose ZAŘÍZENÍ"
 
-#: big-mount/usr/lib/big-mount/cli.sh:281
+#: big-mount/usr/lib/big-mount/cli.sh:303
 msgid "To find out why a partition is read-only or failed to mount, install big-storage-rescue."
 msgstr "Chcete-li zjistit, proč je oddíl jen ke čtení nebo proč se jej nepodařilo připojit, nainstalujte big-storage-rescue."

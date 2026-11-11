@@ -43,236 +43,248 @@ msgstr "שם המשתמש מהכניסה האחרונה, '%s', אינו חשבו
 msgid "/etc/big-mount.conf: unknown value '%s', using shared"
 msgstr "/etc/big-mount.conf: ערך לא ידוע '%s', נעשה שימוש ב־shared"
 
-#: big-mount/usr/bin/bigmount:284
+#: big-mount/usr/bin/bigmount:304
 msgid "%s: skipped, %s is not a filesystem"
 msgstr "%s: דילוג, %s אינו מערכת קבצים"
 
-#: big-mount/usr/bin/bigmount:290
+#: big-mount/usr/bin/bigmount:310
 msgid "%s: skipped, virtual device"
 msgstr "%s: דילוג, התקן וירטואלי"
 
-#: big-mount/usr/bin/bigmount:297
+#: big-mount/usr/bin/bigmount:317
 msgid "%s: skipped, already mounted"
 msgstr "%s: דילוג, כבר מעוגן"
 
-#: big-mount/usr/bin/bigmount:333
+#: big-mount/usr/bin/bigmount:353
 msgid "waiting for udev to finish processing %s"
 msgstr "בהמתנה לסיום העיבוד של %s על ידי udev"
 
-#: big-mount/usr/bin/bigmount:383
+#: big-mount/usr/bin/bigmount:420
 msgid "%s: udev has no information about it yet, not mounting"
 msgstr "%s: אין עדיין מידע עליו ב־udev, לא יעוגן"
 
-#: big-mount/usr/bin/bigmount:387
+#: big-mount/usr/bin/bigmount:424
 msgid "%s: skipped, hidden by udev/UDisks (UDISKS_IGNORE)"
 msgstr "%s: דילוג, מוסתר על ידי udev/UDisks (UDISKS_IGNORE)"
 
-#: big-mount/usr/bin/bigmount:395
+#: big-mount/usr/bin/bigmount:432
 msgid "%s: left to UDisks, external device (%s)"
 msgstr "%s: הושאר ל־UDisks, התקן חיצוני (%s)"
 
-#: big-mount/usr/bin/bigmount:401
+#: big-mount/usr/bin/bigmount:438
 msgid "%s: skipped, listed in /etc/fstab"
 msgstr "%s: דילוג, רשום ב־/etc/fstab"
 
-#: big-mount/usr/bin/bigmount:453
+#: big-mount/usr/bin/bigmount:484
+msgid "%s: %s is a link or already in use, not mounting"
+msgstr "%s: %s הוא קישור או שכבר נמצא בשימוש, לא יעוגן"
+
+#: big-mount/usr/bin/bigmount:494
 msgid "%s: device changed during the scan, not mounting"
 msgstr "%s: ההתקן השתנה במהלך הסריקה, לא יעוגן"
 
-#: big-mount/usr/bin/bigmount:479
+#: big-mount/usr/bin/bigmount:520
 msgid "%s: NTFS refused read-write mount (%s), retrying read-only"
 msgstr "%s: NTFS סירבה לעיגון לקריאה ולכתיבה (%s), ניסיון חוזר לקריאה בלבד"
 
-#: big-mount/usr/bin/bigmount:496
+#: big-mount/usr/bin/bigmount:537
 msgid "%s: mount of %s on %s failed (exit %s)"
 msgstr "%s: עיגון %s ב־%s נכשל (קוד יציאה %s)"
 
-#: big-mount/usr/bin/bigmount:517
+#: big-mount/usr/bin/bigmount:559
 msgid "%s: the driver mounted %s read-only on its own (%s)"
 msgstr "%s: מנהל ההתקן עיגן את %s לקריאה בלבד מעצמו (%s)"
 
-#: big-mount/usr/bin/bigmount:524
+#: big-mount/usr/bin/bigmount:566
 msgid "%s: would be mounted %s on %s (%s)"
 msgstr "%s: יעוגן כ־%s ב־%s (%s)"
 
-#: big-mount/usr/bin/bigmount:526
+#: big-mount/usr/bin/bigmount:568
 msgid "%s: mounted %s on %s (%s)"
 msgstr "%s: עוגן כ־%s ב־%s (%s)"
 
-#: big-mount/usr/lib/big-mount/cli.sh:28
+#: big-mount/usr/lib/big-mount/cli.sh:29
 msgid "Usage: bigmount [OPTION]"
 msgstr "שימוש: bigmount [אפשרות]"
 
-#: big-mount/usr/lib/big-mount/cli.sh:31
+#: big-mount/usr/lib/big-mount/cli.sh:32
 msgid "(none)"
 msgstr "(ללא)"
 
-#: big-mount/usr/lib/big-mount/cli.sh:31
+#: big-mount/usr/lib/big-mount/cli.sh:32
 msgid "mount internal partitions (run at boot by big-mount.service)"
 msgstr "עיגון המחיצות הפנימיות (מופעל באתחול על ידי big-mount.service)"
 
-#: big-mount/usr/lib/big-mount/cli.sh:33
+#: big-mount/usr/lib/big-mount/cli.sh:34
 msgid "show what would be mounted, change nothing"
 msgstr "הצגת מה שיעוגן, בלי לשנות דבר"
 
-#: big-mount/usr/lib/big-mount/cli.sh:34
+#: big-mount/usr/lib/big-mount/cli.sh:35
 msgid "check the boot service and what it did in this boot"
 msgstr "בדיקת שירות האתחול ומה שהוא עשה באתחול הנוכחי"
 
-#: big-mount/usr/lib/big-mount/cli.sh:35
+#: big-mount/usr/lib/big-mount/cli.sh:36
 msgid "show the version and the source revision"
 msgstr "הצגת הגרסה ומהדורת קוד המקור"
 
-#: big-mount/usr/lib/big-mount/cli.sh:36
+#: big-mount/usr/lib/big-mount/cli.sh:37
 msgid "show this help"
 msgstr "הצגת עזרה זו"
 
-#: big-mount/usr/lib/big-mount/cli.sh:37
+#: big-mount/usr/lib/big-mount/cli.sh:38
 msgid "Configuration: /etc/big-mount.conf. To mount again now: sudo systemctl restart big-mount"
 msgstr "תצורה: /etc/big-mount.conf. לעיגון מחדש עכשיו: sudo systemctl restart big-mount"
 
-#: big-mount/usr/lib/big-mount/cli.sh:38
+#: big-mount/usr/lib/big-mount/cli.sh:39
 msgid "Diagnosis of devices, safe removal and file rescue: big-storage-rescue (package big-storage-rescue)."
 msgstr "אבחון התקנים, הסרה בטוחה וחילוץ קבצים: big-storage-rescue (החבילה big-storage-rescue)."
 
-#: big-mount/usr/lib/big-mount/cli.sh:56 big-mount/usr/lib/big-mount/cli.sh:268
+#: big-mount/usr/lib/big-mount/cli.sh:57 big-mount/usr/lib/big-mount/cli.sh:289
 msgid "bigmount: unknown option '%s' (see bigmount --help)"
 msgstr "bigmount: אפשרות לא ידועה '%s' (ראו bigmount --help)"
 
-#: big-mount/usr/lib/big-mount/cli.sh:72
+#: big-mount/usr/lib/big-mount/cli.sh:73
 msgid "bigmount: Secure Erase is no longer part of Big-Mount."
 msgstr "bigmount: Secure Erase כבר אינו חלק מ־Big-Mount."
 
-#: big-mount/usr/lib/big-mount/cli.sh:78
+#: big-mount/usr/lib/big-mount/cli.sh:79
 msgid "bigmount: %s moved to Big Storage Rescue. Use: %s"
 msgstr "bigmount: %s עבר ל־Big Storage Rescue. יש להשתמש בפקודה: %s"
 
-#: big-mount/usr/lib/big-mount/cli.sh:80
+#: big-mount/usr/lib/big-mount/cli.sh:81
 msgid "Install it with: sudo pacman -S big-storage-rescue"
 msgstr "להתקנה: sudo pacman -S big-storage-rescue"
 
-#: big-mount/usr/lib/big-mount/cli.sh:127
+#: big-mount/usr/lib/big-mount/cli.sh:128
 msgid "source checkout (not installed by a package)"
 msgstr "עותק של קוד המקור (לא מותקן מחבילה)"
 
-#: big-mount/usr/lib/big-mount/cli.sh:136
+#: big-mount/usr/lib/big-mount/cli.sh:137
 msgid "package:"
 msgstr "חבילה:"
 
-#: big-mount/usr/lib/big-mount/cli.sh:136
+#: big-mount/usr/lib/big-mount/cli.sh:137
 msgid "revision:"
 msgstr "מהדורה:"
 
-#: big-mount/usr/lib/big-mount/cli.sh:136
+#: big-mount/usr/lib/big-mount/cli.sh:137
 msgid "source:"
 msgstr "מקור:"
 
-#: big-mount/usr/lib/big-mount/cli.sh:144
+#: big-mount/usr/lib/big-mount/cli.sh:145
 msgid "unknown"
 msgstr "לא ידוע"
 
-#: big-mount/usr/lib/big-mount/cli.sh:187
+#: big-mount/usr/lib/big-mount/cli.sh:188
 msgid "Missing file of the package: %s"
 msgstr "קובץ חסר של החבילה: %s"
 
-#: big-mount/usr/lib/big-mount/cli.sh:188
-#: big-mount/usr/lib/big-mount/cli.sh:197
-#: big-mount/usr/lib/big-mount/cli.sh:219
+#: big-mount/usr/lib/big-mount/cli.sh:189
+#: big-mount/usr/lib/big-mount/cli.sh:198
+#: big-mount/usr/lib/big-mount/cli.sh:220
 msgid "Reinstall the big-mount package."
 msgstr "יש להתקין מחדש את החבילה big-mount."
 
-#: big-mount/usr/lib/big-mount/cli.sh:196
+#: big-mount/usr/lib/big-mount/cli.sh:197
 msgid "Unsafe owner or permissions: %s (%s)"
 msgstr "בעלים או הרשאות לא בטוחים: %s (%s)"
 
-#: big-mount/usr/lib/big-mount/cli.sh:204
+#: big-mount/usr/lib/big-mount/cli.sh:205
 msgid "Boot service (big-mount.service)"
 msgstr "שירות האתחול (big-mount.service)"
 
-#: big-mount/usr/lib/big-mount/cli.sh:206
+#: big-mount/usr/lib/big-mount/cli.sh:207
 msgid "/etc/bigmountall-no exists: mounting at boot is disabled on purpose"
 msgstr "/etc/bigmountall-no קיים: העיגון באתחול מושבת בכוונה"
 
-#: big-mount/usr/lib/big-mount/cli.sh:218
+#: big-mount/usr/lib/big-mount/cli.sh:219
 msgid "Enabled at boot"
 msgstr "מופעל באתחול"
 
-#: big-mount/usr/lib/big-mount/cli.sh:219
+#: big-mount/usr/lib/big-mount/cli.sh:220
 msgid "Not found by systemd"
 msgstr "לא נמצא על ידי systemd"
 
-#: big-mount/usr/lib/big-mount/cli.sh:220
+#: big-mount/usr/lib/big-mount/cli.sh:221
 msgid "Not enabled at boot (%s)"
 msgstr "לא מופעל באתחול (%s)"
 
-#: big-mount/usr/lib/big-mount/cli.sh:220
+#: big-mount/usr/lib/big-mount/cli.sh:221
 msgid "Enable it: sudo systemctl enable big-mount"
 msgstr "להפעלה: sudo systemctl enable big-mount"
 
-#: big-mount/usr/lib/big-mount/cli.sh:223
+#: big-mount/usr/lib/big-mount/cli.sh:224
 msgid "Ran in this boot"
 msgstr "רץ באתחול הנוכחי"
 
-#: big-mount/usr/lib/big-mount/cli.sh:225
+#: big-mount/usr/lib/big-mount/cli.sh:226
 msgid "State in this boot: %s (%s)"
 msgstr "מצב באתחול הנוכחי: %s (%s)"
 
-#: big-mount/usr/lib/big-mount/cli.sh:226
+#: big-mount/usr/lib/big-mount/cli.sh:227
 msgid "See: journalctl -b -u big-mount"
 msgstr "ראו: journalctl -b -u big-mount"
 
-#: big-mount/usr/lib/big-mount/cli.sh:229
+#: big-mount/usr/lib/big-mount/cli.sh:230
 msgid "The unit is replaced by %s"
 msgstr "היחידה מוחלפת על ידי %s"
 
-#: big-mount/usr/lib/big-mount/cli.sh:230
+#: big-mount/usr/lib/big-mount/cli.sh:231
 msgid "A copy in /etc/systemd/system overrides the package: remove it unless it is intended."
 msgstr "עותק ב־/etc/systemd/system גובר על החבילה: יש להסיר אותו אלא אם זה מכוון."
 
-#: big-mount/usr/lib/big-mount/cli.sh:232
+#: big-mount/usr/lib/big-mount/cli.sh:233
 msgid "Drop-in files change the unit: %s"
 msgstr "קובצי Drop-in משנים את היחידה: %s"
 
-#: big-mount/usr/lib/big-mount/cli.sh:242
+#: big-mount/usr/lib/big-mount/cli.sh:243
 msgid "Partitions handled by Big-Mount at boot: %d"
 msgstr "מחיצות שמטופלות על ידי Big-Mount באתחול: %d"
 
-#: big-mount/usr/lib/big-mount/cli.sh:243
+#: big-mount/usr/lib/big-mount/cli.sh:244
 msgid "Failed at boot"
 msgstr "נכשל באתחול"
 
-#: big-mount/usr/lib/big-mount/cli.sh:244
+#: big-mount/usr/lib/big-mount/cli.sh:245
 msgid "Mounted read-only at boot"
 msgstr "עוגן לקריאה בלבד באתחול"
 
-#: big-mount/usr/lib/big-mount/cli.sh:250
+#: big-mount/usr/lib/big-mount/cli.sh:251
 msgid "Configuration: PERMISSIONS=%s"
 msgstr "תצורה: PERMISSIONS=%s"
 
-#: big-mount/usr/lib/big-mount/cli.sh:251
+#: big-mount/usr/lib/big-mount/cli.sh:252
 msgid "Configuration: unknown PERMISSIONS value, shared is used"
 msgstr "תצורה: ערך PERMISSIONS לא ידוע, נעשה שימוש ב־shared"
 
-#: big-mount/usr/lib/big-mount/cli.sh:259
+#: big-mount/usr/lib/big-mount/cli.sh:260
 msgid "Warnings in the journal of this boot"
 msgstr "אזהרות ביומן של האתחול הנוכחי"
 
-#: big-mount/usr/lib/big-mount/cli.sh:262
+#: big-mount/usr/lib/big-mount/cli.sh:263
 msgid "The journal is not readable by this user: boot messages not checked"
 msgstr "למשתמש הזה אין הרשאה לקרוא את היומן: הודעות האתחול לא נבדקו"
 
-#: big-mount/usr/lib/big-mount/cli.sh:273
+#: big-mount/usr/lib/big-mount/cli.sh:278
+msgid "%s is mounted on top of %s, whose files are hidden under it"
+msgstr "%s מעוגן מעל %s, שהקבצים שלו מוסתרים מתחתיו"
+
+#: big-mount/usr/lib/big-mount/cli.sh:280
+msgid "Unmount the one on top (sudo umount %s), then mount again: sudo systemctl restart big-mount"
+msgstr "נתקו את העליון (sudo umount %s) ועגנו מחדש: sudo systemctl restart big-mount"
+
+#: big-mount/usr/lib/big-mount/cli.sh:294
 msgid "Big-Mount check (nothing is changed; labels and mount points are left out)"
 msgstr "בדיקת Big-Mount (דבר אינו משתנה; תוויות ונקודות עיגון מושמטות)"
 
-#: big-mount/usr/lib/big-mount/cli.sh:277
+#: big-mount/usr/lib/big-mount/cli.sh:299
 msgid "Result: %d problem(s), %d warning(s)."
 msgstr "תוצאה: בעיות: %d, אזהרות: %d."
 
-#: big-mount/usr/lib/big-mount/cli.sh:279
+#: big-mount/usr/lib/big-mount/cli.sh:301
 msgid "Why a partition is read-only or failed to mount, and the health of its drive: big-storage-rescue --diagnose DEVICE"
 msgstr "מדוע מחיצה מעוגנת לקריאה בלבד או שעיגונה נכשל, ומה מצב בריאות הכונן שלה: big-storage-rescue --diagnose התקן"
 
-#: big-mount/usr/lib/big-mount/cli.sh:281
+#: big-mount/usr/lib/big-mount/cli.sh:303
 msgid "To find out why a partition is read-only or failed to mount, install big-storage-rescue."
 msgstr "כדי לברר מדוע מחיצה מעוגנת לקריאה בלבד או שעיגונה נכשל, יש להתקין את big-storage-rescue."

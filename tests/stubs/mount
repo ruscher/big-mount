@@ -49,5 +49,9 @@ done
 for fb in ${MOUNT_FALLBACK_RO:-}; do
     [ "$src" = "$fb" ] && mode=ro
 done
+# As the kernel: a symlink target is followed (the mount lands on the folder
+# it points to), and /proc/mounts escapes backslash, space, tab and newline
+[ -L "$tgt" ] && tgt="$(readlink -f -- "$tgt")"
+tgt="${tgt//\\/\\134}"; tgt="${tgt// /\\040}"; tgt="${tgt//$'\t'/\\011}"; tgt="${tgt//$'\n'/\\012}"
 echo "$src $tgt $typ $mode 0 0" >> "$TESTROOT/proc/mounts"
 exit 0

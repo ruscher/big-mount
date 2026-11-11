@@ -708,6 +708,113 @@ test_stale_reverse_symlink() {
     assert_true test "$(readlink "$root/mnt/sda1")" = "$root/mnt/Data"
 }
 
+# No folder under /mnt may hold two mounts: the one below disappears
+mounted_on() { awk -v d="$2" -v m="$3" '$1 == d && $2 == m { f = 1 } END { exit !f }' "$1/proc/mounts"; }
+no_stacked_mounts() { [ -z "$(awk '{ print $2 }' "$1/proc/mounts" | sort | uniq -d)" ]; }
+
+# Field report: a WD disk labeled Dados was sda1 when it was first mounted,
+# which left /mnt/sda1 -> /mnt/Dados. A new, empty, unlabeled disk was then
+# added and became sda1 (the WD became sdb1). The new disk was mounted through
+# the old link on top of /mnt/Dados, hiding every file of the WD.
+test_new_disk_takes_old_link_name() {
+    begin "new-disk-takes-old-reverse-link-name"
+    local root="$HERE/tmp-new-disk-link" order
+    for order in labeled-first new-first; do
+        setup_root "$root"
+        mkdir -p "$root/mnt/Dados"
+        ln -s "$root/mnt/Dados" "$root/mnt/sda1"
+        if [ "$order" = labeled-first ]; then
+            printf '%s\n' '/dev/sdb1: LABEL="Dados" UUID="wd" TYPE="btrfs"' '/dev/sda1: UUID="toshiba" TYPE="btrfs"' > "$root/fake-blkid"
+        else
+            printf '%s\n' '/dev/sda1: UUID="toshiba" TYPE="btrfs"' '/dev/sdb1: LABEL="Dados" UUID="wd" TYPE="btrfs"' > "$root/fake-blkid"
+        fi
+        lsblk_map "$root" "sda1 sda sata" "sdb1 sdb sata"
+        disk "$root" sda; disk "$root" sdb
+        run_script "$root" >/dev/null 2>&1
+        ASSERT_MSG="$order: the labeled disk on /mnt/Dados"; assert_true mounted_on "$root" /dev/sdb1 "$root/mnt/Dados"
+        ASSERT_MSG="$order: the new disk on a folder of its own, /mnt/sda1 [new-only fix]"; assert_true mounted_on "$root" /dev/sda1 "$root/mnt/sda1"
+        ASSERT_MSG="$order: /mnt/sda1 is a real folder, not the old link [new-only fix]"; assert_false test -L "$root/mnt/sda1"
+        ASSERT_MSG="$order: no disk mounted on top of another [new-only fix]"; assert_true no_stacked_mounts "$root"
+        ASSERT_MSG="$order: /mnt/sdb1 now points to /mnt/Dados"; assert_true test "$(readlink "$root/mnt/sdb1")" = "$root/mnt/Dados"
+    done
+}
+
+# The same, with the labeled disk mounted by an earlier run (systemctl
+# restart big-mount after plugging the new disk in)
+test_new_disk_old_link_already_mounted() {
+    begin "new-disk-old-link-labeled-already-mounted"
+    local root="$HERE/tmp-new-disk-mounted"
+    setup_root "$root"
+    mkdir -p "$root/mnt/Dados"
+    ln -s "$root/mnt/Dados" "$root/mnt/sda1"
+    echo "/dev/sdb1 $root/mnt/Dados btrfs rw 0 0" > "$root/proc/mounts"
+    printf '%s\n' '/dev/sdb1: LABEL="Dados" TYPE="btrfs"' '/dev/sda1: TYPE="btrfs"' > "$root/fake-blkid"
+    lsblk_map "$root" "sda1 sda sata" "sdb1 sdb sata"
+    disk "$root" sda; disk "$root" sdb
+    run_script "$root" >/dev/null 2>&1
+    ASSERT_MSG="new disk on /mnt/sda1, not on /mnt/Dados [new-only fix]"; assert_true mounted_on "$root" /dev/sda1 "$root/mnt/sda1"
+    ASSERT_MSG="no disk mounted on top of another [new-only fix]"; assert_true no_stacked_mounts "$root"
+}
+
+# Reverse links that are still true survive; the false ones of devices that
+# are not mounted by this run go away
+test_reverse_links_pruned() {
+    begin "reverse-links-pruned"
+    local root="$HERE/tmp-links-pruned"
+    setup_root "$root"
+    mkdir -p "$root/mnt/Dados" "$root/mnt/Win" "$root/mnt/mine"
+    echo "/dev/sdc3 $root/mnt/Win ntfs rw 0 0" > "$root/proc/mounts"
+    ln -s "$root/mnt/Win" "$root/mnt/sdc3"      # true: kept
+    ln -s "$root/mnt/Win" "$root/mnt/sdb3"      # from another boot: removed
+    ln -s "$root/mnt/Dados" "$root/mnt/nvme0n1p2" # nothing mounted: removed
+    ln -s /home "$root/mnt/sdq1"                # not ours (outside /mnt): kept
+    ln -s "$root/mnt/mine" "$root/mnt/shortcut" # not a device name: kept
+    : > "$root/fake-blkid"
+    run_script "$root" >/dev/null 2>&1
+    ASSERT_MSG="a link that is still true is kept"; assert_true test -L "$root/mnt/sdc3"
+    ASSERT_MSG="a link of another boot is removed [new-only fix]"; assert_false test -L "$root/mnt/sdb3"
+    ASSERT_MSG="a link to a folder nothing is mounted on is removed [new-only fix]"; assert_false test -L "$root/mnt/nvme0n1p2"
+    ASSERT_MSG="a link outside /mnt is never touched"; assert_true test -L "$root/mnt/sdq1"
+    ASSERT_MSG="a link that is not a device name is never touched"; assert_true test -L "$root/mnt/shortcut"
+}
+
+# Without a label, the device name follows the same rules as a label
+test_no_label_name_taken() {
+    begin "no-label-name-taken"
+    local root="$HERE/tmp-nolabel-taken"
+    simple_case "$root" '/dev/sda1: TYPE="ext4"' sda1 sda sata
+    mkdir -p "$root/mnt/sda1"
+    echo "/dev/sdz9 $root/mnt/sda1 ext4 rw 0 0" > "$root/proc/mounts"
+    run_script "$root" >/dev/null 2>&1
+    ASSERT_MSG="mounted on /mnt/sda1_1, not on top of /dev/sdz9 [new-only fix]"; assert_true mounted_on "$root" /dev/sda1 "$root/mnt/sda1_1"
+    ASSERT_MSG="no reverse link over the other disk's folder"; assert_false test -L "$root/mnt/sda1"
+}
+
+# /proc/mounts writes a backslash as \134: the folder of a label with one
+# must still be seen as taken
+test_backslash_label_collision() {
+    begin "backslash-label-collision"
+    local root="$HERE/tmp-backslash"
+    simple_case "$root" '/dev/sdb1: LABEL="A\\B" TYPE="ext4"' sdb1 sdb sata
+    mkdir -p "$root/mnt/A\\B"
+    printf '/dev/sdz9 %s/mnt/A\\134B ext4 rw 0 0\n' "$root" > "$root/proc/mounts"
+    run_script "$root" >/dev/null 2>&1
+    ASSERT_MSG="suffix used, not mounted on top [new-only fix]"; assert_true mount_log_has "$root" "$root/mnt/A\\B1"
+    ASSERT_MSG="no disk mounted on top of another [new-only fix]"; assert_true no_stacked_mounts "$root"
+}
+
+test_dry_run_old_link() {
+    begin "dry-run-old-link"
+    local root="$HERE/tmp-dry-link" out
+    simple_case "$root" '/dev/sda1: TYPE="btrfs"' sda1 sda sata
+    mkdir -p "$root/mnt/Dados"
+    ln -s "$root/mnt/Dados" "$root/mnt/sda1"
+    out="$(LANGUAGE=C run_script "$root" --dry-run 2>&1)"
+    ASSERT_MSG="the old link is left in place"; assert_true test -L "$root/mnt/sda1"
+    ASSERT_MSG="its removal is shown once [new-only fix]"; assert_true test "$(grep -c "dry-run: rm -f -- $root/mnt/sda1\$" <<<"$out")" -eq 1
+    ASSERT_MSG="the plan is /mnt/sda1 [new-only fix]"; assert_true grep -qF "would be mounted btrfs on $root/mnt/sda1 (rw)" <<<"$out"
+}
+
 # ===== operation =====
 
 test_dry_run() {
@@ -942,6 +1049,12 @@ test_unicode_label
 test_quoted_label
 test_label_command_substitution
 test_stale_reverse_symlink
+test_new_disk_takes_old_link_name
+test_new_disk_old_link_already_mounted
+test_reverse_links_pruned
+test_no_label_name_taken
+test_backslash_label_collision
+test_dry_run_old_link
 test_dry_run
 test_status_and_lock
 test_lock_released_with_fuse_daemon
@@ -951,7 +1064,21 @@ test_user_runs_boot_mode
 test_unknown_last_user
 test_lock_file_unwritable
 test_no_destructive_commands
+test_doctor_stacked() {
+    begin "doctor-stacked-mounts"
+    local b="$REPO/big-mount/usr/bin/bigmount" f="$HERE/tmp-doctor-mounts" out
+    printf '%s\n' "/dev/sdb1 /mnt/Dados btrfs rw 0 0" "/dev/sda1 /mnt/Dados btrfs rw 0 0" "/dev/sdc3 /mnt/Win fuseblk rw 0 0" > "$f"
+    out="$(LANGUAGE=C BM_PROC_MOUNTS="$f" bash "$b" --doctor 2>&1)"
+    ASSERT_MSG="names the disk on top and the hidden one"; assert_true grep -qF "/dev/sda1 is mounted on top of /dev/sdb1" <<<"$out"
+    ASSERT_MSG="tells how to undo it"; assert_true grep -qF "sudo umount /dev/sda1" <<<"$out"
+    ASSERT_MSG="no folder name in the report"; assert_false grep -qF "Dados" <<<"$out"
+    printf '%s\n' "/dev/sdb1 /mnt/Dados btrfs rw 0 0" "/dev/sdc3 /mnt/Win fuseblk rw 0 0" > "$f"
+    out="$(LANGUAGE=C BM_PROC_MOUNTS="$f" bash "$b" --doctor 2>&1)"
+    ASSERT_MSG="quiet when every disk has its own folder"; assert_false grep -qF "mounted on top" <<<"$out"
+}
+
 if [ "$VERSION_LABEL" = new ]; then
+    test_doctor_stacked
     test_options_and_moved_commands
     test_nothing_but_the_automount
 fi

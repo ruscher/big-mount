@@ -177,11 +177,18 @@ The reasons are printed by `--dry-run` and in the journal, for example
 3. `.` and `..` are rejected (`..` would mount over `/`), and so are labels
    longer than 200 bytes. In both cases the device name is used.
 4. If `/mnt/<name>` is used by **another** device, a number is added:
-   `Data1`, `Data2`... Empty directories and stale links are reused.
+   `Data1`, `Data2`... (for a device name, `sdb3_1`, `sdb3_2`...). A
+   directory nothing is mounted on is reused. A symlink is removed first and
+   never followed, and nothing is ever mounted on top of another mount.
 5. The link `/mnt/<device>` → `/mnt/<label>` is created (`/mnt/sda1` →
-   `/mnt/Data`). An old link pointing elsewhere, for example after the disks
-   changed order, is updated. A real directory or file at that path is never
-   touched.
+   `/mnt/Data`). A real directory or file at that path is never touched.
+   Device names follow the order in which the disks are found, so they
+   change when a disk is added. At every boot, links `/mnt/<device>` →
+   `/mnt/<folder>` that are no longer true are removed before anything is
+   mounted. Without this, a new unlabeled disk that takes the name `sda1`
+   would be mounted through the old `/mnt/sda1` → `/mnt/Data` link, on top
+   of the other disk, hiding its files. `bigmount --doctor` warns about two
+   partitions mounted on the same folder.
 
 The label comes from the device and is untrusted: it never goes through
 `eval`, `echo` or a shell.
