@@ -72,6 +72,7 @@ sudo systemctl start big-mount
 | `systemd` | the service, `udevadm`, and `systemctl`/`journalctl` in `--doctor` |
 | `coreutils`, `glibc`, `gawk`, `sed`, `grep` | `mkdir`, `ln`, `readlink`, `stat`, `timeout`…, `getent`, `awk`, `sed`, `grep` |
 | `acl`, `kmod` | APFS: the folder of an opened volume (`setfacl`), whether the kernel driver exists (`modinfo`) |
+| `procps-ng` | `pgrep`: on an upgrade, a copy still running from 2.x |
 | *optional:* `big-storage-rescue` | explains read-only or failed mounts, safe removal, drive health, file rescue |
 | *optional:* `apfs-fuse-git` (AUR) | reads APFS, also encrypted volumes |
 | *optional:* `linux-apfs-rw-dkms`, `apfsprogs` | read APFS with the kernel driver (no encrypted volumes) and list its volumes |
