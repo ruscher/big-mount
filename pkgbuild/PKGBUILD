@@ -10,12 +10,13 @@ arch=('any')
 license=('GPL-3.0-or-later')
 # Every package whose programs bigmount calls, as Arch asks, even those of the
 # base system:
-#   util-linux  blkid, lsblk, findmnt, mount, umount, mountpoint, flock, dmesg, setsid
+#   util-linux  blkid, lsblk, findmnt, mount, umount, mountpoint, flock, dmesg, setsid;
+#               mount(8) runs /usr/bin/mount.apfs for "mount -t apfs" (file manager)
 #   ntfs-3g     mount.lowntfs-3g (NTFS)
 #   systemd     udevadm, systemctl, journalctl (--doctor) and the service itself
 #   coreutils   readlink, dirname, mkdir, ln, ls, rm, rmdir, stat, head, tail,
 #               mktemp, tee, timeout, chmod, chown
-#   glibc       getent
+#   glibc       getent (also the owner of an APFS volume clicked in the file manager)
 #   gawk        awk
 #   sed         sed (--doctor, APFS)
 #   grep        grep (APFS)
@@ -32,7 +33,7 @@ depends=('acl' 'bash' 'coreutils' 'gawk' 'glibc' 'grep' 'kmod' 'ntfs-3g' 'procps
 optdepends=('big-storage-rescue: explains read-only or failed mounts, safe removal, drive health, file rescue, and which programs keep an APFS volume busy'
             'apfs-fuse-git: read APFS (Mac) partitions, also encrypted ones (AUR)'
             'linux-apfs-rw-dkms: read APFS (Mac) partitions with the kernel driver, also by clicking them in the file manager; no encrypted volumes'
-            'apfsprogs: list the volumes of an APFS partition for the kernel driver'
+            'apfsprogs: list the volumes of an APFS partition for the kernel driver, so a click in the file manager opens the Data volume of a Mac'
             'sudo: bigmount --open-apfs asks for administrator rights through it'
             'xdg-utils: bigmount --open-apfs finds the file manager for folders (xdg-mime, xdg-open)')
 provides=('big-mount-git')
