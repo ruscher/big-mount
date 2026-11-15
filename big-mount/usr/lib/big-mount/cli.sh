@@ -52,10 +52,13 @@ bm_main() {
       -V | --version) bm_cmd_version ;;
       --doctor) bm_cmd_doctor "$@" ;;
       --open-apfs | --close-apfs | --apfs-info | --apfs-helper)
-         # At boot (big-mount.service) the messages go to the journal, in
-         # English; bash translates $"..." while it reads a function, so the
-         # domain is chosen before apfs.sh is read
-         [ "$cmd ${1:-}" = "--apfs-helper boot-mount" ] && TEXTDOMAIN=big-mount-journal
+         # At boot (big-mount.service) and from mount.apfs (udisks2.service)
+         # the messages go to the journal, in English; bash translates $"..."
+         # while it reads a function, so the domain is chosen before apfs.sh
+         # is read
+         case "$cmd ${1:-}" in
+            "--apfs-helper boot-mount" | "--apfs-helper fs-mount") TEXTDOMAIN=big-mount-journal ;;
+         esac
          # shellcheck source=apfs.sh
          . "$BM_LIB_DIR/apfs.sh" || return 1
          bm_apfs_main "$cmd" "$@"

@@ -264,7 +264,10 @@ usually has one volume. Linux has no APFS driver of its own: install one.
 | apfs-fuse | `pamac build apfs-fuse-git` (AUR) | **yes**, password typed in the terminal | cannot write at all; used first |
 | kernel driver | `sudo pacman -S linux-apfs-rw-dkms apfsprogs` | no | faster; maintained; built for each kernel (needs its headers) |
 
-Open the disk of a Mac:
+With the kernel driver, **clicking the partition in the file manager opens
+it**, read-only: the volume with your files, owned by you
+(`/usr/bin/mount.apfs`, installed by Big-Mount). Eject works as for any disk.
+For an encrypted volume, or with apfs-fuse only, open it from a terminal:
 
 ```bash
 bigmount --open-apfs            # the only APFS partition connected, or /dev/sdX2
@@ -293,6 +296,7 @@ driver does not know gives a read error, never wrong content.
 | Message | What to do |
 | --- | --- |
 | `no APFS driver is installed` | install one of the two drivers above |
+| `Mount helper program failed` (file manager) | encrypted volume, or only apfs-fuse installed: `bigmount --open-apfs`; the reason is in `journalctl -u udisks2` |
 | `is not APFS: it contains …` | the partition is of another kind; Dolphin opens it directly |
 | `container cannot be read` | damaged, or newer than the driver: try the other driver (`APFS_DRIVER` below) |
 | `input/output error` | the disk is failing: stop, and copy it first with Big Storage Rescue |
@@ -536,6 +540,7 @@ big-mount/                       what the package installs
 ├── etc/big-mount.conf           configuration
 └── usr/
     ├── bin/bigmount             the boot run (the only code loaded at boot)
+    ├── bin/mount.apfs           APFS clicked in the file manager (mount -t apfs)
     ├── lib/big-mount/cli.sh     --help, --version, --doctor, the 2.x options
     ├── lib/big-mount/apfs.sh    --open-apfs, --close-apfs, --apfs-info and their root helper
     ├── lib/systemd/system/      big-mount.service

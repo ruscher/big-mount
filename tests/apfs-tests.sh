@@ -47,7 +47,7 @@ new_root() {
     mkdir -p "$R"/{tree/usr/bin,tree/usr/lib/big-mount,bin,dev,proc,run/media,etc} \
              "$R"/{fake-blkid-p,fake-apfsutil,fake-apfs-label,fake-fuse,fake-kernel}
     : > "$R/proc/mounts"; : > "$R/filesystems"; : > "$R/kmsg"; : > "$R/fake-lsblk"
-    cp "$REPO/big-mount/usr/bin/bigmount" "$R/tree/usr/bin/"
+    cp "$REPO/big-mount/usr/bin/bigmount" "$REPO/big-mount/usr/bin/mount.apfs" "$R/tree/usr/bin/"
     cp "$REPO/big-mount/usr/lib/big-mount/cli.sh" "$R/tree/usr/lib/big-mount/"
     cp -r "$REPO/big-mount/usr/share" "$R/tree/usr/"
     sed -e "s|^APFS_MEDIA=.*|APFS_MEDIA=$R/run/media|" \
@@ -137,6 +137,14 @@ bm() {
     env -i TESTROOT="$R" PATH="$R/bin" HOME="$HOME" LANGUAGE="${LANGUAGE_T:-C}" LANG="${LANG_T:-C.UTF-8}" \
         FAKE_EUID="${FAKE_EUID_T:-1000}" ${DISPLAY_T:+DISPLAY=$DISPLAY_T} \
         bash "$R/tree/usr/bin/bigmount" "$@" < /dev/null > "$R/out" 2> "$R/err"
+    RC=$?
+}
+# mapfs ARGS...: /usr/bin/mount.apfs of the scratch tree, as mount(8) runs it
+# for UDisks: as root (FAKE_EUID_T to change it), no terminal
+mapfs() {
+    env -i TESTROOT="$R" PATH="$R/bin" HOME="$HOME" LANGUAGE="${LANGUAGE_T:-C}" LANG="${LANG_T:-C.UTF-8}" \
+        FAKE_EUID="${FAKE_EUID_T:-0}" \
+        bash "$R/tree/usr/bin/mount.apfs" "$@" < /dev/null > "$R/out" 2> "$R/err"
     RC=$?
 }
 # The same, with a terminal: TTY_INPUT is typed into it
@@ -366,7 +374,7 @@ printf '0\tMacintosh HD\n1\tMacintosh HD - Data\n2\tPreboot\n' > "$R/fake-apfs-l
 bm --open-apfs /dev/sdz2 --no-open
 check "apfs-label lists the volumes: the one named Data is proposed" bash -c 'grep "Macintosh HD - Data" "$1" | grep -q "files of the users"' _ "$R/err"
 bm --open-apfs /dev/sdz2 --volume 1 --no-open
-check "mount -t apfs, read-only, owner mapped, volume 1" has mount.log "mount -t apfs -o ro,nosuid,nodev,uid=$(id -u),gid=$(id -g),vol=1 -- /dev/sdz2"
+check "mount -i -t apfs (never mount.apfs again), read-only, owner mapped, volume 1" has mount.log "mount -i -t apfs -o ro,nosuid,nodev,uid=$(id -u),gid=$(id -g),vol=1 -- /dev/sdz2"
 check "  ... never the readwrite option" bash -c '! grep -q readwrite "$1"' _ "$R/mount.log"
 check "  ... encryption checked in the kernel log after a mark" has kmsg "big-mount: apfs mount"
 check "  ... the file manager gets the volume itself (no root folder)" bash -c 'grep -q "Macintosh HD - Data$" "$1"' _ "$R/out"
@@ -391,13 +399,13 @@ with_fuse; with_kernel
 part sdz2 sdz apfs "" "$APFS_GUID"; sig sdz2 TYPE=apfs; volume_single sdz2 Mac
 : > "$R/fake-fuse/sdz2.fail"
 bm --open-apfs /dev/sdz2 --no-open
-check "apfs-fuse cannot read the container: the kernel driver is tried next" bash -c '[ "$1" = 0 ] && grep -q "^apfs-fuse" "$2" && grep -q "mount -t apfs" "$3"' _ "$RC" "$R/apfs-fuse.log" "$R/mount.log"
+check "apfs-fuse cannot read the container: the kernel driver is tried next" bash -c '[ "$1" = 0 ] && grep -q "^apfs-fuse" "$2" && grep -q "mount -i -t apfs" "$3"' _ "$RC" "$R/apfs-fuse.log" "$R/mount.log"
 new_root driver-choice
 with_fuse; with_kernel
 part sdz2 sdz apfs "" "$APFS_GUID"; sig sdz2 TYPE=apfs; volume_single sdz2 Mac
 echo "APFS_DRIVER=kernel" > "$R/etc/big-mount.conf"
 bm --open-apfs /dev/sdz2 --no-open
-check "APFS_DRIVER=kernel in big-mount.conf: only the kernel driver" bash -c '[ "$1" = 0 ] && ! test -s "$2" && grep -q "mount -t apfs" "$3"' _ "$RC" "$R/apfs-fuse.log" "$R/mount.log"
+check "APFS_DRIVER=kernel in big-mount.conf: only the kernel driver" bash -c '[ "$1" = 0 ] && ! test -s "$2" && grep -q "mount -i -t apfs" "$3"' _ "$RC" "$R/apfs-fuse.log" "$R/mount.log"
 new_root both-fail
 with_fuse; with_kernel
 part sdz2 sdz apfs "" "$APFS_GUID"; sig sdz2 TYPE=apfs; volume_single sdz2 Mac
@@ -467,6 +475,50 @@ part sdz2 sdz apfs "" "$APFS_GUID"; sig sdz2 TYPE=apfs
 mkdir -p "$R/mnt/Mac"
 FAKE_EUID_T=0 bm --apfs-helper boot-mount /dev/sdz2 "$R/mnt/Mac" 1000 1000
 check "no driver at boot: exit 4 at once, says which packages" bash -c '[ "$1" = 4 ] && grep -q linux-apfs-rw-dkms "$2"' _ "$RC" "$R/err"
+
+begin "file manager click (UDisks runs mount -t apfs, mount(8) runs mount.apfs)"
+UUID_DIR=92319c2f-9cef-43a8-b73a-86562c5c47ec
+new_root fs
+with_kernel; with_apfsprogs
+part sdz2 sdz apfs "" "$APFS_GUID"; sig sdz2 TYPE=apfs
+printf '0\tMacintosh HD\n1\tMacintosh HD - Data\n2\tPreboot\n' > "$R/fake-apfs-label/sdz2"
+mkdir -p "$(MEDIA)/$UUID_DIR"
+mapfs /dev/sdz2 "$(MEDIA)/$UUID_DIR" -o nosuid,nodev,uhelper=udisks2
+check "mounted (exit 0), by the kernel driver on the folder UDisks made" bash -c '[ "$1" = 0 ] && grep -q -- "-- /dev/sdz2 $2\$" "$3"' _ "$RC" "$(MEDIA)/$UUID_DIR" "$R/mount.log"
+check "  ... mount -i: the driver itself, never mount.apfs again" has mount.log "mount -i -t apfs"
+check "  ... the volume with the files of the users (Data, 1), not volume 0" has mount.log ",vol=1 --"
+check "  ... read-only, files of the person of /run/media/<user>" has mount.log "-o ro,nosuid,nodev,uid=$(id -u),gid=$(id -g),vol=1"
+check "  ... encryption checked in the kernel log, nothing on stdout, no sudo" bash -c 'grep -q "big-mount: apfs mount" "$1" && ! test -s "$2" && ! test -s "$3"' _ "$R/kmsg" "$R/out" "$R/sudo.log"
+check "  ... the module loaded only now" has modprobe.log "apfs"
+mapfs /dev/sdz2 "$(MEDIA)/$UUID_DIR" -o rw,vol=0,uid=1234,gid=4321
+check "vol=, uid=, gid= given are used; rw is not: read-only all the same" has mount.log "-o ro,nosuid,nodev,uid=1234,gid=4321,vol=0"
+check "  ... no readwrite option, ever" bash -c '! grep -qE "readwrite|-o rw" "$1"' _ "$R/mount.log"
+: > "$R/mount.log"
+mapfs /dev/sdz2 "$(MEDIA)/$UUID_DIR" -f -o nosuid
+check "-f (fake): exit 0, nothing mounted" bash -c '[ "$1" = 0 ] && ! test -s "$2"' _ "$RC" "$R/mount.log"
+mapfs /dev/sdz2
+check "no folder: exit 1 (usage), nothing mounted" bash -c '[ "$1" = 1 ] && ! test -s "$2"' _ "$RC" "$R/mount.log"
+mapfs /dev/sdz2 "$R/nowhere" -o nosuid
+check "a folder that does not exist: exit 1, nothing mounted" bash -c '[ "$1" = 1 ] && ! test -s "$2"' _ "$RC" "$R/mount.log"
+FAKE_EUID_T=1000 mapfs /dev/sdz2 "$(MEDIA)/$UUID_DIR" -o nosuid
+check "not run as root: exit 32, nothing mounted" bash -c '[ "$1" = 32 ] && ! test -s "$2"' _ "$RC" "$R/mount.log"
+sig sdz2 TYPE=ext4
+mapfs /dev/sdz2 "$(MEDIA)/$UUID_DIR" -o nosuid
+check "no APFS signature on the partition: exit 32, nothing mounted" bash -c '[ "$1" = 32 ] && ! test -s "$2"' _ "$RC" "$R/mount.log"
+new_root fs-fuse
+with_fuse
+part sdz2 sdz apfs "" "$APFS_GUID"; sig sdz2 TYPE=apfs; volume_single sdz2 Mac
+mkdir -p "$(MEDIA)/$UUID_DIR"
+LANGUAGE_T=pt_BR LANG_T=pt_BR.UTF-8 mapfs /dev/sdz2 "$(MEDIA)/$UUID_DIR" -o nosuid,nodev
+check "only apfs-fuse: exit 32, never mounted with FUSE (UDisks could not see it)" bash -c '[ "$1" = 32 ] && ! test -s "$2" && ! test -s "$3"' _ "$RC" "$R/apfs-fuse.log" "$R/mount.log"
+check "  ... says which package, and bigmount --open-apfs, in English for the journal" bash -c 'grep -q linux-apfs-rw-dkms "$1" && grep -q -- "--open-apfs /dev/sdz2" "$1"' _ "$R/err"
+new_root fs-enc
+with_kernel; ln -sf "$STUBS/apfsutil" "$R/bin/apfsutil"
+part sdz2 sdz apfs "" "$APFS_GUID"; sig sdz2 TYPE=apfs; ENC=Yes volumes_catalina sdz2
+mkdir -p "$(MEDIA)/$UUID_DIR"
+mapfs /dev/sdz2 "$(MEDIA)/$UUID_DIR" -o nosuid,nodev
+check "encrypted Data volume: exit 32, not mounted (it would be garbage)" bash -c '[ "$1" = 32 ] && ! test -s "$2"' _ "$RC" "$R/mount.log"
+check "  ... says to open it with bigmount --open-apfs" bash -c 'grep -q "encrypted" "$1" && grep -q -- "--open-apfs /dev/sdz2" "$1"' _ "$R/err"
 
 begin "translations"
 new_root i18n

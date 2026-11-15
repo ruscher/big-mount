@@ -1,0 +1,62 @@
+#!/bin/bash
+#
+# mount.apfs: mount(8) runs it for "mount -t apfs" (libmount looks for a
+# /sbin/mount.<type> before asking the kernel), and UDisks does that when an
+# APFS (Mac) partition is clicked in the file manager. It hands the mount to
+# "bigmount --apfs-helper fs-mount" (/usr/lib/big-mount/apfs.sh): read-only
+# with the kernel driver (linux-apfs-rw-dkms), the volume with the files of
+# the users, owned by the person of /run/media/<user>/...
+#
+# Without this file "mount -t apfs" asks the kernel directly, which fails
+# with "Filesystem type apfs not configured in kernel" when the driver is
+# missing, mounts volume 0 (on a Mac system disk: the sealed system, not the
+# files), and mounts encrypted volumes as garbage.
+#
+# mount(8) calls it as: mount.apfs DEVICE FOLDER [-sfnv] [-N NS] [-o OPTIONS] [-t TYPE]
+# Exit codes as mount(8): 0 mounted, 1 wrong usage, 32 not mounted.
+
+set -u
+# mount(8) runs helpers as root only, with the environment of root's caller
+# (udisksd, a root shell); one with no PATH at all still finds the tools
+PATH="${PATH:-/usr/bin:/bin}"
+
+# The bigmount beside this file (/usr/bin), never one from the environment
+self="$(readlink -f -- "${BASH_SOURCE[0]}")"
+bigmount="${self%/*}/bigmount"
+
+dev="" mp="" opts="" fake=""
+while [ "$#" -gt 0 ]; do
+   case "$1" in
+      -o)
+         opts="${opts:+$opts,}${2:-}"
+         shift
+         ;;
+      -o?*) opts="${opts:+$opts,}${1#-o}" ;;
+      -t | -N) shift ;;
+      -f) fake=1 ;;
+      --) ;;
+      -*) ;; # -s (sloppy), -n (no mtab), -v (verbose), -tTYPE, -NNS
+      *)
+         if [ -z "$dev" ]; then
+            dev="$1"
+         elif [ -z "$mp" ]; then
+            mp="$1"
+         fi
+         ;;
+   esac
+   shift
+done
+
+if [ -z "$dev" ] || [ -z "$mp" ]; then
+   echo "usage: mount.apfs DEVICE FOLDER [-o OPTIONS]" >&2
+   exit 1
+fi
+# -f: everything but the mount itself; there is nothing else to do
+[ -n "$fake" ] && exit 0
+
+"$bigmount" --apfs-helper fs-mount "$dev" "$mp" "$opts"
+case "$?" in
+   0) exit 0 ;;
+   2) exit 1 ;;
+   *) exit 32 ;;
+esac

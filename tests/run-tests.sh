@@ -982,7 +982,7 @@ test_nothing_but_the_automount() {
     local lib="$REPO/big-mount/usr/lib/big-mount" files expect l
     files="$(cd "$REPO/big-mount" && find . -type f | sed 's|^\./||' | sort)"
     expect="$(
-        printf '%s\n' etc/big-mount.conf usr/bin/bigmount usr/lib/big-mount/cli.sh usr/lib/big-mount/apfs.sh \
+        printf '%s\n' etc/big-mount.conf usr/bin/bigmount usr/bin/mount.apfs usr/lib/big-mount/cli.sh usr/lib/big-mount/apfs.sh \
             usr/lib/systemd/system/big-mount.service usr/share/libalpm/hooks/big-mount.hook
         while read -r l; do echo "usr/share/locale/$l/LC_MESSAGES/big-mount.mo"; done < "$REPO/locale/LINGUAS"
     )"

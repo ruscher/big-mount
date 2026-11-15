@@ -63,6 +63,7 @@ check "bigmount --version of the package shows that commit" \
 P="$WORK/pkg"
 expect=(
     "755 usr/bin/bigmount"
+    "755 usr/bin/mount.apfs"
     "644 usr/lib/big-mount/cli.sh"
     "644 usr/lib/big-mount/apfs.sh"
     "644 usr/lib/big-mount/version"
