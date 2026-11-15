@@ -1,0 +1,26 @@
+#!/bin/bash
+# Stub mount for the kernel driver: "mount -t apfs -o OPTS -- DEV DIR".
+#   $TESTROOT/fake-kernel/<name>.encrypted  the driver warns in the kernel
+#                                           log that the volume is encrypted
+#   $TESTROOT/fake-kernel/<name>.fail       exit 32
+#   $TESTROOT/fake-kernel/<name>.rw         the mount comes out writable
+: "${TESTROOT:?stub called outside the test harness}"
+echo "mount $*" >> "$TESTROOT/mount.log"
+typ="" opts="" pos=()
+while [ "$#" -gt 0 ]; do
+    case "$1" in
+        -t) typ="$2"; shift ;;
+        -o) opts="$2"; shift ;;
+        --) ;;
+        -*) ;;
+        *) pos+=("$1") ;;
+    esac
+    shift
+done
+dev="${pos[0]}" mp="${pos[1]}" name="${pos[0]##*/}" d="$TESTROOT/fake-kernel"
+if [ -e "$d/$name.fail" ]; then echo "mount: wrong fs type, bad option, bad superblock on $dev" >&2; exit 32; fi
+[ -e "$d/$name.encrypted" ] && echo "<4>APFS ($name): volume is encrypted, may not be read correctly" >> "$TESTROOT/kmsg"
+mode=ro
+[ -e "$d/$name.rw" ] && mode=rw
+echo "$dev ${mp// /\\040} $typ $mode,${opts#ro,} 0 0" >> "$TESTROOT/proc/mounts"
+exit 0

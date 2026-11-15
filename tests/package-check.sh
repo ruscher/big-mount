@@ -64,6 +64,7 @@ P="$WORK/pkg"
 expect=(
     "755 usr/bin/bigmount"
     "644 usr/lib/big-mount/cli.sh"
+    "644 usr/lib/big-mount/apfs.sh"
     "644 usr/lib/big-mount/version"
     "644 usr/lib/systemd/system/big-mount.service"
     "644 usr/share/libalpm/hooks/big-mount.hook"
@@ -87,8 +88,10 @@ check "install script restarts nothing by itself" bash -c '! grep -vE "^\s*(#|ec
 check "configuration preserved on upgrades (backup=)" grep -q "^backup=etc/big-mount.conf" <<< "$pkginfo"
 check "the obsolete big-mount-git is replaced and cannot be installed beside it" \
     bash -c 'source pkgbuild/PKGBUILD 2>/dev/null; [[ " ${replaces[*]} " == *" big-mount-git "* && " ${conflicts[*]} " == *" big-mount-git "* ]]'
-for d in bash coreutils gawk glibc ntfs-3g sed systemd util-linux; do check "depends on $d" grep -qw "$d" <<< "$(grep ^depends= <<< "$pkginfo")"; done
+for d in acl bash coreutils gawk glibc grep kmod ntfs-3g sed systemd util-linux; do check "depends on $d" grep -qw "$d" <<< "$(grep ^depends= <<< "$pkginfo")"; done
 check "  ... and on nothing of a desktop or of the rescue tools" bash -c '[[ $1 != *gtk* && $1 != *python* && $1 != *adwaita* && $1 != *rsync* && $1 != *smartmontools* && $1 != *lsof* && $1 != *polkit* && $1 != *udisks2* && $1 != *libnotify* ]]' _ "$(grep ^depends= <<< "$pkginfo")"
+check "the APFS drivers are optional, never required (the boot needs none)" \
+    bash -c 'source pkgbuild/PKGBUILD 2>/dev/null; [[ " ${optdepends[*]} " == *"apfs-fuse-git:"* && " ${optdepends[*]} " == *"linux-apfs-rw-dkms:"* && " ${depends[*]} " != *apfs* ]]'
 check "big-storage-rescue is optional, never required, never in conflict" \
     bash -c 'source pkgbuild/PKGBUILD 2>/dev/null; [[ " ${optdepends[*]} " == *"big-storage-rescue:"* && " ${depends[*]} ${conflicts[*]} ${replaces[*]} ${provides[*]} " != *big-storage-rescue* ]]'
 check "no file shared with big-storage-rescue" bash -c '! grep -E "storage-rescue|bsr-" <<< "$1"' _ "$installed"

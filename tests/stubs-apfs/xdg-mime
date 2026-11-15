@@ -1,0 +1,5 @@
+#!/bin/bash
+# Stub "xdg-mime query default inode/directory": $TESTROOT/mime-default
+: "${TESTROOT:?stub called outside the test harness}"
+[ -r "$TESTROOT/mime-default" ] && cat "$TESTROOT/mime-default"
+exit 0

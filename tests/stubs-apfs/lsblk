@@ -1,0 +1,33 @@
+#!/bin/bash
+# Stub lsblk for tests/apfs-tests.sh, driven by $TESTROOT/fake-lsblk: one
+# device per line, fields separated by | (empty fields allowed):
+#   NAME TYPE FSTYPE SIZE PKNAME TRAN PARTLABEL PARTTYPE   (names without /dev/)
+# Supported calls (those of apfs.sh and of bigmount --doctor):
+#   lsblk -P -p -o NAME,FSTYPE,PKNAME
+#   lsblk -P -p -d -o NAME,TYPE,FSTYPE,SIZE,LABEL,PARTLABEL,PARTTYPE,PKNAME -- DEV
+#   lsblk -dno TRAN -- DISK
+#   lsblk -rno FSTYPE
+: "${TESTROOT:?stub called outside the test harness}"
+map="$TESTROOT/fake-lsblk"
+dev="" mode=""
+for a in "$@"; do
+    case "$a" in
+        /dev/*) dev="${a#/dev/}" ;;
+        NAME,FSTYPE,PKNAME) mode=list ;;
+        NAME,TYPE,FSTYPE,SIZE,LABEL,PARTLABEL,PARTTYPE,PKNAME) mode=one ;;
+        TRAN) mode=tran ;;
+        FSTYPE) mode=fstypes ;;
+    esac
+done
+[ -r "$map" ] || exit 0
+while IFS='|' read -r name type fstype size pk tran plabel ptype; do
+    [ -n "$name" ] || continue
+    case "$mode" in
+        list) printf 'NAME="/dev/%s" FSTYPE="%s" PKNAME="%s"\n' "$name" "$fstype" "${pk:+/dev/$pk}" ;;
+        one) [ "$name" = "$dev" ] && printf 'NAME="/dev/%s" TYPE="%s" FSTYPE="%s" SIZE="%s" LABEL="" PARTLABEL="%s" PARTTYPE="%s" PKNAME="%s"\n' \
+                 "$name" "$type" "$fstype" "$size" "$plabel" "$ptype" "${pk:+/dev/$pk}" ;;
+        tran) [ "$name" = "$dev" ] && printf '%s\n' "$tran" ;;
+        fstypes) printf '%s\n' "$fstype" ;;
+    esac
+done < "$map"
+exit 0

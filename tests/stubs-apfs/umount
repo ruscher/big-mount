@@ -1,0 +1,14 @@
+#!/bin/bash
+# Stub umount: removes DIR from the fake /proc/mounts. $TESTROOT/busy makes
+# it fail as a busy filesystem does. With $TESTROOT/real-bin, fusermount3.
+: "${TESTROOT:?stub called outside the test harness}"
+mp="${*: -1}"
+echo "umount $*" >> "$TESTROOT/umount.log"
+if [ -e "$TESTROOT/real-bin" ]; then exec fusermount3 -u "$mp"; fi
+if [ -e "$TESTROOT/busy" ]; then echo "umount: $mp: target is busy." >&2; exit 32; fi
+esc="${mp// /\\040}"
+awk -v m="$esc" '$2 != m' "$TESTROOT/proc/mounts" > "$TESTROOT/proc/mounts.new"
+mv "$TESTROOT/proc/mounts.new" "$TESTROOT/proc/mounts"
+# What the stub apfs-fuse showed goes away with the mount
+rmdir "$mp/root" 2>/dev/null
+exit 0

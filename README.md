@@ -19,6 +19,7 @@ desktop, and `/etc/fstab` always wins.
 
 [Installation](#-installation) ·
 [How it works](#-how-it-works) ·
+[Mac disks (APFS)](#-mac-disks-apfs) ·
 [Checking it](#-checking-it) ·
 [Troubleshooting](#-troubleshooting) ·
 [Configuration](#%EF%B8%8F-configuration) ·
@@ -38,6 +39,7 @@ desktop, and `/etc/fstab` always wins.
 | **When** | once at every boot, by `big-mount.service`, after the local filesystems |
 | **Never touches** | USB, FireWire, Thunderbolt and SD devices · anything in `/etc/fstab` · LUKS, BitLocker, LVM and RAID members · the EFI and Windows recovery partitions · swap |
 | **Windows** | hibernated or Fast Startup volumes are mounted read-only, never "fixed" (no `ntfsfix`, no deleted hiberfile) |
+| **Mac (APFS)** | `bigmount --open-apfs` opens the disk of a Mac **read-only** in Dolphin, also an encrypted (FileVault) one; never written to |
 | **Footprint** | one bash script and its translations, about 290 KiB (33 KiB without the translations), no GUI toolkit, no Python, nothing left running |
 | **Languages** | 31, from Belarusian to Traditional Chinese; any other language falls back to English |
 
@@ -68,8 +70,12 @@ sudo systemctl start big-mount
 | `util-linux` | `blkid`, `lsblk`, `findmnt`, `mount`, `flock` |
 | `ntfs-3g` | `mount.lowntfs-3g`, for NTFS |
 | `systemd` | the service, `udevadm`, and `systemctl`/`journalctl` in `--doctor` |
-| `coreutils`, `glibc`, `gawk`, `sed` | `mkdir`, `ln`, `readlink`, `stat`…, `getent`, `awk`, `sed` |
+| `coreutils`, `glibc`, `gawk`, `sed`, `grep` | `mkdir`, `ln`, `readlink`, `stat`, `timeout`…, `getent`, `awk`, `sed`, `grep` |
+| `acl`, `kmod` | APFS: the folder of an opened volume (`setfacl`), whether the kernel driver exists (`modinfo`) |
 | *optional:* `big-storage-rescue` | explains read-only or failed mounts, safe removal, drive health, file rescue |
+| *optional:* `apfs-fuse-git` (AUR) | reads APFS, also encrypted volumes |
+| *optional:* `linux-apfs-rw-dkms`, `apfsprogs` | read APFS with the kernel driver (no encrypted volumes) and list its volumes |
+| *optional:* `sudo`, `xdg-utils` | `--open-apfs` asks for administrator rights, then shows the files |
 
 FAT32, exFAT, ext4, Btrfs, XFS and F2FS are mounted by kernel drivers. Every
 package above except `ntfs-3g` is already part of an Arch base system. Details:
@@ -85,6 +91,9 @@ package above except `ntfs-3g` is already part of an Arch base system. Details:
 | `bigmount --dry-run` | shows every decision and every command, **changes nothing** | recommended¹ |
 | `bigmount --doctor` | checks the service and reports what it did at this boot, changes nothing | no |
 | `bigmount --version` | version and the exact source revision of the package | no |
+| `bigmount --open-apfs [DEV]` | opens an APFS (Mac) partition read-only in the file manager | asks (sudo) |
+| `bigmount --close-apfs [DEV]` | closes it, so that the disk can be unplugged | asks (sudo) |
+| `bigmount --apfs-info [DEV]` | what an APFS partition contains (volumes, encryption) and which driver reads it | asks (sudo) |
 
 ¹ As a normal user `blkid` may not see every partition; with `sudo` the answer is complete.
 
@@ -177,11 +186,18 @@ The reasons are printed by `--dry-run` and in the journal, for example
 3. `.` and `..` are rejected (`..` would mount over `/`), and so are labels
    longer than 200 bytes. In both cases the device name is used.
 4. If `/mnt/<name>` is used by **another** device, a number is added:
-   `Data1`, `Data2`... Empty directories and stale links are reused.
+   `Data1`, `Data2`... (for a device name, `sdb3_1`, `sdb3_2`...). A
+   directory nothing is mounted on is reused. A symlink is removed first and
+   never followed, and nothing is ever mounted on top of another mount.
 5. The link `/mnt/<device>` → `/mnt/<label>` is created (`/mnt/sda1` →
-   `/mnt/Data`). An old link pointing elsewhere, for example after the disks
-   changed order, is updated. A real directory or file at that path is never
-   touched.
+   `/mnt/Data`). A real directory or file at that path is never touched.
+   Device names follow the order in which the disks are found, so they
+   change when a disk is added. At every boot, links `/mnt/<device>` →
+   `/mnt/<folder>` that are no longer true are removed before anything is
+   mounted. Without this, a new unlabeled disk that takes the name `sda1`
+   would be mounted through the old `/mnt/sda1` → `/mnt/Data` link, on top
+   of the other disk, hiding its files. `bigmount --doctor` warns about two
+   partitions mounted on the same folder.
 
 The label comes from the device and is untrusted: it never goes through
 `eval`, `echo` or a shell.
@@ -234,6 +250,61 @@ started inside the service. With the default `control-group`, a `systemctl
 restart big-mount` killed it and the volume vanished under the programs
 using it.
 
+## 🍎 Mac disks (APFS)
+
+APFS is the filesystem of every Mac since 2017. An APFS partition is a
+*container* with one or more *volumes*: on macOS 10.15 and later
+`Macintosh HD` (the system), **`Macintosh HD - Data`** (the files of the
+users), `Preboot`, `Recovery` and `VM`; a disk formatted on a Mac for data
+usually has one volume. Linux has no APFS driver of its own: install one.
+
+| Driver | Install | Encrypted (FileVault) | Notes |
+| --- | --- | --- | --- |
+| apfs-fuse | `pamac build apfs-fuse-git` (AUR) | **yes**, password typed in the terminal | cannot write at all; used first |
+| kernel driver | `sudo pacman -S linux-apfs-rw-dkms apfsprogs` | no | faster; maintained; built for each kernel (needs its headers) |
+
+Open the disk of a Mac:
+
+```bash
+bigmount --open-apfs            # the only APFS partition connected, or /dev/sdX2
+```
+
+1. sudo asks for **your** password (the disk is read as root; nothing is
+   written to it);
+2. with several volumes, the list is shown and the one with your files is
+   proposed: press Enter;
+3. an encrypted volume asks for the password of a user of the Mac, or its
+   recovery key (typed into the driver; nothing is shown, nothing is kept);
+4. Dolphin opens the files, read-only, under `/run/media/<you>/<volume>`.
+   Copy what you need to another disk;
+5. `bigmount --close-apfs`, then unplug.
+
+`bigmount --apfs-info /dev/sdX2` shows what the partition is without opening
+it: the GPT name (such as `Basic data partition`, only a name), the GPT type,
+the signature found on it (what counts), the volumes with role and
+encryption, and the drivers installed.
+
+What cannot be read: volumes encrypted by the hardware of a T2 or Apple
+silicon Mac (no tool can, off that Mac), encrypted volumes with only the
+kernel driver, Fusion Drives (not offered); a file with a compression the
+driver does not know gives a read error, never wrong content.
+
+| Message | What to do |
+| --- | --- |
+| `no APFS driver is installed` | install one of the two drivers above |
+| `is not APFS: it contains …` | the partition is of another kind; Dolphin opens it directly |
+| `container cannot be read` | damaged, or newer than the driver: try the other driver (`APFS_DRIVER` below) |
+| `input/output error` | the disk is failing: stop, and copy it first with Big Storage Rescue |
+| `its password can only be typed in a terminal` | run the command in Konsole |
+| `Wrong password: volume N stays locked` | the password of a user of that Mac, or the recovery key |
+| `still in use` | close Dolphin windows and terminals in that folder, then `--close-apfs` again |
+| `This volume is empty` | open the `- Data` volume (`--volume N`) |
+
+Internal APFS partitions (a Mac running BigLinux) are not mounted at boot
+unless `APFS=readonly` is set in `/etc/big-mount.conf`. Design, interface for
+other programs and tests: [docs/apfs-04-read-only-mount.md](docs/apfs-04-read-only-mount.md)
+and the other `docs/apfs-*` notes.
+
 ## 🩺 Checking it
 
 ### `bigmount --doctor`
@@ -282,6 +353,7 @@ Big Storage Rescue.
 | I want another mount point or other options | put the partition in `/etc/fstab`; Big-Mount steps aside |
 | I do not want Big-Mount at all | `sudo touch /etc/bigmountall-no`, see [below](#disable-the-automatic-mounting) |
 | `bigmount: mounting the internal partitions needs administrator rights` | mounting is the job of the service: `sudo systemctl restart big-mount` |
+| A disk of a Mac does not open | `bigmount --open-apfs`, see [Mac disks (APFS)](#-mac-disks-apfs) |
 
 When asking for help, attach the output of `bigmount --doctor` and
 `sudo bigmount --dry-run`.
@@ -308,6 +380,17 @@ PERMISSIONS=shared
 - It is kept on package updates (`backup=` in the PKGBUILD).
 - Apply without rebooting: `sudo systemctl restart big-mount`. Partitions
   that are already mounted keep their options until they are mounted again.
+
+```ini
+# INTERNAL APFS (Mac) partitions at boot: off (default) or readonly
+APFS=off
+# which driver reads APFS when both are installed: auto (apfs-fuse first), fuse or kernel
+APFS_DRIVER=auto
+```
+
+With `APFS=readonly` the volume with the files of the users is mounted
+read-only under `/mnt/<label>`, owned by the last user who logged in;
+encrypted volumes are skipped. External disks are never mounted at boot.
 
 ### Disable the automatic mounting
 
@@ -453,12 +536,13 @@ big-mount/                       what the package installs
 └── usr/
     ├── bin/bigmount             the boot run (the only code loaded at boot)
     ├── lib/big-mount/cli.sh     --help, --version, --doctor, the 2.x options
+    ├── lib/big-mount/apfs.sh    --open-apfs, --close-apfs, --apfs-info and their root helper
     ├── lib/systemd/system/      big-mount.service
     └── share/libalpm/hooks/     enables the service on install
 pkgbuild/                        PKGBUILD and install messages
 locale/                          translations
 tests/                           test suites and device stubs
-docs/                            design notes (01–07) and the history of 2.x
+docs/                            design notes (01–07, apfs-01–09) and the history of 2.x
 ```
 
 Technical notes: [docs/](docs) (01–07). The history of 2.x, including the

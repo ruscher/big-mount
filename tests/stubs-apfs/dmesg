@@ -1,0 +1,5 @@
+#!/bin/bash
+# Stub dmesg: the fake kernel log, without the priority prefix
+: "${TESTROOT:?stub called outside the test harness}"
+[ -r "$TESTROOT/kmsg" ] && sed 's/^<[0-9]>//' "$TESTROOT/kmsg"
+exit 0

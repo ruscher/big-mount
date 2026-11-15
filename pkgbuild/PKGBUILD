@@ -10,19 +10,30 @@ arch=('any')
 license=('GPL-3.0-or-later')
 # Every package whose programs bigmount calls, as Arch asks, even those of the
 # base system:
-#   util-linux  blkid, lsblk, findmnt, mount, flock
+#   util-linux  blkid, lsblk, findmnt, mount, umount, mountpoint, flock, dmesg, setsid
 #   ntfs-3g     mount.lowntfs-3g (NTFS)
 #   systemd     udevadm, systemctl, journalctl (--doctor) and the service itself
-#   coreutils   readlink, dirname, mkdir, ln, rm, rmdir, stat, head, tail
+#   coreutils   readlink, dirname, mkdir, ln, ls, rm, rmdir, stat, head, tail,
+#               mktemp, tee, timeout, chmod, chown
 #   glibc       getent
 #   gawk        awk
-#   sed         sed (--doctor)
+#   sed         sed (--doctor, APFS)
+#   grep        grep (APFS)
+#   acl         setfacl: the folder of an APFS volume opened for one person
+#   kmod        modinfo, modprobe: whether the APFS kernel driver is installed
 # FAT32, exFAT, ext4, Btrfs, XFS and F2FS are mounted by the kernel drivers.
+# APFS (disks of a Mac) needs a driver of its own, which stays optional: it is
+# only read, by "bigmount --open-apfs" or, when asked for, at boot.
 # No graphical toolkit, no Python: diagnosis, safe removal and file rescue are
 # the separate package big-storage-rescue, which reads what this one leaves in
 # /run/big-mount.
-depends=('bash' 'coreutils' 'gawk' 'glibc' 'ntfs-3g' 'sed' 'systemd' 'util-linux')
-optdepends=('big-storage-rescue: explains read-only or failed mounts, safe removal, drive health and file rescue')
+depends=('acl' 'bash' 'coreutils' 'gawk' 'glibc' 'grep' 'kmod' 'ntfs-3g' 'sed' 'systemd' 'util-linux')
+optdepends=('big-storage-rescue: explains read-only or failed mounts, safe removal, drive health, file rescue, and which programs keep an APFS volume busy'
+            'apfs-fuse-git: read APFS (Mac) partitions, also encrypted ones (AUR)'
+            'linux-apfs-rw-dkms: read APFS (Mac) partitions with the kernel driver, no encrypted volumes'
+            'apfsprogs: list the volumes of an APFS partition for the kernel driver'
+            'sudo: bigmount --open-apfs asks for administrator rights through it'
+            'xdg-utils: bigmount --open-apfs finds the file manager for folders (xdg-mime, xdg-open)')
 provides=('big-mount-git')
 conflicts=('big-mount-git')
 replaces=('big-mount-git')
@@ -30,7 +41,7 @@ backup=('etc/big-mount.conf')
 install=big-mount.install
 # The official repository; work done in forks comes in by pull request
 url="https://github.com/biglinux/big-mount"
-pkgdesc="Mounts the partitions of internal disks at boot"
+pkgdesc="Mounts the partitions of internal disks at boot, and opens APFS (Mac) partitions read-only"
 source=("git+https://github.com/biglinux/big-mount.git")
 makedepends=("git")
 md5sums=(SKIP)

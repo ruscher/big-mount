@@ -1,0 +1,5 @@
+#!/bin/bash
+# Stub modprobe: logs, loads nothing
+: "${TESTROOT:?stub called outside the test harness}"
+echo "modprobe $*" >> "$TESTROOT/modprobe.log"
+exit 0

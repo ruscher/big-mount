@@ -1,0 +1,5 @@
+#!/bin/bash
+# Stub file manager: records what it would show, and as whom
+: "${TESTROOT:?stub called outside the test harness}"
+echo "thunar euid=${FAKE_EUID:-?} $*" >> "$TESTROOT/filemanager.log"
+exit 0

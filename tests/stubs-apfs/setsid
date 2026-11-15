@@ -1,0 +1,4 @@
+#!/bin/bash
+# Stub setsid: runs the command in the foreground, so that the test can see it
+[ "${1:-}" = -f ] && shift
+"$@"

@@ -151,9 +151,11 @@ if [ -n "$pw_entry" ]; then
    IFS=: read -r _ _ UserID GroupID _ <<< "$pw_entry"
 fi
 
-# Permission mask for FAT/exFAT/NTFS (see /etc/big-mount.conf). The file is
-# parsed as data, never sourced: this runs as root.
+# Permission mask for FAT/exFAT/NTFS, and whether internal APFS partitions
+# are mounted (see /etc/big-mount.conf). The file is parsed as data, never
+# sourced: this runs as root.
 FILE_MASK="umask=000"
+APFS_BOOT=off
 if [ -r /etc/big-mount.conf ]; then
    while IFS= read -r line; do
       line="${line%%#*}"
@@ -163,6 +165,9 @@ if [ -r /etc/big-mount.conf ]; then
          PERMISSIONS=owner) FILE_MASK="dmask=022,fmask=022" ;;
          PERMISSIONS=private) FILE_MASK="umask=077" ;;
          PERMISSIONS=*) warn $"/etc/big-mount.conf: unknown value '%s', using shared" "${line#*=}" ;;
+         APFS=off) APFS_BOOT=off ;;
+         APFS=readonly) APFS_BOOT=readonly ;;
+         APFS=*) warn $"/etc/big-mount.conf: unknown value APFS=%s, internal APFS partitions are not mounted" "${line#*=}" ;;
       esac
    done < /etc/big-mount.conf
 fi
@@ -215,20 +220,40 @@ is_mounted_dev() {
    return 1
 }
 
+# /proc/mounts writes backslash, space, tab and newline as octal escapes: a
+# path is compared in that form, or a label with a backslash would never be
+# seen as mounted (and a second disk would be mounted on top of it)
+mnt_esc() {
+   local s="${1//\\/\\134}"
+   s="${s// /\\040}"
+   s="${s//$'\t'/\\011}"
+   MNT_ESC="${s//$'\n'/\\012}"
+}
+
 is_mounted_on() {
    local l
+   mnt_esc "$1"
    for l in "${MOUNTS[@]}"; do
-      [[ $l == *" $1 "* ]] && return 0
+      [[ $l == *" $MNT_ESC "* ]] && return 0
    done
    return 1
 }
 
 mounted_dev_on() {
    local l
+   mnt_esc "$2"
    for l in "${MOUNTS[@]}"; do
-      [[ $l == "$1 $2 "* ]] && return 0
+      [[ $l == "$1 $MNT_ESC "* ]] && return 0
    done
    return 1
+}
+
+# Remove a symlink of ours. A dry run only prints it, so what it would
+# remove is remembered and treated as gone.
+declare -A GONE
+drop_link() {
+   run rm -f -- "$1"
+   GONE[$1]=1
 }
 
 # Split a blkid line into DEV and the BK[KEY]=value map
@@ -370,6 +395,23 @@ external_reason() {
    REPLY="${reasons[*]}"
 }
 
+# Reverse links /mnt/<device> -> /mnt/<folder> left by earlier boots. Kernel
+# names follow the order in which disks are found, and change when a disk is
+# added: the old sda can be sdb now, and a new, unlabeled disk takes sda1.
+# mkdir and mount follow symlinks, so that new disk would be mounted through
+# the old link on top of the other disk's folder, hiding all of its files.
+# Only links that are still true are kept; the ones for what this run mounts
+# are made again below.
+for link in /mnt/*; do
+   [ -L "$link" ] || continue
+   name="${link##*/}"
+   [[ $name =~ ^(sd|hd|vd|xvd|nvme|mmcblk|md|nbd)[a-z0-9]*$ ]] || continue
+   target="$(readlink -- "$link")"
+   [[ $target == /mnt/* && $target != /mnt/*/* ]] || continue
+   mounted_dev_on "/dev/$name" "$target" && continue
+   drop_link "$link"
+done
+
 # ---------------------------------------------------------------------------
 # Pass 2: decide and mount, in blkid order
 
@@ -402,6 +444,15 @@ for i in "${CANDIDATES[@]}"; do
       continue
    fi
 
+   # APFS (disks of a Mac) is never mounted read-write, and at boot only
+   # when asked for: a container can be encrypted, or use what the driver
+   # does not know, and the driver is a separate package. The work is done by
+   # "bigmount --apfs-helper", read only for such a partition.
+   if [ "$FSTYPE" = apfs ] && [ "$APFS_BOOT" != readonly ]; then
+      log $"%s: APFS (Mac) partition, not mounted at boot (APFS=readonly in /etc/big-mount.conf does it, read-only). To open it now: bigmount --open-apfs %s" "$DEV" "$DEV"
+      continue
+   fi
+
    # 1. LABEL, 2. PARTLABEL, 3. device name
    safe_label "${BK[LABEL]:-}"
    LABEL_NAME="$REPLY"
@@ -410,40 +461,44 @@ for i in "${CANDIDATES[@]}"; do
       LABEL_NAME="$REPLY"
    fi
 
-   # Resolve a free mount point with numeric suffix on collision
+   # A free mount point: the label (Data, Data1, Data2...) or, without one,
+   # the device name (sda1, sda1_1...: "sda11" would read as another
+   # partition). The same rules for both: the device name is just as likely
+   # to be taken, by a reverse link or by another disk.
    if [ -n "$LABEL_NAME" ]; then
-      BASE_NAME="$LABEL_NAME"
-      COUNTER=1
-      while : ; do
-
-         # Remove stale symlink before existence check
-         if [ -L "/mnt/$LABEL_NAME" ]; then
-            run rm "/mnt/$LABEL_NAME"
-            [ -n "$DRY_RUN" ] && break
-         fi
-
-         if [ ! -e "/mnt/$LABEL_NAME" ]; then
-            break
-         fi
-
-         # Folder exists but nothing is mounted on it (stale) — reuse
-         if ! is_mounted_on "/mnt/$LABEL_NAME"; then
-            break
-         fi
-
-         # Already mounted by this exact device — idempotent success
-         if mounted_dev_on "$DEV" "/mnt/$LABEL_NAME"; then
-            break
-         fi
-
-         # Collision with another device — increment suffix
-         LABEL_NAME="${BASE_NAME}${COUNTER}"
-         ((COUNTER++))
-      done
-
-      MOUNT_POINT="/mnt/$LABEL_NAME"
+      BASE_NAME="$LABEL_NAME" SEP=""
    else
-      MOUNT_POINT="/mnt/$PARTITION"
+      BASE_NAME="$PARTITION" SEP="_"
+   fi
+   NAME="$BASE_NAME"
+   COUNTER=1
+   while : ; do
+      MOUNT_POINT="/mnt/$NAME"
+      # A symlink: a reverse link (or one left behind). mkdir and mount
+      # would follow it into another disk's folder.
+      if [ -L "$MOUNT_POINT" ]; then
+         [ -n "${GONE[$MOUNT_POINT]:-}" ] || drop_link "$MOUNT_POINT"
+         [ -n "$DRY_RUN" ] && break
+      fi
+      [ -e "$MOUNT_POINT" ] || break
+      # A folder nothing is mounted on: left by an earlier boot, reuse it
+      if [ -d "$MOUNT_POINT" ] && [ ! -L "$MOUNT_POINT" ] && ! is_mounted_on "$MOUNT_POINT"; then
+         break
+      fi
+      # Taken by another disk (or not a folder): next suffix
+      NAME="$BASE_NAME$SEP$COUNTER"
+      COUNTER=$((COUNTER + 1))
+   done
+   LABEL_NAME="$NAME"
+   [ "$NAME" = "$PARTITION" ] && LABEL_NAME=""
+
+   # Last guard: never through a symlink, never on top of another mount
+   # (the disk below would disappear from view)
+   if [ -z "$DRY_RUN" ] && { [ -L "$MOUNT_POINT" ] || is_mounted_on "$MOUNT_POINT"; }; then
+      err $"%s: %s is a link or already in use, not mounting" "$DEV" "$MOUNT_POINT"
+      printf -v line '%s\t%s\t%s\t%s\t%s' "$DEV" "${BK[UUID]:--}" "$MOUNT_POINT" failed mountpoint-in-use
+      STATUS+=("$line")
+      continue
    fi
 
    # The device we examined must still be the one behind this name
@@ -482,6 +537,20 @@ for i in "${CANDIDATES[@]}"; do
             state=ro
          fi
          ;;
+      apfs)
+         # Read-only, the volume with the files of the users, encrypted
+         # volumes left alone; exits as in /usr/lib/big-mount/apfs.sh
+         state=ro
+         BIGMOUNT_SELF="$(readlink -f -- "${BASH_SOURCE[0]}")"
+         run "$BIGMOUNT_SELF" --apfs-helper boot-mount "$DEV" "$MOUNT_POINT" "$UserID" "$GroupID"
+         mount_rc=$?
+         case "$mount_rc" in
+            0) note=apfs ;;
+            4) note=apfs-no-driver ;;
+            6) note=apfs-encrypted ;;
+            7) note=apfs-io-error ;;
+         esac
+         ;;
       *fat*)
          run mount -o "uid=$UserID,gid=$GroupID,noatime,rw,$FILE_MASK,nodev,nofail,x-gvfs-show" "$DEV" "$MOUNT_POINT"
          mount_rc=$?
@@ -508,8 +577,9 @@ for i in "${CANDIDATES[@]}"; do
    # (ntfs-3g for hibernated or unclean volumes, mount(8) for write-protected
    # devices), and the user deserves to know why
    if [ -z "$DRY_RUN" ] && [ "$state" = rw ]; then
+      mnt_esc "$MOUNT_POINT"
       for l in "${MOUNTS[@]}"; do
-         [[ $l == "$DEV $MOUNT_POINT "* ]] || continue
+         [[ $l == "$DEV $MNT_ESC "* ]] || continue
          read -r _ _ _ mount_opts _ <<< "$l"
          if [[ ,$mount_opts, == *,ro,* ]]; then
             state=ro

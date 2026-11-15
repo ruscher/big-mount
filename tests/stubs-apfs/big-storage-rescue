@@ -1,0 +1,6 @@
+#!/bin/bash
+# Stub Big Storage Rescue: records the call, and as whom; exits 3 (busy)
+: "${TESTROOT:?stub called outside the test harness}"
+echo "big-storage-rescue euid=${FAKE_EUID:-?} $*" >> "$TESTROOT/bsr.log"
+echo "bash  |  bash  |  1234  |  current folder is on the device"
+exit 3

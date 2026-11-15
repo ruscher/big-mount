@@ -1,0 +1,8 @@
+#!/bin/bash
+# Stub apfs-label (apfsprogs): prints $TESTROOT/fake-apfs-label/<name>
+# ("INDEX<tab>NAME" lines)
+: "${TESTROOT:?stub called outside the test harness}"
+echo "apfs-label $*" >> "$TESTROOT/apfs-label.log"
+f="$TESTROOT/fake-apfs-label/${1##*/}"
+[ -r "$f" ] || { echo "apfs-label: not an apfs container" >&2; exit 1; }
+cat "$f"

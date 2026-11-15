@@ -1,0 +1,19 @@
+#!/bin/bash
+# Stub sudo: logs the command line (to prove what runs as root) and runs it
+# as "root" (FAKE_EUID=0) with the SUDO_* variables of the real sudo.
+#   $TESTROOT/sudo-refuse   the password is refused (exit 1)
+: "${TESTROOT:?stub called outside the test harness}"
+echo "sudo $*" >> "$TESTROOT/sudo.log"
+while [ "$#" -gt 0 ]; do
+    case "$1" in
+        -n) ;;
+        --) shift; break ;;
+        -*) ;;
+        *) break ;;
+    esac
+    shift
+done
+[ -e "$TESTROOT/sudo-refuse" ] && { echo "sudo: 1 incorrect password attempt" >&2; exit 1; }
+[ "$#" -eq 0 ] && exit 0
+[ "$1" = true ] && exit 0
+SUDO_UID="$(id -u)" SUDO_GID="$(id -g)" SUDO_USER="$(id -un)" FAKE_EUID=0 "$@"

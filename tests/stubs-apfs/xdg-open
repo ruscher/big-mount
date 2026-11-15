@@ -1,0 +1,5 @@
+#!/bin/bash
+# Stub xdg-open: records what would be opened, and as whom
+: "${TESTROOT:?stub called outside the test harness}"
+echo "xdg-open euid=${FAKE_EUID:-?} $*" >> "$TESTROOT/xdg-open.log"
+exit 0

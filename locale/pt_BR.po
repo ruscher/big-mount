@@ -39,240 +39,648 @@ msgstr "outro bigmount ainda está em execução, desistindo"
 msgid "last login '%s' is not a known account, ignoring it"
 msgstr "o último login '%s' não é uma conta conhecida; ignorando"
 
-#: big-mount/usr/bin/bigmount:165
+#: big-mount/usr/bin/bigmount:167
 msgid "/etc/big-mount.conf: unknown value '%s', using shared"
 msgstr "/etc/big-mount.conf: valor desconhecido '%s', usando shared"
 
-#: big-mount/usr/bin/bigmount:284
+#: big-mount/usr/bin/bigmount:170
+msgid "/etc/big-mount.conf: unknown value APFS=%s, internal APFS partitions are not mounted"
+msgstr "/etc/big-mount.conf: valor desconhecido APFS=%s, as partições APFS internas não são montadas"
+
+#: big-mount/usr/bin/bigmount:309
 msgid "%s: skipped, %s is not a filesystem"
 msgstr "%s: ignorado, %s não é um sistema de arquivos"
 
-#: big-mount/usr/bin/bigmount:290
+#: big-mount/usr/bin/bigmount:315
 msgid "%s: skipped, virtual device"
 msgstr "%s: ignorado, dispositivo virtual"
 
-#: big-mount/usr/bin/bigmount:297
+#: big-mount/usr/bin/bigmount:322
 msgid "%s: skipped, already mounted"
 msgstr "%s: ignorado, já está montado"
 
-#: big-mount/usr/bin/bigmount:333
+#: big-mount/usr/bin/bigmount:358
 msgid "waiting for udev to finish processing %s"
 msgstr "aguardando o udev terminar de processar %s"
 
-#: big-mount/usr/bin/bigmount:383
+#: big-mount/usr/bin/bigmount:425
 msgid "%s: udev has no information about it yet, not mounting"
 msgstr "%s: o udev ainda não tem informações sobre ele, não será montado"
 
-#: big-mount/usr/bin/bigmount:387
+#: big-mount/usr/bin/bigmount:429
 msgid "%s: skipped, hidden by udev/UDisks (UDISKS_IGNORE)"
 msgstr "%s: ignorado, oculto pelo udev/UDisks (UDISKS_IGNORE)"
 
-#: big-mount/usr/bin/bigmount:395
+#: big-mount/usr/bin/bigmount:437
 msgid "%s: left to UDisks, external device (%s)"
 msgstr "%s: deixado para o UDisks, dispositivo externo (%s)"
 
-#: big-mount/usr/bin/bigmount:401
+#: big-mount/usr/bin/bigmount:443
 msgid "%s: skipped, listed in /etc/fstab"
 msgstr "%s: ignorado, listado no /etc/fstab"
 
-#: big-mount/usr/bin/bigmount:453
+#: big-mount/usr/bin/bigmount:452
+msgid "%s: APFS (Mac) partition, not mounted at boot (APFS=readonly in /etc/big-mount.conf does it, read-only). To open it now: bigmount --open-apfs %s"
+msgstr "%s: partição APFS (Mac), não montada no boot (APFS=readonly em /etc/big-mount.conf faz isso, somente leitura). Para abri-la agora: bigmount --open-apfs %s"
+
+#: big-mount/usr/bin/bigmount:498
+msgid "%s: %s is a link or already in use, not mounting"
+msgstr "%s: %s é um link ou já está em uso, não será montado"
+
+#: big-mount/usr/bin/bigmount:508
 msgid "%s: device changed during the scan, not mounting"
 msgstr "%s: o dispositivo mudou durante a varredura, não será montado"
 
-#: big-mount/usr/bin/bigmount:479
+#: big-mount/usr/bin/bigmount:534
 msgid "%s: NTFS refused read-write mount (%s), retrying read-only"
 msgstr "%s: o NTFS recusou a montagem com gravação (%s), tentando somente leitura"
 
-#: big-mount/usr/bin/bigmount:496
+#: big-mount/usr/bin/bigmount:565
 msgid "%s: mount of %s on %s failed (exit %s)"
 msgstr "%s: a montagem de %s em %s falhou (código %s)"
 
-#: big-mount/usr/bin/bigmount:517
+#: big-mount/usr/bin/bigmount:587
 msgid "%s: the driver mounted %s read-only on its own (%s)"
 msgstr "%s: o driver montou %s somente para leitura por conta própria (%s)"
 
-#: big-mount/usr/bin/bigmount:524
+#: big-mount/usr/bin/bigmount:594
 msgid "%s: would be mounted %s on %s (%s)"
 msgstr "%s: seria montado como %s em %s (%s)"
 
-#: big-mount/usr/bin/bigmount:526
+#: big-mount/usr/bin/bigmount:596
 msgid "%s: mounted %s on %s (%s)"
 msgstr "%s: %s montado em %s (%s)"
 
-#: big-mount/usr/lib/big-mount/cli.sh:28
-msgid "Usage: bigmount [OPTION]"
-msgstr "Uso: bigmount [OPÇÃO]"
+#: big-mount/usr/lib/big-mount/apfs.sh:41
+msgid "APFS container"
+msgstr "contêiner APFS"
 
-#: big-mount/usr/lib/big-mount/cli.sh:31
-msgid "(none)"
-msgstr "(nenhuma)"
+#: big-mount/usr/lib/big-mount/apfs.sh:42
+msgid "HFS+ (Mac OS Extended)"
+msgstr "HFS+ (Mac OS Expandido)"
 
-#: big-mount/usr/lib/big-mount/cli.sh:31
-msgid "mount internal partitions (run at boot by big-mount.service)"
-msgstr "monta as partições internas (executado no boot pelo big-mount.service)"
+#: big-mount/usr/lib/big-mount/apfs.sh:43
+msgid "Microsoft basic data"
+msgstr "dados básicos da Microsoft"
 
-#: big-mount/usr/lib/big-mount/cli.sh:33
-msgid "show what would be mounted, change nothing"
-msgstr "mostra o que seria montado, sem alterar nada"
+#: big-mount/usr/lib/big-mount/apfs.sh:44
+msgid "EFI system partition"
+msgstr "partição de sistema EFI"
 
-#: big-mount/usr/lib/big-mount/cli.sh:34
-msgid "check the boot service and what it did in this boot"
-msgstr "verifica o serviço de inicialização e o que ele fez nesta inicialização"
+#: big-mount/usr/lib/big-mount/apfs.sh:45
+msgid "Linux filesystem"
+msgstr "sistema de arquivos Linux"
 
-#: big-mount/usr/lib/big-mount/cli.sh:35
-msgid "show the version and the source revision"
-msgstr "mostra a versão e a revisão do código-fonte"
+#: big-mount/usr/lib/big-mount/apfs.sh:46
+msgid "Apple Recovery HD"
+msgstr "Apple Recovery HD"
 
-#: big-mount/usr/lib/big-mount/cli.sh:36
-msgid "show this help"
-msgstr "mostra esta ajuda"
+#: big-mount/usr/lib/big-mount/apfs.sh:47
+msgid "Apple Core Storage (old FileVault or Fusion Drive)"
+msgstr "Apple Core Storage (FileVault antigo ou Fusion Drive)"
 
-#: big-mount/usr/lib/big-mount/cli.sh:37
-msgid "Configuration: /etc/big-mount.conf. To mount again now: sudo systemctl restart big-mount"
-msgstr "Configuração: /etc/big-mount.conf. Para montar de novo agora: sudo systemctl restart big-mount"
+#: big-mount/usr/lib/big-mount/apfs.sh:49
+msgid "other"
+msgstr "outro"
 
-#: big-mount/usr/lib/big-mount/cli.sh:38
-msgid "Diagnosis of devices, safe removal and file rescue: big-storage-rescue (package big-storage-rescue)."
-msgstr "Diagnóstico de dispositivos, remoção segura e resgate de arquivos: big-storage-rescue (pacote big-storage-rescue)."
+#: big-mount/usr/lib/big-mount/apfs.sh:72
+msgid "%s is not a device: give its path, such as /dev/sdb2 (see: lsblk -f)"
+msgstr "%s não é um dispositivo: informe o caminho, como /dev/sdb2 (veja: lsblk -f)"
 
-#: big-mount/usr/lib/big-mount/cli.sh:56 big-mount/usr/lib/big-mount/cli.sh:268
+#: big-mount/usr/lib/big-mount/apfs.sh:77
+msgid "%s does not exist: the disk is not connected, or its name changed (see: lsblk -f)"
+msgstr "%s não existe: o disco não está conectado, ou o nome dele mudou (veja: lsblk -f)"
+
+#: big-mount/usr/lib/big-mount/apfs.sh:81
+msgid "%s is not a disk partition"
+msgstr "%s não é uma partição de disco"
+
+#: big-mount/usr/lib/big-mount/apfs.sh:154
+msgid "The driver chosen in /etc/big-mount.conf (APFS_DRIVER=%s) is not installed."
+msgstr "O driver escolhido em /etc/big-mount.conf (APFS_DRIVER=%s) não está instalado."
+
+#: big-mount/usr/lib/big-mount/apfs.sh:156
+msgid "This partition contains APFS (the filesystem of a Mac), and no APFS driver is installed. Install one to read its files without changing the disk:"
+msgstr "Esta partição contém APFS (o sistema de arquivos de um Mac), e nenhum driver APFS está instalado. Instale um para ler os arquivos sem alterar o disco:"
+
+#: big-mount/usr/lib/big-mount/apfs.sh:157
+msgid "  apfs-fuse (recommended, also opens encrypted volumes): pamac build apfs-fuse-git"
+msgstr "  apfs-fuse (recomendado, também abre volumes criptografados): pamac build apfs-fuse-git"
+
+#: big-mount/usr/lib/big-mount/apfs.sh:158
+msgid "  or the kernel driver (no encrypted volumes):           sudo pacman -S linux-apfs-rw-dkms apfsprogs"
+msgstr "  ou o driver do kernel (sem volumes criptografados):          sudo pacman -S linux-apfs-rw-dkms apfsprogs"
+
+#: big-mount/usr/lib/big-mount/apfs.sh:169
+msgid "unknown user id %s"
+msgstr "id de usuário desconhecido: %s"
+
+#: big-mount/usr/lib/big-mount/apfs.sh:182
+#: big-mount/usr/lib/big-mount/apfs.sh:238
+#: big-mount/usr/lib/big-mount/apfs.sh:440
+msgid "%s cannot be read (input/output error). Do not insist: copy what can be saved with Big Storage Rescue first."
+msgstr "%s não pode ser lido (erro de entrada/saída). Não insista: copie primeiro o que puder ser salvo com o Big Storage Rescue."
+
+#: big-mount/usr/lib/big-mount/apfs.sh:189
+msgid "%s is not APFS: it contains %s"
+msgstr "%s não é APFS: contém %s"
+
+#: big-mount/usr/lib/big-mount/apfs.sh:191
+msgid "%s has no APFS signature (nor any other known filesystem)"
+msgstr "%s não tem assinatura APFS (nem de outro sistema de arquivos conhecido)"
+
+#: big-mount/usr/lib/big-mount/apfs.sh:234
+msgid "%s: reading the list of volumes took too long; the disk may be failing"
+msgstr "%s: a leitura da lista de volumes demorou demais; o disco pode estar falhando"
+
+#: big-mount/usr/lib/big-mount/apfs.sh:242
+msgid "%s has an APFS signature, but its container cannot be read: it is damaged, or uses a format the driver does not know"
+msgstr "%s tem assinatura APFS, mas o contêiner não pode ser lido: está danificado, ou usa um formato que o driver não conhece"
+
+#: big-mount/usr/lib/big-mount/apfs.sh:306
+msgid "%s is a symbolic link, not using it"
+msgstr "%s é um link simbólico, não será usado"
+
+#: big-mount/usr/lib/big-mount/apfs.sh:358
+msgid "Wrong password, try again (it can be the password of a user of the Mac or the recovery key)."
+msgstr "Senha incorreta, tente de novo (pode ser a senha de um usuário do Mac ou a chave de recuperação)."
+
+#: big-mount/usr/lib/big-mount/apfs.sh:388
+msgid "Whether volume %s is encrypted cannot be checked here: install apfs-fuse-git (it checks it, and reads encrypted volumes)."
+msgstr "Não é possível verificar aqui se o volume %s está criptografado: instale o apfs-fuse-git (ele verifica isso e lê volumes criptografados)."
+
+#: big-mount/usr/lib/big-mount/apfs.sh:416
+msgid "Volume %s of %s is encrypted (FileVault). The kernel driver cannot decrypt it: install apfs-fuse (pamac build apfs-fuse-git) and try again."
+msgstr "O volume %s de %s está criptografado (FileVault). O driver do kernel não consegue decifrá-lo: instale o apfs-fuse (pamac build apfs-fuse-git) e tente de novo."
+
+#: big-mount/usr/lib/big-mount/apfs.sh:420
+msgid "Volume %s of %s is encrypted (FileVault): its password can only be typed in a terminal, run: bigmount --open-apfs %s"
+msgstr "O volume %s de %s está criptografado (FileVault): a senha só pode ser digitada em um terminal, execute: bigmount --open-apfs %s"
+
+#: big-mount/usr/lib/big-mount/apfs.sh:423
+msgid "Volume %s is encrypted. Type the password of a user of the Mac, or the recovery key (nothing is shown while typing)."
+msgstr "O volume %s está criptografado. Digite a senha de um usuário do Mac, ou a chave de recuperação (nada aparece enquanto você digita)."
+
+#: big-mount/usr/lib/big-mount/apfs.sh:444
+msgid "Wrong password: volume %s stays locked."
+msgstr "Senha incorreta: o volume %s continua bloqueado."
+
+#: big-mount/usr/lib/big-mount/apfs.sh:451
+msgid "Volume %s of %s is encrypted, and the installed driver cannot unlock it here."
+msgstr "O volume %s de %s está criptografado, e o driver instalado não consegue desbloqueá-lo aqui."
+
+#: big-mount/usr/lib/big-mount/apfs.sh:454
+msgid "The APFS driver could not open volume %s of %s (tried: %s). The disk was not changed."
+msgstr "O driver APFS não conseguiu abrir o volume %s de %s (tentado: %s). O disco não foi alterado."
+
+#: big-mount/usr/lib/big-mount/apfs.sh:455
+msgid "Details: sudo dmesg | grep -i apfs"
+msgstr "Detalhes: sudo dmesg | grep -i apfs"
+
+#: big-mount/usr/lib/big-mount/apfs.sh:464
+msgid "%s was mounted writable by the driver: unmounted again at once"
+msgstr "%s foi montado com escrita pelo driver: desmontado imediatamente"
+
+#: big-mount/usr/lib/big-mount/apfs.sh:470
+msgid "The APFS driver reported success, but nothing is mounted on %s"
+msgstr "O driver APFS informou sucesso, mas nada está montado em %s"
+
+#: big-mount/usr/lib/big-mount/apfs.sh:482
+#: big-mount/usr/lib/big-mount/apfs.sh:834
+#: big-mount/usr/lib/big-mount/apfs.sh:875
+msgid "invalid volume number: %s"
+msgstr "número de volume inválido: %s"
+
+#: big-mount/usr/lib/big-mount/apfs.sh:488
+msgid "this APFS container has no volume %s (it has: %s)"
+msgstr "este contêiner APFS não tem o volume %s (ele tem: %s)"
+
+#: big-mount/usr/lib/big-mount/apfs.sh:515
+msgid "%s is already mounted on %s"
+msgstr "%s já está montado em %s"
+
+#: big-mount/usr/lib/big-mount/apfs.sh:529
+msgid "cannot make a folder for %s under %s"
+msgstr "não foi possível criar uma pasta para %s em %s"
+
+#: big-mount/usr/lib/big-mount/apfs.sh:555
+msgid "%s: APFS partition, but no APFS driver is installed (apfs-fuse-git or linux-apfs-rw-dkms)"
+msgstr "%s: partição APFS, mas nenhum driver APFS está instalado (apfs-fuse-git ou linux-apfs-rw-dkms)"
+
+#: big-mount/usr/lib/big-mount/apfs.sh:584
+msgid "%s is not an open APFS volume"
+msgstr "%s não é um volume APFS aberto"
+
+#: big-mount/usr/lib/big-mount/apfs.sh:589
+msgid "%s was not opened by Big-Mount: unmount it with the program that mounted it"
+msgstr "%s não foi aberto pelo Big-Mount: desmonte-o com o programa que o montou"
+
+#: big-mount/usr/lib/big-mount/apfs.sh:596
+msgid "%s is still in use: close the files and windows (also terminals) opened in it, then try again. To see which programs: big-storage-rescue --busy %s"
+msgstr "%s ainda está em uso: feche os arquivos e janelas (inclusive terminais) abertos nele e tente de novo. Para ver quais programas: big-storage-rescue --busy %s"
+
+#: big-mount/usr/lib/big-mount/apfs.sh:599
+msgid "could not unmount %s: %s"
+msgstr "não foi possível desmontar %s: %s"
+
+#: big-mount/usr/lib/big-mount/apfs.sh:611
+msgid "bigmount --apfs-helper must run as root (it is used by bigmount --open-apfs through sudo)"
+msgstr "bigmount --apfs-helper precisa rodar como root (é usado pelo bigmount --open-apfs por meio do sudo)"
+
+#: big-mount/usr/lib/big-mount/apfs.sh:663
+msgid "Reading the disk needs administrator rights: run this command as root."
+msgstr "Ler o disco exige direitos de administrador: execute este comando como root."
+
+#: big-mount/usr/lib/big-mount/apfs.sh:669
+msgid "Reading the disk needs administrator rights: run this command in a terminal (sudo asks for the password there), or as root."
+msgstr "Ler o disco exige direitos de administrador: execute este comando em um terminal (o sudo pede a senha ali), ou como root."
+
+#: big-mount/usr/lib/big-mount/apfs.sh:687
+msgid "%s is a whole disk; using its APFS partition %s"
+msgstr "%s é um disco inteiro; usando a partição APFS dele, %s"
+
+#: big-mount/usr/lib/big-mount/apfs.sh:692
+msgid "%s has no APFS partition (see: lsblk -f %s)"
+msgstr "%s não tem partição APFS (veja: lsblk -f %s)"
+
+#: big-mount/usr/lib/big-mount/apfs.sh:695
+msgid "%s has several APFS partitions, choose one: %s"
+msgstr "%s tem várias partições APFS, escolha uma: %s"
+
+#: big-mount/usr/lib/big-mount/apfs.sh:703
+msgid "No APFS partition is connected. If the disk of the Mac is connected, see what the system found: lsblk -f"
+msgstr "Nenhuma partição APFS está conectada. Se o disco do Mac estiver conectado, veja o que o sistema encontrou: lsblk -f"
+
+#: big-mount/usr/lib/big-mount/apfs.sh:708
+msgid "APFS partitions connected:"
+msgstr "Partições APFS conectadas:"
+
+#: big-mount/usr/lib/big-mount/apfs.sh:714
+msgid "Give the one to open: bigmount --open-apfs DEVICE"
+msgstr "Informe qual abrir: bigmount --open-apfs DISPOSITIVO"
+
+#: big-mount/usr/lib/big-mount/apfs.sh:717
+msgid "Partition to open (number): "
+msgstr "Partição a abrir (número): "
+
+#: big-mount/usr/lib/big-mount/apfs.sh:722
+msgid "invalid choice: %s"
+msgstr "escolha inválida: %s"
+
+#: big-mount/usr/lib/big-mount/apfs.sh:748
+msgid "encrypted"
+msgstr "criptografado"
+
+#: big-mount/usr/lib/big-mount/apfs.sh:749
+msgid "not encrypted"
+msgstr "sem criptografia"
+
+#: big-mount/usr/lib/big-mount/apfs.sh:750
+msgid "encryption unknown"
+msgstr "criptografia desconhecida"
+
+#: big-mount/usr/lib/big-mount/apfs.sh:753
+msgid "<- the files of the users are usually here"
+msgstr "<- os arquivos dos usuários costumam estar aqui"
+
+#: big-mount/usr/lib/big-mount/apfs.sh:765
+msgid "none"
+msgstr "nenhum"
+
+#: big-mount/usr/lib/big-mount/apfs.sh:767
+#: big-mount/usr/lib/big-mount/apfs.sh:825
+#: big-mount/usr/lib/big-mount/apfs.sh:827
+#: big-mount/usr/lib/big-mount/apfs.sh:910
+#: big-mount/usr/lib/big-mount/cli.sh:71 big-mount/usr/lib/big-mount/cli.sh:322
 msgid "bigmount: unknown option '%s' (see bigmount --help)"
 msgstr "bigmount: opção desconhecida '%s' (veja bigmount --help)"
 
-#: big-mount/usr/lib/big-mount/cli.sh:72
+#: big-mount/usr/lib/big-mount/apfs.sh:776
+msgid "size:"
+msgstr "tamanho:"
+
+#: big-mount/usr/lib/big-mount/apfs.sh:777
+msgid "disk:"
+msgstr "disco:"
+
+#: big-mount/usr/lib/big-mount/apfs.sh:778
+msgid "partition name (GPT, only a name):"
+msgstr "nome da partição (GPT, só um nome):"
+
+#: big-mount/usr/lib/big-mount/apfs.sh:780
+msgid "partition type (GPT):"
+msgstr "tipo da partição (GPT):"
+
+#: big-mount/usr/lib/big-mount/apfs.sh:781
+msgid "filesystem found by udev:"
+msgstr "sistema de arquivos visto pelo udev:"
+
+#: big-mount/usr/lib/big-mount/apfs.sh:783
+msgid "APFS drivers installed:"
+msgstr "drivers APFS instalados:"
+
+#: big-mount/usr/lib/big-mount/apfs.sh:785
+msgid "%s is not APFS for udev; the signature on the partition is checked next."
+msgstr "%s não é APFS para o udev; a assinatura na partição é verificada a seguir."
+
+#: big-mount/usr/lib/big-mount/apfs.sh:788
+msgid "The partition table gives another type, but the signature on the partition is APFS: the signature is what counts. The partition table is left as it is."
+msgstr "A tabela de partições informa outro tipo, mas a assinatura na partição é APFS: o que vale é a assinatura. A tabela de partições fica como está."
+
+#: big-mount/usr/lib/big-mount/apfs.sh:790
+msgid "Reading the volumes needs administrator rights (nothing is written to the disk)."
+msgstr "Ler os volumes exige direitos de administrador (nada é gravado no disco)."
+
+#: big-mount/usr/lib/big-mount/apfs.sh:796
+msgid "Volumes: unknown (install apfs-fuse-git or apfsprogs to list them)"
+msgstr "Volumes: desconhecidos (instale o apfs-fuse-git ou o apfsprogs para listá-los)"
+
+#: big-mount/usr/lib/big-mount/apfs.sh:799
+msgid "Volumes:"
+msgstr "Volumes:"
+
+#: big-mount/usr/lib/big-mount/apfs.sh:819
+msgid "--volume needs a number"
+msgstr "--volume precisa de um número"
+
+#: big-mount/usr/lib/big-mount/apfs.sh:846
+msgid "%s is already open (read-only): %s"
+msgstr "%s já está aberto (somente leitura): %s"
+
+#: big-mount/usr/lib/big-mount/apfs.sh:859
+msgid "Reading %s needs administrator rights. Nothing will be written to it."
+msgstr "Ler %s exige direitos de administrador. Nada será gravado nele."
+
+#: big-mount/usr/lib/big-mount/apfs.sh:866
+msgid "Volumes of %s:"
+msgstr "Volumes de %s:"
+
+#: big-mount/usr/lib/big-mount/apfs.sh:869
+msgid "Choose one: bigmount --open-apfs %s --volume N"
+msgstr "Escolha um: bigmount --open-apfs %s --volume N"
+
+#: big-mount/usr/lib/big-mount/apfs.sh:872
+msgid "Volume to open [%s]: "
+msgstr "Volume a abrir [%s]: "
+
+#: big-mount/usr/lib/big-mount/apfs.sh:879
+msgid "The volumes of this partition cannot be listed (install apfsprogs or apfs-fuse-git): opening volume 0."
+msgstr "Os volumes desta partição não podem ser listados (instale o apfsprogs ou o apfs-fuse-git): abrindo o volume 0."
+
+#: big-mount/usr/lib/big-mount/apfs.sh:887
+msgid "unexpected answer from the APFS helper"
+msgstr "resposta inesperada do auxiliar APFS"
+
+#: big-mount/usr/lib/big-mount/apfs.sh:891
+msgid "%s is open, but this user cannot read it"
+msgstr "%s está aberto, mas este usuário não consegue lê-lo"
+
+#: big-mount/usr/lib/big-mount/apfs.sh:895
+msgid "This volume is empty. Since macOS 10.15 the files of the users are in the volume whose role is Data: bigmount --close-apfs %s, then bigmount --open-apfs %s and choose it."
+msgstr "Este volume está vazio. Desde o macOS 10.15 os arquivos dos usuários ficam no volume cuja função é Data: bigmount --close-apfs %s, depois bigmount --open-apfs %s e escolha-o."
+
+#: big-mount/usr/lib/big-mount/apfs.sh:897
+msgid "Opened read-only (nothing can be changed on the disk): %s"
+msgstr "Aberto somente leitura (nada pode ser alterado no disco): %s"
+
+#: big-mount/usr/lib/big-mount/apfs.sh:898
+msgid "Files that use a compression the driver does not know give a read error instead of wrong content."
+msgstr "Arquivos com uma compressão que o driver não conhece dão erro de leitura em vez de conteúdo errado."
+
+#: big-mount/usr/lib/big-mount/apfs.sh:899
+msgid "To close it before unplugging the disk: bigmount --close-apfs %s"
+msgstr "Para fechá-lo antes de desconectar o disco: bigmount --close-apfs %s"
+
+#: big-mount/usr/lib/big-mount/apfs.sh:901
+msgid "Open it in the file manager of your session (it is not opened as root)."
+msgstr "Abra-o no gerenciador de arquivos da sua sessão (ele não é aberto como root)."
+
+#: big-mount/usr/lib/big-mount/apfs.sh:920
+msgid "No APFS volume opened by bigmount --open-apfs is mounted."
+msgstr "Nenhum volume APFS aberto pelo bigmount --open-apfs está montado."
+
+#: big-mount/usr/lib/big-mount/apfs.sh:923
+msgid "Several APFS volumes are open, give the one to close:"
+msgstr "Vários volumes APFS estão abertos, informe qual fechar:"
+
+#: big-mount/usr/lib/big-mount/apfs.sh:932
+msgid "Closed: %s. The disk can be unplugged."
+msgstr "Fechado: %s. O disco pode ser desconectado."
+
+#: big-mount/usr/lib/big-mount/cli.sh:31
+msgid "Usage: bigmount [OPTION]"
+msgstr "Uso: bigmount [OPÇÃO]"
+
+#: big-mount/usr/lib/big-mount/cli.sh:34
+msgid "(none)"
+msgstr "(nenhuma)"
+
+#: big-mount/usr/lib/big-mount/cli.sh:34
+msgid "mount internal partitions (run at boot by big-mount.service)"
+msgstr "monta as partições internas (executado no boot pelo big-mount.service)"
+
+#: big-mount/usr/lib/big-mount/cli.sh:36
+msgid "show what would be mounted, change nothing"
+msgstr "mostra o que seria montado, sem alterar nada"
+
+#: big-mount/usr/lib/big-mount/cli.sh:37
+msgid "check the boot service and what it did in this boot"
+msgstr "verifica o serviço de inicialização e o que ele fez nesta inicialização"
+
+#: big-mount/usr/lib/big-mount/cli.sh:38
+msgid "open an APFS (Mac) partition read-only in the file manager"
+msgstr "abre uma partição APFS (Mac) somente leitura no gerenciador de arquivos"
+
+#: big-mount/usr/lib/big-mount/cli.sh:39
+msgid "close an APFS partition opened with --open-apfs"
+msgstr "fecha uma partição APFS aberta com --open-apfs"
+
+#: big-mount/usr/lib/big-mount/cli.sh:40
+msgid "what an APFS partition contains, and which driver reads it"
+msgstr "o que uma partição APFS contém, e qual driver a lê"
+
+#: big-mount/usr/lib/big-mount/cli.sh:41
+msgid "show the version and the source revision"
+msgstr "mostra a versão e a revisão do código-fonte"
+
+#: big-mount/usr/lib/big-mount/cli.sh:42
+msgid "show this help"
+msgstr "mostra esta ajuda"
+
+#: big-mount/usr/lib/big-mount/cli.sh:43
+msgid "Configuration: /etc/big-mount.conf. To mount again now: sudo systemctl restart big-mount"
+msgstr "Configuração: /etc/big-mount.conf. Para montar de novo agora: sudo systemctl restart big-mount"
+
+#: big-mount/usr/lib/big-mount/cli.sh:44
+msgid "Diagnosis of devices, safe removal and file rescue: big-storage-rescue (package big-storage-rescue)."
+msgstr "Diagnóstico de dispositivos, remoção segura e resgate de arquivos: big-storage-rescue (pacote big-storage-rescue)."
+
+#: big-mount/usr/lib/big-mount/cli.sh:87
 msgid "bigmount: Secure Erase is no longer part of Big-Mount."
 msgstr "bigmount: o Secure Erase não faz mais parte do Big-Mount."
 
-#: big-mount/usr/lib/big-mount/cli.sh:78
+#: big-mount/usr/lib/big-mount/cli.sh:93
 msgid "bigmount: %s moved to Big Storage Rescue. Use: %s"
 msgstr "bigmount: %s foi para o Big Storage Rescue. Use: %s"
 
-#: big-mount/usr/lib/big-mount/cli.sh:80
+#: big-mount/usr/lib/big-mount/cli.sh:95
 msgid "Install it with: sudo pacman -S big-storage-rescue"
 msgstr "Instale-o com: sudo pacman -S big-storage-rescue"
 
-#: big-mount/usr/lib/big-mount/cli.sh:127
+#: big-mount/usr/lib/big-mount/cli.sh:142
 msgid "source checkout (not installed by a package)"
 msgstr "cópia do código-fonte (não instalada por um pacote)"
 
-#: big-mount/usr/lib/big-mount/cli.sh:136
+#: big-mount/usr/lib/big-mount/cli.sh:151
 msgid "package:"
 msgstr "pacote:"
 
-#: big-mount/usr/lib/big-mount/cli.sh:136
+#: big-mount/usr/lib/big-mount/cli.sh:151
 msgid "revision:"
 msgstr "revisão:"
 
-#: big-mount/usr/lib/big-mount/cli.sh:136
+#: big-mount/usr/lib/big-mount/cli.sh:151
 msgid "source:"
 msgstr "origem:"
 
-#: big-mount/usr/lib/big-mount/cli.sh:144
+#: big-mount/usr/lib/big-mount/cli.sh:159
 msgid "unknown"
 msgstr "desconhecido"
 
-#: big-mount/usr/lib/big-mount/cli.sh:187
+#: big-mount/usr/lib/big-mount/cli.sh:202
 msgid "Missing file of the package: %s"
 msgstr "Arquivo do pacote ausente: %s"
 
-#: big-mount/usr/lib/big-mount/cli.sh:188
-#: big-mount/usr/lib/big-mount/cli.sh:197
-#: big-mount/usr/lib/big-mount/cli.sh:219
+#: big-mount/usr/lib/big-mount/cli.sh:203
+#: big-mount/usr/lib/big-mount/cli.sh:212
+#: big-mount/usr/lib/big-mount/cli.sh:234
 msgid "Reinstall the big-mount package."
 msgstr "Reinstale o pacote big-mount."
 
-#: big-mount/usr/lib/big-mount/cli.sh:196
+#: big-mount/usr/lib/big-mount/cli.sh:211
 msgid "Unsafe owner or permissions: %s (%s)"
 msgstr "Dono ou permissões inseguros: %s (%s)"
 
-#: big-mount/usr/lib/big-mount/cli.sh:204
+#: big-mount/usr/lib/big-mount/cli.sh:219
 msgid "Boot service (big-mount.service)"
 msgstr "Serviço de inicialização (big-mount.service)"
 
-#: big-mount/usr/lib/big-mount/cli.sh:206
+#: big-mount/usr/lib/big-mount/cli.sh:221
 msgid "/etc/bigmountall-no exists: mounting at boot is disabled on purpose"
 msgstr "/etc/bigmountall-no existe: a montagem na inicialização está desativada de propósito"
 
-#: big-mount/usr/lib/big-mount/cli.sh:218
+#: big-mount/usr/lib/big-mount/cli.sh:233
 msgid "Enabled at boot"
 msgstr "Ativado na inicialização"
 
-#: big-mount/usr/lib/big-mount/cli.sh:219
+#: big-mount/usr/lib/big-mount/cli.sh:234
 msgid "Not found by systemd"
 msgstr "Não encontrado pelo systemd"
 
-#: big-mount/usr/lib/big-mount/cli.sh:220
+#: big-mount/usr/lib/big-mount/cli.sh:235
 msgid "Not enabled at boot (%s)"
 msgstr "Não ativado na inicialização (%s)"
 
-#: big-mount/usr/lib/big-mount/cli.sh:220
+#: big-mount/usr/lib/big-mount/cli.sh:235
 msgid "Enable it: sudo systemctl enable big-mount"
 msgstr "Ative-o: sudo systemctl enable big-mount"
 
-#: big-mount/usr/lib/big-mount/cli.sh:223
+#: big-mount/usr/lib/big-mount/cli.sh:238
 msgid "Ran in this boot"
 msgstr "Executado nesta inicialização"
 
-#: big-mount/usr/lib/big-mount/cli.sh:225
+#: big-mount/usr/lib/big-mount/cli.sh:240
 msgid "State in this boot: %s (%s)"
 msgstr "Estado nesta inicialização: %s (%s)"
 
-#: big-mount/usr/lib/big-mount/cli.sh:226
+#: big-mount/usr/lib/big-mount/cli.sh:241
 msgid "See: journalctl -b -u big-mount"
 msgstr "Veja: journalctl -b -u big-mount"
 
-#: big-mount/usr/lib/big-mount/cli.sh:229
+#: big-mount/usr/lib/big-mount/cli.sh:244
 msgid "The unit is replaced by %s"
 msgstr "A unidade é substituída por %s"
 
-#: big-mount/usr/lib/big-mount/cli.sh:230
+#: big-mount/usr/lib/big-mount/cli.sh:245
 msgid "A copy in /etc/systemd/system overrides the package: remove it unless it is intended."
 msgstr "Uma cópia em /etc/systemd/system substitui a do pacote: remova-a, a menos que seja intencional."
 
-#: big-mount/usr/lib/big-mount/cli.sh:232
+#: big-mount/usr/lib/big-mount/cli.sh:247
 msgid "Drop-in files change the unit: %s"
 msgstr "Arquivos drop-in alteram a unidade: %s"
 
-#: big-mount/usr/lib/big-mount/cli.sh:242
+#: big-mount/usr/lib/big-mount/cli.sh:258
 msgid "Partitions handled by Big-Mount at boot: %d"
 msgstr "Partições tratadas pelo Big-Mount na inicialização: %d"
 
-#: big-mount/usr/lib/big-mount/cli.sh:243
+#: big-mount/usr/lib/big-mount/cli.sh:259
 msgid "Failed at boot"
 msgstr "Falharam na inicialização"
 
-#: big-mount/usr/lib/big-mount/cli.sh:244
+#: big-mount/usr/lib/big-mount/cli.sh:260
 msgid "Mounted read-only at boot"
 msgstr "Montadas somente leitura na inicialização"
 
-#: big-mount/usr/lib/big-mount/cli.sh:250
+#: big-mount/usr/lib/big-mount/cli.sh:266
 msgid "Configuration: PERMISSIONS=%s"
 msgstr "Configuração: PERMISSIONS=%s"
 
-#: big-mount/usr/lib/big-mount/cli.sh:251
+#: big-mount/usr/lib/big-mount/cli.sh:267
 msgid "Configuration: unknown PERMISSIONS value, shared is used"
 msgstr "Configuração: valor de PERMISSIONS desconhecido, shared é usado"
 
-#: big-mount/usr/lib/big-mount/cli.sh:259
+#: big-mount/usr/lib/big-mount/cli.sh:275
 msgid "Warnings in the journal of this boot"
 msgstr "Avisos no journal desta inicialização"
 
-#: big-mount/usr/lib/big-mount/cli.sh:262
+#: big-mount/usr/lib/big-mount/cli.sh:278
 msgid "The journal is not readable by this user: boot messages not checked"
 msgstr "O journal não pode ser lido por este usuário: mensagens da inicialização não verificadas"
 
-#: big-mount/usr/lib/big-mount/cli.sh:273
+#: big-mount/usr/lib/big-mount/cli.sh:293
+msgid "%s is mounted on top of %s, whose files are hidden under it"
+msgstr "%s está montado por cima de %s, cujos arquivos ficam escondidos embaixo dele"
+
+#: big-mount/usr/lib/big-mount/cli.sh:295
+msgid "Unmount the one on top (sudo umount %s), then mount again: sudo systemctl restart big-mount"
+msgstr "Desmonte o de cima (sudo umount %s) e monte de novo: sudo systemctl restart big-mount"
+
+#: big-mount/usr/lib/big-mount/cli.sh:307
+msgid "APFS (Mac) partitions"
+msgstr "Partições APFS (Mac)"
+
+#: big-mount/usr/lib/big-mount/cli.sh:308
+msgid "APFS partitions connected: %d (bigmount --apfs-info)"
+msgstr "Partições APFS conectadas: %d (bigmount --apfs-info)"
+
+#: big-mount/usr/lib/big-mount/cli.sh:311
+msgid "APFS driver apfs-fuse installed (also encrypted volumes)"
+msgstr "Driver APFS apfs-fuse instalado (também volumes criptografados)"
+
+#: big-mount/usr/lib/big-mount/cli.sh:312
+msgid "APFS kernel driver installed (no encrypted volumes)"
+msgstr "Driver APFS do kernel instalado (sem volumes criptografados)"
+
+#: big-mount/usr/lib/big-mount/cli.sh:314
+msgid "No APFS driver installed: these partitions cannot be read"
+msgstr "Nenhum driver APFS instalado: estas partições não podem ser lidas"
+
+#: big-mount/usr/lib/big-mount/cli.sh:315
+msgid "Install apfs-fuse-git (pamac build apfs-fuse-git) or linux-apfs-rw-dkms and apfsprogs."
+msgstr "Instale o apfs-fuse-git (pamac build apfs-fuse-git) ou o linux-apfs-rw-dkms e o apfsprogs."
+
+#: big-mount/usr/lib/big-mount/cli.sh:327
 msgid "Big-Mount check (nothing is changed; labels and mount points are left out)"
 msgstr "Verificação do Big-Mount (nada é alterado; rótulos e pontos de montagem ficam de fora)"
 
-#: big-mount/usr/lib/big-mount/cli.sh:277
+#: big-mount/usr/lib/big-mount/cli.sh:333
 msgid "Result: %d problem(s), %d warning(s)."
 msgstr "Resultado: %d problema(s), %d aviso(s)."
 
-#: big-mount/usr/lib/big-mount/cli.sh:279
+#: big-mount/usr/lib/big-mount/cli.sh:335
 msgid "Why a partition is read-only or failed to mount, and the health of its drive: big-storage-rescue --diagnose DEVICE"
 msgstr "Por que uma partição está somente leitura ou não foi montada, e a saúde da unidade dela: big-storage-rescue --diagnose DISPOSITIVO"
 
-#: big-mount/usr/lib/big-mount/cli.sh:281
+#: big-mount/usr/lib/big-mount/cli.sh:337
 msgid "To find out why a partition is read-only or failed to mount, install big-storage-rescue."
 msgstr "Para saber por que uma partição está somente leitura ou não foi montada, instale o big-storage-rescue."

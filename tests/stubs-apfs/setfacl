@@ -1,0 +1,4 @@
+#!/bin/bash
+: "${TESTROOT:?stub called outside the test harness}"
+echo "setfacl $*" >> "$TESTROOT/setfacl.log"
+exit 0
