@@ -1,0 +1,45 @@
+#!/bin/bash
+# Stub apfs-fuse: logs its arguments, and "mounts" by adding a line to the
+# fake /proc/mounts and a "root" folder, as the real one shows the volume.
+#   $TESTROOT/fake-fuse/<name>.fail     exit 22, "Unable to load container."
+#   $TESTROOT/fake-fuse/<name>.eio      exit 5, "Error opening device!"
+#   $TESTROOT/fake-fuse/<name>.password the volume is encrypted: the password
+#                                       is read from the terminal, as the
+#                                       real one does (never from argv)
+# With $TESTROOT/real-bin: the real apfs-fuse mounts $TESTROOT/real-image
+# (allow_other dropped: a user may not give it without /etc/fuse.conf).
+: "${TESTROOT:?stub called outside the test harness}"
+printf 'apfs-fuse' >> "$TESTROOT/apfs-fuse.log"
+printf ' [%s]' "$@" >> "$TESTROOT/apfs-fuse.log"
+echo >> "$TESTROOT/apfs-fuse.log"
+opts="" pos=()
+while [ "$#" -gt 0 ]; do
+    case "$1" in
+        -o) opts="$2"; shift ;;
+        -*) echo "stub apfs-fuse: unexpected option $1" >&2; exit 1 ;;
+        *) pos+=("$1") ;;
+    esac
+    shift
+done
+dev="${pos[0]}" mp="${pos[1]}" name="${pos[0]##*/}"
+if [ -e "$TESTROOT/real-bin" ]; then
+    exec "$(cat "$TESTROOT/real-bin")/apfs-fuse" -o "${opts/allow_other,/}" "$(cat "$TESTROOT/real-image")" "$mp"
+fi
+d="$TESTROOT/fake-fuse"
+if [ -e "$d/$name.eio" ]; then echo "Error opening device!" >&2; exit 5; fi
+if [ -e "$d/$name.fail" ]; then echo "Unable to load container." >&2; exit 22; fi
+if [ -e "$d/$name.password" ]; then
+    echo "Volume Secret is encrypted."
+    printf 'Enter Password: '
+    pw=""
+    if [ -t 0 ]; then IFS= read -r -s pw; fi
+    echo
+    if [ "$pw" != "$(cat "$d/$name.password")" ]; then
+        echo "Wrong password!"
+        echo "Unable to get volume!" >&2
+        exit 1
+    fi
+fi
+mkdir -p "$mp/root" 2>/dev/null
+echo "$dev ${mp// /\\040} fuse.apfs-fuse ro,nosuid,nodev,$opts 0 0" >> "$TESTROOT/proc/mounts"
+exit 0

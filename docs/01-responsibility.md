@@ -18,6 +18,10 @@ service from the start. That is all.
   state, reason) and to the journal.
 - NTFS volumes that Windows left hibernated or unclean are mounted read-only,
   never repaired.
+- APFS partitions (disks of a Mac) are opened read-only on request:
+  `bigmount --open-apfs` (any disk, in the session of the person) or, for
+  internal disks, `APFS=readonly` at boot. Never written to, never repaired
+  (docs/apfs-04-read-only-mount.md).
 
 What it no longer does: diagnosis of devices, what keeps a device busy, safe
 removal, drive health, file rescue, disk images, notifications, a graphical

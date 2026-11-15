@@ -17,6 +17,14 @@ What Big-Mount calls, and the package of each program:
 | glibc | `getent` |
 | gawk | `awk` |
 | sed | `sed` in `--doctor` |
+| grep | `grep` (APFS) |
+| acl | `setfacl`: `/run/media/<user>` for an opened APFS volume |
+| kmod | `modinfo`, `modprobe`: the APFS kernel driver, only when it is used |
+
+APFS drivers are optional (`apfs-fuse-git` from the AUR, or
+`linux-apfs-rw-dkms` and `apfsprogs` from extra), as are `sudo` and
+`xdg-utils` for `--open-apfs`: the boot run needs none of them
+(docs/apfs-03-driver-comparison.md).
 
 systemd, glibc, gawk, sed and coreutils are on every Arch system, so the five
 of them install nothing new. They are listed all the same, as the Arch

@@ -1,0 +1,12 @@
+#!/bin/bash
+# Stub apfsutil (part of apfs-fuse): prints $TESTROOT/fake-apfsutil/<name>,
+# the output of the real tool for that device. With $TESTROOT/real-bin the
+# real apfsutil reads $TESTROOT/real-image instead.
+: "${TESTROOT:?stub called outside the test harness}"
+echo "apfsutil $*" >> "$TESTROOT/apfsutil.log"
+if [ -e "$TESTROOT/real-bin" ]; then
+    exec "$(cat "$TESTROOT/real-bin")/apfsutil" "$(cat "$TESTROOT/real-image")"
+fi
+f="$TESTROOT/fake-apfsutil/${1##*/}"
+if [ -r "$f" ]; then cat "$f"; else echo "Unable to open APFS container"; fi
+exit 0

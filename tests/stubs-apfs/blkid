@@ -1,0 +1,19 @@
+#!/bin/bash
+# Stub "blkid -p -o export -- DEV" for tests/apfs-tests.sh:
+# $TESTROOT/fake-blkid-p/<name> holds the KEY=value lines to print (none:
+# no signature, exit 2); <name>.eio simulates a device that cannot be read.
+# With $TESTROOT/real-image, the real blkid reads that image.
+: "${TESTROOT:?stub called outside the test harness}"
+dev="${*: -1}"
+name="${dev##*/}"
+echo "blkid $*" >> "$TESTROOT/blkid.log"
+if [ -e "$TESTROOT/real-image" ]; then
+    exec /usr/bin/blkid -p -o export -- "$(cat "$TESTROOT/real-image")"
+fi
+d="$TESTROOT/fake-blkid-p"
+if [ -e "$d/$name.eio" ]; then
+    echo "blkid: error: $dev: Input/output error" >&2
+    exit 2
+fi
+[ -s "$d/$name" ] || exit 2
+cat "$d/$name"

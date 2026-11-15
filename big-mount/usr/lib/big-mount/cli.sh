@@ -6,13 +6,15 @@
 #
 #   --help, --version   what this is, and which code is installed
 #   --doctor            is the boot service doing its job? (nothing is changed)
+#   --open-apfs, --close-apfs, --apfs-info
+#                       read-only access to APFS (Mac) partitions, in apfs.sh
 #   old options         the drive manager, the diagnosis and safe removal of
 #                       Big-Mount 2.x are now Big Storage Rescue: say where
 #
 # Plain bash: no GTK, no Python, nothing of Big Storage Rescue is needed.
 #
 # Exit codes: 0 done, 1 a problem was found (--doctor), 2 usage, or an option
-# that moved to Big Storage Rescue.
+# that moved to Big Storage Rescue. The APFS options have their own (apfs.sh).
 
 export TEXTDOMAIN=big-mount
 # /usr/lib/big-mount -> /usr/share/locale (a source checkout uses its own)
@@ -29,10 +31,13 @@ bm_usage() {
    printf $"Usage: bigmount [OPTION]"'\n\n'
    # printf pads by bytes: the translated "(none)" is padded by columns
    # shellcheck disable=SC2247  # $"(none)" is a translatable string
-   bm_pad $"(none)" 16; printf '  %s %s\n' "$REPLY" $"mount internal partitions (run at boot by big-mount.service)"
-   printf '  %-16s %s\n' \
+   bm_pad $"(none)" 19; printf '  %s %s\n' "$REPLY" $"mount internal partitions (run at boot by big-mount.service)"
+   printf '  %-19s %s\n' \
       "--dry-run" $"show what would be mounted, change nothing" \
       "--doctor" $"check the boot service and what it did in this boot" \
+      "--open-apfs [DEV]" $"open an APFS (Mac) partition read-only in the file manager" \
+      "--close-apfs [DEV]" $"close an APFS partition opened with --open-apfs" \
+      "--apfs-info [DEV]" $"what an APFS partition contains, and which driver reads it" \
       "-V, --version" $"show the version and the source revision" \
       "-h, --help" $"show this help"
    printf '\n%s\n' $"Configuration: /etc/big-mount.conf. To mount again now: sudo systemctl restart big-mount"
@@ -46,6 +51,15 @@ bm_main() {
       -h | --help) bm_usage ;;
       -V | --version) bm_cmd_version ;;
       --doctor) bm_cmd_doctor "$@" ;;
+      --open-apfs | --close-apfs | --apfs-info | --apfs-helper)
+         # At boot (big-mount.service) the messages go to the journal, in
+         # English; bash translates $"..." while it reads a function, so the
+         # domain is chosen before apfs.sh is read
+         [ "$cmd ${1:-}" = "--apfs-helper boot-mount" ] && TEXTDOMAIN=big-mount-journal
+         # shellcheck source=apfs.sh
+         . "$BM_LIB_DIR/apfs.sh" || return 1
+         bm_apfs_main "$cmd" "$@"
+         ;;
       # Started from the autostart folder of whoever turned the notifier of
       # Big-Mount 2.x on: there is nothing to say at every login
       --notifier) return 0 ;;
@@ -238,7 +252,8 @@ bm_dr_service() {
          [[ $dev == /dev/* ]] || continue
          n=$((n + 1))
          [ "$s" = failed ] && failed+=("$dev: $line")
-         [ "$s" = ro ] && warns+=("$dev: $line")
+         # APFS is always read-only, on purpose
+         [ "$s" = ro ] && [ "$line" != apfs ] && warns+=("$dev: $line")
       done < "$BM_STATUS_FILE"
       bm_fmt $"Partitions handled by Big-Mount at boot: %d" "$n"; bm_dr info "$REPLY"
       [ "${#failed[@]}" -gt 0 ] && bm_dr warn $"Failed at boot" "$(printf '%s\n' "${failed[@]}")"
@@ -284,6 +299,24 @@ bm_dr_stacked() {
    done < "$BM_PROC_MOUNTS"
 }
 
+# APFS partitions connected: is there a driver to read them?
+bm_dr_apfs() {
+   local n fuse="" kernel=""
+   n="$(lsblk -rno FSTYPE 2>/dev/null | grep -cx apfs)"
+   [ "${n:-0}" -gt 0 ] || return 0
+   printf '\n%s\n' $"APFS (Mac) partitions"
+   bm_fmt $"APFS partitions connected: %d (bigmount --apfs-info)" "$n"; bm_dr info "$REPLY"
+   command -v apfs-fuse >/dev/null 2>&1 && fuse=1
+   if grep -qw apfs /proc/filesystems 2>/dev/null || modinfo -F filename apfs >/dev/null 2>&1; then kernel=1; fi
+   [ -n "$fuse" ] && bm_dr ok $"APFS driver apfs-fuse installed (also encrypted volumes)"
+   [ -n "$kernel" ] && bm_dr ok $"APFS kernel driver installed (no encrypted volumes)"
+   if [ -z "$fuse$kernel" ]; then
+      bm_dr warn $"No APFS driver installed: these partitions cannot be read" \
+         $"Install apfs-fuse-git (pamac build apfs-fuse-git) or linux-apfs-rw-dkms and apfsprogs."
+   fi
+   return 0
+}
+
 bm_cmd_doctor() {
    if [ "$#" -gt 0 ]; then
       printf $"bigmount: unknown option '%s' (see bigmount --help)"'\n' "$1" >&2
@@ -295,6 +328,7 @@ bm_cmd_doctor() {
    bm_dr_install
    bm_dr_service
    bm_dr_stacked
+   bm_dr_apfs
    printf '\n'
    printf $"Result: %d problem(s), %d warning(s)."'\n' "$DR_FAIL" "$DR_WARN"
    if command -v big-storage-rescue >/dev/null; then

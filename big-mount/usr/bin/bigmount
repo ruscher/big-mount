@@ -151,9 +151,11 @@ if [ -n "$pw_entry" ]; then
    IFS=: read -r _ _ UserID GroupID _ <<< "$pw_entry"
 fi
 
-# Permission mask for FAT/exFAT/NTFS (see /etc/big-mount.conf). The file is
-# parsed as data, never sourced: this runs as root.
+# Permission mask for FAT/exFAT/NTFS, and whether internal APFS partitions
+# are mounted (see /etc/big-mount.conf). The file is parsed as data, never
+# sourced: this runs as root.
 FILE_MASK="umask=000"
+APFS_BOOT=off
 if [ -r /etc/big-mount.conf ]; then
    while IFS= read -r line; do
       line="${line%%#*}"
@@ -163,6 +165,9 @@ if [ -r /etc/big-mount.conf ]; then
          PERMISSIONS=owner) FILE_MASK="dmask=022,fmask=022" ;;
          PERMISSIONS=private) FILE_MASK="umask=077" ;;
          PERMISSIONS=*) warn $"/etc/big-mount.conf: unknown value '%s', using shared" "${line#*=}" ;;
+         APFS=off) APFS_BOOT=off ;;
+         APFS=readonly) APFS_BOOT=readonly ;;
+         APFS=*) warn $"/etc/big-mount.conf: unknown value APFS=%s, internal APFS partitions are not mounted" "${line#*=}" ;;
       esac
    done < /etc/big-mount.conf
 fi
@@ -439,6 +444,15 @@ for i in "${CANDIDATES[@]}"; do
       continue
    fi
 
+   # APFS (disks of a Mac) is never mounted read-write, and at boot only
+   # when asked for: a container can be encrypted, or use what the driver
+   # does not know, and the driver is a separate package. The work is done by
+   # "bigmount --apfs-helper", read only for such a partition.
+   if [ "$FSTYPE" = apfs ] && [ "$APFS_BOOT" != readonly ]; then
+      log $"%s: APFS (Mac) partition, not mounted at boot (APFS=readonly in /etc/big-mount.conf does it, read-only). To open it now: bigmount --open-apfs %s" "$DEV" "$DEV"
+      continue
+   fi
+
    # 1. LABEL, 2. PARTLABEL, 3. device name
    safe_label "${BK[LABEL]:-}"
    LABEL_NAME="$REPLY"
@@ -522,6 +536,20 @@ for i in "${CANDIDATES[@]}"; do
             mount_rc=$?
             state=ro
          fi
+         ;;
+      apfs)
+         # Read-only, the volume with the files of the users, encrypted
+         # volumes left alone; exits as in /usr/lib/big-mount/apfs.sh
+         state=ro
+         BIGMOUNT_SELF="$(readlink -f -- "${BASH_SOURCE[0]}")"
+         run "$BIGMOUNT_SELF" --apfs-helper boot-mount "$DEV" "$MOUNT_POINT" "$UserID" "$GroupID"
+         mount_rc=$?
+         case "$mount_rc" in
+            0) note=apfs ;;
+            4) note=apfs-no-driver ;;
+            6) note=apfs-encrypted ;;
+            7) note=apfs-io-error ;;
+         esac
          ;;
       *fat*)
          run mount -o "uid=$UserID,gid=$GroupID,noatime,rw,$FILE_MASK,nodev,nofail,x-gvfs-show" "$DEV" "$MOUNT_POINT"

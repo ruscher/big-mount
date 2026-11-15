@@ -16,7 +16,7 @@ jobs:
     steps:
       - name: Install tools
         run: |
-          pacman -Syu --noconfirm --needed git bash shellcheck gettext python glibc-locales util-linux systemd diffutils
+          pacman -Syu --noconfirm --needed git bash shellcheck gettext python glibc-locales util-linux systemd diffutils acl kmod
           # The suites must not run as root: permission checks would be meaningless
           useradd --create-home ci
 
@@ -42,10 +42,13 @@ jobs:
           shopt -s extglob
           shellcheck -x -P big-mount/usr/lib/big-mount:tests \
             big-mount/usr/bin/bigmount big-mount/usr/lib/big-mount/*.sh \
-            locale/*.sh tests/stubs/* tests/!(bigmount.old).sh
+            locale/*.sh tests/stubs/* tests/stubs-apfs/* tests/!(bigmount.old).sh
 
       - name: Boot path (stubbed devices)
         run: runuser -u ci -- bash tests/run-tests.sh new
+
+      - name: APFS (stubbed drivers and devices)
+        run: runuser -u ci -- bash tests/apfs-tests.sh
 
       - name: Translations
         run: runuser -u ci -- bash tests/i18n-tests.sh

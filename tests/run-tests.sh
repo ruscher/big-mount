@@ -49,6 +49,7 @@ transform_script() {
         -e "s|/media|$root/media|g" \
         -e "s|__RUNMEDIA__|$root/run/media|g" \
         -e '/# root-check$/s/\[ "\$EUID" -ne 0 \]/[ "${FAKE_EUID:-0}" -ne 0 ]/' \
+        -e "s|^\( *\)BIGMOUNT_SELF=.*|\1BIGMOUNT_SELF=$HERE/stubs/bigmount-apfs-helper|" \
         "$src" > "$dst"
     chmod +x "$dst"
 }
@@ -981,16 +982,83 @@ test_nothing_but_the_automount() {
     local lib="$REPO/big-mount/usr/lib/big-mount" files expect l
     files="$(cd "$REPO/big-mount" && find . -type f | sed 's|^\./||' | sort)"
     expect="$(
-        printf '%s\n' etc/big-mount.conf usr/bin/bigmount usr/lib/big-mount/cli.sh \
+        printf '%s\n' etc/big-mount.conf usr/bin/bigmount usr/lib/big-mount/cli.sh usr/lib/big-mount/apfs.sh \
             usr/lib/systemd/system/big-mount.service usr/share/libalpm/hooks/big-mount.hook
         while read -r l; do echo "usr/share/locale/$l/LC_MESSAGES/big-mount.mo"; done < "$REPO/locale/LINGUAS"
     )"
     ASSERT_MSG="only the automount and its translations are shipped (got: $(tr '\n' ' ' <<< "$files"))"
     assert_true test "$files" = "$(sort <<< "$expect")"
     code() { grep -rniE "$1" "$REPO/big-mount/usr/bin" "$lib" | grep -vE '^[^:]+:[0-9]+:[[:space:]]*#'; }
-    ASSERT_MSG="no Python, GTK or dialog anywhere"; assert_false code 'python|gi\.repository|gtk|libadwaita|kdialog|zenity|notify-send|pkexec'
+    # (PKEXEC_UID is read: another program may run the APFS helper through pkexec)
+    ASSERT_MSG="no Python, GTK or dialog anywhere"; assert_false code 'python|gi\.repository|gtk|libadwaita|kdialog|zenity|notify-send|\bpkexec\b'
     ASSERT_MSG="no copy, image or recovery tool"; assert_false code '\b(rsync|ddrescue|testdisk|photorec|smartctl|lsof)\b' 
     ASSERT_MSG="the boot run never reads cli.sh before an option"; assert_true bash -c 'awk "/cli.sh/ { print NR; exit }" "$1" | grep -q . && [ "$(grep -n "^DRY_RUN=\"\"" "$1" | cut -d: -f1)" -lt "$(grep -n "cli.sh\" ||" "$1" | cut -d: -f1)" ]' _ "$SCRIPT_SRC"
+}
+
+# ===== APFS at boot (docs/apfs-04-read-only-mount.md) =====
+
+test_apfs_internal_default_off() {
+    begin "apfs-internal-not-mounted-by-default"
+    local root="$HERE/tmp-apfs-off" out
+    simple_case "$root" '/dev/sda2: UUID="a" TYPE="apfs" PARTLABEL="Basic data partition"' sda2 sda sata 0
+    out="$(run_script "$root" 2>&1)"
+    ASSERT_MSG="nothing mounted, no helper run"; assert_false bash -c 'test -s "$1" || test -s "$2"' _ "$root/mount.log" "$root/apfs-helper.log"
+    ASSERT_MSG="no folder made"; assert_false test -e "$root/mnt/Basic_data_partition"
+    ASSERT_MSG="the journal says why and how to open it"; assert_true bash -c '[[ $1 == *"APFS (Mac) partition, not mounted at boot"* && $1 == *"bigmount --open-apfs /dev/sda2"* ]]' _ "$out"
+    ASSERT_MSG="never a read-write mount of APFS"; assert_false grep -q "apfs" "$root/mount.log"
+}
+
+test_apfs_internal_readonly() {
+    begin "apfs-internal-readonly-when-asked"
+    local root="$HERE/tmp-apfs-ro" out
+    simple_case "$root" '/dev/sda2: LABEL="Macintosh HD" UUID="a" TYPE="apfs"' sda2 sda sata 0
+    printf 'PERMISSIONS=shared
+APFS=readonly
+' > "$root/etc/big-mount.conf"
+    run_script "$root" >/dev/null 2>&1
+    ASSERT_MSG="the APFS helper mounts it, on /mnt/<label>, for the last user"
+    assert_true grep -qxE "apfs-helper --apfs-helper boot-mount /dev/sda2 $root/mnt/Macintosh_HD [0-9]+ [0-9]+" "$root/apfs-helper.log"
+    ASSERT_MSG="mount(8) is never used for APFS"; assert_false test -s "$root/mount.log"
+    ASSERT_MSG="the helper (and its FUSE driver) does not get the lock"; assert_false test -s "$root/fd.log"
+    ASSERT_MSG="status: read-only, reason apfs"; assert_true status_has "$root" "/dev/sda2	a	$root/mnt/Macintosh_HD	ro	apfs"
+    ASSERT_MSG="reverse link /mnt/sda2"; assert_true test -L "$root/mnt/sda2"
+}
+
+test_apfs_internal_no_driver() {
+    begin "apfs-internal-no-driver"
+    local root="$HERE/tmp-apfs-nodrv" out
+    simple_case "$root" '/dev/sda2: LABEL="Mac" UUID="a" TYPE="apfs"' sda2 sda sata 0
+    printf 'APFS=readonly
+' > "$root/etc/big-mount.conf"
+    echo 4 > "$root/apfs-helper-rc"
+    out="$(run_script "$root" 2>&1)"; local rc=$?
+    ASSERT_MSG="the boot goes on (exit 0)"; assert_true test "$rc" -eq 0
+    ASSERT_MSG="status: failed, apfs-no-driver"; assert_true status_has "$root" "/dev/sda2	a	$root/mnt/Mac	failed	apfs-no-driver"
+    ASSERT_MSG="the empty folder is removed"; assert_false test -e "$root/mnt/Mac"
+    echo 6 > "$root/apfs-helper-rc"; rm -rf "$root/run/big-mount"
+    run_script "$root" >/dev/null 2>&1
+    ASSERT_MSG="encrypted volume: status failed, apfs-encrypted"; assert_true status_has "$root" "failed	apfs-encrypted"
+}
+
+test_apfs_external_and_dry_run() {
+    begin "apfs-external-left-to-udisks"
+    local root="$HERE/tmp-apfs-usb" out
+    simple_case "$root" '/dev/sdf2: UUID="a" TYPE="apfs" PARTLABEL="Basic data partition"' sdf2 sdf usb 1
+    printf 'APFS=readonly
+' > "$root/etc/big-mount.conf"
+    out="$(run_script "$root" 2>&1)"
+    ASSERT_MSG="an APFS SSD on USB is left to UDisks, even with APFS=readonly"; assert_false test -s "$root/apfs-helper.log"
+    ASSERT_MSG="  ... and the journal says so"; assert_true grep -q "left to UDisks, external device" <<< "$out"
+    root="$HERE/tmp-apfs-dry"
+    simple_case "$root" '/dev/sda2: LABEL="Mac" TYPE="apfs"' sda2 sda sata 0
+    printf 'APFS=readonly
+' > "$root/etc/big-mount.conf"
+    out="$(run_script "$root" --dry-run 2>&1)"
+    ASSERT_MSG="dry run: the helper is only shown"; assert_true bash -c '[[ $1 == *"dry-run: "*"--apfs-helper boot-mount /dev/sda2"* ]] && ! test -s "$2"' _ "$out" "$root/apfs-helper.log"
+    printf 'APFS=yes
+' > "$root/etc/big-mount.conf"
+    out="$(run_script "$root" 2>&1)"
+    ASSERT_MSG="unknown APFS= value: warned, not mounted"; assert_true bash -c '[[ $1 == *"unknown value APFS=yes"* ]] && ! test -s "$2"' _ "$out" "$root/apfs-helper.log"
 }
 
 # ===== run all =====
@@ -1064,6 +1132,10 @@ test_user_runs_boot_mode
 test_unknown_last_user
 test_lock_file_unwritable
 test_no_destructive_commands
+test_apfs_internal_default_off
+test_apfs_internal_readonly
+test_apfs_internal_no_driver
+test_apfs_external_and_dry_run
 test_doctor_stacked() {
     begin "doctor-stacked-mounts"
     local b="$REPO/big-mount/usr/bin/bigmount" f="$HERE/tmp-doctor-mounts" out
@@ -1092,6 +1164,6 @@ fi
 echo "========================================="
 
 # clean tmp dirs
-rm -rf "$HERE"/tmp-*
+[ -n "${KEEP:-}" ] || rm -rf "$HERE"/tmp-*
 
 exit "$FAIL"

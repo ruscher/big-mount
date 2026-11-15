@@ -1,0 +1,6 @@
+#!/bin/bash
+# Stub modinfo: the apfs kernel module exists when $TESTROOT/has-kernel-apfs does
+: "${TESTROOT:?stub called outside the test harness}"
+[ -e "$TESTROOT/has-kernel-apfs" ] && [ "${*: -1}" = apfs ] && { echo /lib/modules/fake/apfs.ko; exit 0; }
+echo "modinfo: ERROR: Module ${*: -1} not found." >&2
+exit 1

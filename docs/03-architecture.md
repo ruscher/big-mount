@@ -3,10 +3,11 @@
 ```
 /usr/bin/bigmount                     boot run (no option) and --dry-run; parsing in bash, the tools of 04-dependencies.md for the rest
 /usr/lib/big-mount/cli.sh             --help, --version, --doctor, old options (loaded only for them)
+/usr/lib/big-mount/apfs.sh            --open-apfs, --close-apfs, --apfs-info, --apfs-helper (loaded only for them)
 /usr/lib/big-mount/version            commit and date of the build (written by the PKGBUILD)
 /usr/lib/systemd/system/big-mount.service
 /usr/share/libalpm/hooks/big-mount.hook   enables the service on installation
-/etc/big-mount.conf                   PERMISSIONS
+/etc/big-mount.conf                   PERMISSIONS, APFS, APFS_DRIVER
 /run/big-mount/status                 what the last runs did (tab-separated, v1)
 /run/lock/big-mount.lock              one run at a time (fd 9, never inherited by mount helpers)
 ```
@@ -35,6 +36,7 @@ Details and the reasons: `docs/history/02-device-detection.md`,
 
 `STATE`: `rw`, `ro` or `failed`. `REASON`: `-`, `ntfs-hibernated`,
 `ntfs-unclean`, `ntfs-inconsistent`, `ntfs-readonly`, `readonly-fallback`,
+`apfs` (always `ro`), `apfs-no-driver`, `apfs-encrypted`, `apfs-io-error`,
 `mount-exit-N`. Big Storage Rescue reads it to explain why a partition is
 read-only; it is the only interface between the two, and it is read-only for
 everyone but this script.
