@@ -38,7 +38,10 @@ terminal). A whole disk (`/dev/sdf`) means its APFS partition.
 
 `--close-apfs` unmounts through the helper (`umount`, never `-l` or `-f`)
 and removes the empty folder. A volume still in use is left mounted (exit
-8), with how to find the programs that use it.
+8); when Big Storage Rescue is installed, `big-storage-rescue --busy FOLDER`
+is run at once, as the person, and shows which programs use it (a terminal
+whose current folder is inside, a file manager window…). Nothing is closed
+for them.
 
 ## Mount
 

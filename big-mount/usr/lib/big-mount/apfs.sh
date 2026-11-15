@@ -561,25 +561,34 @@ apfs_cmd_boot_mount() {
    apfs_do_mount "$dev" "$vol" "$mp" "$uid" "$gid" boot
 }
 
-apfs_cmd_unmount() {
-   local target="$1" i mp="" typ="" dev="" rc out
+# apfs_find_open DEVICE|FOLDER: the APFS mount it names (its mount point, or
+# the "root" folder apfs-fuse shows): APFS_OPEN_MP and APFS_OPEN_TYPE
+apfs_find_open() {
+   local target="$1" dev="" i
+   APFS_OPEN_MP="" APFS_OPEN_TYPE=""
    apfs_read_mounts
    if [[ $target == /dev/* ]]; then
       apfs_dev "$target" || return
       dev="$REPLY"
-      for i in "${!APFS_M_SRC[@]}"; do
-         if [ "${APFS_M_SRC[i]}" = "$dev" ] && apfs_is_apfs_type "${APFS_M_TYPE[i]}"; then
-            mp="${APFS_M_MP[i]}" typ="${APFS_M_TYPE[i]}"
-         fi
-      done
    else
       target="$(readlink -f -- "$target" 2>/dev/null)"
-      for i in "${!APFS_M_MP[@]}"; do
-         if { [ "${APFS_M_MP[i]}" = "$target" ] || [ "${APFS_M_MP[i]}/root" = "$target" ]; } && apfs_is_apfs_type "${APFS_M_TYPE[i]}"; then
-            mp="${APFS_M_MP[i]}" typ="${APFS_M_TYPE[i]}"
-         fi
-      done
    fi
+   for i in "${!APFS_M_MP[@]}"; do
+      apfs_is_apfs_type "${APFS_M_TYPE[i]}" || continue
+      if { [ -n "$dev" ] && [ "${APFS_M_SRC[i]}" = "$dev" ]; } ||
+         { [ -z "$dev" ] && { [ "${APFS_M_MP[i]}" = "$target" ] || [ "${APFS_M_MP[i]}/root" = "$target" ]; }; }; then
+         APFS_OPEN_MP="${APFS_M_MP[i]}" APFS_OPEN_TYPE="${APFS_M_TYPE[i]}"
+      fi
+   done
+   [ -n "$APFS_OPEN_MP" ]
+}
+
+apfs_cmd_unmount() {
+   local mp typ rc out
+   apfs_find_open "$1"
+   rc=$?
+   [ "$rc" -eq 3 ] && return 3
+   mp="$APFS_OPEN_MP" typ="$APFS_OPEN_TYPE"
    if [ -z "$mp" ]; then
       apfs_say $"%s is not an open APFS volume" "$1"
       return 3
@@ -954,6 +963,11 @@ apfs_cmd_close() {
    fi
    out="$(apfs_as_root unmount "$target")"
    rc=$?
+   # In use: Big Storage Rescue, when installed, says by which programs (as
+   # this person: their own programs, nothing is closed)
+   if [ "$rc" -eq 8 ] && [ "$EUID" -ne 0 ] && command -v big-storage-rescue >/dev/null 2>&1 && apfs_find_open "$target" 2>/dev/null; then # root-check
+      big-storage-rescue --busy "$APFS_OPEN_MP" < /dev/null >&2
+   fi
    [ "$rc" -eq 0 ] || return "$rc"
    apfs_say $"Closed: %s. The disk can be unplugged." "${out#unmounted$'\t'}"
    return 0

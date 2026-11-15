@@ -65,7 +65,7 @@ new_root() {
     done
     # The stubs, but not the APFS drivers: each test installs those it needs
     for s in "$STUBS"/*; do
-        case "${s##*/}" in apfs-fuse | apfsutil | apfs-label | thunar) continue ;; esac
+        case "${s##*/}" in apfs-fuse | apfsutil | apfs-label | thunar | big-storage-rescue) continue ;; esac
         ln -sf "$s" "$R/bin/${s##*/}"
     done
 }
@@ -429,6 +429,11 @@ touch "$R/busy"
 bm --close-apfs
 check "in use: exit 8, says to close the files, nothing forced" bash -c '[ "$1" = 8 ] && grep -q "still in use" "$2" && ! grep -qE "umount .*-[a-z]*[lf]" "$3"' _ "$RC" "$R/err" "$R/umount.log"
 check "  ... still mounted" has proc/mounts "$(MEDIA | sed 's/ /\\040/g')/Mac"
+check "  ... Big Storage Rescue not installed: not run" bash -c '! test -s "$1"' _ "$R/bsr.log"
+ln -s "$STUBS/big-storage-rescue" "$R/bin/big-storage-rescue"
+bm --close-apfs /dev/sdz2
+check "Big Storage Rescue installed: it shows the programs in the folder, run as the person" \
+    bash -c '[ "$1" = 8 ] && grep -qx "big-storage-rescue euid=1000 --busy $2/Mac" "$3" && grep -q "current folder is on the device" "$4"' _ "$RC" "$(MEDIA)" "$R/bsr.log" "$R/err"
 rm -f "$R/busy"
 bm --close-apfs "$(MEDIA)/Mac/root"
 check "closed by the folder shown in the file manager" bash -c '[ "$1" = 0 ] && grep -q "Closed" "$2" && [ ! -e "$3" ]' _ "$RC" "$R/err" "$(MEDIA)/Mac"
