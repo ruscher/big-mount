@@ -13,11 +13,11 @@ license=('GPL-3.0-or-later')
 #   util-linux  blkid, lsblk, findmnt, mount, umount, mountpoint, flock, dmesg, setsid
 #   ntfs-3g     mount.lowntfs-3g (NTFS)
 #   systemd     udevadm, systemctl, journalctl (--doctor) and the service itself
-#   coreutils   readlink, dirname, mkdir, ln, rm, rmdir, stat, head, tail,
+#   coreutils   readlink, dirname, mkdir, ln, ls, rm, rmdir, stat, head, tail,
 #               mktemp, tee, timeout, chmod, chown
 #   glibc       getent
 #   gawk        awk
-#   sed         sed (--doctor)
+#   sed         sed (--doctor, APFS)
 #   grep        grep (APFS)
 #   acl         setfacl: the folder of an APFS volume opened for one person
 #   kmod        modinfo, modprobe: whether the APFS kernel driver is installed
@@ -28,12 +28,12 @@ license=('GPL-3.0-or-later')
 # the separate package big-storage-rescue, which reads what this one leaves in
 # /run/big-mount.
 depends=('acl' 'bash' 'coreutils' 'gawk' 'glibc' 'grep' 'kmod' 'ntfs-3g' 'sed' 'systemd' 'util-linux')
-optdepends=('big-storage-rescue: explains read-only or failed mounts, safe removal, drive health and file rescue'
+optdepends=('big-storage-rescue: explains read-only or failed mounts, safe removal, drive health, file rescue, and which programs keep an APFS volume busy'
             'apfs-fuse-git: read APFS (Mac) partitions, also encrypted ones (AUR)'
             'linux-apfs-rw-dkms: read APFS (Mac) partitions with the kernel driver, no encrypted volumes'
             'apfsprogs: list the volumes of an APFS partition for the kernel driver'
             'sudo: bigmount --open-apfs asks for administrator rights through it'
-            'xdg-utils: bigmount --open-apfs shows the files in the file manager')
+            'xdg-utils: bigmount --open-apfs finds the file manager for folders (xdg-mime, xdg-open)')
 provides=('big-mount-git')
 conflicts=('big-mount-git')
 replaces=('big-mount-git')
