@@ -2,7 +2,7 @@
 
 | | 2.6 | 3.0 |
 | --- | --- | --- |
-| `depends` | bash, util-linux, udisks2, polkit, ntfs-3g, lsof, rsync, smartmontools, python, python-gobject, gtk4, libadwaita>=1.5, libnotify (13) | **bash, coreutils, gawk, glibc, ntfs-3g, sed, systemd, util-linux** (8) |
+| `depends` | bash, util-linux, udisks2, polkit, ntfs-3g, lsof, rsync, smartmontools, python, python-gobject, gtk4, libadwaita>=1.5, libnotify (13) | **acl, bash, coreutils, gawk, glibc, grep, kmod, ntfs-3g, procps-ng, sed, systemd, util-linux** (12) |
 | `optdepends` | ddrescue, testdisk | big-storage-rescue |
 | installed files | 45, 803 KB | 37, 291 KB (with the version file and 31 translations) |
 
@@ -20,14 +20,15 @@ What Big-Mount calls, and the package of each program:
 | grep | `grep` (APFS) |
 | acl | `setfacl`: `/run/media/<user>` for an opened APFS volume |
 | kmod | `modinfo`, `modprobe`: the APFS kernel driver, only when it is used |
+| procps-ng | `pgrep` in `big-mount.install`: a 2.x copy still running on upgrade |
 
 APFS drivers are optional (`apfs-fuse-git` from the AUR, or
 `linux-apfs-rw-dkms` and `apfsprogs` from extra), as are `sudo` and
 `xdg-utils` for `--open-apfs`: the boot run needs none of them
 (docs/apfs-03-driver-comparison.md).
 
-systemd, glibc, gawk, sed and coreutils are on every Arch system, so the five
-of them install nothing new. They are listed all the same, as the Arch
+systemd, glibc, gawk, sed, coreutils and procps-ng are on every Arch system,
+so the six of them install nothing new. They are listed all the same, as the Arch
 packaging guidelines ask for every direct dependency. `namcap` cannot see the
 programs a shell script calls, so it marks every one of them "may not be
 needed": the table above is the check. FAT32, exFAT, ext4, Btrfs, XFS and F2FS are mounted by kernel drivers,

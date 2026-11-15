@@ -21,13 +21,14 @@ license=('GPL-3.0-or-later')
 #   grep        grep (APFS)
 #   acl         setfacl: the folder of an APFS volume opened for one person
 #   kmod        modinfo, modprobe: whether the APFS kernel driver is installed
+#   procps-ng   pgrep: big-mount.install looks for a copy still running on upgrade
 # FAT32, exFAT, ext4, Btrfs, XFS and F2FS are mounted by the kernel drivers.
 # APFS (disks of a Mac) needs a driver of its own, which stays optional: it is
 # only read, by "bigmount --open-apfs" or, when asked for, at boot.
 # No graphical toolkit, no Python: diagnosis, safe removal and file rescue are
 # the separate package big-storage-rescue, which reads what this one leaves in
 # /run/big-mount.
-depends=('acl' 'bash' 'coreutils' 'gawk' 'glibc' 'grep' 'kmod' 'ntfs-3g' 'sed' 'systemd' 'util-linux')
+depends=('acl' 'bash' 'coreutils' 'gawk' 'glibc' 'grep' 'kmod' 'ntfs-3g' 'procps-ng' 'sed' 'systemd' 'util-linux')
 optdepends=('big-storage-rescue: explains read-only or failed mounts, safe removal, drive health, file rescue, and which programs keep an APFS volume busy'
             'apfs-fuse-git: read APFS (Mac) partitions, also encrypted ones (AUR)'
             'linux-apfs-rw-dkms: read APFS (Mac) partitions with the kernel driver, no encrypted volumes'
