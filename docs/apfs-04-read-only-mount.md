@@ -89,6 +89,17 @@ boot goes on. Status reasons: `apfs` (ro), `apfs-no-driver`,
 `apfs-encrypted`, `apfs-io-error`, `mount-exit-N`. `--doctor` does not warn
 about APFS being read-only: it is on purpose.
 
+## From the file manager (mount.apfs)
+
+`/usr/bin/mount.apfs` is the helper mount(8) runs for `mount -t apfs`, as
+UDisks does when the partition is clicked. It runs
+`bigmount --apfs-helper fs-mount DEVICE FOLDER OPTIONS` and gives mount(8)
+its exit codes (0, 1 usage, 32 not mounted). Kernel driver only, the Data
+volume (or `vol=N`), read-only, owner from `/run/media/<user>/…` (or `uid=`,
+`gid=`), encrypted volumes refused; messages in English, in the journal of
+udisks2.service. Big-Mount's own kernel mounts use `mount -i`, so they never
+come back through it. Why not apfs-fuse: apfs-06, "Clicking the partition".
+
 ## Interface for other programs (v1)
 
 `bigmount --apfs-helper` runs as root only (exit 5 otherwise). Big Storage

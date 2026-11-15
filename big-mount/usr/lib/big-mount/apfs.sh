@@ -15,6 +15,9 @@
 #   --apfs-helper mount DEVICE [VOLUME]
 #   --apfs-helper unmount DEVICE | FOLDER
 #   --apfs-helper boot-mount DEVICE FOLDER UID GID
+# As root, run by /usr/bin/mount.apfs, which mount(8) runs for "mount -t
+# apfs", as UDisks does when the partition is clicked in the file manager:
+#   --apfs-helper fs-mount DEVICE FOLDER OPTIONS
 #
 # Nothing here ever writes to an APFS partition: both drivers are used
 # read-only (apfs-fuse cannot write at all; the kernel driver writes only
@@ -390,7 +393,8 @@ apfs_mount_kernel() {
          return 1
       fi
    fi
-   mount -t apfs -o "ro,nosuid,nodev,uid=$uid,gid=$gid,vol=$vol" -- "$dev" "$mp"
+   # -i: the driver itself, never /usr/bin/mount.apfs (which runs this)
+   mount -i -t apfs -o "ro,nosuid,nodev,uid=$uid,gid=$gid,vol=$vol" -- "$dev" "$mp"
    rc=$?
    [ "$rc" -eq 0 ] || return "$rc"
    if [ -n "$mark" ] && dmesg 2>/dev/null | sed -n "\\|$mark|,\$p" | grep -q 'volume is encrypted'; then
@@ -561,6 +565,65 @@ apfs_cmd_boot_mount() {
    apfs_do_mount "$dev" "$vol" "$mp" "$uid" "$gid" boot
 }
 
+# From /usr/bin/mount.apfs: mount(8) runs it for "mount -t apfs", and UDisks
+# does that when the partition is clicked in the file manager, on a folder it
+# made under /run/media/<user>. Only the kernel driver is used: UDisks shows a
+# mount as the partition's only when it is on the device number of the
+# partition, which the kernel driver gives and FUSE (apfs-fuse) never does, so
+# the file manager could neither show it open nor close it. The volume is the
+# one with the files of the users (vol=N in OPTIONS chooses another), the
+# files belong to the person of /run/media/<user>/... (or uid=, gid= in
+# OPTIONS), read-only whatever OPTIONS asks for, and encrypted volumes are
+# left to bigmount --open-apfs, where their password can be typed. Messages
+# go to the journal of udisks2.service, in English.
+apfs_cmd_fs_mount() {
+   local dev="$1" mp="$2" opts="$3" o list=() uid="" gid="" vol="" user entry pgid="" i enc=unknown
+   if [ ! -d "$mp" ] || [ -L "$mp" ]; then
+      apfs_say "mount.apfs: %s is not a folder" "$mp"
+      return 2
+   fi
+   IFS=, read -ra list <<< "$opts"
+   for o in "${list[@]}"; do
+      case "$o" in
+         uid=*) uid="${o#uid=}" ;;
+         gid=*) gid="${o#gid=}" ;;
+         vol=*) vol="${o#vol=}" ;;
+      esac
+   done
+   if [ -z "$uid" ] && [[ $mp == "$APFS_MEDIA"/*/* ]]; then
+      user="${mp#"$APFS_MEDIA"/}"
+      user="${user%%/*}"
+      entry="$(getent passwd "$user")" && IFS=: read -r _ _ uid pgid _ <<< "$entry"
+   elif [ -n "$uid" ]; then
+      entry="$(getent passwd "$uid")" && IFS=: read -r _ _ _ pgid _ <<< "$entry"
+   fi
+   uid="${uid:-0}" gid="${gid:-${pgid:-0}}"
+   if [[ ! $uid =~ ^[0-9]+$ || ! $gid =~ ^[0-9]+$ ]]; then
+      apfs_say "mount.apfs: invalid uid or gid: %s" "$opts"
+      return 2
+   fi
+   apfs_dev "$dev" || return
+   dev="$REPLY"
+   apfs_check_signature "$dev" || return
+   apfs_backends
+   if [[ " ${APFS_BACKENDS[*]} " != *" kernel "* ]]; then
+      apfs_say "%s: APFS (Mac) partition. The file manager opens it only with the kernel driver (sudo pacman -S linux-apfs-rw-dkms apfsprogs); without it, open it read-only with: bigmount --open-apfs %s" "$dev" "$dev"
+      return 4
+   fi
+   APFS_BACKENDS=(kernel)
+   apfs_volumes "$dev" || return
+   apfs_pick_volume "$vol" || return
+   vol="$REPLY"
+   for i in "${!APFS_V_IDX[@]}"; do
+      [ "${APFS_V_IDX[i]}" = "$vol" ] && enc="${APFS_V_ENC[i]}"
+   done
+   if [ "$enc" = yes ]; then
+      apfs_say "%s: volume %s is encrypted (FileVault), and the kernel driver cannot decrypt it. Open it with its password in a terminal: bigmount --open-apfs %s" "$dev" "$vol" "$dev"
+      return 6
+   fi
+   apfs_do_mount "$dev" "$vol" "$mp" "$uid" "$gid" boot
+}
+
 # apfs_find_open DEVICE|FOLDER: the APFS mount it names (its mount point, or
 # the "root" folder apfs-fuse shows): APFS_OPEN_MP and APFS_OPEN_TYPE
 apfs_find_open() {
@@ -626,8 +689,9 @@ apfs_cmd_helper() {
       mount:1 | mount:2) apfs_cmd_mount "$@" ;;
       unmount:1) apfs_cmd_unmount "$1" ;;
       boot-mount:4) apfs_cmd_boot_mount "$@" ;;
+      fs-mount:3) apfs_cmd_fs_mount "$@" ;;
       *)
-         apfs_say "usage: bigmount --apfs-helper probe DEVICE | mount DEVICE [VOLUME] | unmount DEVICE|FOLDER | boot-mount DEVICE FOLDER UID GID"
+         apfs_say "usage: bigmount --apfs-helper probe DEVICE | mount DEVICE [VOLUME] | unmount DEVICE|FOLDER | boot-mount DEVICE FOLDER UID GID | fs-mount DEVICE FOLDER OPTIONS"
          return 2
          ;;
    esac

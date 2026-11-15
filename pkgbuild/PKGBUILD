@@ -31,7 +31,7 @@ license=('GPL-3.0-or-later')
 depends=('acl' 'bash' 'coreutils' 'gawk' 'glibc' 'grep' 'kmod' 'ntfs-3g' 'procps-ng' 'sed' 'systemd' 'util-linux')
 optdepends=('big-storage-rescue: explains read-only or failed mounts, safe removal, drive health, file rescue, and which programs keep an APFS volume busy'
             'apfs-fuse-git: read APFS (Mac) partitions, also encrypted ones (AUR)'
-            'linux-apfs-rw-dkms: read APFS (Mac) partitions with the kernel driver, no encrypted volumes'
+            'linux-apfs-rw-dkms: read APFS (Mac) partitions with the kernel driver, also by clicking them in the file manager; no encrypted volumes'
             'apfsprogs: list the volumes of an APFS partition for the kernel driver'
             'sudo: bigmount --open-apfs asks for administrator rights through it'
             'xdg-utils: bigmount --open-apfs finds the file manager for folders (xdg-mime, xdg-open)')
